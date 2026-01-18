@@ -372,6 +372,20 @@ class OctoprintUptimePlugin(
     # Temporary on_api_command handler for debugging frontend save payloads.
     # Small, easily removed helper used only while investigating settings
     # save behaviour.
+    def get_api_commands(self):
+        """Return API commands this plugin accepts via the plugin API.
+
+        OctoPrint checks this to decide whether POSTs to
+        `/api/plugin/<identifier>` are allowed. Returning a mapping of
+        command names to argument lists enables the POST handler for those
+        commands (avoids 405 Method Not Allowed responses).
+        """
+        return {
+            "saveAttempt": [],
+            "bound": [],
+            "clientConstructed": [],
+        }
+
     def on_api_command(self, command, data):
         """Handle lightweight frontend debug pings."""
         try:
@@ -474,4 +488,4 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = (
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc39"
+__plugin_version__ = "0.1.0rc41"
