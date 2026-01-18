@@ -126,6 +126,32 @@ $(function () {
         !self.settings.plugins ||
         !self.settings.plugins.octoprint_uptime
       ) {
+        // Send a lightweight, one-time diagnostic ping so the backend log
+        // can show what keys are present when the binding fails. This is
+        // helpful to debug why `settings.plugins.octoprint_uptime` is
+        // missing in certain environments. Do not spam the server;
+        // only send once per page load.
+        try {
+          if (!self._diagnosticSent) {
+            self._diagnosticSent = true;
+            if (window.OctoPrint && OctoPrint.simpleApiCommand) {
+              var keys = [];
+              try {
+                keys =
+                  self.settings && self.settings.plugins
+                    ? Object.keys(self.settings.plugins)
+                    : [];
+              } catch (e) {
+                keys = [];
+              }
+              OctoPrint.simpleApiCommand("octoprint_uptime", "bound", {
+                missing: true,
+                plugins: keys,
+              }).always(function () {});
+            }
+          }
+        } catch (e) {}
+
         return;
       }
 
