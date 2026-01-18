@@ -153,7 +153,7 @@ class OctoprintUptimePlugin(
                 "type": "settings",
                 "name": "OctoPrint Uptime",
                 "template": "settings.jinja2",
-                "custom_bindings": True,
+                "custom_bindings": False,
             },
         ]
 
@@ -369,115 +369,6 @@ class OctoprintUptimePlugin(
             # Fallback for test environments: return a plain dict
             return dict(uptime=uptime_full)
 
-    # Temporary on_api_command handler for debugging frontend save payloads.
-    # Small, easily removed helper used only while investigating settings
-    # save behaviour.
-    def get_api_commands(self):
-        """Return API commands this plugin accepts via the plugin API.
-
-        OctoPrint checks this to decide whether POSTs to
-        `/api/plugin/<identifier>` are allowed. Returning a mapping of
-        command names to argument lists enables the POST handler for those
-        commands (avoids 405 Method Not Allowed responses).
-        """
-        return {
-            "saveAttempt": [],
-            "bound": [],
-            "clientConstructed": [],
-        }
-
-    def on_api_command(self, command, data):
-        """Handle lightweight frontend debug pings."""
-        try:
-            if getattr(self, "_logger", None):
-                msg = "on_api_command called: command=%s, data=%r"
-                self._logger.info(msg, command, data)
-        except Exception:
-            pass
-
-        try:
-            if command == "saveAttempt":
-                try:
-                    import flask as _flask  # type: ignore
-
-                    try:
-                        if getattr(self, "_logger", None):
-                            self._logger.info("UptimePlugin: saveAttempt")
-                            self._logger.debug("%r", data)
-                    except Exception:
-                        pass
-
-                    return _flask.jsonify(success=True)
-                except Exception:
-                    # Fall through to safe failure response
-                    pass
-        except Exception:
-            pass
-
-        try:
-            import flask as _flask  # type: ignore
-
-            return _flask.jsonify(success=False)
-        except Exception:
-            return dict(success=False)
-
-    def on_api_post(self, request):
-        """Accept POSTs to /api/plugin/<identifier> and handle
-        simpleApiCommand-style payloads.
-
-        This complements :py:meth:`on_api_command` and ensures POST
-        requests (sent from the frontend) are accepted instead of
-        returning 405 Method Not Allowed.
-        """
-        try:
-            try:
-                payload = request.get_json(force=True) or {}
-            except Exception:
-                payload = {}
-
-            command = payload.get("command")
-            data = payload.get("data")
-
-            try:
-                if getattr(self, "_logger", None):
-                    self._logger.info(
-                        "on_api_post called: command=%s",
-                        str(command),
-                    )
-                    self._logger.debug("payload=%r", payload)
-            except Exception:
-                pass
-
-            if command == "saveAttempt":
-                try:
-                    if getattr(self, "_logger", None):
-                        self._logger.info("UptimePlugin: saveAttempt")
-                        self._logger.debug("%r", data)
-                except Exception:
-                    pass
-                try:
-                    import flask as _flask  # type: ignore
-
-                    return _flask.jsonify(success=True)
-                except Exception:
-                    return dict(success=True)
-
-            try:
-                import flask as _flask  # type: ignore
-
-                return _flask.jsonify(success=False)
-            except Exception:
-                return dict(success=False)
-        except Exception:
-            try:
-                import flask as _flask  # type: ignore
-
-                return _flask.jsonify(success=False)
-            except Exception:
-                return dict(success=False)
-
-
-UptimePlugin = OctoprintUptimePlugin
 
 # Backwards-compatible alias expected by tests
 UptimePlugin = OctoprintUptimePlugin
@@ -488,4 +379,4 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = (
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc45"
+__plugin_version__ = "0.1.0rc49"

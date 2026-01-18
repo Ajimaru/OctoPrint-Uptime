@@ -1,57 +1,56 @@
-
-<form id="settings_plugin_octoprint_uptime" class="form-horizontal">
+<div id="settings_plugin_octoprint_uptime" class="form-horizontal">
   <fieldset>
     <legend>{{ _("OctoPrint-Uptime") }}</legend>
     <p>{{ _("Use this plugin to display system uptime in the Navbar.") }}</p>
 
-    <div class="control-group">
-      <label class="control-label" for="plugin_uptime_debug">{{ _("Debug") }}</label>
-      <div class="controls">
-        <label class="checkbox" for="plugin_uptime_debug">
-          <input
-            id="plugin_uptime_debug"
-            type="checkbox"
-            data-bind="checked: settings.plugins.octoprint_uptime.debug"
-          />
-          {{ _("Enable debug logging (throttled)") }}
-        </label>
-        <p class="help-block">{{ _("When enabled, the plugin will log debug messages. Messages are throttled to avoid spamming the log.") }}</p>
+      <div class="control-group">
+        <label class="control-label" for="plugin_uptime_debug">{{ _("Debug") }}</label>
+        <div class="controls">
+          <label class="checkbox" for="plugin_uptime_debug">
+            <input
+              id="plugin_uptime_debug"
+              type="checkbox"
+              data-bind="checked: settings.plugins.octoprint_uptime.debug"
+            />
+            {{ _("Enable debug logging (throttled)") }}
+          </label>
+          <p class="help-block">{{ _("When enabled, the plugin will log debug messages. Messages are throttled to avoid spamming the log.") }}</p>
+        </div>
       </div>
-    </div>
 
-    <div class="control-group">
-      <label class="control-label" for="plugin_uptime_navbar">{{ _("Navbar") }}</label>
-      <div class="controls">
-        <label class="checkbox" for="plugin_uptime_navbar">
-          <input
-            id="plugin_uptime_navbar"
-            type="checkbox"
-            data-bind="checked: settings.plugins.octoprint_uptime.navbar_enabled"
-          />
-          {{ _("Show uptime in navbar") }}
-        </label>
-        <p class="help-block">{{ _("Toggle whether the uptime is visible in the top navigation bar.") }}</p>
+      <div class="control-group">
+        <label class="control-label" for="plugin_uptime_navbar">{{ _("Navbar") }}</label>
+        <div class="controls">
+          <label class="checkbox" for="plugin_uptime_navbar">
+            <input
+              id="plugin_uptime_navbar"
+              type="checkbox"
+              data-bind="checked: settings.plugins.octoprint_uptime.navbar_enabled"
+            />
+            {{ _("Show uptime in navbar") }}
+          </label>
+          <p class="help-block">{{ _("Toggle whether the uptime is visible in the top navigation bar.") }}</p>
+        </div>
       </div>
-    </div>
 
-    <div class="control-group">
-      <label class="control-label" for="plugin_uptime_format">{{ _("Display format") }}</label>
-      <div class="controls">
-        <select id="plugin_uptime_format" data-bind="value: settings.plugins.octoprint_uptime.display_format" class="span3">
-          <option value="full">{{ _("days + hours + minutes + seconds") }}</option>
-          <option value="short">{{ _("days + hours only") }}</option>
-        </select>
-        <p class="help-block">{{ _("Choose how the uptime is shown in the navbar.") }}</p>
+      <div class="control-group">
+        <label class="control-label" for="plugin_uptime_format">{{ _("Display format") }}</label>
+        <div class="controls">
+          <select id="plugin_uptime_format" data-bind="value: settings.plugins.octoprint_uptime.display_format" class="span3">
+            <option value="full">{{ _("days + hours + minutes + seconds") }}</option>
+            <option value="short">{{ _("days + hours only") }}</option>
+          </select>
+          <p class="help-block">{{ _("Choose how the uptime is shown in the navbar.") }}</p>
+        </div>
       </div>
-    </div>
 
-    <div class="control-group">
-      <label class="control-label" for="plugin_uptime_throttle">{{ _("Debug throttle (s)") }}</label>
-      <div class="controls">
-        <input id="plugin_uptime_throttle" type="number" class="span2" min="1" data-bind="value: settings.plugins.octoprint_uptime.debug_throttle_seconds" />
-        <p class="help-block">{{ _("Minimum seconds between debug log entries.") }}</p>
+      <div class="control-group">
+        <label class="control-label" for="plugin_uptime_throttle">{{ _("Debug throttle (s)") }}</label>
+        <div class="controls">
+          <input id="plugin_uptime_throttle" type="number" class="span2" min="1" data-bind="value: settings.plugins.octoprint_uptime.debug_throttle_seconds" />
+          <p class="help-block">{{ _("Minimum seconds between debug log entries.") }}</p>
+        </div>
       </div>
-    </div>
 
   </fieldset>
-</form>
+</div>
