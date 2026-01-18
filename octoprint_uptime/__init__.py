@@ -124,8 +124,8 @@ class OctoprintUptimePlugin(
     """
 
     def is_api_protected(self):
-        """API is now public for debugging (no auth required)."""
-        return False
+        """Require authentication for API access (secure by default)."""
+        return True
 
     def get_assets(self):
         """Return JS assets for registration by OctoPrint."""
@@ -224,10 +224,8 @@ class OctoprintUptimePlugin(
         """Update cached debug flag when settings change. Log for debug."""
         try:
             if getattr(self, "_logger", None):
-                self._logger.info(
-                    "on_settings_save called with data: %r",
-                    data,
-                )
+                # Log at debug level to avoid noisy info logs in production
+                self._logger.debug("on_settings_save data: %r", data)
         except Exception:
             pass
         try:
@@ -371,4 +369,4 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = (
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc51"
+__plugin_version__ = "0.1.0rc52"
