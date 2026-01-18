@@ -204,13 +204,65 @@ $(function () {
     self.onSettingsBeforeSave = function () {
       // Refresh cached reference to settings before save
       self.settings = self._resolveSettingsRoot();
-      // Notify backend (debug) that save is about to happen
+
+      // Send a lightweight debug payload to the backend so we can verify
+      // what values the frontend is about to save. This is non-blocking
+      // and temporary (will be removed once debugging is complete).
       try {
         if (window.OctoPrint && OctoPrint.simpleApiCommand) {
+          var payload = null;
+          try {
+            // Prefer a KO -> plain JS conversion when available
+            payload = ko.toJS(self.settings.plugins.octoprint_uptime);
+          } catch (e) {
+            // Fallback: construct a minimal payload safely
+            payload = {
+              debug: !!(
+                self.settings &&
+                self.settings.plugins &&
+                self.settings.plugins.octoprint_uptime &&
+                (typeof self.settings.plugins.octoprint_uptime.debug ===
+                "function"
+                  ? self.settings.plugins.octoprint_uptime.debug()
+                  : self.settings.plugins.octoprint_uptime.debug)
+              ),
+              navbar_enabled: !!(
+                self.settings &&
+                self.settings.plugins &&
+                self.settings.plugins.octoprint_uptime &&
+                (typeof self.settings.plugins.octoprint_uptime
+                  .navbar_enabled === "function"
+                  ? self.settings.plugins.octoprint_uptime.navbar_enabled()
+                  : self.settings.plugins.octoprint_uptime.navbar_enabled)
+              ),
+              display_format:
+                (self.settings &&
+                  self.settings.plugins &&
+                  self.settings.plugins.octoprint_uptime &&
+                  (typeof self.settings.plugins.octoprint_uptime
+                    .display_format === "function"
+                    ? self.settings.plugins.octoprint_uptime.display_format()
+                    : self.settings.plugins.octoprint_uptime.display_format)) ||
+                "full",
+              debug_throttle_seconds: parseInt(
+                (self.settings &&
+                  self.settings.plugins &&
+                  self.settings.plugins.octoprint_uptime &&
+                  (typeof self.settings.plugins.octoprint_uptime
+                    .debug_throttle_seconds === "function"
+                    ? self.settings.plugins.octoprint_uptime.debug_throttle_seconds()
+                    : self.settings.plugins.octoprint_uptime
+                        .debug_throttle_seconds)) ||
+                  60,
+                10,
+              ),
+            };
+          }
+
           OctoPrint.simpleApiCommand(
             "octoprint_uptime",
             "saveAttempt",
-            {},
+            payload,
           ).always(function () {});
         }
       } catch (e) {}

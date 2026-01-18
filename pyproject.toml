@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OctoPrint-Uptime"
-version = "0.1.0rc38"
+version = "0.1.0rc39"
 description = "OctoPrint plugin that exposes system uptime to the About → System dialog"
 authors = [
     {name = "Ajimaru", email = "ajimaru_gdr@pm.me"}
