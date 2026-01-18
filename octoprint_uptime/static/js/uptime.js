@@ -115,7 +115,20 @@ $(function () {
     };
 
     self._bindSettingsIfNeeded = function () {
+      // Refresh reference to settings root before attempting to bind
       self.settings = self._resolveSettingsRoot();
+
+      // Only attempt to bind once the Settings object from OctoPrint has
+      // loaded and contains the plugin entry we expect. If not yet present
+      // bail out and let the retry logic kick in.
+      if (
+        !self.settings ||
+        !self.settings.plugins ||
+        !self.settings.plugins.octoprint_uptime
+      ) {
+        return;
+      }
+
       var $root = self._getSettingsDialogRoot();
       if (!$root) {
         return;
@@ -158,18 +171,27 @@ $(function () {
     };
 
     self._bindSettingsWithRetry = function () {
-      var attempts = 0;
-      var maxAttempts = 10;
-      var delayMs = 50;
+      var start = Date.now();
+      var timeoutMs = 10000; // total time to keep trying (ms)
+      var delayMs = 200; // poll interval
       var tick = function () {
-        attempts += 1;
         self._bindSettingsIfNeeded();
         var $root = self._getSettingsDialogRoot();
         if ($root && $root.data && $root.data("uptimeKoBound")) {
           return;
         }
-        if (attempts < maxAttempts) {
+        if (Date.now() - start < timeoutMs) {
           window.setTimeout(tick, delayMs);
+        } else {
+          // Final attempt/time out; send a non-blocking diagnostic ping so
+          // backend logs can capture that we failed to bind in time.
+          try {
+            if (window.OctoPrint && OctoPrint.simpleApiCommand) {
+              OctoPrint.simpleApiCommand("octoprint_uptime", "bound", {
+                timeout: true,
+              }).always(function () {});
+            }
+          } catch (e) {}
         }
       };
       tick();
@@ -293,6 +315,6 @@ $(function () {
   OCTOPRINT_VIEWMODELS.push([
     UptimeSettingsViewModel,
     ["settingsViewModel"],
-    ["#settings_plugin_octoprint_uptime", "#navbar_plugin_navbar_uptime"],
+    ["#settings_plugin_octoprint_uptime"],
   ]);
 });
