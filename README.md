@@ -11,7 +11,19 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-Adds a simple System Uptime entry to the About → System (System Information) dialog in OctoPrint.
+OctoPrint-Uptime zeigt die System-Uptime an und bietet eine kleine API.
+
+Aktueller Status: Release Candidate 0.1.0rc52
+
+Kurz:
+
+- Zeigt die System-Uptime in der Navbar an.
+- Bietet ein kleines API-Endpunkt unter `/api/plugin/octoprint_uptime` (geschützt, Auth erforderlich).
+
+Wichtiges Verhalten in dieser Version:
+
+- `debug` Standard ist auf `false` gesetzt (weniger Lärm in Logs).
+- `is_api_protected()` ist standardmäßig aktiv (`True`) — API-Zugriff erfordert OctoPrint-Berechtigungen.
 
 ## How to use this template
 
@@ -23,40 +35,53 @@ Adds a simple System Uptime entry to the About → System (System Information) d
 
 ## Features
 
-- Shows host system uptime in the System Information dialog.
-- Small, read-only server API endpoint returning formatted uptime.
-- Clientside widget injects the uptime into the System info list and refreshes every minute.
+- Zeigt die Host-System-Uptime in der Navbar.
+- Kleines, gelesenes API-Endpunkt, das formatierte Uptime zurückgibt.
+- Frontend-Widget aktualisiert die Anzeige periodisch (kurzes Polling).
 
 ## Development quickstart
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -U pip
-python -m pip install -e ".[develop]"
+python3 -m pip install -U pip build
+python3 -m pip install -e ".[develop]"
 pre-commit install
 pytest
 ```
 
-The stub plugin exposes a simple settings pane and is safe to load in OctoPrint for local testing.
+Zum lokalen Testen: die `.development/restart_octoprint_dev.sh`-Hilfe im Repo nutzt ein lokales OctoPrint-Dev-Setup. Nach Änderungen am Template oder an den Assets `./.development/restart_octoprint_dev.sh --clear-cache` ausführen.
 
 ## Translations
 
-Update and compile catalogs whenever user-facing strings change:
+Übersetzungsdateien liegen unter `octoprint_uptime/translations`. Kataloge neu erzeugen / kompilieren mit Babel/pybabel nach Änderungen an Nutzertexten.
 
-```bash
-pip install https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip
-```
-
-The `releases/latest` URL always points to the newest stable release.
+Für Nutzer: vorgebaute Releases sind unter Releases auf GitHub verfügbar.
 
 ## Configuration
 
 ### Settings Defaults
 
+Die folgenden Standardwerte werden vom Plugin verwendet (siehe `get_settings_defaults()`):
+
+- `debug`: `false`
+- `navbar_enabled`: `true`
+- `display_format`: `"full"` (Tage + Stunden + Minuten + Sekunden)
+- `debug_throttle_seconds`: `60`
+
+### Verhalten
+
+- API-Zugriff ist standardmäßig geschützt — OctoPrint-Berechtigungen werden geprüft.
+- Debug-Logging ist standardmäßig deaktiviert; aktivierbar in den Plugin-Einstellungen.
+
 ## How It Works
 
+Das Plugin stellt einen kleinen JSON-Endpunkt unter `/api/plugin/octoprint_uptime` bereit, und ein kleines Knockout-basiertes Navbar-Widget pollt diesen Endpunkt und zeigt die formatierte Uptime an.
+
 ## FAQ
+
+- Wie aktiviere ich Debug-Logs? → In den Plugin-Einstellungen die Option "Debug" einschalten.
+- Warum ist die API geschützt? → Sicherheitsgründe; personenbezogene oder systemkritische Infos werden nur nach OctoPrint-Berechtigung ausgegeben.
 
 ## Contributing
 
