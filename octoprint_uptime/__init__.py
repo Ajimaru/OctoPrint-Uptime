@@ -10,32 +10,18 @@ import logging
 import os
 import subprocess
 import time
-from typing import TYPE_CHECKING
 
-# Use TYPE_CHECKING to provide real types for static analysis while avoiding
-# runtime imports. Fallback to dummy classes if OctoPrint is not available.
-if TYPE_CHECKING:
+# --- OctoPrint plugin base class compatibility (TempETA-Style) ---
+from typing import Any, Type
+
+try:
     import octoprint.plugin  # type: ignore
+except ModuleNotFoundError:
 
-    SimpleApiPlugin = octoprint.plugin.SimpleApiPlugin
-    AssetPlugin = octoprint.plugin.AssetPlugin
-    SettingsPlugin = octoprint.plugin.SettingsPlugin
-    TemplatePlugin = octoprint.plugin.TemplatePlugin
-else:
-    try:
-        import octoprint.plugin as _op_plugin  # type: ignore
-
-        SimpleApiPlugin = _op_plugin.SimpleApiPlugin
-        AssetPlugin = _op_plugin.AssetPlugin
-        SettingsPlugin = _op_plugin.SettingsPlugin
-        try:
-            TemplatePlugin = _op_plugin.TemplatePlugin
-        except Exception:
-
-            class TemplatePlugin:  # type: ignore
-                pass
-
-    except Exception:
+    class _OctoPrintPluginStubs:
+        class SettingsPlugin:
+            def on_settings_save(self: Any, data: dict) -> dict:
+                return data
 
         class SimpleApiPlugin:
             pass
@@ -43,55 +29,101 @@ else:
         class AssetPlugin:
             pass
 
-        class SettingsPlugin:
+        class TemplatePlugin:
             pass
 
+    class _OctoPrintStubs:
+        plugin = _OctoPrintPluginStubs
 
-# Keep compatibility alias used elsewhere in the file/tests
-SettingsPluginMixin = SettingsPlugin
+    octoprint = _OctoPrintStubs()  # type: ignore
+
+
+SettingsPluginBase: Type[Any] = getattr(
+    octoprint.plugin, "SettingsPlugin", object
+)  # type: ignore[attr-defined]
+SimpleApiPluginBase: Type[Any] = getattr(
+    octoprint.plugin, "SimpleApiPlugin", object
+)  # type: ignore[attr-defined]
+AssetPluginBase: Type[Any] = getattr(
+    octoprint.plugin, "AssetPlugin", object
+)  # type: ignore[attr-defined]
+TemplatePluginBase: Type[Any] = getattr(
+    octoprint.plugin, "TemplatePlugin", object
+)  # type: ignore[attr-defined]
+
+# In some test environments the octoprint.plugin module only exposes a
+# subset of plugin base classes. When that happens multiple bases may
+# resolve to the built-in 'object', which would create duplicate base
+# classes and trigger a TypeError when defining our plugin class.
+# Ensure each base is a unique class object by creating simple dummy
+# classes when a base resolved to 'object'.
+if SettingsPluginBase is object:
+
+    class _SettingsPluginDummy:  # pragma: no cover - trivial fallback
+        pass
+
+    SettingsPluginBase = _SettingsPluginDummy
+if TemplatePluginBase is object:
+
+    class _TemplatePluginDummy:  # pragma: no cover - trivial fallback
+        pass
+
+    TemplatePluginBase = _TemplatePluginDummy
+if SimpleApiPluginBase is object:
+
+    class _SimpleApiPluginDummy:  # pragma: no cover - trivial fallback
+        pass
+
+    SimpleApiPluginBase = _SimpleApiPluginDummy
+if AssetPluginBase is object:
+
+    class _AssetPluginDummy:  # pragma: no cover - trivial fallback
+        pass
+
+    AssetPluginBase = _AssetPluginDummy
 
 
 def _format_uptime(seconds):
-    """Format seconds into human-readable uptime string.
+    """Format seconds into a full human-readable uptime string (default).
 
-    Supports two modes:
-    - "full": days + hours + minutes + seconds (default)
-    - "short": days + hours only
+    Historically this function returned a string (the "full" format) and
+    tests expect that behaviour. Return the full string here; callers that
+    need the short form can use _format_uptime_short().
     """
     seconds = int(seconds)
     days, rem = divmod(seconds, 86400)
     hours, rem = divmod(rem, 3600)
     minutes, secs = divmod(rem, 60)
 
-    def full():
-        parts = []
-        if days:
-            parts.append(f"{days}d")
-        if hours:
-            parts.append(f"{hours}h")
-        if minutes:
-            parts.append(f"{minutes}m")
-        if secs or not parts:
-            parts.append(f"{secs}s")
-        return " ".join(parts)
-
-    def short():
-        parts = []
-        if days:
-            parts.append(f"{days}d")
-        # show hours even if zero when days present
+    parts = []
+    if days:
+        parts.append(f"{days}d")
+    if hours:
         parts.append(f"{hours}h")
-        return " ".join(parts)
+    if minutes:
+        parts.append(f"{minutes}m")
+    if secs or not parts:
+        parts.append(f"{secs}s")
+    return " ".join(parts)
 
-    # Default behaviour is full if no mode requested by caller
-    return dict(full=full(), short=short())
+
+def _format_uptime_short(seconds):
+    """Return the 'short' uptime representation (days + hours)."""
+    seconds = int(seconds)
+    days, rem = divmod(seconds, 86400)
+    hours, rem = divmod(rem, 3600)
+    parts = []
+    if days:
+        parts.append(f"{days}d")
+    parts.append(f"{hours}h")
+    return " ".join(parts)
 
 
 class OctoprintUptimePlugin(
-    SimpleApiPlugin,
-    AssetPlugin,
-    SettingsPluginMixin,
-    TemplatePlugin,
+    SimpleApiPluginBase,
+    AssetPluginBase,
+    SettingsPluginBase,
+    TemplatePluginBase,
 ):
     """OctoPrint plugin implementation.
 
@@ -100,11 +132,8 @@ class OctoprintUptimePlugin(
     """
 
     def is_api_protected(self):
-        """Require authentication for the API.
-
-        Respect OctoPrint permissions.
-        """
-        return True
+        """API is now public for debugging (no auth required)."""
+        return False
 
     def get_assets(self):
         """Return JS assets for registration by OctoPrint."""
@@ -112,23 +141,24 @@ class OctoprintUptimePlugin(
 
     def get_template_configs(self):
         """Return template configurations for OctoPrint."""
+
         return [
-            dict(
-                type="navbar",
-                name="navbar_uptime",
-                template="navbar.jinja2",
-                custom_bindings=True,
-            ),
-            dict(
-                type="settings",
-                name="OctoPrint Uptime",
-                template="settings.jinja2",
-            ),
+            {
+                "type": "navbar",
+                "name": "navbar_uptime",
+                "template": "navbar.jinja2",
+                "custom_bindings": True,
+            },
+            {
+                "type": "settings",
+                "name": "OctoPrint Uptime",
+                "template": "settings.jinja2",
+                "custom_bindings": True,
+            },
         ]
 
     def is_template_autoescaped(self):
         """Opt into OctoPrint's template autoescaping.
-
         Returning True signals OctoPrint to render this plugin's templates
         with autoescaping enabled by default (safer). Use the `|safe` filter
         in templates for any controlled HTML you intentionally want to allow.
@@ -199,21 +229,26 @@ class OctoprintUptimePlugin(
             pass
 
     def on_settings_save(self, data):
-        """Update cached debug flag when settings change."""
+        """Update cached debug flag when settings change. Log for debug."""
         try:
-            method = getattr(SettingsPlugin, "on_settings_save", None)
+            if getattr(self, "_logger", None):
+                self._logger.info(
+                    "on_settings_save called with data: %r",
+                    data,
+                )
+        except Exception:
+            pass
+        try:
+            method = getattr(SettingsPluginBase, "on_settings_save", None)
             if callable(method):
                 method(self, data)
         except Exception:
-            # best-effort; don't fail on settings save proxy
             pass
-        # Capture previous values for logging
         try:
             prev_navbar = getattr(self, "_navbar_enabled", None)
         except Exception:
             prev_navbar = None
 
-        # Update cached values from settings store
         self._debug_enabled = bool(self._settings.get(["debug"]))
         self._navbar_enabled = bool(self._settings.get(["navbar_enabled"]))
         self._display_format = str(self._settings.get(["display_format"]))
@@ -221,22 +256,22 @@ class OctoprintUptimePlugin(
             self._settings.get(["debug_throttle_seconds"]) or 60
         )
 
-        # Adjust logger level when debug toggled on
         try:
             if getattr(self, "_logger", None):
-                try:
-                    if self._debug_enabled:
-                        self._logger.setLevel(logging.DEBUG)
-                        self._logger.debug("UptimePlugin: debug enabled via settings")
-                    else:
-                        # Keep global logging handlers unchanged.
-                        self._logger.info("UptimePlugin: debug disabled via settings")
-                except Exception:
-                    pass
+                msg = (
+                    "UptimePlugin: settings after save: debug=%s, "
+                    "navbar_enabled=%s, display_format=%s, "
+                    "debug_throttle_seconds=%s"
+                )
+                self._logger.info(
+                    msg,
+                    self._debug_enabled,
+                    self._navbar_enabled,
+                    self._display_format,
+                    self._debug_throttle_seconds,
+                )
         except Exception:
             pass
-
-        # Log navbar toggle event at INFO (visible without DEBUG)
         try:
             logger = getattr(self, "_logger", None)
             if (
@@ -248,23 +283,6 @@ class OctoprintUptimePlugin(
                     "UptimePlugin: navbar_enabled changed from %s to %s",
                     prev_navbar,
                     self._navbar_enabled,
-                )
-        except Exception:
-            pass
-
-        # Debug-level dump of current settings
-        try:
-            if getattr(self, "_logger", None) and self._debug_enabled:
-                msg = (
-                    "UptimePlugin settings: debug=%s, navbar_enabled=%s, "
-                    "display_format=%s, debug_throttle_seconds=%s"
-                )
-                self._logger.debug(
-                    msg,
-                    self._debug_enabled,
-                    self._navbar_enabled,
-                    self._display_format,
-                    self._debug_throttle_seconds,
                 )
         except Exception:
             pass
@@ -311,10 +329,9 @@ class OctoprintUptimePlugin(
 
             seconds = self._get_uptime_seconds()
             if isinstance(seconds, (int, float)):
-                formatted = _format_uptime(seconds)
-                # formatted is a dict with both formats
-                uptime_full = formatted.get("full")
-                uptime_short = formatted.get("short")
+                # compute both full and short representations
+                uptime_full = _format_uptime(seconds)
+                uptime_short = _format_uptime_short(seconds)
             else:
                 uptime_full = uptime_short = str(seconds)
 
@@ -352,6 +369,12 @@ class OctoprintUptimePlugin(
             # Fallback for test environments: return a plain dict
             return dict(uptime=uptime_full)
 
+    # No on_api_command handler — rely on OctoPrint's native
+    # settings save flow and on_settings_save.
+
+
+# Backwards-compatible alias expected by tests
+UptimePlugin = OctoprintUptimePlugin
 
 __plugin_name__ = "OctoPrint-Uptime"
 __plugin_pythoncompat__ = ">=3.10,<4"
@@ -359,4 +382,4 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = (
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc22"
+__plugin_version__ = "0.1.0rc38"

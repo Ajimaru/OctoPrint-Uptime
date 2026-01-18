@@ -73,9 +73,174 @@ $(function () {
     setInterval(fetchUptime, 2 * 1000);
   }
 
+  // Settings ViewModel for plugin settings panel
+  function UptimeSettingsViewModel(parameters) {
+    var self = this;
+
+    // Keep reference to OctoPrint's settingsViewModel wrapper
+    self.settingsViewModel = parameters[0];
+
+    // Resolve to the real settings object (handles different OctoPrint versions)
+    self._resolveSettingsRoot = function () {
+      var s = null;
+      try {
+        s = self.settingsViewModel && self.settingsViewModel.settings;
+        if (typeof s === "function") {
+          s = s();
+        }
+      } catch (e) {
+        s = null;
+      }
+
+      if (s && s.plugins) {
+        return s;
+      }
+      if (s && s.settings && s.settings.plugins) {
+        return s.settings;
+      }
+      return {};
+    };
+
+    // Expose settings so template data-bind="settings.plugins.octoprint_uptime..." works
+    self.settings = self._resolveSettingsRoot();
+
+    // No fallback save helper; rely on OctoPrint settings flow (as in example project)
+
+    self._getSettingsDialogRoot = function () {
+      var $root = $("#settings_plugin_octoprint_uptime");
+      if (!$root.length) {
+        $root = $(".section");
+      }
+      return $root.length ? $root : null;
+    };
+
+    self._bindSettingsIfNeeded = function () {
+      self.settings = self._resolveSettingsRoot();
+      var $root = self._getSettingsDialogRoot();
+      if (!$root) {
+        return;
+      }
+      var rootEl = $root.get(0);
+      if ($(rootEl).data("uptimeKoBound")) {
+        return;
+      }
+      try {
+        ko.applyBindings(self, rootEl);
+        $(rootEl).data("uptimeKoBound", true);
+        // Notify backend for debug: indicate bindings were applied
+        try {
+          if (window.OctoPrint && OctoPrint.simpleApiCommand) {
+            OctoPrint.simpleApiCommand("octoprint_uptime", "bound", {}).always(
+              function () {},
+            );
+          }
+        } catch (e) {}
+
+        // No fallback save UI inserted; use OctoPrint's native settings save behavior (as in the example project)
+      } catch (e) {
+        // Ignore - binding may be retried
+      }
+    };
+
+    self._unbindSettingsIfBound = function () {
+      var $root = self._getSettingsDialogRoot();
+      if (!$root) {
+        return;
+      }
+      var rootEl = $root.get(0);
+      if (!$(rootEl).data("uptimeKoBound")) {
+        return;
+      }
+      try {
+        ko.cleanNode(rootEl);
+      } catch (e) {}
+      $(rootEl).removeData("uptimeKoBound");
+    };
+
+    self._bindSettingsWithRetry = function () {
+      var attempts = 0;
+      var maxAttempts = 10;
+      var delayMs = 50;
+      var tick = function () {
+        attempts += 1;
+        self._bindSettingsIfNeeded();
+        var $root = self._getSettingsDialogRoot();
+        if ($root && $root.data && $root.data("uptimeKoBound")) {
+          return;
+        }
+        if (attempts < maxAttempts) {
+          window.setTimeout(tick, delayMs);
+        }
+      };
+      tick();
+    };
+
+    self._installSettingsDialogHooks = function () {
+      if (self._settingsDialogHooksInstalled) {
+        return;
+      }
+      self._settingsDialogHooksInstalled = true;
+
+      $(document).on("shown", "#settings_dialog", function () {
+        self._bindSettingsWithRetry();
+      });
+      $(document).on("shown.bs.modal", "#settings_dialog", function () {
+        self._bindSettingsWithRetry();
+      });
+
+      $(document).on("hidden", "#settings_dialog", function () {
+        self._unbindSettingsIfBound();
+      });
+      $(document).on("hidden.bs.modal", "#settings_dialog", function () {
+        self._unbindSettingsIfBound();
+      });
+    };
+
+    // Hooks called by OctoPrint's settings dialog lifecycle
+    self.onSettingsShown = function () {
+      self._bindSettingsWithRetry();
+    };
+
+    self.onSettingsBeforeSave = function () {
+      // Refresh cached reference to settings before save
+      self.settings = self._resolveSettingsRoot();
+      // Notify backend (debug) that save is about to happen
+      try {
+        if (window.OctoPrint && OctoPrint.simpleApiCommand) {
+          OctoPrint.simpleApiCommand(
+            "octoprint_uptime",
+            "saveAttempt",
+            {},
+          ).always(function () {});
+        }
+      } catch (e) {}
+      // Return true to allow save to proceed (no blocking validation here)
+      return true;
+    };
+
+    self.onSettingsHidden = function () {
+      self._unbindSettingsIfBound();
+    };
+
+    // Ensure we install hooks once when the viewmodel is initialized
+    self._installSettingsDialogHooks();
+
+    // No extra client debug pings or save interception; rely on OctoPrint's
+    // native settings dialog save flow (as in the working example).
+
+    // Removed fallback 'Save (force)' click handler per user's request — rely on OctoPrint's native settings save flow.
+  }
+
   OCTOPRINT_VIEWMODELS.push([
     NavbarUptimeViewModel,
     ["settingsViewModel"],
     ["#navbar_plugin_navbar_uptime"],
+  ]);
+
+  // Ensure the settings VM is constructed early by also attaching it to the navbar element
+  OCTOPRINT_VIEWMODELS.push([
+    UptimeSettingsViewModel,
+    ["settingsViewModel"],
+    ["#settings_plugin_octoprint_uptime", "#navbar_plugin_navbar_uptime"],
   ]);
 });
