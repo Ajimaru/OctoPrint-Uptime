@@ -407,6 +407,63 @@ class OctoprintUptimePlugin(
         except Exception:
             return dict(success=False)
 
+    def on_api_post(self, request):
+        """Accept POSTs to /api/plugin/<identifier> and handle
+        simpleApiCommand-style payloads.
+
+        This complements :py:meth:`on_api_command` and ensures POST
+        requests (sent from the frontend) are accepted instead of
+        returning 405 Method Not Allowed.
+        """
+        try:
+            try:
+                payload = request.get_json(force=True) or {}
+            except Exception:
+                payload = {}
+
+            command = payload.get("command")
+            data = payload.get("data")
+
+            try:
+                if getattr(self, "_logger", None):
+                    self._logger.info(
+                        "on_api_post called: command=%s",
+                        str(command),
+                    )
+                    self._logger.debug("payload=%r", payload)
+            except Exception:
+                pass
+
+            if command == "saveAttempt":
+                try:
+                    if getattr(self, "_logger", None):
+                        self._logger.info("UptimePlugin: saveAttempt")
+                        self._logger.debug("%r", data)
+                except Exception:
+                    pass
+                try:
+                    import flask as _flask  # type: ignore
+
+                    return _flask.jsonify(success=True)
+                except Exception:
+                    return dict(success=True)
+
+            try:
+                import flask as _flask  # type: ignore
+
+                return _flask.jsonify(success=False)
+            except Exception:
+                return dict(success=False)
+        except Exception:
+            try:
+                import flask as _flask  # type: ignore
+
+                return _flask.jsonify(success=False)
+            except Exception:
+                return dict(success=False)
+
+
+UptimePlugin = OctoprintUptimePlugin
 
 # Backwards-compatible alias expected by tests
 UptimePlugin = OctoprintUptimePlugin
