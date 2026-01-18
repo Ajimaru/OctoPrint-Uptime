@@ -1,0 +1,18 @@
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Critical areas: changes here should always be reviewed by the maintainer.
+/.github/ @Ajimaru
+/octoprint_octoprint_plugin_template/ @Ajimaru
+/translations/ @Ajimaru
+/tests/ @Ajimaru
+
+# Packaging / build / release metadata
+/pyproject.toml @Ajimaru
+/setup.py @Ajimaru
+/MANIFEST.in @Ajimaru
+/requirements.txt @Ajimaru
+
+# Dev tooling / hooks
+/.development/ @Ajimaru
+/.githooks/ @Ajimaru
+/.pre-commit-config.yaml @Ajimaru

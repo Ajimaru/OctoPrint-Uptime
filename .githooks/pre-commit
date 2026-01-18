@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$REPO_ROOT"
+
+python_is_at_least_310() {
+    local python_bin="$1"
+    "$python_bin" -c 'import sys; sys.exit(0 if sys.version_info[:2] >= (3, 10) else 1)' >/dev/null 2>&1
+}
+
+run_pre_commit_from_venv() {
+    local venv_dir="$1"
+    local python_bin="$venv_dir/bin/python"
+    local pre_commit_bin="$venv_dir/bin/pre-commit"
+
+    if [[ ! -x "$pre_commit_bin" || ! -x "$python_bin" ]]; then
+        return 1
+    fi
+
+    if ! python_is_at_least_310 "$python_bin"; then
+        echo "ERROR: $python_bin is < 3.10; pre-commit hooks require Python 3.10+" >&2
+        return 2
+    fi
+
+    exec "$pre_commit_bin" run --hook-stage pre-commit --show-diff-on-failure --color=always
+}
+
+run_pre_commit_from_venv "./venv"
+
+echo "ERROR: pre-commit not available in ./venv. Run: .development/setup_dev.sh" >&2
+exit 1

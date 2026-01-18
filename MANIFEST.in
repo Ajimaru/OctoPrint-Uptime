@@ -1,0 +1,10 @@
+include README.md
+include LICENSE
+include AUTHORS.md
+include requirements.txt
+include babel.cfg
+include translations/messages.pot
+recursive-include octoprint_plugin_template/templates *
+recursive-include octoprint_plugin_template/static *
+recursive-include octoprint_plugin_template/translations *.po *.mo *.pot
+recursive-include translations *.po *.mo

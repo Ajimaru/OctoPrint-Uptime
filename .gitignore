@@ -1,0 +1,32 @@
+*.pyc
+*.pyo
+*.swp
+*.swo
+*~
+.DS_Store
+*.egg-info
+dist
+build
+venv
+.venv
+__pycache__
+.pytest_cache
+.coverage
+coverage.xml
+htmlcov
+*.log
+.idea
+.vscode
+*.bak
+GITHUB_UPLOAD.md
+
+# pre-commit/prettier temporary install artifacts
+node_modules/
+
+# Development-only folders (not for GitHub)
+.drafts/
+.local/
+.notes/
+.ideas/
+.logs
+.qodo

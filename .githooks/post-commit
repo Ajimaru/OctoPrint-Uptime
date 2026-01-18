@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Git post-commit hook.
+# Delegates to the version-bump-aware artifact builder.
+
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [[ -z "$repo_root" ]]; then
+  exit 0
+fi
+
+script="$repo_root/.development/post_commit_build_dist.sh"
+if [[ ! -x "$script" ]]; then
+  exit 0
+fi
+
+"$script"

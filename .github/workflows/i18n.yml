@@ -1,0 +1,73 @@
+name: i18n
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  i18n:
+    name: i18n catalog check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[develop]" "Babel==2.16.0" "Jinja2==3.1.4"
+
+      - name: Verify messages.pot is up to date
+        run: |
+          pybabel extract --sort-output -F babel.cfg -o /tmp/messages.pot .
+          python - <<'PY'
+          import pathlib
+          import sys
+
+          def normalize(path: str) -> str:
+              text = pathlib.Path(path).read_text(encoding="utf-8")
+              lines = text.splitlines()
+              out = []
+              for line in lines:
+                  # These headers are time/tool-version dependent.
+                  if line.startswith('"POT-Creation-Date:'):
+                      continue
+                  if line.startswith('"Generated-By:'):
+                      continue
+                  out.append(line)
+              return "\n".join(out).strip() + "\n"
+
+          repo = "translations/messages.pot"
+          tmp = "/tmp/messages.pot"
+
+          if not pathlib.Path(repo).exists():
+              print(f"Missing {repo}")
+              sys.exit(1)
+
+          if normalize(repo) != normalize(tmp):
+              print("translations/messages.pot is out of date. Run:")
+              print("  pybabel extract --sort-output -F babel.cfg -o translations/messages.pot .")
+              print("  pybabel update -i translations/messages.pot -d translations -l de")
+              print("  pybabel update -i translations/messages.pot -d translations -l en")
+              sys.exit(1)
+          PY
+
+      - name: Compile catalogs
+        run: |
+          pybabel compile -d octoprint_plugin_template/translations
