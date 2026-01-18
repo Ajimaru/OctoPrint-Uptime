@@ -4,21 +4,6 @@
     <p>{{ _("Use this plugin to display system uptime in the Navbar.") }}</p>
 
       <div class="control-group">
-        <label class="control-label" for="plugin_uptime_debug">{{ _("Debug") }}</label>
-        <div class="controls">
-          <label class="checkbox" for="plugin_uptime_debug">
-            <input
-              id="plugin_uptime_debug"
-              type="checkbox"
-              data-bind="checked: settings.plugins.octoprint_uptime.debug"
-            />
-            {{ _("Enable debug logging (throttled)") }}
-          </label>
-          <p class="help-block">{{ _("When enabled, the plugin will log debug messages. Messages are throttled to avoid spamming the log.") }}</p>
-        </div>
-      </div>
-
-      <div class="control-group">
         <label class="control-label" for="plugin_uptime_navbar">{{ _("Navbar") }}</label>
         <div class="controls">
           <label class="checkbox" for="plugin_uptime_navbar">
@@ -41,6 +26,21 @@
             <option value="short">{{ _("days + hours only") }}</option>
           </select>
           <p class="help-block">{{ _("Choose how the uptime is shown in the navbar.") }}</p>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="plugin_uptime_debug">{{ _("Debug") }}</label>
+        <div class="controls">
+          <label class="checkbox" for="plugin_uptime_debug">
+            <input
+              id="plugin_uptime_debug"
+              type="checkbox"
+              data-bind="checked: settings.plugins.octoprint_uptime.debug"
+            />
+            {{ _("Enable debug logging (throttled)") }}
+          </label>
+          <p class="help-block">{{ _("When enabled, the plugin will log debug messages. Messages are throttled to avoid spamming the log.") }}</p>
         </div>
       </div>
 
