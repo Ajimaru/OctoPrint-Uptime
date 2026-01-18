@@ -5,7 +5,7 @@ set -euo pipefail
 # artifacts into dist/ (wheel + sdist via build, plus a zip derived from sdist).
 
 log() {
-  printf '[octoprint_plugin_template post-commit] %s\n' "$*"
+  printf '[OctoPrint-Uptime post-commit] %s\n' "$*"
 }
 
 python_is_at_least_310() {
@@ -97,9 +97,9 @@ get_previous_version_from_dist() {
 
   local best=""
   local file version
-  for file in dist/octoprint_plugin_template-*.tar.gz dist/octoprint_plugin_template-*.whl dist/octoprint_plugin_template-*.zip; do
+  for file in dist/OctoPrint-Uptime-*.tar.gz dist/OctoPrint-Uptime-*.whl dist/OctoPrint-Uptime-*.zip; do
     [[ -e "$file" ]] || continue
-    version="$(basename "$file" | sed -nE 's/^octoprint_plugin_template-([0-9]+\.[0-9]+\.[0-9]+).*/\1/p')"
+    version="$(basename "$file" | sed -nE 's/^OctoPrint-Uptime-([0-9]+\.[0-9]+\.[0-9]+).*/\1/p')"
     [[ -n "$version" ]] || continue
 
     if [[ "$version" == "$new_version" ]]; then
@@ -255,8 +255,8 @@ main() {
   log "Building wheel + sdist into dist/"
   "$PYTHON" -m build >/dev/null
 
-  local sdist="dist/octoprint_plugin_template-${new_version}.tar.gz"
-  local zip="dist/octoprint_plugin_template-${new_version}.zip"
+  local sdist="dist/OctoPrint-Uptime-${new_version}.tar.gz"
+  local zip="dist/OctoPrint-Uptime-${new_version}.zip"
 
   if [[ ! -f "$sdist" ]]; then
     log "Expected sdist not found: ${sdist}; skipping zip creation"

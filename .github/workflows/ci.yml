@@ -21,6 +21,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - python-version: "3.10"
+            os: ubuntu-latest
+            run-precommit: true
+            run-coverage: false
+            run-build: false
           - python-version: "3.11"
             os: ubuntu-latest
             run-precommit: true
@@ -60,10 +65,10 @@ jobs:
       - name: Run tests (with coverage)
         if: ${{ matrix.run-coverage }}
         run: |
-          pytest -q --cov=octoprint_plugin_template --cov-branch --cov-report=xml:coverage.xml
+          pytest -q --cov=octoprint_uptime --cov-branch --cov-report=xml:coverage.xml
 
       - name: Upload coverage to Codecov
-        if: ${{ matrix.run-coverage && github.repository == 'Ajimaru/OctoPrint-octoprint_plugin_template' }}
+        if: ${{ matrix.run-coverage && github.repository == 'Ajimaru/OctoPrint-Uptime' }}
         uses: codecov/codecov-action@v5
         with:
           files: coverage.xml
@@ -91,7 +96,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.10"
           cache: pip
 
       - name: Install OctoPrint
@@ -109,4 +114,4 @@ jobs:
         run: |
           mkdir ../smoketest
           cd ../smoketest
-          python -c "import octoprint_plugin_template; print(getattr(octoprint_plugin_template, '__version__', 'unknown'))"
+          python -c "import octoprint_uptime; print(getattr(octoprint_uptime, '__version__', 'unknown'))"

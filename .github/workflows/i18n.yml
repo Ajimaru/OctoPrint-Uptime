@@ -70,4 +70,4 @@ jobs:
 
       - name: Compile catalogs
         run: |
-          pybabel compile -d octoprint_plugin_template/translations
+          pybabel compile -d octoprint_uptime/translations

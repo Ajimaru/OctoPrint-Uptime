@@ -17,7 +17,7 @@ Options:
   --port PORT            Port to resolve PID from (via ss), default: OCTOPRINT_PORT or 5000
   --basedir PATH          OctoPrint basedir (default: $OCTOPRINT_BASEDIR or ~/.octoprint)
   --octoprint-log PATH   Path to octoprint.log (default: basedir/logs/octoprint.log)
-  --data-dir PATH        Plugin data dir to monitor (default: basedir/data/plugin_template)
+  --data-dir PATH        Plugin data dir to monitor (default: basedir/data/octoprint_uptime)
   --out-prefix NAME      Output file prefix (default: octoprint_perf)
   --once                 Take one sample and exit
   -h, --help             Show this help
@@ -59,7 +59,7 @@ OCTOPRINT_BASEDIR="$OCTOPRINT_BASEDIR_DEFAULT"
 OCTOPRINT_LOG_DEFAULT="${OCTOPRINT_LOG:-$OCTOPRINT_BASEDIR/logs/octoprint.log}"
 OCTOPRINT_LOG_PATH="$OCTOPRINT_LOG_DEFAULT"
 
-PLUGIN_DATA_DIR_DEFAULT="$OCTOPRINT_BASEDIR/data/plugin_template"
+PLUGIN_DATA_DIR_DEFAULT="$OCTOPRINT_BASEDIR/data/octoprint_uptime"
 PLUGIN_DATA_DIR="$PLUGIN_DATA_DIR_DEFAULT"
 
 while [[ $# -gt 0 ]]; do
@@ -199,7 +199,7 @@ data_dir_metrics() {
 plugin_log_tail_lines() {
   local path="$1"
   if [[ -f "$path" ]]; then
-    tail -n 200 "$path" 2>/dev/null | grep -ci 'plugin_template' || echo 0
+    tail -n 200 "$path" 2>/dev/null | grep -ci 'octoprint_uptime' || echo 0
   else
     echo 0
   fi

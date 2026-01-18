@@ -2,7 +2,7 @@
 
 # Critical areas: changes here should always be reviewed by the maintainer.
 /.github/ @Ajimaru
-/octoprint_octoprint_plugin_template/ @Ajimaru
+/OctoPrint-Uptime/ @Ajimaru
 /translations/ @Ajimaru
 /tests/ @Ajimaru
 

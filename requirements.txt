@@ -1,3 +1,2 @@
 # Any additional requirements besides OctoPrint should be listed here
 # For development dependencies, see the [project.optional-dependencies] section in pyproject.toml
-paho-mqtt>=1.6.0,<3.0.0

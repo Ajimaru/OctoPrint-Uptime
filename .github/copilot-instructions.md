@@ -1,7 +1,7 @@
 # GitHub Copilot Instructions - OctoPrint Plugin Template
 
-**Issue**:
-**Target**: OctoPrint 1.12.0+, Python 3.11+ | Implements 2014 feature request
+**Issue**: https://github.com/OctoPrint/OctoPrint/issues/4355
+**Target**: OctoPrint 1.12.0+, Python 3.10+ | Implements 2014 feature request
 
 ## Code Standards (CRITICAL)
 
@@ -85,3 +85,4 @@ pybabel compile -d translations
 - Mixins: https://docs.octoprint.org/en/main/plugins/mixins.html
 - Contributing: https://github.com/OctoPrint/OctoPrint/blob/main/CONTRIBUTING.md
 - Knockout.js: https://knockoutjs.com/documentation/introduction.html
+- Implementation Plan: .ideas/IMPLEMENTATION_PLAN.md

@@ -63,33 +63,33 @@ echo ""
 
 # Step 3: Check main plugin file
 echo "3️⃣  Backend Implementation:"
-PLUGIN_METHODS=$(grep -c "def " octoprint_plugin_template/__init__.py)
+PLUGIN_METHODS=$(grep -c "def " octoprint_uptime/__init__.py)
 echo "   ✓ $PLUGIN_METHODS backend methods implemented"
 echo ""
 
 # Step 4: Check Templates
 echo "4️⃣  Templates:"
-echo "   ✓ Settings: $(test -s octoprint_plugin_template/templates/settings.jinja2 && echo 'Ready' || echo 'Missing')"
+echo "   ✓ Settings: $(test -s octoprint_uptime/templates/settings.jinja2 && echo 'Ready' || echo 'Missing')"
 echo ""
 
 # Step 5: Check Templates
 echo "5️⃣  Templates:"
-echo "   ✓ Navbar: $(test -s octoprint_octoprint_plugin_template/templates/octoprint_plugin_template_navbar.jinja2 && echo 'Ready' || echo 'Missing')"
-echo "   ✓ Settings: $(test -s octoprint_octoprint_plugin_template/templates/octoprint_plugin_template_settings.jinja2 && echo 'Ready' || echo 'Missing')"
-echo "   ✓ Tab: $(test -s octoprint_octoprint_plugin_template/templates/octoprint_plugin_template_tab.jinja2 && echo 'Ready' || echo 'Missing')"
+echo "   ✓ Navbar: $(test -s octoprint_octoprint_uptime/templates/octoprint_uptime_navbar.jinja2 && echo 'Ready' || echo 'Missing')"
+echo "   ✓ Settings: $(test -s octoprint_octoprint_uptime/templates/octoprint_uptime_settings.jinja2 && echo 'Ready' || echo 'Missing')"
+echo "   ✓ Tab: $(test -s octoprint_octoprint_uptime/templates/octoprint_uptime_tab.jinja2 && echo 'Ready' || echo 'Missing')"
 echo ""
 
 # Step 6: Check Styling
 echo "6️⃣  Styling:"
-LESS_LINES=$(wc -l < octoprint_octoprint_plugin_template/static/less/octoprint_plugin_template.less)
+LESS_LINES=$(wc -l < octoprint_octoprint_uptime/static/less/octoprint_uptime.less)
 echo "   ✓ LESS: $LESS_LINES lines"
 echo ""
 
 # Step 7: Check Translations
 echo "7️⃣  Internationalization:"
 echo "   ✓ POT: $(test -s translations/messages.pot && echo 'Ready' || echo 'Missing')"
-echo "   ✓ German: $(test -s octoprint_plugin_template/translations/de/LC_MESSAGES/messages.po && echo 'Ready' || echo 'Missing')"
-echo "   ✓ English: $(test -s octoprint_plugin_template/translations/en/LC_MESSAGES/messages.po && echo 'Ready' || echo 'Missing')"
+echo "   ✓ German: $(test -s octoprint_uptime/translations/de/LC_MESSAGES/messages.po && echo 'Ready' || echo 'Missing')"
+echo "   ✓ English: $(test -s octoprint_uptime/translations/en/LC_MESSAGES/messages.po && echo 'Ready' || echo 'Missing')"
 echo ""
 
 # Step 8: Installation Instructions

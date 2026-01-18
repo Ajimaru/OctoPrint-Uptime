@@ -389,7 +389,7 @@ verify_plugin_loaded() {
     return 0
   fi
 
-  echo "--- plugin_template verification (log tail) ---"
+  echo "--- uptime plugin verification (log tail) ---"
 
   # Give OctoPrint a moment to finish startup and flush logs.
   # (Especially right after port becomes available.)
@@ -401,19 +401,21 @@ verify_plugin_loaded() {
 
   # If the plugin isn't installed/enabled, it may not show up at all.
   # In that case we should not warn; the user explicitly might have it uninstalled.
-  if ! wait_for_log "Enabled plugin plugin_template|octoprint_plugin_template/__init__|octoprint\.plugins\.plugin_template" 15 0.5; then
-    echo "plugin_template: not detected in startup log (likely not installed); skipping verification"
+  # Also check for already loaded plugins (no "Enabled" message on restart)
+  if ! wait_for_log "Enabled plugin uptime|octoprint_uptime/__init__|octoprint\.plugins\.uptime|Loaded plugin octoprint_uptime" 15 0.5; then
+    echo "uptime: not detected in startup log (likely not installed); skipping verification"
     return 0
   fi
 
   # 1) Look for any plugin-specific log activity (optional)
-  if wait_for_log "octoprint\.plugins\.plugin_template" 30 0.5; then
-    echo "plugin_template: log activity detected"
+  # Note: Our plugin only logs on API calls, not on startup, so this may not find anything
+  if wait_for_log "octoprint\.plugins\.uptime" 5 0.5; then
+    echo "uptime: log activity detected"
   else
-    echo "NOTE: No plugin_template log lines observed (since restart)."
+    echo "NOTE: No uptime log lines observed (since restart)."
   fi
 
-  # 2) Show the actual metadata path OctoPrint used for plugin_template (scoped to log lines since restart).
+  # 2) Show the actual metadata path OctoPrint used for octoprint_uptime (scoped to log lines since restart).
   # OctoPrint log lines may wrap, splitting the path across multiple lines.
   # We therefore scan for the most recent occurrence across up to 3 concatenated lines.
   local meta_path
@@ -424,8 +426,8 @@ verify_plugin_loaded() {
         combo = a[i]
         if (i + 1 <= n) combo = combo a[i + 1]
         if (i + 2 <= n) combo = combo a[i + 1] a[i + 2]
-        if (index(combo, "Parsing plugin metadata from AST of") > 0 && index(combo, "octoprint_plugin_template/__init__") > 0) {
-          if (match(combo, /Parsing plugin metadata from AST of ([^\r\n]*octoprint_plugin_template\/__init__\.py)/, m)) {
+        if (index(combo, "Parsing plugin metadata from AST of") > 0 && index(combo, "octoprint_uptime/__init__") > 0) {
+          if (match(combo, /Parsing plugin metadata from AST of ([^\r\n]*octoprint_uptime\/__init__\.py)/, m)) {
             print m[1]
             exit 0
           }
@@ -436,16 +438,17 @@ verify_plugin_loaded() {
   ' 2>/dev/null || true)"
 
   if [[ -n "$meta_path" ]]; then
-    echo "plugin_template: metadata path: $meta_path"
+    echo "uptime: metadata path: $meta_path"
   else
-    echo "WARNING: Could not find a fresh 'Parsing plugin metadata...' line for plugin_template (since restart)." >&2
+    echo "WARNING: Could not find a fresh 'Parsing plugin metadata...' line for uptime (since restart)." >&2
   fi
 
   # 3) Confirm OctoPrint enabled the plugin (i.e., not in safe mode)
-  if wait_for_log "Enabled plugin plugin_template" 60 0.5; then
-    echo "plugin_template: enabled OK"
+  # Check for both fresh enable messages and already loaded plugins
+  if wait_for_log "Enabled plugin uptime|Loaded plugin octoprint_uptime" 10 0.5; then
+    echo "uptime: enabled/loaded OK"
   else
-    echo "WARNING: Did not find 'Enabled plugin plugin_template' in log (since restart)." >&2
+    echo "WARNING: Did not find 'Enabled plugin uptime' or 'Loaded plugin octoprint_uptime' in log (since restart)." >&2
   fi
 }
 

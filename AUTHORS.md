@@ -1,6 +1,6 @@
 # Ajimaru
 
-Author and maintainer of the octoprint_plugin_template plugin for OctoPrint.
+Author and maintainer of the OctoPrint-Uptime plugin for OctoPrint.
 
 ## Contributors
 

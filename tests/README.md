@@ -19,7 +19,7 @@ pytest
 Run with coverage:
 
 ```bash
-pytest --cov=octoprint_plugin_template --cov-report=html
+pytest --cov=octoprint_uptime --cov-report=html
 ```
 
 ## Writing Tests

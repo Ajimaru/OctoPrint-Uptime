@@ -38,8 +38,8 @@ jobs:
           set -euo pipefail
 
           version="${GITHUB_REF_NAME#v}"
-          zip_versioned="dist/octoprint_plugin_template-${version}.zip"
-          zip_latest="dist/octoprint_plugin_template-latest.zip"
+          zip_versioned="dist/OctoPrint-Uptime-${version}.zip"
+          zip_latest="dist/OctoPrint-Uptime-latest.zip"
 
           shopt -s nullglob
           sdist_candidates=(dist/*"${version}".tar.gz)
@@ -122,7 +122,7 @@ jobs:
               "wheel (.whl)",
               "sdist (.tar.gz)",
               "versioned zip (.zip)",
-              "octoprint_plugin_template-latest.zip",
+              "OctoPrint-Uptime-latest.zip",
             ];
 
             const body = [

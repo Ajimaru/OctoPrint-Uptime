@@ -39,7 +39,7 @@ Creates/uses a local Python virtual environment in `./venv`, installs the plugin
 
 Notes:
 
-- The helper scripts target a Python 3.10+ development environment. The plugin itself supports Python 3.11+ as declared in `pyproject.toml`.
+- The helper scripts target a Python 3.10+ development environment. The plugin itself supports Python 3.10+ as declared in `pyproject.toml`.
 - It automatically sets `git config core.hooksPath .githooks` (if the repo is a git checkout).
 - `pre-commit` is optional: if it is not installed, it will be skipped with a warning.
 - To use a specific Python interpreter for the venv (e.g. Python 3.12), set `PYTHON_BIN`: `PYTHON_BIN=python3.12 .development/setup_dev.sh`.
@@ -125,7 +125,7 @@ If your working tree is not clean, the script will refuse to run unless you pass
 Lightweight performance monitoring for long-running OctoPrint/plugin tests.
 
 It samples OctoPrint process metrics (CPU, RSS, threads, open FDs), watches the plugin data directory
-(`~/.octoprint/data/plugin_template/` by default), and records basic log growth stats.
+(`~/.octoprint/data/octoprint_uptime/` by default), and records basic log growth stats.
 
 Logs are written to the repo-local `.logs/` folder (gitignored).
 

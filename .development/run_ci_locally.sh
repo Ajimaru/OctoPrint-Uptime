@@ -210,13 +210,13 @@ if not pathlib.Path(repo).exists():
 if normalize(repo) != normalize(tmp):
     print("translations/messages.pot is out of date. Run:")
     print("  pybabel extract --sort-output -F babel.cfg -o translations/messages.pot .")
-    print("  pybabel update -i translations/messages.pot -d octoprint_plugin_template/translations -l de")
-    print("  pybabel update -i translations/messages.pot -d octoprint_plugin_template/translations -l en")
+    print("  pybabel update -i translations/messages.pot -d octoprint_uptime/translations -l de")
+    print("  pybabel update -i translations/messages.pot -d octoprint_uptime/translations -l en")
     raise SystemExit(1)
 PY
 
     log "Compiling catalogs"
-    "$PYBABEL_BIN" compile -d octoprint_plugin_template/translations
+    "$PYBABEL_BIN" compile -d octoprint_uptime/translations
 fi
 
 if [[ "$RUN_BUILD" == "1" ]]; then
@@ -239,20 +239,20 @@ def newest(paths):
     return max(paths, key=lambda p: p.stat().st_mtime)
 
 
-sdists = list(Path("dist").glob("octoprint_plugin_template-*.tar.gz"))
+sdists = list(Path("dist").glob("OctoPrint-Uptime-*.tar.gz"))
 if not sdists:
-    print("ERROR: Expected an sdist matching dist/octoprint_plugin_template-*.tar.gz", file=sys.stderr)
+    print("ERROR: Expected an sdist matching dist/OctoPrint-Uptime-*.tar.gz", file=sys.stderr)
     raise SystemExit(1)
 
 sdist = newest(sdists)
-match = re.match(r"octoprint_plugin_template-(.+)\.tar\.gz$", sdist.name)
+match = re.match(r"OctoPrint-Uptime-(.+)\.tar\.gz$", sdist.name)
 if not match:
     print(f"ERROR: Could not parse version from {sdist.name}", file=sys.stderr)
     raise SystemExit(1)
 
 version = match.group(1)
-zip_versioned = Path("dist") / f"octoprint_plugin_template-{version}.zip"
-zip_latest = Path("dist") / "octoprint_plugin_template-latest.zip"
+zip_versioned = Path("dist") / f"OctoPrint-Uptime-{version}.zip"
+zip_latest = Path("dist") / "OctoPrint-Uptime-latest.zip"
 
 with tarfile.open(sdist, "r:gz") as tf, zipfile.ZipFile(
     zip_versioned, "w", compression=zipfile.ZIP_DEFLATED

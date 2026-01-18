@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to this OctoPrint plugin template.
+Thanks for your interest in contributing to the OctoPrint-Uptime plugin.
 
 ## Before you start
 
@@ -44,7 +44,7 @@ If you use the helper scripts, see `.development/README.md`.
 
 Notes:
 
-- The helper scripts target a Python 3.10+ development environment. The plugin runtime supports Python 3.11+.
+- The helper scripts target a Python 3.10+ development environment. The plugin runtime supports Python 3.10+.
 - If you downloaded the repo as a ZIP, executable bits may be missing. In that case run `bash .development/setup_dev.sh` (or `chmod +x .development/setup_dev.sh`).
 
 ## Running tests
@@ -73,7 +73,7 @@ If you use `.development/setup_dev.sh`, it enables repo-local git hooks via `cor
 
 ### Frontend & styles
 
-- Prefer changing **LESS** sources (`octoprint_plugin_template/static/less`) over compiled CSS.
+- Prefer changing **LESS** sources (`octoprint_uptime/static/less`) over compiled CSS.
 - Avoid inline styles in templates.
 
 ## Internationalization (i18n)

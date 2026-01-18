@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Setup script for OctoPrint octoprint_plugin_template plugin development.
+# Setup script for OctoPrint OctoPrint-Uptime plugin development.
 
 set -euo pipefail
 

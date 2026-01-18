@@ -42,8 +42,8 @@ This repository uses a protected default branch (`main`). Releases are created v
 5. Publish the GitHub Release
 
    Pushing the tag triggers the `Release` workflow, which builds and attaches:
-   - `octoprint_plugin_template-X.Y.Z.zip` (user installable)
-   - `octoprint_plugin_template-latest.zip` (stable URL for docs)
+   - `OctoPrint-Uptime-X.Y.Z.zip` (user installable)
+   - `OctoPrint-Uptime-latest.zip` (stable URL for docs)
    - sdist + wheel
 
    After the workflow completes, add release notes on GitHub.
