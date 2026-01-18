@@ -51,12 +51,6 @@ TemplatePluginBase: Type[Any] = getattr(
     octoprint.plugin, "TemplatePlugin", object
 )  # type: ignore[attr-defined]
 
-# In some test environments the octoprint.plugin module only exposes a
-# subset of plugin base classes. When that happens multiple bases may
-# resolve to the built-in 'object', which would create duplicate base
-# classes and trigger a TypeError when defining our plugin class.
-# Ensure each base is a unique class object by creating simple dummy
-# classes when a base resolved to 'object'.
 if SettingsPluginBase is object:
 
     class _SettingsPluginDummy:  # pragma: no cover - trivial fallback
@@ -379,4 +373,4 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = (
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc49"
+__plugin_version__ = "0.1.0rc50"
