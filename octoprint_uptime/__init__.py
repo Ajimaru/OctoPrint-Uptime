@@ -191,7 +191,7 @@ class OctoprintUptimePlugin(
     def get_settings_defaults(self):
         """Return default plugin settings."""
         return dict(
-            debug=True,
+            debug=False,
             navbar_enabled=True,
             display_format="full",
             debug_throttle_seconds=60,
