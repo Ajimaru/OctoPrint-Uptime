@@ -6,6 +6,7 @@
 $(function () {
   function NavbarUptimeViewModel(parameters) {
     var self = this;
+    var settingsVM = parameters[0];
     var settings =
       parameters[0] && parameters[0].settings
         ? parameters[0].settings
@@ -104,6 +105,20 @@ $(function () {
               anchor.removeAttr("data-original-title");
             }
           } catch (e) {}
+          // Determine poll interval from server or local settings
+          try {
+            var pollInterval = DEFAULT_POLL;
+            if (data && typeof data.poll_interval_seconds !== "undefined") {
+              pollInterval = Number(data.poll_interval_seconds) || DEFAULT_POLL;
+            } else {
+              try {
+                var s =
+                  settings.plugins.octoprint_uptime.poll_interval_seconds();
+                if (s) pollInterval = Number(s) || DEFAULT_POLL;
+              } catch (e) {}
+            }
+            scheduleNext(pollInterval);
+          } catch (e) {}
         })
         .fail(function () {
           self.uptimeDisplay("Error");
@@ -114,8 +129,91 @@ $(function () {
         });
     };
 
+    var pollTimer = null;
+    var DEFAULT_POLL = 5;
+
+    function scheduleNext(intervalSeconds) {
+      try {
+        if (pollTimer) {
+          clearTimeout(pollTimer);
+        }
+      } catch (e) {}
+      pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
+    }
+
+    // Start the polling loop; each fetch will reschedule itself based on
+    // the server-provided `poll_interval_seconds` or local setting.
     fetchUptime();
-    setInterval(fetchUptime, 2 * 1000);
+    scheduleNext(DEFAULT_POLL);
+
+    // Validate numeric settings on save: enforce integers in [1,120].
+    try {
+      if (settingsVM && typeof settingsVM.save === "function") {
+        var origSave = settingsVM.save.bind(settingsVM);
+        settingsVM.save = function () {
+          try {
+            var errors = [];
+            try {
+              var throttle = Number(
+                settings.plugins.octoprint_uptime.debug_throttle_seconds(),
+              );
+              if (
+                !Number.isFinite(throttle) ||
+                throttle < 1 ||
+                throttle > 120 ||
+                Math.floor(throttle) !== throttle
+              ) {
+                errors.push(
+                  typeof gettext === "function"
+                    ? gettext(
+                        "Debug throttle must be an integer between 1 and 120 seconds.",
+                      )
+                    : "Debug throttle must be an integer between 1 and 120 seconds.",
+                );
+              }
+            } catch (e) {}
+            try {
+              var poll = Number(
+                settings.plugins.octoprint_uptime.poll_interval_seconds(),
+              );
+              if (
+                !Number.isFinite(poll) ||
+                poll < 1 ||
+                poll > 120 ||
+                Math.floor(poll) !== poll
+              ) {
+                errors.push(
+                  typeof gettext === "function"
+                    ? gettext(
+                        "Polling interval must be an integer between 1 and 120 seconds.",
+                      )
+                    : "Polling interval must be an integer between 1 and 120 seconds.",
+                );
+              }
+            } catch (e) {}
+
+            if (errors.length) {
+              // Use OctoPrint notifications if available, fallback to alert
+              try {
+                if (
+                  typeof OctoPrint !== "undefined" &&
+                  OctoPrint.notifications &&
+                  OctoPrint.notifications.error
+                ) {
+                  OctoPrint.notifications.error(errors.join("\n"));
+                } else {
+                  alert(errors.join("\n"));
+                }
+              } catch (e) {
+                alert(errors.join("\n"));
+              }
+              return;
+            }
+          } catch (e) {}
+          return origSave();
+        };
+      }
+    } catch (e) {}
   }
 
   OCTOPRINT_VIEWMODELS.push([

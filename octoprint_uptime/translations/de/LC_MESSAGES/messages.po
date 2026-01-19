@@ -82,6 +82,14 @@ msgstr "Polling‑Intervall (s)"
 msgid "Seconds between navbar API polls. Low values may spam logs; default is 5s."
 msgstr "Sekunden zwischen Navbar‑API‑Abfragen. Kleine Werte können das Log fluten; Standard ist 5s."
 
+#: octoprint_uptime/static/js/uptime.js:TOP
+msgid "Debug throttle must be an integer between 1 and 120 seconds."
+msgstr "Die Debug‑Drossel muss eine ganze Zahl zwischen 1 und 120 Sekunden sein."
+
+#: octoprint_uptime/static/js/uptime.js:TOP
+msgid "Polling interval must be an integer between 1 and 120 seconds."
+msgstr "Das Polling‑Intervall muss eine ganze Zahl zwischen 1 und 120 Sekunden sein."
+
 #: octoprint_uptime/templates/settings.jinja2:35
 msgid "Debug"
 msgstr "Debug"

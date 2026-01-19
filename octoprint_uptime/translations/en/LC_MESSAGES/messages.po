@@ -24,71 +24,79 @@ msgstr "OctoPrint-Uptime"
 
 #: octoprint_uptime/templates/settings.jinja2:4
 msgid "Use this plugin to display system uptime in the Navbar."
-msgstr ""
+msgstr "Use this plugin to display system uptime in the Navbar."
 
 #: octoprint_uptime/templates/settings.jinja2:7
 msgid "Navbar"
-msgstr ""
+msgstr "Navbar"
 
 #: octoprint_uptime/templates/settings.jinja2:15
 msgid "Show uptime in navbar"
-msgstr ""
+msgstr "Show uptime in navbar"
 
 #: octoprint_uptime/templates/settings.jinja2:17
 msgid "Toggle whether the uptime is visible in the top navigation bar."
-msgstr ""
+msgstr "Toggle whether the uptime is visible in the top navigation bar."
 
 #: octoprint_uptime/templates/settings.jinja2:22
 msgid "Display format"
-msgstr ""
+msgstr "Display format"
 
 #: octoprint_uptime/templates/settings.jinja2:25
 msgid "D + H + M + S (days + hours + minutes + seconds)"
-msgstr ""
+msgstr "D + H + M + S (days + hours + minutes + seconds)"
 
 #: octoprint_uptime/templates/settings.jinja2:26
 msgid "D + H + M (days + hours + minutes)"
-msgstr ""
+msgstr "D + H + M (days + hours + minutes)"
 
 #: octoprint_uptime/templates/settings.jinja2:27
 msgid "D + H (days + hours)"
-msgstr ""
+msgstr "D + H (days + hours)"
 
 #: octoprint_uptime/templates/settings.jinja2:28
 msgid "D (days only)"
-msgstr ""
+msgstr "D (days only)"
 
 #: octoprint_uptime/templates/settings.jinja2:30
 msgid "Choose how the uptime is shown in the navbar."
-msgstr ""
+msgstr "Choose how the uptime is shown in the navbar."
 
 #: octoprint_uptime/templates/settings.jinja2:34
 msgid "Systeminfo bundle"
-msgstr ""
+msgstr "Systeminfo bundle"
 
 #: octoprint_uptime/templates/settings.jinja2:37
 msgid "Include uptime in systeminfo bundle"
-msgstr ""
+msgstr "Include uptime in systeminfo bundle"
 
 #: octoprint_uptime/templates/settings.jinja2:39
 msgid "When enabled, adds an uptime.json file to OctoPrint's systeminfo bundle."
-msgstr ""
+msgstr "When enabled, adds an uptime.json file to OctoPrint's systeminfo bundle."
 
 #: octoprint_uptime/templates/settings.jinja2:43
 msgid "Polling interval (s)"
-msgstr ""
+msgstr "Polling interval (s)"
 
 #: octoprint_uptime/templates/settings.jinja2:46
 msgid "Seconds between navbar API polls. Low values may spam logs; default is 5s."
-msgstr ""
+msgstr "Seconds between navbar API polls. Low values may spam logs; default is 5s."
+
+#: octoprint_uptime/static/js/uptime.js:TOP
+msgid "Debug throttle must be an integer between 1 and 120 seconds."
+msgstr "Debug throttle must be an integer between 1 and 120 seconds."
+
+#: octoprint_uptime/static/js/uptime.js:TOP
+msgid "Polling interval must be an integer between 1 and 120 seconds."
+msgstr "Polling interval must be an integer between 1 and 120 seconds."
 
 #: octoprint_uptime/templates/settings.jinja2:35
 msgid "Debug"
-msgstr ""
+msgstr "Debug"
 
 #: octoprint_uptime/templates/settings.jinja2:43
 msgid "Enable debug logging (throttled)"
-msgstr ""
+msgstr "Enable debug logging (throttled)"
 
 #: octoprint_uptime/templates/settings.jinja2:45
 msgid ""
@@ -98,11 +106,11 @@ msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:50
 msgid "Debug throttle (s)"
-msgstr ""
+msgstr "Debug throttle (s)"
 
 #: octoprint_uptime/templates/settings.jinja2:53
 msgid "Minimum seconds between debug log entries."
-msgstr ""
+msgstr "Minimum seconds between debug log entries."
 
 #: octoprint_uptime/static/js/uptime.js:1
 msgid "Started:"

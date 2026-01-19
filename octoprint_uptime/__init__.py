@@ -263,6 +263,39 @@ class OctoprintUptimePlugin(
 
     def on_settings_save(self, data: Dict[str, Any]) -> None:
         """Update cached debug flag when settings change. Log for debug."""
+        # Validate and clamp numeric plugin settings before saving to avoid
+        # storing out-of-range values. Expect data to include plugin values
+        # under the `plugins -> octoprint_uptime` path when saving from UI.
+        try:
+            plugins = data.get("plugins") if isinstance(data, dict) else None
+            if isinstance(plugins, dict):
+                uptime_cfg = plugins.get("octoprint_uptime")
+                if isinstance(uptime_cfg, dict):
+                    keys = (
+                        "debug_throttle_seconds",
+                        "poll_interval_seconds",
+                    )
+                    for key in keys:
+                        if key in uptime_cfg:
+                            try:
+                                raw = uptime_cfg.get(key)
+                                if raw is None:
+                                    raise ValueError()
+                                val = int(raw)
+                            except Exception:
+                                # replace invalid values with sensible defaults
+                                if key == "poll_interval_seconds":
+                                    val = 5
+                                else:
+                                    val = 60
+                            # clamp to 1..120
+                            if val < 1:
+                                val = 1
+                            if val > 120:
+                                val = 120
+                            uptime_cfg[key] = val
+        except Exception:
+            pass
         try:
             if getattr(self, "_logger", None):
                 # Log at debug level to avoid noisy info logs in production
