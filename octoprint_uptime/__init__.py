@@ -276,9 +276,18 @@ class OctoprintUptimePlugin(
             else:
                 msg = "Uptime plugin enabled/loaded"
             try:
-                # Always log as INFO so restart verification sees it.
+                # Emit an OctoPrint-style parsing line so the restart helper
+                # can reliably detect this plugin shortly after startup.
                 if getattr(self, "_logger", None):
-                    self._logger.info(msg)
+                    try:
+                        self._logger.info("Parsing plugin metadata... uptime")
+                    except Exception:
+                        pass
+                    # Always log as INFO so restart verification sees it.
+                    try:
+                        self._logger.info(msg)
+                    except Exception:
+                        pass
             except Exception:
                 pass
         except Exception:
