@@ -82,59 +82,69 @@ def _format_uptime(seconds: float) -> str:
     need the short form can use _format_uptime_short().
     """
     seconds = int(seconds)
-    days, rem = divmod(seconds, 86400)
-    hours, rem = divmod(rem, 3600)
-    minutes, secs = divmod(rem, 60)
+    days = seconds // 86400
+    rem = seconds - days * 86400
+    hours = rem // 3600
+    rem = rem - hours * 3600
+    minutes = rem // 60
+    secs = rem - minutes * 60
 
     parts = []
     if days:
         parts.append(f"{days}d")
-    if hours:
+    # include hours when present or when days are shown for consistency
+    if hours or days:
         parts.append(f"{hours}h")
-    if minutes:
+    # include minutes when present or when hours/days are shown
+    if minutes or hours or days:
         parts.append(f"{minutes}m")
+    # always include seconds if nothing else was added,
+    # otherwise include if non-zero
     if secs or not parts:
         parts.append(f"{secs}s")
     return " ".join(parts)
 
 
 def _format_uptime_dhm(seconds: float) -> str:
-    """Return days + hours + minutes representation."""
+    """Return days + hours + minutes representation.
+
+    This returns "D H M" when days are present, otherwise "H M" for
+    durations less than a day. Hours and minutes are always included so
+    the representation is consistent across formats.
+    """
     seconds = int(seconds)
-    days, rem = divmod(seconds, 86400)
-    hours, rem = divmod(rem, 3600)
+    days = seconds // 86400
+    rem = seconds - days * 86400
+    hours = rem // 3600
+    rem = rem - hours * 3600
     minutes = rem // 60
-    parts = []
+
     if days:
-        parts.append(f"{days}d")
-    if hours:
-        parts.append(f"{hours}h")
-    if minutes or not parts:
-        parts.append(f"{minutes}m")
-    return " ".join(parts)
+        return f"{days}d {hours}h {minutes}m"
+    return f"{hours}h {minutes}m"
 
 
 def _format_uptime_dh(seconds: float) -> str:
-    """Return days + hours representation."""
+    """Return days + hours representation.
+
+    Returns "D H" when days are present, otherwise "H" for durations
+    less than a day. Hours are always included (0h when appropriate).
+    """
     seconds = int(seconds)
-    days, rem = divmod(seconds, 86400)
-    hours, rem = divmod(rem, 3600)
-    parts = []
+    days = seconds // 86400
+    rem = seconds - days * 86400
+    hours = rem // 3600
+
     if days:
-        parts.append(f"{days}d")
-    if hours or not parts:
-        parts.append(f"{hours}h")
-    return " ".join(parts)
+        return f"{days}d {hours}h"
+    return f"{hours}h"
 
 
 def _format_uptime_d(seconds: float) -> str:
     """Return days-only representation (0d if less than a day)."""
     seconds = int(seconds)
-    days, rem = divmod(seconds, 86400)
-    parts = []
-    if days or True:
-        parts.append(f"{days}d")
-    return " ".join(parts)
+    days = seconds // 86400
+    return f"{days}d"
 
 
 class OctoprintUptimePlugin(
@@ -405,4 +415,4 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = (
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc54"
+__plugin_version__ = "0.1.0rc59"

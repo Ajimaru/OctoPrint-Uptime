@@ -163,7 +163,11 @@ def test_reload_with_octoprint_present():
     sys.modules["octoprint.plugin"] = _make_fake_octoprint_plugin()
     if "octoprint" not in sys.modules:
         sys.modules["octoprint"] = types.ModuleType("octoprint")
-    setattr(sys.modules["octoprint"], "plugin", sys.modules["octoprint.plugin"])
+    setattr(
+        sys.modules["octoprint"],
+        "plugin",
+        sys.modules["octoprint.plugin"],
+    )
 
     importlib.reload(mod)
     assert hasattr(mod, "__plugin_implementation__")
@@ -214,6 +218,32 @@ def test_format_d_zero_day():
     _ensure_repo_on_path()
     mod = importlib.import_module("octoprint_uptime")
     assert mod._format_uptime_d(10) == "0d"
+
+
+def test_format_dh_and_durations():
+    _ensure_repo_on_path()
+    mod = importlib.import_module("octoprint_uptime")
+    # Less than a day -> hours only
+    assert mod._format_uptime_dh(3600 * 5) == "5h"
+    # Day + hours
+    assert mod._format_uptime_dh(86400 + 3600 * 2) == "1d 2h"
+
+
+def test_format_dhm_and_durations():
+    _ensure_repo_on_path()
+    mod = importlib.import_module("octoprint_uptime")
+    # Less than a day -> hours + minutes
+    assert mod._format_uptime_dhm(3600 * 5 + 60 * 30) == "5h 30m"
+    # Day + hours + minutes
+    assert mod._format_uptime_dhm(86400 + 3600 * 2 + 60 * 15) == "1d 2h 15m"
+
+
+def test_format_full_variants():
+    _ensure_repo_on_path()
+    mod = importlib.import_module("octoprint_uptime")
+    assert mod._format_uptime(3600 * 5 + 60 * 30 + 10) == "5h 30m 10s"
+    val = mod._format_uptime(86400 + 3600 * 2 + 60 * 15 + 10)
+    assert val == "1d 2h 15m 10s"
 
 
 def test_uptime_plugin_alias_and_meta():

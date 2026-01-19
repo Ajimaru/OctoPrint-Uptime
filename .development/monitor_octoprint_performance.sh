@@ -2,7 +2,6 @@
 set -euo pipefail
 
 # Lightweight OctoPrint performance monitor for long-running plugin tests.
-#
 # Writes logs to the repo-local .logs/ folder (gitignored).
 # Intended for development use only.
 
