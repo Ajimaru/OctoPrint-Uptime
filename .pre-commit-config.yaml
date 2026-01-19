@@ -38,12 +38,3 @@ repos:
     hooks:
       - id: prettier
         types_or: [javascript, css, markdown, json, yaml]
-
-  - repo: local
-    hooks:
-      - id: github-action-sha-updater
-        name: github-action-sha-updater
-        entry: github-action-sha-updater --config .github-action-sha-updater.yml --write
-        language: system
-        types: [yaml]
-        files: ".github/workflows/.*\\.yml$"
