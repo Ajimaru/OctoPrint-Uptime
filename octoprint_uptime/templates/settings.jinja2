@@ -22,8 +22,10 @@
         <label class="control-label" for="plugin_uptime_format">{{ _("Display format") }}</label>
         <div class="controls">
           <select id="plugin_uptime_format" data-bind="value: settings.plugins.octoprint_uptime.display_format" class="span3">
-            <option value="full">{{ _("days + hours + minutes + seconds") }}</option>
-            <option value="short">{{ _("days + hours only") }}</option>
+            <option value="full">{{ _("D + H + M + S (days + hours + minutes + seconds)") }}</option>
+            <option value="dhm">{{ _("D + H + M (days + hours + minutes)") }}</option>
+            <option value="dh">{{ _("D + H (days + hours)") }}</option>
+            <option value="d">{{ _("D (days only)") }}</option>
           </select>
           <p class="help-block">{{ _("Choose how the uptime is shown in the navbar.") }}</p>
         </div>

@@ -54,7 +54,16 @@ $(function () {
           var fmt =
             data && data.display_format ? data.display_format : displayFormat();
           navbarEl.show();
-          if (fmt === "short") {
+          if (fmt === "full") {
+            self.uptimeDisplay(data.uptime || "unknown");
+          } else if (fmt === "dhm") {
+            self.uptimeDisplay(data.uptime_dhm || data.uptime || "unknown");
+          } else if (fmt === "dh") {
+            self.uptimeDisplay(data.uptime_dh || data.uptime || "unknown");
+          } else if (fmt === "d") {
+            self.uptimeDisplay(data.uptime_d || data.uptime || "unknown");
+          } else if (fmt === "short") {
+            // legacy value: keep days+hours behaviour
             self.uptimeDisplay(data.uptime_short || data.uptime || "unknown");
           } else {
             self.uptimeDisplay(data.uptime || "unknown");

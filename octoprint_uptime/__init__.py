@@ -111,6 +111,45 @@ def _format_uptime_short(seconds):
     return " ".join(parts)
 
 
+def _format_uptime_dhm(seconds):
+    """Return days + hours + minutes representation."""
+    seconds = int(seconds)
+    days, rem = divmod(seconds, 86400)
+    hours, rem = divmod(rem, 3600)
+    minutes, secs = divmod(rem, 60)
+    parts = []
+    if days:
+        parts.append(f"{days}d")
+    if hours:
+        parts.append(f"{hours}h")
+    if minutes or not parts:
+        parts.append(f"{minutes}m")
+    return " ".join(parts)
+
+
+def _format_uptime_dh(seconds):
+    """Return days + hours representation."""
+    seconds = int(seconds)
+    days, rem = divmod(seconds, 86400)
+    hours, rem = divmod(rem, 3600)
+    parts = []
+    if days:
+        parts.append(f"{days}d")
+    if hours or not parts:
+        parts.append(f"{hours}h")
+    return " ".join(parts)
+
+
+def _format_uptime_d(seconds):
+    """Return days-only representation (0d if less than a day)."""
+    seconds = int(seconds)
+    days, rem = divmod(seconds, 86400)
+    parts = []
+    if days or True:
+        parts.append(f"{days}d")
+    return " ".join(parts)
+
+
 class OctoprintUptimePlugin(
     SimpleApiPluginBase,
     AssetPluginBase,
@@ -319,11 +358,18 @@ class OctoprintUptimePlugin(
 
             seconds = self._get_uptime_seconds()
             if isinstance(seconds, (int, float)):
-                # compute both full and short representations
+                # compute multiple representations used by frontend
                 uptime_full = _format_uptime(seconds)
+                uptime_dhm = _format_uptime_dhm(seconds)
+                uptime_dh = _format_uptime_dh(seconds)
+                uptime_d = _format_uptime_d(seconds)
                 uptime_short = _format_uptime_short(seconds)
             else:
-                uptime_full = uptime_short = str(seconds)
+                uptime_full = str(seconds)
+                uptime_dhm = str(seconds)
+                uptime_dh = str(seconds)
+                uptime_d = str(seconds)
+                uptime_short = str(seconds)
 
             # debug trace (throttled)
             self._log_debug("Uptime API requested, result=%s" % (uptime_full,))
@@ -350,6 +396,9 @@ class OctoprintUptimePlugin(
 
             return _flask.jsonify(
                 uptime=uptime_full,
+                uptime_dhm=uptime_dhm,
+                uptime_dh=uptime_dh,
+                uptime_d=uptime_d,
                 uptime_short=uptime_short,
                 seconds=seconds,
                 navbar_enabled=navbar_enabled,
