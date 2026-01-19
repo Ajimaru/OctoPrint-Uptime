@@ -6,6 +6,8 @@ This module avoids importing OctoPrint/Flask at import-time so it can be
 packaged and unit-tested without the OctoPrint runtime present.
 """
 
+
+import gettext
 import json
 import logging
 import os
@@ -13,6 +15,15 @@ import subprocess
 import time
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple, Type
+
+# Set up translation (OctoPrint injects its own, fallback for tests)
+try:
+    _ = gettext.gettext
+except Exception:
+
+    def _(message):
+        return message
+
 
 try:
     import octoprint.plugin  # type: ignore
@@ -181,17 +192,16 @@ class OctoprintUptimePlugin(
 
     def get_template_configs(self) -> List[Dict[str, Any]]:
         """Return template configurations for OctoPrint."""
-
         return [
             {
                 "type": "navbar",
-                "name": "navbar_uptime",
+                "name": _("navbar_uptime"),
                 "template": "navbar.jinja2",
                 "custom_bindings": True,
             },
             {
                 "type": "settings",
-                "name": "OctoPrint Uptime",
+                "name": _("OctoPrint Uptime"),
                 "template": "settings.jinja2",
                 "custom_bindings": False,
             },
@@ -457,7 +467,7 @@ class OctoprintUptimePlugin(
 
                         _flask.abort(403)
                     except Exception:
-                        raise PermissionError("Forbidden")
+                        raise PermissionError(_("Forbidden"))
             except Exception:
                 # octoprint or permissions not available — skip check
                 pass
@@ -476,16 +486,16 @@ class OctoprintUptimePlugin(
                 uptime_d = str(seconds)
 
             # debug trace (throttled)
-            self._log_debug("Uptime API requested, result=%s" % (uptime_full,))
+            self._log_debug(_("Uptime API requested, result=%s") % (uptime_full,))
         except Exception:
             try:
-                self._logger.exception("Error computing uptime")
+                self._logger.exception(_("Error computing uptime"))
             except Exception:
                 pass
-            uptime_full = "unknown"
-            uptime_dhm = "unknown"
-            uptime_dh = "unknown"
-            uptime_d = "unknown"
+            uptime_full = _("unknown")
+            uptime_dhm = _("unknown")
+            uptime_dh = _("unknown")
+            uptime_d = _("unknown")
             seconds = 0
 
         try:
@@ -499,7 +509,7 @@ class OctoprintUptimePlugin(
             try:
                 display_format = str(self._settings.get(["display_format"]))
             except Exception:
-                display_format = "full"
+                display_format = _("full")
             try:
                 poll_interval = int(self._settings.get(["poll_interval_seconds"]) or 5)
             except Exception:
@@ -523,10 +533,10 @@ class OctoprintUptimePlugin(
 # Backwards-compatible alias expected by tests
 UptimePlugin = OctoprintUptimePlugin
 
-__plugin_name__ = "OctoPrint-Uptime"
+__plugin_name__ = _("OctoPrint-Uptime")
 __plugin_pythoncompat__ = ">=3.10,<4"
 __plugin_implementation__ = OctoprintUptimePlugin()
-__plugin_description__ = (
+__plugin_description__ = _(
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc71"
+__plugin_version__ = "0.1.0rc72"
