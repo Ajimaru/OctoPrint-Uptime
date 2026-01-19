@@ -16,3 +16,4 @@
 /.development/ @Ajimaru
 /.githooks/ @Ajimaru
 /.pre-commit-config.yaml @Ajimaru
+/.github-action-sha-updater.yml @Ajimaru
