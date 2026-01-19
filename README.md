@@ -58,6 +58,7 @@ The plugin exposes a small JSON endpoint at `/api/plugin/octoprint_uptime`. A sm
 
 - How do I enable debug logs? → Toggle the "Debug" option in the plugin settings.
 - Why is the API protected? → For security; sensitive or system information is only exposed to authorized OctoPrint users.
+- Is this plugin cross-platform? → No. This plugin has only been tested on Linux systems. Other platforms (e.g. Windows, macOS) are not officially supported and may not work reliably.
 
 ## Contributing
 
