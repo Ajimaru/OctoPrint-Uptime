@@ -13,31 +13,12 @@
 
 OctoPrint-Uptime shows the system uptime and provides a small API.
 
-Current status: Release Candidate 0.1.0rc52
-
-Overview:
-
-- Shows system uptime in the navbar.
-- Provides a small API endpoint at `/api/plugin/octoprint_uptime` (protected, requires OctoPrint permissions).
-
-Notable behavior in this release:
-
-- `debug` default is set to `false` (reduces log noise).
-- `is_api_protected()` is enabled by default (`True`) — API access requires OctoPrint permissions.
-
-## How to use this template
-
-1. **Create your repo from this template** (GitHub → Use this template).
-2. **Configure GitHub settings**: See [.github/GITHUB_REPO_SETTINGS.md](.github/GITHUB_REPO_SETTINGS.md).
-3. **Replace all placeholders** with your actual values: See [.github/TEMPLATE_SETUP.md](.github/TEMPLATE_SETUP.md) for detailed instructions on all files requiring changes.
-4. **Test locally**: `pytest && pre-commit run --all-files`
-5. **Push and verify** CI workflows run successfully on first commit.
-
 ## Features
 
 - Shows the host system uptime in the navbar.
 - Small, read-only API endpoint that returns formatted uptime.
 - Frontend widget refreshes the display periodically (short polling).
+- Provides a small API endpoint at `/api/plugin/octoprint_uptime` (protected, requires OctoPrint permissions).
 
 ## Development quickstart
 
@@ -68,11 +49,6 @@ The following default values are used by the plugin (see `get_settings_defaults(
 - `navbar_enabled`: `true`
 - `display_format`: `"full"` (days + hours + minutes + seconds)
 - `debug_throttle_seconds`: `60`
-
-### Behavior
-
-- API access is protected by default — OctoPrint permissions are checked.
-- Debug logging is disabled by default; it can be enabled in the plugin settings.
 
 ## How It Works
 
@@ -110,7 +86,7 @@ Note: For logs and troubleshooting, enable "debug logging" in the plugin setting
 
 ## Credits
 
-- **Original Request**: [Issue ](https://github.com/OctoPrint/OctoPrint/issues/xxx) by [@](https://github.com/) (20xx)
+- **Original Request**: [Issue 4355](https://github.com/OctoPrint/OctoPrint/issues/4355) by [@Oxize](https://github.com/Oxize) (2021)
 - **Development**: Built following [OctoPrint Plugin Guidelines](https://docs.octoprint.org/en/latest/plugins/index.html)
 - **Contributors**: See [AUTHORS.md](AUTHORS.md)
 

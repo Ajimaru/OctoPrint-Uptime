@@ -10,7 +10,7 @@ import logging
 import os
 import subprocess
 import time
-from typing import Any, Type
+from typing import Any, Dict, List, Type
 
 try:
     import octoprint.plugin  # type: ignore
@@ -75,7 +75,7 @@ if AssetPluginBase is object:
     AssetPluginBase = _AssetPluginDummy
 
 
-def _format_uptime(seconds):
+def _format_uptime(seconds: float) -> str:
     """Format seconds into a full human-readable uptime string (default).
 
     Historically this function returned a string (the "full" format) and
@@ -99,7 +99,7 @@ def _format_uptime(seconds):
     return " ".join(parts)
 
 
-def _format_uptime_short(seconds):
+def _format_uptime_short(seconds: float) -> str:
     """Return the 'short' uptime representation (days + hours)."""
     seconds = int(seconds)
     days, rem = divmod(seconds, 86400)
@@ -111,7 +111,7 @@ def _format_uptime_short(seconds):
     return " ".join(parts)
 
 
-def _format_uptime_dhm(seconds):
+def _format_uptime_dhm(seconds: float) -> str:
     """Return days + hours + minutes representation."""
     seconds = int(seconds)
     days, rem = divmod(seconds, 86400)
@@ -127,7 +127,7 @@ def _format_uptime_dhm(seconds):
     return " ".join(parts)
 
 
-def _format_uptime_dh(seconds):
+def _format_uptime_dh(seconds: float) -> str:
     """Return days + hours representation."""
     seconds = int(seconds)
     days, rem = divmod(seconds, 86400)
@@ -140,7 +140,7 @@ def _format_uptime_dh(seconds):
     return " ".join(parts)
 
 
-def _format_uptime_d(seconds):
+def _format_uptime_d(seconds: float) -> str:
     """Return days-only representation (0d if less than a day)."""
     seconds = int(seconds)
     days, rem = divmod(seconds, 86400)
@@ -162,15 +162,15 @@ class OctoprintUptimePlugin(
     can be imported in environments where OctoPrint is not installed.
     """
 
-    def is_api_protected(self):
+    def is_api_protected(self) -> bool:
         """Require authentication for API access (secure by default)."""
         return True
 
-    def get_assets(self):
+    def get_assets(self) -> Dict[str, List[str]]:
         """Return JS assets for registration by OctoPrint."""
         return dict(js=["js/uptime.js"])
 
-    def get_template_configs(self):
+    def get_template_configs(self) -> List[Dict[str, Any]]:
         """Return template configurations for OctoPrint."""
 
         return [
@@ -196,7 +196,7 @@ class OctoprintUptimePlugin(
         """
         return True
 
-    def _get_uptime_seconds(self):
+    def _get_uptime_seconds(self) -> float:
         """Retrieve system uptime in seconds using multiple fallbacks."""
         # 1) /proc/uptime (Linux)
         try:
@@ -225,7 +225,7 @@ class OctoprintUptimePlugin(
         except Exception:
             return 0
 
-    def get_settings_defaults(self):
+    def get_settings_defaults(self) -> Dict[str, Any]:
         """Return default plugin settings."""
         return dict(
             debug=False,
@@ -234,7 +234,7 @@ class OctoprintUptimePlugin(
             debug_throttle_seconds=60,
         )
 
-    def on_settings_initialized(self):
+    def on_settings_initialized(self) -> None:
         """Initialize settings and throttling state."""
         self._debug_enabled = bool(self._settings.get(["debug"]))
         self._navbar_enabled = bool(self._settings.get(["navbar_enabled"]))
@@ -259,7 +259,7 @@ class OctoprintUptimePlugin(
         except Exception:
             pass
 
-    def on_settings_save(self, data):
+    def on_settings_save(self, data: Dict[str, Any]) -> None:
         """Update cached debug flag when settings change. Log for debug."""
         try:
             if getattr(self, "_logger", None):
@@ -316,7 +316,7 @@ class OctoprintUptimePlugin(
         except Exception:
             pass
 
-    def _log_debug(self, message):
+    def _log_debug(self, message: str) -> None:
         """Throttled debug logger to avoid spam."""
         try:
             if not getattr(self, "_debug_enabled", False):
@@ -336,7 +336,7 @@ class OctoprintUptimePlugin(
             # Never raise from debug logging
             pass
 
-    def on_api_get(self, request):
+    def on_api_get(self, request: Any) -> Any:
         """Handle API GET request for uptime."""
         # Perform permissions check lazily; if OctoPrint isn't available
         # (e.g. during packaging/tests) skip the check and return a simple
@@ -378,7 +378,11 @@ class OctoprintUptimePlugin(
                 self._logger.exception("Error computing uptime")
             except Exception:
                 pass
-            uptime_full = uptime_short = "unknown"
+            uptime_full = "unknown"
+            uptime_dhm = "unknown"
+            uptime_dh = "unknown"
+            uptime_d = "unknown"
+            uptime_short = "unknown"
             seconds = 0
 
         try:
@@ -418,4 +422,4 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = (
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc52"
+__plugin_version__ = "0.1.0rc53"
