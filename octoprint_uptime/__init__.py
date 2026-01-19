@@ -104,7 +104,7 @@ def _format_uptime(seconds: float) -> str:
     parts = []
     if days:
         parts.append(f"{days}d")
-    # include hours when present or when days are shown for consistency
+    # include hours when present or when days are shown
     if hours or days:
         parts.append(f"{hours}h")
     # include minutes when present or when hours/days are shown
@@ -268,7 +268,6 @@ class OctoprintUptimePlugin(
                         "UptimePlugin: debug logging enabled (level DEBUG)"
                     )
                 except Exception:
-                    # Not critical if logger cannot be adjusted
                     pass
         except Exception:
             pass
@@ -398,29 +397,9 @@ class OctoprintUptimePlugin(
             last_time = getattr(self, "_last_debug_time", 0)
             # Log at most once per throttle interval to avoid flooding the log
             if (now - last_time) < self._debug_throttle_seconds:
-                # suppressed; emit a single informational notice at most
-                # once per throttle interval so the operator knows logging
-                # is being throttled instead of flooding octoprint.log
-                last_notice = getattr(self, "_last_throttle_notice", 0)
-                if (now - last_notice) >= self._debug_throttle_seconds:
-                    try:
-                        # prefer plugin translation when available
-                        translator = getattr(self, "_", None)
-                        if callable(translator):
-                            notice = translator(
-                                "Logging throttled to avoid flooding " "octoprint.log"
-                            )
-                        else:
-                            notice = (
-                                "Logging throttled to avoid flooding " "octoprint.log"
-                            )
-                        try:
-                            self._logger.info(notice)
-                        except Exception:
-                            pass
-                        self._last_throttle_notice = now
-                    except Exception:
-                        pass
+                # suppressed; do not emit any informational notice here to
+                # avoid creating additional log spam. Simply drop the
+                # debug message when within the throttle interval.
                 return
             self._last_debug_time = now
             try:
