@@ -1,5 +1,8 @@
 name: Weekly Actions Update Check
 
+permissions:
+  contents: read
+
 on:
   schedule:
     - cron: "0 9 * * 1"
