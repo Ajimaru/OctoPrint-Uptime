@@ -1,6 +1,5 @@
 {
   "source": {
-    "include": ["octoprint_uptime/static/js"],
     "includePattern": ".+\\.js(doc|x)?$",
     "excludePattern": "(^|/|\\\\)_"
   },

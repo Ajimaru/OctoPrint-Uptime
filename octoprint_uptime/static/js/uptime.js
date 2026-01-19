@@ -3,7 +3,20 @@
  *
  * Displays uptime in the navbar.
  */
+/**
+ * Frontend module for the navbar uptime widget.
+ * @module octoprint_uptime/navbar
+ */
 $(function () {
+  /**
+   * NavbarUptimeViewModel
+   *
+   * Displays the system uptime in the navbar and keeps it updated via polling.
+   * @class
+   * @memberof module:octoprint_uptime/navbar
+   * @alias module:octoprint_uptime/navbar.NavbarUptimeViewModel
+   * @param {Array} parameters - ViewModel parameters (expects `settingsViewModel`).
+   */
   function NavbarUptimeViewModel(parameters) {
     var self = this;
     var settingsVM = parameters[0];
@@ -23,6 +36,13 @@ $(function () {
       }
     };
 
+    /**
+     * Check whether the navbar uptime widget is enabled in current settings.
+     * @function isNavbarEnabled
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {boolean} true when enabled, false otherwise
+     */
+
     var displayFormat = function () {
       try {
         return settings.plugins.octoprint_uptime.display_format() || "full";
@@ -31,6 +51,31 @@ $(function () {
       }
     };
 
+    /**
+     * Get the configured display format (fallback to "full").
+     * @function displayFormat
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {string} one of "full", "dhm", "dh", "d", or "short"
+     */
+
+    /**
+     * Fetch uptime from the plugin API and update the navbar display and tooltip.
+     * Silently updates polling interval based on server or local settings.
+     * @function fetchUptime
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {void}
+     * @example
+     * // Expected API response (partial):
+     * // {
+     * //   "seconds": 3600,
+     * //   "uptime": "1 hour",
+     * //   "uptime_dhm": "0d 1h 0m",
+     * //   "uptime_short": "1h",
+     * //   "navbar_enabled": true,
+     * //   "display_format": "dhm",
+     * //   "poll_interval_seconds": 5
+     * // }
+     */
     var fetchUptime = function () {
       // If local settings explicitly disable the navbar, hide immediately
       if (!isNavbarEnabled()) {
@@ -132,6 +177,13 @@ $(function () {
     var pollTimer = null;
     var DEFAULT_POLL = 5;
 
+    /**
+     * Schedule the next polling cycle.
+     * @function scheduleNext
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @param {number} intervalSeconds - seconds until next poll (clamped by caller)
+     * @returns {void}
+     */
     function scheduleNext(intervalSeconds) {
       try {
         if (pollTimer) {
@@ -149,6 +201,17 @@ $(function () {
     // Validate numeric settings on save: enforce integers in [1,120].
     try {
       if (settingsVM && typeof settingsVM.save === "function") {
+        /**
+         * Wrapped settings save that validates numeric plugin settings before
+         * delegating to the original `settingsViewModel.save()`.
+         * @function settingsVM.save
+         * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~settingsVM
+         * @returns {*} whatever the original `settingsViewModel.save()` returns
+         * @example
+         * // If validation fails, the wrapper shows an OctoPrint notification and
+         * // does not call the original save. Example error messages:
+         * // "Polling interval must be an integer between 1 and 120 seconds."
+         */
         var origSave = settingsVM.save.bind(settingsVM);
         settingsVM.save = function () {
           try {

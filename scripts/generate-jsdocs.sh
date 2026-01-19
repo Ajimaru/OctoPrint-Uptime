@@ -5,13 +5,14 @@ set -euo pipefail
 # This script uses paths relative to the repository root so it can be executed
 # from any working directory. It requires `jsdoc-to-markdown` (install via npm).
 
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 OUT_DIR="$REPO_ROOT/docs/api"
 mkdir -p "$OUT_DIR"
 
-CONFIG="$REPO_ROOT/jsdoc.json"
+CONFIG="$REPO_ROOT/docs/jsdoc.json"
 SRC_GLOB="$REPO_ROOT/octoprint_uptime/static/js/**/*.js"
 OUT_FILE="$OUT_DIR/javascript.md"
 
