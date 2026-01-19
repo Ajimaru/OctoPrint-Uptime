@@ -242,6 +242,8 @@ class OctoprintUptimePlugin(
         self._bundle_enabled = bool(self._settings.get(["bundle_enabled"]))
         self._display_format = str(self._settings.get(["display_format"]))
         self._last_debug_time = 0
+        # track when we last warned about throttled logging
+        self._last_throttle_notice = 0
         # throttle debug messages (seconds)
         self._debug_throttle_seconds = int(
             self._settings.get(["debug_throttle_seconds"]) or 60
@@ -378,6 +380,29 @@ class OctoprintUptimePlugin(
             last_time = getattr(self, "_last_debug_time", 0)
             # Log at most once per throttle interval to avoid flooding the log
             if (now - last_time) < self._debug_throttle_seconds:
+                # suppressed; emit a single informational notice at most
+                # once per throttle interval so the operator knows logging
+                # is being throttled instead of flooding octoprint.log
+                last_notice = getattr(self, "_last_throttle_notice", 0)
+                if (now - last_notice) >= self._debug_throttle_seconds:
+                    try:
+                        # prefer plugin translation when available
+                        translator = getattr(self, "_", None)
+                        if callable(translator):
+                            notice = translator(
+                                "Logging throttled to avoid flooding " "octoprint.log"
+                            )
+                        else:
+                            notice = (
+                                "Logging throttled to avoid flooding " "octoprint.log"
+                            )
+                        try:
+                            self._logger.info(notice)
+                        except Exception:
+                            pass
+                        self._last_throttle_notice = now
+                    except Exception:
+                        pass
                 return
             self._last_debug_time = now
             try:
@@ -415,7 +440,7 @@ class OctoprintUptimePlugin(
         except Exception:
             try:
                 if getattr(self, "_logger", None):
-                    self._logger.exception("Failed to build uptime bundle file")
+                    self._logger.exception("Failed to build uptime bundle " "file")
             except Exception:
                 pass
             return []
