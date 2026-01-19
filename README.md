@@ -11,19 +11,19 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-OctoPrint-Uptime zeigt die System-Uptime an und bietet eine kleine API.
+OctoPrint-Uptime shows the system uptime and provides a small API.
 
-Aktueller Status: Release Candidate 0.1.0rc52
+Current status: Release Candidate 0.1.0rc52
 
-Kurz:
+Overview:
 
-- Zeigt die System-Uptime in der Navbar an.
-- Bietet ein kleines API-Endpunkt unter `/api/plugin/octoprint_uptime` (geschützt, Auth erforderlich).
+- Shows system uptime in the navbar.
+- Provides a small API endpoint at `/api/plugin/octoprint_uptime` (protected, requires OctoPrint permissions).
 
-Wichtiges Verhalten in dieser Version:
+Notable behavior in this release:
 
-- `debug` Standard ist auf `false` gesetzt (weniger Lärm in Logs).
-- `is_api_protected()` ist standardmäßig aktiv (`True`) — API-Zugriff erfordert OctoPrint-Berechtigungen.
+- `debug` default is set to `false` (reduces log noise).
+- `is_api_protected()` is enabled by default (`True`) — API access requires OctoPrint permissions.
 
 ## How to use this template
 
@@ -35,9 +35,9 @@ Wichtiges Verhalten in dieser Version:
 
 ## Features
 
-- Zeigt die Host-System-Uptime in der Navbar.
-- Kleines, gelesenes API-Endpunkt, das formatierte Uptime zurückgibt.
-- Frontend-Widget aktualisiert die Anzeige periodisch (kurzes Polling).
+- Shows the host system uptime in the navbar.
+- Small, read-only API endpoint that returns formatted uptime.
+- Frontend widget refreshes the display periodically (short polling).
 
 ## Development quickstart
 
@@ -50,38 +50,38 @@ pre-commit install
 pytest
 ```
 
-Zum lokalen Testen: die `.development/restart_octoprint_dev.sh`-Hilfe im Repo nutzt ein lokales OctoPrint-Dev-Setup. Nach Änderungen am Template oder an den Assets `./.development/restart_octoprint_dev.sh --clear-cache` ausführen.
+For local testing: the `.development/restart_octoprint_dev.sh` helper in this repo uses a local OctoPrint dev setup. After changing templates or assets run `./.development/restart_octoprint_dev.sh --clear-cache`.
 
 ## Translations
 
-Übersetzungsdateien liegen unter `octoprint_uptime/translations`. Kataloge neu erzeugen / kompilieren mit Babel/pybabel nach Änderungen an Nutzertexten.
+Translation files live under `octoprint_uptime/translations`. Rebuild/compile catalogs with Babel/pybabel after changes to user-facing strings.
 
-Für Nutzer: vorgebaute Releases sind unter Releases auf GitHub verfügbar.
+Binary releases are available from the project's GitHub Releases page.
 
 ## Configuration
 
 ### Settings Defaults
 
-Die folgenden Standardwerte werden vom Plugin verwendet (siehe `get_settings_defaults()`):
+The following default values are used by the plugin (see `get_settings_defaults()`):
 
 - `debug`: `false`
 - `navbar_enabled`: `true`
-- `display_format`: `"full"` (Tage + Stunden + Minuten + Sekunden)
+- `display_format`: `"full"` (days + hours + minutes + seconds)
 - `debug_throttle_seconds`: `60`
 
-### Verhalten
+### Behavior
 
-- API-Zugriff ist standardmäßig geschützt — OctoPrint-Berechtigungen werden geprüft.
-- Debug-Logging ist standardmäßig deaktiviert; aktivierbar in den Plugin-Einstellungen.
+- API access is protected by default — OctoPrint permissions are checked.
+- Debug logging is disabled by default; it can be enabled in the plugin settings.
 
 ## How It Works
 
-Das Plugin stellt einen kleinen JSON-Endpunkt unter `/api/plugin/octoprint_uptime` bereit, und ein kleines Knockout-basiertes Navbar-Widget pollt diesen Endpunkt und zeigt die formatierte Uptime an.
+The plugin exposes a small JSON endpoint at `/api/plugin/octoprint_uptime`. A small Knockout-based navbar widget polls that endpoint and displays the formatted uptime.
 
 ## FAQ
 
-- Wie aktiviere ich Debug-Logs? → In den Plugin-Einstellungen die Option "Debug" einschalten.
-- Warum ist die API geschützt? → Sicherheitsgründe; personenbezogene oder systemkritische Infos werden nur nach OctoPrint-Berechtigung ausgegeben.
+- How do I enable debug logs? → Toggle the "Debug" option in the plugin settings.
+- Why is the API protected? → For security; sensitive or system information is only exposed to authorized OctoPrint users.
 
 ## Contributing
 
