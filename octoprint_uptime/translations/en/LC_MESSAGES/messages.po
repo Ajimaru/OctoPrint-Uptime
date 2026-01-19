@@ -120,6 +120,11 @@ msgstr "Started:"
 #: octoprint_uptime/__init__.py:392
 msgid "Logging throttled to avoid flooding octoprint.log"
 msgstr "Logging throttled to avoid flooding octoprint.log"
+
+# Startup notice
+#: octoprint_uptime/__init__.py:416
+msgid "Uptime plugin enabled/loaded"
+msgstr "Uptime plugin enabled/loaded"
 #~ msgid "Example toggle"
 #~ msgstr "Example toggle"
 

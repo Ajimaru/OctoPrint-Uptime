@@ -120,3 +120,8 @@ msgstr "Gestartet:"
 #: octoprint_uptime/__init__.py:392
 msgid "Logging throttled to avoid flooding octoprint.log"
 msgstr "Protokollierung gedrosselt, um octoprint.log nicht zu fluten."
+
+# Startup notice
+#: octoprint_uptime/__init__.py:416
+msgid "Uptime plugin enabled/loaded"
+msgstr "Uptime-Plugin aktiviert/geladen"
