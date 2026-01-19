@@ -539,4 +539,5 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = _(
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc72"
+__plugin_version__ = "0.1.0rc73"
+__plugin_license__ = "AGPLv3"
