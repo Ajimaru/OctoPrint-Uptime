@@ -11,7 +11,7 @@ license: AGPLv3
 
 date: 2026-01-19
 
-homepage: https://github.com/Ajimaru/OctoPrint-Uptime
+homepage: https://ajimaru.github.io/OctoPrint-Uptime/
 source: https://github.com/Ajimaru/OctoPrint-Uptime
 archive: https://github.com/Ajimaru/OctoPrint-Uptime/archive/main.zip
 
