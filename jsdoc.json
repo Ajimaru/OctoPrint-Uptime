@@ -1,0 +1,11 @@
+{
+  "source": {
+    "include": ["octoprint_uptime/static/js"],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(^|/|\\\\)_"
+  },
+  "plugins": ["plugins/markdown"],
+  "opts": {
+    "encoding": "utf8"
+  }
+}

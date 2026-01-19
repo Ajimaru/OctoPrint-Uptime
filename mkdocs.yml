@@ -1,0 +1,68 @@
+site_name: OctoPrint-Uptime (Developer Docs)
+site_url: https://ajimaru.github.io/OctoPrint-Uptime/
+repo_url: https://github.com/Ajimaru/OctoPrint-Uptime
+repo_name: Ajimaru/OctoPrint-Uptime
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+    - content.tabs.link
+    - search.highlight
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.tabbed
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: true
+            docstring_style: google
+            merge_init_into_class: true
+            separate_signature: true
+            filters:
+              - "!^_"
+
+nav:
+  - Overview: index.md
+  - Getting started: getting-started.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Data flow: architecture/data-flow.md
+      - Algorithms: architecture/algorithms.md
+      - Settings: architecture/settings.md
+      - OctoPrint integration: architecture/octoprint-integration.md
+  - API:
+      - Python: api/python.md
+      - JavaScript: api/javascript.md
+  - Frontend:
+      - UI placements: frontend/ui-placements.md
+      - Internationalization: frontend/i18n.md
+  - Development:
+      - Contributing: development/contributing.md
+      - Testing: development/testing.md
+      - Release process: development/release-process.md
+  - Reference:
+      - Configuration: reference/configuration.md
+      - Dev scripts: reference/cli-dev-scripts.md
+      - Diagrams: reference/diagrams/classes.svg
