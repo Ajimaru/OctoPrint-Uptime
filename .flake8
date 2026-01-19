@@ -1,0 +1,13 @@
+[flake8]
+# Allow slightly longer lines to match project style (OctoPrint templates use 120 cols).
+max-line-length = 120
+
+# Ignore a couple compatibility rules that conflict with Black formatting where used.
+extend-ignore = E203, W503
+
+# Common excludes
+exclude = .git,__pycache__,build,dist,venv,.venv,.tox,*.egg-info
+
+# Per-file ignores can be added here if necessary, e.g.:
+# per-file-ignores =
+#     octoprint_uptime/__init__.py: E501

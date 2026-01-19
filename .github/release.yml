@@ -2,24 +2,23 @@
 # Configuration for GitHub auto-generated release notes
 # https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
 
-changelog:
-  categories:
-    - title: "Features"
-      labels:
-        - "enhancement"
-        - "feature"
-    - title: "Bug Fixes"
-      labels:
-        - "bug"
-        - "fix"
-    - title: "Documentation"
-      labels:
-        - "documentation"
-        - "docs"
-    - title: "CI / Tooling"
-      labels:
-        - "ci"
-        - "tooling"
-  exclude:
+categories:
+  - title: "Features"
     labels:
-      - "skip-changelog"
+      - "enhancement"
+      - "feature"
+  - title: "Bug Fixes"
+    labels:
+      - "bug"
+      - "fix"
+  - title: "Documentation"
+    labels:
+      - "documentation"
+      - "docs"
+  - title: "CI / Tooling"
+    labels:
+      - "ci"
+      - "tooling"
+exclude:
+  labels:
+    - "skip-changelog"

@@ -33,4 +33,3 @@ node_modules/
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
-docs/api/

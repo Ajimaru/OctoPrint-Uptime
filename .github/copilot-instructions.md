@@ -81,7 +81,7 @@ pybabel compile -d translations
 
 ## Key References
 
-- Plugin Docs: https://docs.octoprint.org/en/main/plugins/
+- Plugin Docs: https://docs.octoprint.org/en/main/plugins/index.html
 - Mixins: https://docs.octoprint.org/en/main/plugins/mixins.html
 - Contributing: https://github.com/OctoPrint/OctoPrint/blob/main/CONTRIBUTING.md
 - Knockout.js: https://knockoutjs.com/documentation/introduction.html

@@ -1,64 +1,109 @@
-<!-- markdownlint-disable MD041 MD033-->
-<h1 align="center">OctoPrint-Uptime</h1>
-<!-- markdownlint-enable MD041 MD033-->
+<!-- markdownlint-disable MD041 MD033 -->
+<p align="center">
+  <img src="octoprint_uptime/static/img/uptime.svg" alt="OctoPrint Uptime Logo" width="96" />
+</p>
+<h1 align="center">OctoPrint‑Uptime</h1>
+<!-- markdownlint-enable MD041 MD033 -->
 
 [![License](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org)
 [![OctoPrint](https://img.shields.io/badge/OctoPrint-1.12.0%2B-blue.svg)](https://octoprint.org)
 [![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/latest/total)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
-[![Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues)
+[![Downloads](https://img.shields.io/github/downloads/Ajimaru/octoprint_plugin_template/latest/total)](https://github.com/Ajimaru/octoprint_plugin_template/releases/latest)
+[![Issues](https://img.shields.io/github/issues/Ajimaru/octoprint_plugin_template)](https://github.com/Ajimaru/octoprint_plugin_template/issues)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-OctoPrint-Uptime shows the system uptime and provides a small API.
+### Effortlessly track your OctoPrint server's uptime, right from your navbar
 
-## Features
+<!-- markdownlint-disable MD033-->
+<strong>
+  Lightweight OctoPrint plugin that displays the host system uptime in the navbar and exposes a small JSON API for tooling and integrations.<br />
+</strong>
+</br />
+<img src="assets/img/uptime_navbar.png" alt="OctoPrint Uptime Navbar" width="666" />
+<!-- markdownlint-enable MD033-->
 
-- Shows the host system uptime in the navbar.
-- Small, read-only API endpoint that returns formatted uptime.
-- Frontend widget refreshes the display periodically (short polling).
-- Provides a small API endpoint at `/api/plugin/octoprint_uptime` (protected, requires OctoPrint permissions).
+## Highlights
 
-## Development quickstart
+- 🖥️ Navbar widget with configurable display formats (full / dhm / dh / d)
+- 🔒 Small read‑only API at `/api/plugin/octoprint_uptime` (OctoPrint auth enforced)
+- ⚙️ Configurable polling interval and optional systeminfo bundle support
+
+## Installation
+
+### Via Plugin Manager (Recommended)
+
+1. Open OctoPrint web interface
+2. Navigate to **Settings** → **Plugin Manager**
+3. Click **Get More...**
+4. Click **Install from URL** and enter:
+   `https://github.com/Ajimaru/OctoPrint-OctoPrint-Uptime/releases/latest/download/octoprint_uptime-latest.zip`
+5. Click **Install**
+6. Restart OctoPrint
+
+### Manual Installation
+
+<!-- markdownlint-disable MD033 -->
+<details>
+<summary>Manual pip install (advanced users)</summary>
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python3 -m pip install -U pip build
-python3 -m pip install -e ".[develop]"
-pre-commit install
-pytest
+pip install https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/octoprint_uptime-latest.zip
 ```
 
-For local testing: the `.development/restart_octoprint_dev.sh` helper in this repo uses a local OctoPrint dev setup. After changing templates or assets run `./.development/restart_octoprint_dev.sh --clear-cache`.
+The `releases/latest` URL always points to the newest stable release.
 
-## Translations
-
-Translation files live under `octoprint_uptime/translations`. Rebuild/compile catalogs with Babel/pybabel after changes to user-facing strings.
-
-Binary releases are available from the project's GitHub Releases page.
-
-## Configuration
-
-### Settings Defaults
-
-The following default values are used by the plugin (see `get_settings_defaults()`):
-
-- `debug`: `false`
-- `navbar_enabled`: `true`
-- `display_format`: `"full"` (days + hours + minutes + seconds)
-- `debug_throttle_seconds`: `60`
+</details>
+<!-- markdownlint-enable MD033 -->
 
 ## How It Works
 
-The plugin exposes a small JSON endpoint at `/api/plugin/octoprint_uptime`. A small Knockout-based navbar widget polls that endpoint and displays the formatted uptime.
+The navbar widget polls the plugin API and shows a formatted uptime string. The tooltip displays the calculated start datetime (localized).
+
+- API endpoint: `/api/plugin/octoprint_uptime` (requires OctoPrint API key / auth)
+- Settings: `Polling interval`, `Display format`, `Show in navbar`, `Enable systeminfo bundle` (off by default)
+
+Quick curl example:
+
+```bash
+curl -s -H "X-Api-Key: $API_KEY" http://localhost:5000/api/plugin/octoprint_uptime | jq
+```
+
+## Configuration
+
+Configure the plugin in **Settings** → **OctoPrint Uptime**:
+
+<!-- markdownlint-disable MD033 -->
+<img src="assets/img/uptime_settings.png" alt="OctoPrint Uptime Settings" width="666" />
+</br>
+<details>
+<summary>Settings Defaults</summary>
+
+- `navbar_enabled`: `true` – Show uptime in the OctoPrint navbar
+- `display_format`: `full` – Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`)
+- `poll_interval_seconds`: `5` – Polling interval in seconds (validated and clamped between 1–120)
+- `bundle_enabled`: `false` – Enable systeminfo bundle (additional system info file)
+- `debug_logging`: `false` – Enable debug logging for troubleshooting
+- `debug_throttle`: `60` – Throttle debug logs to reduce log spam
+
+</details>
+<!-- markdownlint-enable MD033 -->
 
 ## FAQ
 
-- How do I enable debug logs? → Toggle the "Debug" option in the plugin settings.
-- Why is the API protected? → For security; sensitive or system information is only exposed to authorized OctoPrint users.
-- Is this plugin cross-platform? → No. This plugin has only been tested on Linux systems. Other platforms (e.g. Windows, macOS) are not officially supported and may not work reliably.
+**Q: The uptime in the navbar is not updating. What can I do?**
+A: Ensure that the `Polling interval` setting is set to a reasonable value (default is 5 seconds). Check the browser console for any errors related to the plugin API. Also, verify that the plugin is enabled in the OctoPrint settings.
+
+**Q: How can I change the display format of the uptime?**
+A: You can change the display format in the plugin settings under `Display format`. Options include
+`full`, `dhm`, `dh`, `d`, and `short`.
+
+**Q: How do I access the uptime API?**
+A: The uptime API is available at `/api/plugin/octoprint_uptime`. You need to include your OctoPrint API key in the request headers for authentication.
+
+**Q: Witch OSes are supported?**
+A: Linux is tested and supported. Other OSes may work but are not officially supported.
 
 ## Contributing
 
@@ -81,14 +126,14 @@ AGPLv3 - See [LICENSE](LICENSE) for details.
 ## Support
 
 - 🐛 **Bug Reports**: [GitHub Issues](https://github.com/Ajimaru/OctoPrint-Uptime/issues)
-- 💬 **Discussion**: [OctoPrint Community Forum](https://community.octoprint.org/)
+- 💬 **Discussion**: [GitHub Discussions](https://github.com/Ajimaru/OctoPrint-Uptime/discussions)
 
 Note: For logs and troubleshooting, enable "debug logging" in the plugin settings.
 
 ## Credits
 
 - **Original Request**: [Issue 4355](https://github.com/OctoPrint/OctoPrint/issues/4355) by [@Oxize](https://github.com/Oxize) (2021)
-- **Development**: Built following [OctoPrint Plugin Guidelines](https://docs.octoprint.org/en/latest/plugins/index.html)
+- **Development**: Built following [OctoPrint Plugin Guidelines](https://docs.octoprint.org/en/main/plugins/index.html)
 - **Contributors**: See [AUTHORS.md](AUTHORS.md)
 
 ---

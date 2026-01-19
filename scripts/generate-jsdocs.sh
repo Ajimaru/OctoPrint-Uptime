@@ -5,7 +5,6 @@ set -euo pipefail
 # This script uses paths relative to the repository root so it can be executed
 # from any working directory. It requires `jsdoc-to-markdown` (install via npm).
 
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 

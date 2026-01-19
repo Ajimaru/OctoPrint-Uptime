@@ -43,5 +43,3 @@ Add unit tests under `tests/` as you build out your plugin. Keep tests focused a
 - **Virtual Printer:** Manual testing with OctoPrint's Virtual Printer plugin
 - **Real Printer:** Beta testing with a real printer
 - **Browser Testing:** Chrome, Firefox, Safari
-
-Refer to OctoPrint's [plugin development documentation](https://docs.octoprint.org/en/latest/plugins/development.html#testing) for more details.
