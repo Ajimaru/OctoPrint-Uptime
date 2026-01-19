@@ -51,25 +51,25 @@ TemplatePluginBase: Type[Any] = getattr(
 
 if SettingsPluginBase is object:
 
-    class _SettingsPluginDummy:  # pragma: no cover - trivial fallback
+    class _SettingsPluginDummy:
         pass
 
     SettingsPluginBase = _SettingsPluginDummy
 if TemplatePluginBase is object:
 
-    class _TemplatePluginDummy:  # pragma: no cover - trivial fallback
+    class _TemplatePluginDummy:
         pass
 
     TemplatePluginBase = _TemplatePluginDummy
 if SimpleApiPluginBase is object:
 
-    class _SimpleApiPluginDummy:  # pragma: no cover - trivial fallback
+    class _SimpleApiPluginDummy:
         pass
 
     SimpleApiPluginBase = _SimpleApiPluginDummy
 if AssetPluginBase is object:
 
-    class _AssetPluginDummy:  # pragma: no cover - trivial fallback
+    class _AssetPluginDummy:
         pass
 
     AssetPluginBase = _AssetPluginDummy
@@ -77,7 +77,6 @@ if AssetPluginBase is object:
 
 def _format_uptime(seconds: float) -> str:
     """Format seconds into a full human-readable uptime string (default).
-
     Historically this function returned a string (the "full" format) and
     tests expect that behaviour. Return the full string here; callers that
     need the short form can use _format_uptime_short().
@@ -99,24 +98,12 @@ def _format_uptime(seconds: float) -> str:
     return " ".join(parts)
 
 
-def _format_uptime_short(seconds: float) -> str:
-    """Return the 'short' uptime representation (days + hours)."""
-    seconds = int(seconds)
-    days, rem = divmod(seconds, 86400)
-    hours, rem = divmod(rem, 3600)
-    parts = []
-    if days:
-        parts.append(f"{days}d")
-    parts.append(f"{hours}h")
-    return " ".join(parts)
-
-
 def _format_uptime_dhm(seconds: float) -> str:
     """Return days + hours + minutes representation."""
     seconds = int(seconds)
     days, rem = divmod(seconds, 86400)
     hours, rem = divmod(rem, 3600)
-    minutes, secs = divmod(rem, 60)
+    minutes = rem // 60
     parts = []
     if days:
         parts.append(f"{days}d")
@@ -207,7 +194,7 @@ class OctoprintUptimePlugin(
         except Exception:
             pass
 
-        # 2) psutil (falls verfügbar)
+        # 2) psutil (if available)
         try:
             import psutil  # type: ignore
 
@@ -363,13 +350,11 @@ class OctoprintUptimePlugin(
                 uptime_dhm = _format_uptime_dhm(seconds)
                 uptime_dh = _format_uptime_dh(seconds)
                 uptime_d = _format_uptime_d(seconds)
-                uptime_short = _format_uptime_short(seconds)
             else:
                 uptime_full = str(seconds)
                 uptime_dhm = str(seconds)
                 uptime_dh = str(seconds)
                 uptime_d = str(seconds)
-                uptime_short = str(seconds)
 
             # debug trace (throttled)
             self._log_debug("Uptime API requested, result=%s" % (uptime_full,))
@@ -382,7 +367,6 @@ class OctoprintUptimePlugin(
             uptime_dhm = "unknown"
             uptime_dh = "unknown"
             uptime_d = "unknown"
-            uptime_short = "unknown"
             seconds = 0
 
         try:
@@ -403,7 +387,6 @@ class OctoprintUptimePlugin(
                 uptime_dhm=uptime_dhm,
                 uptime_dh=uptime_dh,
                 uptime_d=uptime_d,
-                uptime_short=uptime_short,
                 seconds=seconds,
                 navbar_enabled=navbar_enabled,
                 display_format=display_format,
@@ -422,4 +405,4 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = (
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc53"
+__plugin_version__ = "0.1.0rc54"
