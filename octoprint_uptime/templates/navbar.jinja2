@@ -1,5 +1,7 @@
 <li id="navbar_plugin_navbar_uptime" class="dropdown">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-        <i class="fas fa-history"></i> Uptime: <span data-bind="text: uptimeDisplay"></span>
+        <i class="fas fa-history"></i> {{ _("Uptime:") }} <span data-bind="text: uptimeDisplay"></span>
     </a>
+    {# Ensure JS translation loader picks up the 'Started:' string used in the tooltip #}
+    <span style="display:none" aria-hidden="true">{{ _("Started:") }}</span>
 </li>

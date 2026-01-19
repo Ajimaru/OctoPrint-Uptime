@@ -125,3 +125,8 @@ msgstr "Protokollierung gedrosselt, um octoprint.log nicht zu fluten."
 #: octoprint_uptime/__init__.py:416
 msgid "Uptime plugin enabled/loaded"
 msgstr "Uptime-Plugin aktiviert/geladen"
+
+# Navbar label
+#: octoprint_uptime/templates/navbar.jinja2:2
+msgid "Uptime:"
+msgstr "Laufzeit:"
