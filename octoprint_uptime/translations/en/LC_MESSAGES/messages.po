@@ -115,6 +115,11 @@ msgstr "Minimum seconds between debug log entries."
 #: octoprint_uptime/static/js/uptime.js:1
 msgid "Started:"
 msgstr "Started:"
+
+# Logging notices
+#: octoprint_uptime/__init__.py:392
+msgid "Logging throttled to avoid flooding octoprint.log"
+msgstr "Logging throttled to avoid flooding octoprint.log"
 #~ msgid "Example toggle"
 #~ msgstr "Example toggle"
 
