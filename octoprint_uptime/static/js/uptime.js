@@ -54,20 +54,48 @@ $(function () {
           var fmt =
             data && data.display_format ? data.display_format : displayFormat();
           navbarEl.show();
+          var displayValue;
           if (fmt === "full") {
-            self.uptimeDisplay(data.uptime || "unknown");
+            displayValue = data.uptime || "unknown";
           } else if (fmt === "dhm") {
-            self.uptimeDisplay(data.uptime_dhm || data.uptime || "unknown");
+            displayValue = data.uptime_dhm || data.uptime || "unknown";
           } else if (fmt === "dh") {
-            self.uptimeDisplay(data.uptime_dh || data.uptime || "unknown");
+            displayValue = data.uptime_dh || data.uptime || "unknown";
           } else if (fmt === "d") {
-            self.uptimeDisplay(data.uptime_d || data.uptime || "unknown");
+            displayValue = data.uptime_d || data.uptime || "unknown";
           } else if (fmt === "short") {
             // legacy value: keep days+hours behaviour
-            self.uptimeDisplay(data.uptime_short || data.uptime || "unknown");
+            displayValue = data.uptime_short || data.uptime || "unknown";
           } else {
-            self.uptimeDisplay(data.uptime || "unknown");
+            displayValue = data.uptime || "unknown";
           }
+
+          // update visible text
+          self.uptimeDisplay(displayValue);
+
+          // compute start time for tooltip from seconds if available
+          try {
+            var secs =
+              data && typeof data.seconds !== "undefined"
+                ? Number(data.seconds)
+                : null;
+            if (secs !== null && !isNaN(secs)) {
+              var started = new Date(Date.now() - secs * 1000);
+              // format like: "Started: 2026-01-19 12:34:56" using locale string
+              var startedText = "Started: " + started.toLocaleString();
+              var anchor = navbarEl.find("a").first();
+              try {
+                // dispose existing tooltip if present (remove bootstrap tooltip)
+                if (anchor.data("bs.tooltip")) {
+                  anchor.tooltip("dispose");
+                }
+              } catch (e) {}
+              // Restore native browser tooltip by setting `title` and
+              // removing any Bootstrap-specific attributes.
+              anchor.attr("title", startedText);
+              anchor.removeAttr("data-original-title");
+            }
+          } catch (e) {}
         })
         .fail(function () {
           self.uptimeDisplay("Error");
