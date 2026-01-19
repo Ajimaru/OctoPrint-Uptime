@@ -3,7 +3,7 @@
 set -euo pipefail
 
 log() {
-    printf '[temp-eta ci] %s\n' "$*"
+    printf '[OctoPrint-Uptime ci] %s\n' "$*"
 }
 
 die() {
