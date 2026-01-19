@@ -50,6 +50,9 @@ AssetPluginBase: Type[Any] = getattr(
 TemplatePluginBase: Type[Any] = getattr(
     octoprint.plugin, "TemplatePlugin", object
 )  # type: ignore[attr-defined]
+StartupPluginBase: Type[Any] = getattr(
+    octoprint.plugin, "StartupPlugin", object
+)  # type: ignore[attr-defined]
 
 if SettingsPluginBase is object:
 
@@ -75,6 +78,13 @@ if AssetPluginBase is object:
         pass
 
     AssetPluginBase = _AssetPluginDummy
+
+if StartupPluginBase is object:
+
+    class _StartupPluginDummy:
+        pass
+
+    StartupPluginBase = _StartupPluginDummy
 
 
 def _format_uptime(seconds: float) -> str:
