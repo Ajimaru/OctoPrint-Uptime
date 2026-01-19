@@ -84,6 +84,10 @@ msgstr "Debug-Drossel (Sekunden)"
 msgid "Minimum seconds between debug log entries."
 msgstr "Minimale Sekunden zwischen Debug-Log-Einträgen."
 
+#: octoprint_uptime/static/js/uptime.js:1
+msgid "Started:"
+msgstr "Gestartet:"
+
 #~ msgid "Use this plugin to display system uptime in the Navbar."
 #~ msgstr "Dieses Plugin zeigt die Systemlaufzeit in der Navigationsleiste an."
 

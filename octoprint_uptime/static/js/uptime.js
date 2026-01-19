@@ -82,7 +82,15 @@ $(function () {
             if (secs !== null && !isNaN(secs)) {
               var started = new Date(Date.now() - secs * 1000);
               // format like: "Started: 2026-01-19 12:34:56" using locale string
-              var startedText = "Started: " + started.toLocaleString();
+              var startedText;
+              if (typeof gettext === "function") {
+                startedText =
+                  gettext("Started:") + " " + started.toLocaleString();
+              } else if (typeof _ === "function") {
+                startedText = _("Started:") + " " + started.toLocaleString();
+              } else {
+                startedText = "Started: " + started.toLocaleString();
+              }
               var anchor = navbarEl.find("a").first();
               try {
                 // dispose existing tooltip if present (remove bootstrap tooltip)

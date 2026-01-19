@@ -84,6 +84,9 @@ msgstr ""
 msgid "Minimum seconds between debug log entries."
 msgstr ""
 
+#: octoprint_uptime/static/js/uptime.js:1
+msgid "Started:"
+msgstr "Started:"
 #~ msgid "Example toggle"
 #~ msgstr "Example toggle"
 
