@@ -182,6 +182,20 @@ class OctoprintUptimePlugin(
     can be imported in environments where OctoPrint is not installed.
     """
 
+    def get_update_information(self):
+        """Softwareupdate hook for OctoPrint: enables updates via the plugin manager."""
+        return {
+            "octoprint_uptime": {
+                "displayName": "OctoPrint-Uptime",
+                "displayVersion": __plugin_version__,
+                "type": "github_release",
+                "user": "Ajimaru",
+                "repo": "OctoPrint-Uptime",
+                "current": __plugin_version__,
+                "pip": "https://github.com/Ajimaru/OctoPrint-Uptime/archive/{target_version}.zip",
+            }
+        }
+
     def is_api_protected(self) -> bool:
         """Require authentication for API access (secure by default)."""
         return True
