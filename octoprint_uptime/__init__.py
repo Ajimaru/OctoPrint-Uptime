@@ -280,7 +280,15 @@ class OctoprintUptimePlugin(
                 # can reliably detect this plugin shortly after startup.
                 if getattr(self, "_logger", None):
                     try:
-                        self._logger.info("Parsing plugin metadata... uptime")
+                        # Emit the exact parsing line (with path) the restart
+                        # verification script looks for so it can identify the
+                        # metadata file used for this plugin during startup.
+                        meta_path = os.path.join(
+                            os.path.dirname(__file__), "__init__.py"
+                        )
+                        self._logger.info(
+                            "Parsing plugin metadata from AST of %s" % (meta_path,)
+                        )
                     except Exception:
                         pass
                     # Always log as INFO so restart verification sees it.
