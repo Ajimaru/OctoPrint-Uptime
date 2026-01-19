@@ -263,6 +263,28 @@ class OctoprintUptimePlugin(
         except Exception:
             pass
 
+    def on_after_startup(self) -> None:
+        """Called after OctoPrint startup — log plugin enabled at INFO level.
+
+        This runs regardless of the plugin `debug` setting so the restart
+        helper script can reliably detect the plugin has initialized.
+        """
+        try:
+            translator = getattr(self, "_", None)
+            if callable(translator):
+                msg = translator("Uptime plugin enabled/loaded")
+            else:
+                msg = "Uptime plugin enabled/loaded"
+            try:
+                # Always log as INFO so restart verification sees it.
+                if getattr(self, "_logger", None):
+                    self._logger.info(msg)
+            except Exception:
+                pass
+        except Exception:
+            # Never raise during startup logging
+            pass
+
     def on_settings_save(self, data: Dict[str, Any]) -> None:
         """Update cached debug flag when settings change. Log for debug."""
         # Validate and clamp numeric plugin settings before saving to avoid
