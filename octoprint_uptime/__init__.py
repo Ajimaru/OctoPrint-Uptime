@@ -279,38 +279,7 @@ class OctoprintUptimePlugin(
         This runs regardless of the plugin `debug` setting so the restart
         helper script can reliably detect the plugin has initialized.
         """
-        try:
-            translator = getattr(self, "_", None)
-            if callable(translator):
-                msg = translator("Uptime plugin enabled/loaded")
-            else:
-                msg = "Uptime plugin enabled/loaded"
-            try:
-                # Emit an OctoPrint-style parsing line so the restart helper
-                # can reliably detect this plugin shortly after startup.
-                if getattr(self, "_logger", None):
-                    try:
-                        # Emit the exact parsing line (with path) the restart
-                        # verification script looks for so it can identify the
-                        # metadata file used for this plugin during startup.
-                        meta_path = os.path.join(
-                            os.path.dirname(__file__), "__init__.py"
-                        )
-                        self._logger.info(
-                            "Parsing plugin metadata from AST of %s" % (meta_path,)
-                        )
-                    except Exception:
-                        pass
-                    # Always log as INFO so restart verification sees it.
-                    try:
-                        self._logger.info(msg)
-                    except Exception:
-                        pass
-            except Exception:
-                pass
-        except Exception:
-            # Never raise during startup logging
-            pass
+        return
 
     def on_settings_save(self, data: Dict[str, Any]) -> None:
         """Update cached debug flag when settings change. Log for debug."""
