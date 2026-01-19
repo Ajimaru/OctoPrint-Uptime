@@ -32,6 +32,29 @@
       </div>
 
       <div class="control-group">
+        <label class="control-label" for="plugin_uptime_poll_interval">{{ _("Polling interval (s)") }}</label>
+        <div class="controls">
+          <input id="plugin_uptime_poll_interval" type="number" class="span2" min="1" data-bind="value: settings.plugins.octoprint_uptime.poll_interval_seconds" />
+          <p class="help-block">{{ _("Seconds between navbar API polls. Low values may spam logs; default is 5s.") }}</p>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="plugin_uptime_bundle">{{ _("Systeminfo bundle") }}</label>
+        <div class="controls">
+          <label class="checkbox" for="plugin_uptime_bundle">
+            <input
+              id="plugin_uptime_bundle"
+              type="checkbox"
+              data-bind="checked: settings.plugins.octoprint_uptime.bundle_enabled"
+            />
+            {{ _("Include uptime in systeminfo bundle") }}
+          </label>
+          <p class="help-block">{{ _("When enabled, adds an uptime.json file to OctoPrint's systeminfo bundle.") }}</p>
+        </div>
+      </div>
+
+      <div class="control-group">
         <label class="control-label" for="plugin_uptime_debug">{{ _("Debug") }}</label>
         <div class="controls">
           <label class="checkbox" for="plugin_uptime_debug">

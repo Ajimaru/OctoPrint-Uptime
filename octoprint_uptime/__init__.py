@@ -6,11 +6,13 @@ This module avoids importing OctoPrint/Flask at import-time so it can be
 packaged and unit-tested without the OctoPrint runtime present.
 """
 
+import json
 import logging
 import os
 import subprocess
 import time
-from typing import Any, Dict, List, Type
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Tuple, Type
 
 try:
     import octoprint.plugin  # type: ignore
@@ -229,12 +231,15 @@ class OctoprintUptimePlugin(
             navbar_enabled=True,
             display_format="full",
             debug_throttle_seconds=60,
+            bundle_enabled=False,
+            poll_interval_seconds=5,
         )
 
     def on_settings_initialized(self) -> None:
         """Initialize settings and throttling state."""
         self._debug_enabled = bool(self._settings.get(["debug"]))
         self._navbar_enabled = bool(self._settings.get(["navbar_enabled"]))
+        self._bundle_enabled = bool(self._settings.get(["bundle_enabled"]))
         self._display_format = str(self._settings.get(["display_format"]))
         self._last_debug_time = 0
         # throttle debug messages (seconds)
@@ -274,9 +279,14 @@ class OctoprintUptimePlugin(
             prev_navbar = getattr(self, "_navbar_enabled", None)
         except Exception:
             prev_navbar = None
+        try:
+            prev_bundle = getattr(self, "_bundle_enabled", None)
+        except Exception:
+            prev_bundle = None
 
         self._debug_enabled = bool(self._settings.get(["debug"]))
         self._navbar_enabled = bool(self._settings.get(["navbar_enabled"]))
+        self._bundle_enabled = bool(self._settings.get(["bundle_enabled"]))
         self._display_format = str(self._settings.get(["display_format"]))
         self._debug_throttle_seconds = int(
             self._settings.get(["debug_throttle_seconds"]) or 60
@@ -310,6 +320,19 @@ class OctoprintUptimePlugin(
                     prev_navbar,
                     self._navbar_enabled,
                 )
+            try:
+                if (
+                    logger
+                    and prev_bundle is not None
+                    and prev_bundle != self._bundle_enabled
+                ):
+                    logger.info(
+                        "UptimePlugin: bundle_enabled changed from %s to %s",
+                        prev_bundle,
+                        self._bundle_enabled,
+                    )
+            except Exception:
+                pass
         except Exception:
             pass
 
@@ -332,6 +355,37 @@ class OctoprintUptimePlugin(
         except Exception:
             # Never raise from debug logging
             pass
+
+    def get_additional_systeminfo_files(self) -> List[Tuple[str, bytes]]:
+        """Return additional files for OctoPrint's systeminfo bundle.
+
+        Returns a list of (filename, content_bytes). If the bundle inclusion
+        setting is disabled this returns an empty list.
+        """
+        try:
+            if not getattr(self, "_bundle_enabled", False):
+                return []
+
+            seconds = self._get_uptime_seconds()
+            if not isinstance(seconds, (int, float)):
+                return []
+
+            started = datetime.now() - timedelta(seconds=int(seconds))
+            payload = {
+                "started": started.isoformat(sep=" ", timespec="seconds"),
+                "uptime_seconds": int(seconds),
+                "uptime_human": _format_uptime(seconds),
+            }
+            content = json.dumps(payload, ensure_ascii=False, indent=2)
+            content = content.encode("utf-8")
+            return [("uptime.json", content)]
+        except Exception:
+            try:
+                if getattr(self, "_logger", None):
+                    self._logger.exception("Failed to build uptime bundle file")
+            except Exception:
+                pass
+            return []
 
     def on_api_get(self, request: Any) -> Any:
         """Handle API GET request for uptime."""
@@ -391,6 +445,10 @@ class OctoprintUptimePlugin(
                 display_format = str(self._settings.get(["display_format"]))
             except Exception:
                 display_format = "full"
+            try:
+                poll_interval = int(self._settings.get(["poll_interval_seconds"]) or 5)
+            except Exception:
+                poll_interval = 5
 
             return _flask.jsonify(
                 uptime=uptime_full,
@@ -400,6 +458,7 @@ class OctoprintUptimePlugin(
                 seconds=seconds,
                 navbar_enabled=navbar_enabled,
                 display_format=display_format,
+                poll_interval_seconds=poll_interval,
             )
         except Exception:
             # Fallback for test environments: return a plain dict
@@ -415,4 +474,4 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = (
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc62"
+__plugin_version__ = "0.1.0rc64"

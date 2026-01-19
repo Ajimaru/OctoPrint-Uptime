@@ -402,14 +402,17 @@ verify_plugin_loaded() {
   # If the plugin isn't installed/enabled, it may not show up at all.
   # In that case we should not warn; the user explicitly might have it uninstalled.
   # Also check for already loaded plugins (no "Enabled" message on restart)
-  if ! wait_for_log "Enabled plugin uptime|octoprint_uptime/__init__|octoprint\.plugins\.uptime|Loaded plugin octoprint_uptime" 15 0.5; then
+  # Accept a variety of log markers: older 'Enabled plugin' messages,
+  # AST parsing traces, API access logs or tracking payloads that include
+  # the plugin name/version.
+  if ! wait_for_log "Enabled plugin uptime|octoprint_uptime/__init__|octoprint\.plugins\.uptime|Loaded plugin octoprint_uptime|GET \/api\/plugin\/octoprint_uptime|octoprint_uptime:" 15 0.5; then
     echo "uptime: not detected in startup log (likely not installed); skipping verification"
     return 0
   fi
 
   # 1) Look for any plugin-specific log activity (optional)
   # Note: Our plugin only logs on API calls, not on startup, so this may not find anything
-  if wait_for_log "octoprint\.plugins\.uptime" 5 0.5; then
+  if wait_for_log "octoprint\.plugins\.uptime|GET \/api\/plugin\/octoprint_uptime" 5 0.5; then
     echo "uptime: log activity detected"
   else
     echo "NOTE: No uptime log lines observed (since restart)."
@@ -445,7 +448,7 @@ verify_plugin_loaded() {
 
   # 3) Confirm OctoPrint enabled the plugin (i.e., not in safe mode)
   # Check for both fresh enable messages and already loaded plugins
-  if wait_for_log "Enabled plugin uptime|Loaded plugin octoprint_uptime" 10 0.5; then
+  if wait_for_log "Enabled plugin uptime|Loaded plugin octoprint_uptime|GET \/api\/plugin\/octoprint_uptime|octoprint_uptime:" 10 0.5; then
     echo "uptime: enabled/loaded OK"
   else
     echo "WARNING: Did not find 'Enabled plugin uptime' or 'Loaded plugin octoprint_uptime' in log (since restart)." >&2

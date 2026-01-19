@@ -62,6 +62,26 @@ msgstr ""
 msgid "Choose how the uptime is shown in the navbar."
 msgstr ""
 
+#: octoprint_uptime/templates/settings.jinja2:34
+msgid "Systeminfo bundle"
+msgstr ""
+
+#: octoprint_uptime/templates/settings.jinja2:37
+msgid "Include uptime in systeminfo bundle"
+msgstr ""
+
+#: octoprint_uptime/templates/settings.jinja2:39
+msgid "When enabled, adds an uptime.json file to OctoPrint's systeminfo bundle."
+msgstr ""
+
+#: octoprint_uptime/templates/settings.jinja2:43
+msgid "Polling interval (s)"
+msgstr ""
+
+#: octoprint_uptime/templates/settings.jinja2:46
+msgid "Seconds between navbar API polls. Low values may spam logs; default is 5s."
+msgstr ""
+
 #: octoprint_uptime/templates/settings.jinja2:35
 msgid "Debug"
 msgstr ""

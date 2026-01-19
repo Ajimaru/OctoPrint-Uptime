@@ -62,6 +62,26 @@ msgstr "D (nur Tage)"
 msgid "Choose how the uptime is shown in the navbar."
 msgstr "Wähle, wie die Uptime in der Navigationsleiste angezeigt wird."
 
+#: octoprint_uptime/templates/settings.jinja2:34
+msgid "Systeminfo bundle"
+msgstr "Systeminfo-Bundle"
+
+#: octoprint_uptime/templates/settings.jinja2:37
+msgid "Include uptime in systeminfo bundle"
+msgstr "Uptime in Systeminfo-Bundle aufnehmen"
+
+#: octoprint_uptime/templates/settings.jinja2:39
+msgid "When enabled, adds an uptime.json file to OctoPrint's systeminfo bundle."
+msgstr "Wenn aktiviert, wird eine uptime.json-Datei zum Systeminfo-Bundle von OctoPrint hinzugefügt."
+
+#: octoprint_uptime/templates/settings.jinja2:43
+msgid "Polling interval (s)"
+msgstr "Polling‑Intervall (s)"
+
+#: octoprint_uptime/templates/settings.jinja2:46
+msgid "Seconds between navbar API polls. Low values may spam logs; default is 5s."
+msgstr "Sekunden zwischen Navbar‑API‑Abfragen. Kleine Werte können das Log fluten; Standard ist 5s."
+
 #: octoprint_uptime/templates/settings.jinja2:35
 msgid "Debug"
 msgstr "Debug"
@@ -87,59 +107,3 @@ msgstr "Minimale Sekunden zwischen Debug-Log-Einträgen."
 #: octoprint_uptime/static/js/uptime.js:1
 msgid "Started:"
 msgstr "Gestartet:"
-
-#~ msgid "Use this plugin to display system uptime in the Navbar."
-#~ msgstr "Dieses Plugin zeigt die Systemlaufzeit in der Navigationsleiste an."
-
-#~ msgid "Navbar"
-#~ msgstr "Navigationsleiste"
-
-#~ msgid "Show uptime in navbar"
-#~ msgstr "Uptime in der Navigationsleiste anzeigen"
-
-#~ msgid "Toggle whether the uptime is visible in the top navigation bar."
-#~ msgstr ""
-#~ "Legt fest, ob die Uptime in der"
-#~ " oberen Navigationsleiste angezeigt wird."
-
-#~ msgid "Display format"
-#~ msgstr "Anzeigeformat"
-
-#~ msgid "Choose how the uptime is shown in the navbar."
-#~ msgstr "Wähle, wie die Uptime in der Navigationsleiste angezeigt wird."
-
-#~ msgid "Debug"
-#~ msgstr "Debug"
-
-#~ msgid "Enable debug logging (throttled)"
-#~ msgstr "Debug-Logging aktivieren (gedrosselt)"
-
-#~ msgid ""
-#~ "When enabled, the plugin will log "
-#~ "debug messages. Messages are throttled "
-#~ "to avoid spamming the log."
-#~ msgstr ""
-#~ "Wenn aktiviert, schreibt das Plugin "
-#~ "Debug-Meldungen ins Log. Die Ausgaben "
-#~ "werden gedrosselt, um Spam zu vermeiden."
-
-#~ msgid "Debug throttle (s)"
-#~ msgstr "Debug-Drossel (Sekunden)"
-
-#~ msgid "Minimum seconds between debug log entries."
-#~ msgstr "Minimale Sekunden zwischen Debug-Log-Einträgen."
-
-#~ msgid "Hello from your plugin!"
-#~ msgstr ""
-
-#~ msgid "Example toggle"
-#~ msgstr "Beispiel-Umschalter"
-
-#~ msgid "Enable example behavior"
-#~ msgstr "Beispielverhalten aktivieren"
-
-#~ msgid "Example text"
-#~ msgstr "Beispieltext"
-
-#~ msgid "Replace with your own plugin configuration fields."
-#~ msgstr "Ersetze durch deine eigenen Plugin-Konfigurationsfelder."
