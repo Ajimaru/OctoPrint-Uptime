@@ -94,7 +94,7 @@ def test_get_uptime_from_proc(monkeypatch):
     monkeypatch.setattr("os.path.exists", lambda p: True)
 
     def _dummy_open(p, mode="r"):
-        return io.StringIO("12345.67 0.00")
+        return io.BytesIO(b"12345.67 0.00")
 
     monkeypatch.setattr("builtins.open", _dummy_open)
     octoprint_uptime = _load_octoprint_uptime()
