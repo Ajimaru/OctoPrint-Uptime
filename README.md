@@ -5,18 +5,20 @@
 <h1 align="center">OctoPrint‑Uptime</h1>
 <!-- markdownlint-enable MD041 MD033 -->
 
-[![License](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org)
-[![OctoPrint](https://img.shields.io/badge/OctoPrint-1.12.0%2B-blue.svg)](https://octoprint.org)
+[![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
 [![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
-[![Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Coverage](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/graph/badge.svg?branch=main)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
 [![CI](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
 [![i18n](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![Language Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)
+[![Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls)
+[![License](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
+![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime)
+![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime)
 
 ### Effortlessly track your OctoPrint server's uptime, right from your navbar
 
@@ -65,8 +67,8 @@ The `releases/latest` URL always points to the newest stable release.
 
 The navbar widget polls the plugin API and shows a formatted uptime string. The tooltip displays the calculated start datetime (localized).
 
-- API endpoint: `/api/plugin/octoprint_uptime` (requires OctoPrint API key / auth)
-- Settings: `Polling interval`, `Display format`, `Show in navbar`, `Enable systeminfo bundle` (off by default)
+1. **API endpoint**: `/api/plugin/octoprint_uptime` (requires OctoPrint API key / auth)
+2. **Settings**: `Polling interval`, `Display format`, `Show in navbar`, `Enable systeminfo bundle` (off by default)
 
 Quick curl example:
 
