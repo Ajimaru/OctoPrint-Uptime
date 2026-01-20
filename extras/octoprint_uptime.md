@@ -4,9 +4,8 @@ layout: plugin
 id: octoprint_uptime
 title: OctoPrint-Uptime
 description: Displays the host system uptime in the OctoPrint navbar and provides a small JSON API for integrations.
-#authors:
-#- Ajimaru
-
+authors:
+  - Ajimaru
 license: AGPLv3
 
 date: 2026-01-19
