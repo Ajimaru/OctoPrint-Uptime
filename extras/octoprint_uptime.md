@@ -19,7 +19,6 @@ tags:
   - uptime
   - status
   - navbar
-  - linux
 
 screenshots:
   - url: /assets/img/uptime_navbar.png

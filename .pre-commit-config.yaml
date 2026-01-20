@@ -16,7 +16,7 @@ repos:
         args: ["--fix=lf"]
 
   - repo: https://github.com/psf/black
-    rev: 24.1.1
+    rev: 26.1.0
     hooks:
       - id: black
         language_version: python3
@@ -28,9 +28,10 @@ repos:
         args: ["--profile", "black"]
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 7.3.0
     hooks:
       - id: flake8
+        exclude: '\.md$|\.yaml$|\.yml$|\.json$|\.txt$|\.po$|\.pot$|\.mo$'
         args: ["--max-line-length=120", "--extend-ignore=E203,W503"]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -38,3 +39,12 @@ repos:
     hooks:
       - id: prettier
         types_or: [javascript, css, markdown, json, yaml]
+
+  - repo: local
+    hooks:
+      - id: jsdoc-gen
+        name: Generate JavaScript docs
+        entry: bash scripts/generate-jsdocs.sh
+        language: system
+        files: '^octoprint_temp_eta/static/js/.*\.js$'
+        pass_filenames: false
