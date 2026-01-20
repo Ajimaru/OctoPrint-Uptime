@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-19 21:31+0100\n"
+"POT-Creation-Date: 2026-01-21 00:00+0100\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: octoprint_uptime/__init__.py:553
+#: octoprint_uptime/__init__.py:552
 msgid "Adds system uptime to the navbar and exposes a small uptime API."
 msgstr ""
 
@@ -58,11 +58,11 @@ msgstr ""
 msgid "Enable debug logging (throttled)"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:506
+#: octoprint_uptime/__init__.py:505
 msgid "Error computing uptime"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:484
+#: octoprint_uptime/__init__.py:483
 msgid "Forbidden"
 msgstr ""
 
@@ -78,11 +78,11 @@ msgstr ""
 msgid "Navbar"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:218
+#: octoprint_uptime/__init__.py:217
 msgid "OctoPrint Uptime"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:550
+#: octoprint_uptime/__init__.py:549
 #: octoprint_uptime/templates/settings.jinja2:3
 msgid "OctoPrint-Uptime"
 msgstr ""
@@ -111,7 +111,7 @@ msgstr ""
 msgid "Toggle whether the uptime is visible in the top navigation bar."
 msgstr ""
 
-#: octoprint_uptime/__init__.py:503
+#: octoprint_uptime/__init__.py:502
 #, python-format
 msgid "Uptime API requested, result=%s"
 msgstr ""
@@ -134,16 +134,16 @@ msgid ""
 "to avoid spamming the log."
 msgstr ""
 
-#: octoprint_uptime/__init__.py:526
+#: octoprint_uptime/__init__.py:525
 msgid "full"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:212
+#: octoprint_uptime/__init__.py:211
 msgid "navbar_uptime"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:509 octoprint_uptime/__init__.py:510
-#: octoprint_uptime/__init__.py:511 octoprint_uptime/__init__.py:512
+#: octoprint_uptime/__init__.py:508 octoprint_uptime/__init__.py:509
+#: octoprint_uptime/__init__.py:510 octoprint_uptime/__init__.py:511
 msgid "unknown"
 msgstr ""
 
