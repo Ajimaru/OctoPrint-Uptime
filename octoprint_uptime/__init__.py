@@ -6,7 +6,6 @@ This module avoids importing OctoPrint/Flask at import-time so it can be
 packaged and unit-tested without the OctoPrint runtime present.
 """
 
-
 import gettext
 import json
 import logging
