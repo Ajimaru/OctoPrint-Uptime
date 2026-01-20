@@ -1,0 +1,3 @@
+# algorithms.md
+
+Dummy-Datei für MkDocs Strict-Build.
