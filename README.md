@@ -13,12 +13,9 @@
 [![CI](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
 [![i18n](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Language Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)
-[![Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls)
-[![License](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
-![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime)
-![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime)
+[![Language Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime)
+[![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/stargazers)
+[![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/network/members)
 
 ### Effortlessly track your OctoPrint server's uptime, right from your navbar
 
