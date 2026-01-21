@@ -125,10 +125,10 @@ Contributions welcome! Please:
 
 Note: `main` is protected on GitHub, so changes go through PRs.
 
-![Open Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime)
-![Closed Issues](https://img.shields.io/github/issues-closed-raw/Ajimaru/OctoPrint-Uptime)
-![Open PRs](https://img.shields.io/github/issues-pr/Ajimaru/OctoPrint-Uptime)
-![Closed PRs](https://img.shields.io/github/issues-pr-closed/Ajimaru/OctoPrint-Uptime)
+[![Open Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aopen)
+[![Closed Issues](https://img.shields.io/github/issues-closed-raw/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aclosed)
+[![Open PRs](https://img.shields.io/github/issues-pr/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aopen)
+[![Closed PRs](https://img.shields.io/github/issues-pr-closed/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aclosed)
 
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
 ![Commit Activity (year)](https://img.shields.io/github/commit-activity/y/Ajimaru/OctoPrint-Uptime)
