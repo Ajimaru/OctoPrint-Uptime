@@ -5,17 +5,20 @@
 <h1 align="center">OctoPrint‑Uptime</h1>
 <!-- markdownlint-enable MD041 MD033 -->
 
+[![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org)
+![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
 [![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
 [![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
-[![Coverage](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/graph/badge.svg?branch=main)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
-[![CI](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
-[![i18n](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Language Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime)
-[![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/stargazers)
-[![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/network/members)
+![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)
+![Maintenance](https://img.shields.io/maintenance/yes/2026)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls)
+
+![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime?style=social)
+![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime?style=social)
+![Watchers](https://img.shields.io/github/watchers/Ajimaru/OctoPrint-Uptime?style=social)
+
+---
 
 ### Effortlessly track your OctoPrint server's uptime, right from your navbar
 
@@ -121,6 +124,24 @@ Contributions welcome! Please:
 7. Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 Note: `main` is protected on GitHub, so changes go through PRs.
+
+![Open Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime)
+![Closed Issues](https://img.shields.io/github/issues-closed-raw/Ajimaru/OctoPrint-Uptime)
+![Open PRs](https://img.shields.io/github/issues-pr/Ajimaru/OctoPrint-Uptime)
+![Closed PRs](https://img.shields.io/github/issues-pr-closed/Ajimaru/OctoPrint-Uptime)
+
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
+![Commit Activity (year)](https://img.shields.io/github/commit-activity/y/Ajimaru/OctoPrint-Uptime)
+![Last Commit](https://img.shields.io/github/last-commit/Ajimaru/OctoPrint-Uptime)
+
+![Build Status](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/ci.yml)
+[![Coverage](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/graph/badge.svg?branch=main)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
+[![CI](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
+[![i18n](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
+![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime)
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![Languages Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)
 
 ## License
 
