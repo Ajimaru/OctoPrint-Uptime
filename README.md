@@ -5,7 +5,7 @@
 <h1 align="center">OctoPrint‑Uptime</h1>
 <!-- markdownlint-enable MD041 MD033 -->
 
-[![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/ajitroids#-license)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org)
 ![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
 [![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
