@@ -30,6 +30,7 @@ node_modules/
 .ideas/
 .logs
 .qodo
+gh_logs
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
