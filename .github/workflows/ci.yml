@@ -71,7 +71,6 @@ jobs:
         if: ${{ matrix.run-coverage && github.repository == 'Ajimaru/OctoPrint-Uptime' }}
         uses: codecov/codecov-action@v5
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
           flags: unittests
           fail_ci_if_error: false
