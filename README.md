@@ -141,6 +141,7 @@ Note: `main` is protected on GitHub, so changes go through PRs.
 ![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 ![Languages Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)
 
 ## License
