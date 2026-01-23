@@ -4,104 +4,148 @@
 Provides packaging metadata for the OctoPrint-Uptime plugin.
 """
 
-########################################################################################################################
-### Do not forget to adjust the following variables to your own plugin.
+import copy
 
+from setuptools import setup
+
+#######################################################################
+# Do not forget to adjust the following variables to your own plugin.
+#
 # The plugin's identifier, has to be unique
-plugin_identifier = "uptime"
+PLUGIN_IDENTIFIER = "uptime"
 
-# The plugin's python package, should be "octoprint_<plugin identifier>", has to be unique
-plugin_package = "octoprint_uptime"
+# The plugin's python package. Should be "octoprint_<plugin identifier>"
+# and must be unique.
+PLUGIN_PACKAGE = "octoprint_uptime"
 
-# The plugin's human readable name. Can be overwritten within OctoPrint's internal data via __plugin_name__ in the
-# plugin module
-plugin_name = "OctoPrint-Uptime"
+# The plugin's human readable name. Can be overridden within OctoPrint's
+# internal data via __plugin_name__ in the plugin module.
+PLUGIN_NAME = "OctoPrint-Uptime"
 
-# The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "0.1.0"
+# The plugin's version. Can be overridden within OctoPrint's internal data
+# via __plugin_version__ in the plugin module.
+PLUGIN_VERSION = "0.1.0"
 
-# The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
-# module
-plugin_description = (
-    """OctoPrint plugin that exposes system uptime to the About → System dialog."""
+# The plugin's description. Can be overridden within OctoPrint's internal
+# data via __plugin_description__ in the plugin module.
+PLUGIN_DESCRIPTION = (
+    "OctoPrint plugin that exposes system uptime to " "the About → System dialog."
 )
 
-# The plugin's author. Can be overwritten within OctoPrint's internal data via __plugin_author__ in the plugin module
-plugin_author = "Ajimaru"
+# The plugin's author. Can be overridden within OctoPrint's internal data
+# via __plugin_author__ in the plugin module.
+PLUGIN_AUTHOR = "Ajimaru"
 
-# The plugin's author's mail address.
-plugin_author_email = "ajimaru_gdr@pm.me"
+# The plugin author's email address.
+PLUGIN_AUTHOR_EMAIL = "ajimaru_gdr@pm.me"
 
-# The plugin's homepage URL. Can be overwritten within OctoPrint's internal data via __plugin_url__ in the plugin module
-plugin_url = "https://github.com/Ajimaru/OctoPrint-Uptime"
+# The plugin's homepage URL. Can be overridden within OctoPrint's internal
+# data via __plugin_url__ in the plugin module.
+PLUGIN_URL = "https://github.com/Ajimaru/OctoPrint-Uptime"
 
-# The plugin's license. Can be overwritten within OctoPrint's internal data via __plugin_license__ in the plugin module
-plugin_license = "MIT"
+# The plugin's license. Can be overridden within OctoPrint's internal data
+# via __plugin_license__ in the plugin module.
+PLUGIN_LICENSE = "MIT"
 
-# Any additional requirements besides OctoPrint should be listed here
-plugin_requires = ["flask>=2.2", "psutil>=5.9"]
+# Any additional requirements besides OctoPrint should be listed here.
+PLUGIN_REQUIRES = ["flask>=2.2", "psutil>=5.9"]
 
-### --------------------------------------------------------------------------------------------------------------------
-### More advanced options that you usually shouldn't have to touch follow after this point
-### --------------------------------------------------------------------------------------------------------------------
+### --------------------------------------------------------------------
+### More advanced options that you usually shouldn't have to touch follow
+### after this point
+### --------------------------------------------------------------------
 
-# Additional package data to install for this plugin. The subfolders "templates", "static" and "translations" will
-# already be installed automatically if they exist. Note that if you add something here you'll also need to update
-# MANIFEST.in to match to ensure that python setup.py sdist produces a source distribution that contains all your
-# files. This is sadly due to how python's setup.py works, see also http://stackoverflow.com/a/14159430/2028598
-plugin_additional_data = []
+# Additional package data to install for this plugin. The subfolders
+# "templates", "static" and "translations" will already be installed
+# automatically if they exist. If you add items here, update MANIFEST.in
+# so python setup.py sdist produces a source distribution that contains
+# all your files (see http://stackoverflow.com/a/14159430/2028598).
+PLUGIN_ADDITIONAL_DATA = []
 
-# Any additional python packages you need to install with your plugin that are not contained in <plugin_package>.*
-plugin_additional_packages = []
+# Any additional python packages you need to install with your plugin that
+# are not contained in <plugin_package>.*.
+PLUGIN_ADDITIONAL_PACKAGES = []
 
-# Any python packages within <plugin_package>.* you do NOT want to install with your plugin
-plugin_ignored_packages = []
+# Any python packages within <plugin_package>.* you do NOT want to install
+# with your plugin.
+PLUGIN_IGNORED_PACKAGES = []
 
-# Additional parameters for the call to setuptools.setup. If your plugin wants to register additional entry points,
-# define dependency links or other things like that, this is the place to go. Will be merged recursively with the
-# default setup parameters as provided by octoprint_setuptools.create_plugin_setup_parameters using
+# Additional parameters for the call to setuptools.setup.
+# If your plugin wants to register additional entry points,
+# define dependency links or other things like that; this is
+# the place to go. Will be merged recursively with the
+# default setup parameters as provided by
+# octoprint_setuptools.create_plugin_setup_parameters using
 # octoprint.util.dict_merge.
 #
 # Example:
 #     plugin_requires = ["someDependency==dev"]
-#     additional_setup_parameters = {"dependency_links": ["https://github.com/someUser/someRepo/archive/master.zip#egg=someDependency-dev"]}
-# "python_requires": ">=3,<4" blocks installation on Python 2 systems, to prevent confused users and provide a helpful error.
-# Remove it if you would like to support Python 2 as well as 3 (not recommended).
+#     additional_setup_parameters = {
+#         "dependency_links": [
+#             "https://github.com/someUser/someRepo/archive/master.zip#egg="
+#             "someDependency-dev"
+#         ]
+#     }
+# "python_requires": ">=3,<4" blocks installation on Python 2 systems,
+# to prevent confused users and provide a helpful error.
+# Remove it if you would like to support Python 2 as well as 3
+# (not recommended).
 additional_setup_parameters = {"python_requires": ">=3,<4"}
 
-########################################################################################################################
-
-from setuptools import setup
+####################################################################
 
 try:
-    import octoprint_setuptools
-except:
-    print(
-        "Could not import OctoPrint's setuptools, are you sure you are running that under "
-        "the same python installation that OctoPrint is installed under?"
-    )
+    import importlib
+
+    octoprint_setuptools = importlib.import_module("octoprint_setuptools")
+except ImportError as e:
     import sys
 
-    sys.exit(-1)
+    print(
+        f"Could not import OctoPrint's setuptools, are you sure you are running that under "
+        f"the same python installation that OctoPrint is installed under? Original error: {e}"
+    )
+    sys.exit(1)
 
 setup_parameters = octoprint_setuptools.create_plugin_setup_parameters(
-    identifier=plugin_identifier,
-    package=plugin_package,
-    name=plugin_name,
-    version=plugin_version,
-    description=plugin_description,
-    author=plugin_author,
-    mail=plugin_author_email,
-    url=plugin_url,
-    license=plugin_license,
-    requires=plugin_requires,
-    additional_packages=plugin_additional_packages,
-    ignored_packages=plugin_ignored_packages,
-    additional_data=plugin_additional_data,
+    identifier=PLUGIN_IDENTIFIER,
+    package=PLUGIN_PACKAGE,
+    name=PLUGIN_NAME,
+    version=PLUGIN_VERSION,
+    description=PLUGIN_DESCRIPTION,
+    author=PLUGIN_AUTHOR,
+    mail=PLUGIN_AUTHOR_EMAIL,
+    url=PLUGIN_URL,
+    license=PLUGIN_LICENSE,
+    requires=PLUGIN_REQUIRES,
+    additional_packages=PLUGIN_ADDITIONAL_PACKAGES,
+    ignored_packages=PLUGIN_IGNORED_PACKAGES,
+    additional_data=PLUGIN_ADDITIONAL_DATA,
 )
 
 if len(additional_setup_parameters):
-    from octoprint.util import dict_merge
+    try:
+        OCTOPRINT_UTIL = importlib.import_module("octoprint.util")
+    except ImportError:
+        OCTOPRINT_UTIL = None
+
+    if OCTOPRINT_UTIL and hasattr(OCTOPRINT_UTIL, "dict_merge"):
+        dict_merge = getattr(OCTOPRINT_UTIL, "dict_merge")
+    else:
+        # Fallback dict_merge implementation (recursive, does not mutate inputs)
+        def dict_merge(a, b):
+            """Recursively merge two dicts without mutating inputs."""
+            result = copy.deepcopy(a)
+            for key, value in b.items():
+                if (
+                    key in result
+                    and isinstance(result[key], dict)
+                    and isinstance(value, dict)
+                ):
+                    result[key] = dict_merge(result[key], value)
+                else:
+                    result[key] = copy.deepcopy(value)
+            return result
 
     setup_parameters = dict_merge(setup_parameters, additional_setup_parameters)
 

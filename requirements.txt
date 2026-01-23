@@ -1,4 +1,4 @@
 # Any additional requirements besides OctoPrint should be listed here
 # For development dependencies, see the [project.optional-dependencies] section in pyproject.toml
-flask>=2.2
-psutil>=5.9
+flask>=2.2.5
+psutil>=5.9.0
