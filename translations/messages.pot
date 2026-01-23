@@ -66,7 +66,6 @@ msgid "Forbidden"
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:51
-msgid "Include uptime in systeminfo bundle"
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:76
@@ -103,7 +102,6 @@ msgid "Started:"
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:43
-msgid "Systeminfo bundle"
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:17
@@ -124,7 +122,6 @@ msgid "Use this plugin to display system uptime in the Navbar."
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:53
-msgid "When enabled, adds an uptime.json file to OctoPrint's systeminfo bundle."
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:68

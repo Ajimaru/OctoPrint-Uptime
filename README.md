@@ -34,7 +34,7 @@
 
 - 🖥️ Navbar widget with configurable display formats (full / dhm / dh / d)
 - 🔒 Small read‑only API at `/api/plugin/octoprint_uptime` (OctoPrint auth enforced)
-- ⚙️ Configurable polling interval and optional systeminfo bundle support
+- ⚙️ Configurable polling interval
 
 ## Installation
 
@@ -68,7 +68,7 @@ The `releases/latest` URL always points to the newest stable release.
 The navbar widget polls the plugin API and shows a formatted uptime string. The tooltip displays the calculated start datetime (localized).
 
 1. **API endpoint**: `/api/plugin/octoprint_uptime` (requires OctoPrint API key / auth)
-2. **Settings**: `Polling interval`, `Display format`, `Show in navbar`, `Enable systeminfo bundle` (off by default)
+2. **Settings**: `Polling interval`, `Display format`, `Show in navbar` (off by default)
 
 Quick curl example:
 
@@ -89,7 +89,6 @@ Configure the plugin in **Settings** → **OctoPrint Uptime**:
 - `navbar_enabled`: `true` – Show uptime in the OctoPrint navbar
 - `display_format`: `full` – Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`)
 - `poll_interval_seconds`: `5` – Polling interval in seconds (validated and clamped between 1–120)
-- `bundle_enabled`: `false` – Enable systeminfo bundle (additional system info file)
 - `debug_logging`: `false` – Enable debug logging for troubleshooting
 - `debug_throttle`: `60` – Throttle debug logs to reduce log spam
 

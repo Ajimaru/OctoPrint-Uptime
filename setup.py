@@ -24,12 +24,12 @@ PLUGIN_NAME = "OctoPrint-Uptime"
 
 # The plugin's version. Can be overridden within OctoPrint's internal data
 # via __plugin_version__ in the plugin module.
-PLUGIN_VERSION = "0.1.0"
+PLUGIN_VERSION = "0.1.0rc5"
 
 # The plugin's description. Can be overridden within OctoPrint's internal
 # data via __plugin_description__ in the plugin module.
 PLUGIN_DESCRIPTION = (
-    "OctoPrint plugin that exposes system uptime to " "the About → System dialog."
+    "OctoPrint plugin that exposes system uptime to the About → System dialog."
 )
 
 # The plugin's author. Can be overridden within OctoPrint's internal data
