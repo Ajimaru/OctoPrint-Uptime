@@ -1,11 +1,11 @@
 # GitHub Copilot Instructions - OctoPrint Plugin Template
 
-**Issue**: https://github.com/OctoPrint/OctoPrint/issues/4355
+**Issue**: <https://github.com/OctoPrint/OctoPrint/issues/4355>
 **Target**: OctoPrint 1.12.0+, Python 3.10+ | Implements 2021 feature request
 
 ## Code Standards (CRITICAL)
 
-**Docs**: https://docs.octoprint.org/en/main/plugins/index.html | Contributing: https://github.com/OctoPrint/OctoPrint/blob/main/CONTRIBUTING.md
+**Docs**: <https://docs.octoprint.org/en/main/plugins/index.html> | Contributing: <https://github.com/OctoPrint/OctoPrint/blob/main/CONTRIBUTING.md>
 
 **Template Autoescape**: [How do I improve my plugin's security by enabling autoescape?](https://faq.octoprint.org/plugin-autoescape)
 
@@ -81,8 +81,8 @@ pybabel compile -d translations
 
 ## Key References
 
-- Plugin Docs: https://docs.octoprint.org/en/main/plugins/index.html
-- Mixins: https://docs.octoprint.org/en/main/plugins/mixins.html
-- Contributing: https://github.com/OctoPrint/OctoPrint/blob/main/CONTRIBUTING.md
-- Knockout.js: https://knockoutjs.com/documentation/introduction.html
+- Plugin Docs: <https://docs.octoprint.org/en/main/plugins/index.html>
+- Mixins: <https://docs.octoprint.org/en/main/plugins/mixins.html>
+- Contributing: <https://github.com/OctoPrint/OctoPrint/blob/main/CONTRIBUTING.md>
+- Knockout.js: <https://knockoutjs.com/documentation/introduction.html>
 - Implementation Plan: .ideas/IMPLEMENTATION_PLAN.md
