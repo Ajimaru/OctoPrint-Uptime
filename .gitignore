@@ -30,7 +30,12 @@ node_modules/
 .ideas/
 .logs
 .qodo
+.codacy
 gh_logs
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
