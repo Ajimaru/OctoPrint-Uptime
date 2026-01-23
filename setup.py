@@ -1,4 +1,8 @@
 # coding=utf-8
+"""OctoPrint Uptime plugin setup module.
+
+Provides packaging metadata for the OctoPrint-Uptime plugin.
+"""
 
 ########################################################################################################################
 ### Do not forget to adjust the following variables to your own plugin.
