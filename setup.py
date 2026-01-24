@@ -147,7 +147,6 @@ setup_parameters = octoprint_setuptools.create_plugin_setup_parameters(
     author=PLUGIN_AUTHOR,
     mail=PLUGIN_AUTHOR_EMAIL,
     url=PLUGIN_URL,
-    install_requires=PLUGIN_REQUIRES,
     additional_packages=PLUGIN_ADDITIONAL_PACKAGES,
     ignored_packages=PLUGIN_IGNORED_PACKAGES,
     additional_data=PLUGIN_ADDITIONAL_DATA,
@@ -155,6 +154,9 @@ setup_parameters = octoprint_setuptools.create_plugin_setup_parameters(
         "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3)",
     ],
 )
+
+# Add install_requires after creation to avoid TypeError
+setup_parameters["install_requires"] = PLUGIN_REQUIRES
 
 if len(additional_setup_parameters):
     import types
@@ -164,7 +166,7 @@ if len(additional_setup_parameters):
             "octoprint.util"
         )
     except ImportError:
-        OCTOPRINT_UTIL: Optional[types.ModuleType] = None
+        OCTOPRINT_UTIL = None
 
     if OCTOPRINT_UTIL and hasattr(OCTOPRINT_UTIL, "dict_merge"):
         dict_merge = getattr(OCTOPRINT_UTIL, "dict_merge")
