@@ -135,9 +135,11 @@ Note: `main` is protected on GitHub, so changes go through PRs.
 
 ![Build Status](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/ci.yml)
 [![Coverage](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/graph/badge.svg?branch=main)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
-![Codacy Coverage](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime/coverage)
+[![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![CI](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
 [![i18n](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
+[![Docs workflow](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml/badge.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml)
 ![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)

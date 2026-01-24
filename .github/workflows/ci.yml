@@ -84,17 +84,9 @@ jobs:
           CODACY_PROJECT_NAME: ${{ vars.CODACY_PROJECT_NAME }}
         continue-on-error: true
         run: |
-          # Install Codacy Coverage Reporter and upload coverage.xml
-          # Installer will place a reporter binary or script on PATH
-          bash <(curl -Ls https://coverage.codacy.com/get.sh)
-          # Try a common reporter invocation; tolerate failures to avoid breaking CI
-          if command -v codacy-coverage-reporter >/dev/null 2>&1; then
-            codacy-coverage-reporter report -l python -r coverage.xml -t "$CODACY_API_TOKEN" || true
-          elif command -v java >/dev/null 2>&1 && [ -f codacy-coverage-reporter-assembly.jar ]; then
-            java -jar codacy-coverage-reporter-assembly.jar report -l python -r coverage.xml -t "$CODACY_API_TOKEN" || true
-          else
-            echo "Codacy coverage reporter not found; installer may have a different workflow." >&2
-          fi
+          # Download and run the Codacy installer to report coverage in one step
+          # Pass the CODACY_API_TOKEN so the installer can upload coverage.xml
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml -t "$CODACY_API_TOKEN"
 
       - name: Run pre-commit
         if: ${{ matrix.run-precommit }}
