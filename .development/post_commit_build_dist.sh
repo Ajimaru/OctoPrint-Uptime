@@ -214,6 +214,7 @@ main() {
 
   # Only consider commits that touched pyproject.toml
   if ! git show --name-only --pretty=format: HEAD | grep -qx "pyproject.toml"; then
+    log "No version bump detected (pyproject.toml unchanged in last commit)."
     exit 0
   fi
 
@@ -227,10 +228,12 @@ main() {
 
   if [[ -z "$old_version" ]]; then
     # No baseline to compare (e.g. first commit) -> do nothing.
+    log "No version bump detected (no previous version to compare)."
     exit 0
   fi
 
   if [[ "$new_version" == "$old_version" ]]; then
+    log "No version bump detected: version unchanged ($new_version)."
     exit 0
   fi
 

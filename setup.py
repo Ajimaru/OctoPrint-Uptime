@@ -150,12 +150,13 @@ setup_parameters = octoprint_setuptools.create_plugin_setup_parameters(
     additional_packages=PLUGIN_ADDITIONAL_PACKAGES,
     ignored_packages=PLUGIN_IGNORED_PACKAGES,
     additional_data=PLUGIN_ADDITIONAL_DATA,
-    classifiers=[
-        "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3)",
-    ],
 )
 
-# Add install_requires after creation to avoid TypeError
+setup_parameters["install_requires"] = PLUGIN_REQUIRES
+setup_parameters["classifiers"] = [
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3)",
+]
+
 setup_parameters["install_requires"] = PLUGIN_REQUIRES
 
 if len(additional_setup_parameters):
