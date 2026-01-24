@@ -256,15 +256,36 @@ main() {
   log "Building wheel + sdist into dist/"
   "$PYTHON" -m build >/dev/null
 
-  local sdist="dist/OctoPrint-Uptime-${new_version}.tar.gz"
-  local zip="dist/OctoPrint-Uptime-${new_version}.zip"
+  local sdist=""
+  local zip=""
 
-  if [[ ! -f "$sdist" ]]; then
-    log "Expected sdist not found: ${sdist}; skipping zip creation"
+  # Find an sdist matching the new version using a glob (case-insensitive),
+  # since build tools may produce different normalized filenames (hyphen vs
+  # underscore, different casing, etc.).
+  shopt -s nullglob nocaseglob
+  for candidate in dist/*${new_version}*.tar.gz dist/*${new_version}*.tgz; do
+    [[ -f "$candidate" ]] || continue
+    sdist="$candidate"
+    break
+  done
+  # restore shell options (turn off nocaseglob but keep nullglob behavior minimal)
+  shopt -u nocaseglob || true
+
+  if [[ -z "$sdist" ]]; then
+    log "Expected sdist not found for version ${new_version}; skipping zip creation"
     exit 0
   fi
 
-  log "Creating zip from sdist: ${zip}"
+  # Derive zip name from found sdist (replace .tar.gz or .tgz with .zip)
+  if [[ "$sdist" == *.tar.gz ]]; then
+    zip="${sdist%.tar.gz}.zip"
+  elif [[ "$sdist" == *.tgz ]]; then
+    zip="${sdist%.tgz}.zip"
+  else
+    zip="${sdist}.zip"
+  fi
+
+  log "Creating zip from sdist: ${zip} (source: ${sdist})"
   rm -f "$zip"
   create_zip_from_sdist "$sdist" "$zip"
 
