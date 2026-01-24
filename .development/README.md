@@ -71,6 +71,12 @@ Quick examples:
 .development/bump_control.sh --config .development/bumpversion.toml minor --execute
 ```
 
+Single-step example (silent, real bump to minor):
+
+```bash
+.development/bump_control.sh --silent minor --execute
+```
+
 Git hooks behavior:
 
 - `pre-commit` hook: runs from `./venv/bin/pre-commit` and requires the venv Python to be 3.10+. If unavailable, it fails with an error and instructs you to run `.development/setup_dev.sh`.

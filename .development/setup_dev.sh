@@ -76,7 +76,6 @@ current_version = "0.0.1"
 commit = true
 tag = true
 
-[bumpversion:file:setup.py]
 [bumpversion:file:octoprint_uptime/_version.py]
 EOF
     echo "Created $BUMP_TOML with default content."

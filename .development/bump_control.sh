@@ -109,14 +109,13 @@ choose_menu() {
 
 check_versions_consistent() {
     local config_file="$1"
-    local config_version py_version setup_version toml_version
+    local config_version py_version toml_version
     config_version=$(grep -E '^current_version[[:space:]]*=' "$config_file" | sed -E 's/.*=\s*"([^\"]+)".*/\1/' || true)
     py_version=$(grep -E '^VERSION[[:space:]]*=' octoprint_uptime/_version.py | sed -E 's/.*=\s*"([^\"]+)".*/\1/' || true)
-    setup_version=$(grep -E 'version="[^\"]+"' setup.py | sed -E 's/.*version=\"([^\"]+)\".*/\1/' || true)
     toml_version=$(grep -E '^version[[:space:]]*=' pyproject.toml | sed -E 's/.*=\s*"([^\"]+)".*/\1/' || true)
 
     local versions=()
-    for v in "$config_version" "$py_version" "$setup_version" "$toml_version"; do
+    for v in "$config_version" "$py_version" "$toml_version"; do
         [[ -n "$v" ]] && versions+=("$v")
     done
     local uniq_versions=($(printf "%s\n" "${versions[@]}" | sort -u))
@@ -125,7 +124,6 @@ check_versions_consistent() {
         printf "%b\n" "${YELLOW}WARNING: Version mismatch detected!${RESET}"
         printf "%b\n" "  ${CYAN}bumpversion.toml:${RESET} $config_version"
         printf "%b\n" "  ${CYAN}_version.py:${RESET}      $py_version"
-        printf "%b\n" "  ${CYAN}setup.py:${RESET}         $setup_version"
         printf "%b\n" "  ${CYAN}pyproject.toml:${RESET}   $toml_version"
         printf "\n"
         local opts=("${uniq_versions[@]}" "Abort")
@@ -136,7 +134,6 @@ check_versions_consistent() {
         printf "%b\n" "Setting all files to version: ${GREEN}$chosen${RESET}"
         sed -E -i "s/^current_version[[:space:]]*=[[:space:]]*\"[^\"]+\"/current_version = \"$chosen\"/" "$config_file"
         sed -E -i "s/VERSION = \"[^\"]+\"/VERSION = \"$chosen\"/" octoprint_uptime/_version.py
-        sed -E -i "s/version=\"[^\"]+\"/version=\"$chosen\"/" setup.py
         sed -E -i "s/^version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$chosen\"/" pyproject.toml
     fi
 }
@@ -158,7 +155,6 @@ NEW_CURRENT=
 COMMIT=
 TAG=
 EXECUTE=0
-# Verbosity: default to very verbose (-vv)
 VERBOSE_FLAGS=("-vv")
 
 while [[ $# -gt 0 ]]; do
@@ -241,12 +237,17 @@ if [[ "$BUMP_TYPE" == "rc" ]]; then
         printf "%b\n" "New version: ${GREEN}$NEW_CURRENT${RESET}"
         exit 0
     fi
-    sed -E -i "s/VERSION = \"[^\"]+\"/VERSION = \"$NEW_CURRENT\"/" octoprint_uptime/_version.py || true
-    sed -E -i "s/version=\"[^\"]+\"/version=\"$NEW_CURRENT\"/" setup.py || true
-    sed -E -i "s/version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$NEW_CURRENT\"/" pyproject.toml || true
-    sed -E -i "s/^current_version[[:space:]]*=[[:space:]]*\"[^\"]+\"/current_version = \"$NEW_CURRENT\"/" "$CONFIG" || true
-    if [[ "$COMMIT" == "true" ]]; then git add octoprint_uptime/_version.py setup.py pyproject.toml "$CONFIG" || true; git commit -m "Bump version to $NEW_CURRENT" || true; fi
-    if [[ "$TAG" == "true" ]]; then git tag "$NEW_CURRENT" || true; fi
+    sed -E -i "s/VERSION = \"[^\"]+\"/VERSION = \"$NEW_CURRENT\"/" octoprint_uptime/_version.py
+    sed -E -i "s/version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$NEW_CURRENT\"/" pyproject.toml
+    sed -E -i "s/^current_version[[:space:]]*=[[:space:]]*\"[^\"]+\"/current_version = \"$NEW_CURRENT\"/" "$CONFIG"
+
+    if [[ "$COMMIT" == "true" ]]; then
+        git add octoprint_uptime/_version.py pyproject.toml "$CONFIG"
+        git commit -m "Bump version to $NEW_CURRENT"
+    fi
+    if [[ "$TAG" == "true" ]]; then
+        git tag "$NEW_CURRENT"
+    fi
     printf "%b\n" "RC bump completed."
     exit 0
 else
@@ -257,12 +258,21 @@ else
     check_versions_consistent "$CONFIG"
     printf "%b\n" "Prepared config. Preview (first 50 lines):"
     sed -n '1,50p' "$CONFIG" || true
-    read -r -p "Proceed with ${EXECUTE:+actual run }${EXECUTE:-dry-run} bump ($BUMP_TYPE)? [Y/n] " ans
+    if [[ $EXECUTE -eq 1 ]]; then
+        run_type="actual run"
+    else
+        run_type="dry-run"
+    fi
+    read -r -p "Proceed with $run_type bump ($BUMP_TYPE)? [Y/n] " ans
     ans=${ans:-Y}
     if [[ ! "$ans" =~ ^[Yy] ]]; then printf "%b\n" "${RED}Aborted by user.${RESET}"; exit 0; fi
     CMD=("$BUMP_CMD" "${VERBOSE_FLAGS[@]}" bump "$BUMP_TYPE" --config "$CONFIG")
     if [[ $EXECUTE -eq 0 ]]; then CMD+=(--dry-run); fi
     printf "%b\n" "Running: ${CYAN}${CMD[*]}${RESET}"
     "${CMD[@]}"
-    printf "%b\n" "Done. Note: remove --dry-run (use --execute) to perform real bump."
+    if [[ $EXECUTE -eq 0 ]]; then
+        printf "%b\n" "Done (dry-run). Note: remove --dry-run (use --execute) to perform real bump."
+    else
+        printf "%b\n" "Done."
+    fi
 fi
