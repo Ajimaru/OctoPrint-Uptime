@@ -41,7 +41,6 @@ else
 fi
 
 semver_is_lt() {
-  # Returns 0 if $1 < $2 for simple x.y.z (or x.y) versions, otherwise 1.
   "$PYTHON" -c '
 import sys
 
@@ -65,7 +64,6 @@ sys.exit(0 if a < b else 1)
 }
 
 semver_is_gt() {
-  # Returns 0 if $1 > $2 for simple x.y.z (or x.y) versions, otherwise 1.
   "$PYTHON" -c '
 import sys
 
@@ -216,6 +214,7 @@ main() {
 
   # Only consider commits that touched pyproject.toml
   if ! git show --name-only --pretty=format: HEAD | grep -qx "pyproject.toml"; then
+    log "No version bump detected (pyproject.toml unchanged in last commit)."
     exit 0
   fi
 
@@ -229,10 +228,12 @@ main() {
 
   if [[ -z "$old_version" ]]; then
     # No baseline to compare (e.g. first commit) -> do nothing.
+    log "No version bump detected (no previous version to compare)."
     exit 0
   fi
 
   if [[ "$new_version" == "$old_version" ]]; then
+    log "No version bump detected: version unchanged ($new_version)."
     exit 0
   fi
 
@@ -255,15 +256,36 @@ main() {
   log "Building wheel + sdist into dist/"
   "$PYTHON" -m build >/dev/null
 
-  local sdist="dist/OctoPrint-Uptime-${new_version}.tar.gz"
-  local zip="dist/OctoPrint-Uptime-${new_version}.zip"
+  local sdist=""
+  local zip=""
 
-  if [[ ! -f "$sdist" ]]; then
-    log "Expected sdist not found: ${sdist}; skipping zip creation"
+  # Find an sdist matching the new version using a glob (case-insensitive),
+  # since build tools may produce different normalized filenames (hyphen vs
+  # underscore, different casing, etc.).
+  shopt -s nullglob nocaseglob
+  for candidate in dist/*${new_version}*.tar.gz dist/*${new_version}*.tgz; do
+    [[ -f "$candidate" ]] || continue
+    sdist="$candidate"
+    break
+  done
+  # restore shell options (turn off nocaseglob but keep nullglob behavior minimal)
+  shopt -u nocaseglob || true
+
+  if [[ -z "$sdist" ]]; then
+    log "Expected sdist not found for version ${new_version}; skipping zip creation"
     exit 0
   fi
 
-  log "Creating zip from sdist: ${zip}"
+  # Derive zip name from found sdist (replace .tar.gz or .tgz with .zip)
+  if [[ "$sdist" == *.tar.gz ]]; then
+    zip="${sdist%.tar.gz}.zip"
+  elif [[ "$sdist" == *.tgz ]]; then
+    zip="${sdist%.tgz}.zip"
+  else
+    zip="${sdist}.zip"
+  fi
+
+  log "Creating zip from sdist: ${zip} (source: ${sdist})"
   rm -f "$zip"
   create_zip_from_sdist "$sdist" "$zip"
 

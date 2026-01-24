@@ -52,6 +52,51 @@ source "$VENV_DIR/bin/activate"
 echo "Upgrading pip..."
 python -m pip install --upgrade pip
 
+# Check for bump-my-version and offer to install into the venv
+if ! command -v bump-my-version >/dev/null 2>&1; then
+    echo "bump-my-version not found in the virtual environment."
+    read -r -p "Install bump-my-version into the virtualenv now? [Y/n] " _ans
+    _ans=${_ans:-Y}
+    if [[ "$_ans" =~ ^[Yy] ]]; then
+        echo "Installing bump-my-version into virtualenv..."
+        python -m pip install bump-my-version
+    else
+        echo "Skipping bump-my-version installation. You can install later with: python -m pip install bump-my-version"
+    fi
+else
+    echo "bump-my-version is already available in the virtual environment."
+fi
+
+# Create .development/bumpversion.toml if it does not exist
+BUMP_TOML=".development/bumpversion.toml"
+if [[ ! -f "$BUMP_TOML" ]]; then
+    cat > "$BUMP_TOML" <<EOF
+# bump-my-version / bump2version-compatible TOML config (root copy)
+# Created for OctoPrint-Uptime. Adjust patterns if needed.
+
+[bumpversion]
+current_version = "0.0.1"
+tag = false
+tag_name = "v{new_version}"
+tag_message = "Bump version: {current_version} → {new_version}"
+commit = false
+message = "Bump version: {current_version} → {new_version}"
+
+[[bumpversion.files]]
+path = "octoprint_uptime/_version.py"
+search = "VERSION = \"{current_version}\""
+replace = "VERSION = \"{new_version}\""
+
+[[bumpversion.files]]
+path = "pyproject.toml"
+search = "version = \"{current_version}\""
+replace = "version = \"{new_version}\""
+
+# Add additional files if you want documentation or README updated automatically.
+EOF
+    echo "Created $BUMP_TOML with default content."
+fi
+
 # Install plugin with development dependencies
 echo "Installing plugin (editable) with development dependencies..."
 python -m pip install -e ".[develop]"

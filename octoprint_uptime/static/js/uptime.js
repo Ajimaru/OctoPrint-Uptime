@@ -86,7 +86,8 @@ $(function () {
       var url = "/api/plugin/octoprint_uptime";
       $.get(url)
         .done(function (data) {
-          // Prefer server-side settings (reflect saved values immediately)
+          // Prefer server-side settings
+          // (reflect saved values immediately)
           var navbarEnabled =
             data && typeof data.navbar_enabled !== "undefined"
               ? data.navbar_enabled
@@ -256,7 +257,6 @@ $(function () {
             } catch (e) {}
 
             if (errors.length) {
-              // Use OctoPrint notifications if available, fallback to alert
               try {
                 if (
                   typeof OctoPrint !== "undefined" &&

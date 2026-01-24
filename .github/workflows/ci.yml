@@ -75,6 +75,19 @@ jobs:
           flags: unittests
           fail_ci_if_error: false
 
+      - name: Upload coverage to Codacy
+        if: ${{ matrix.run-coverage && github.repository == 'Ajimaru/OctoPrint-Uptime' }}
+        env:
+          CODACY_API_TOKEN: ${{ secrets.CODACY_API_TOKEN }}
+          CODACY_ORGANIZATION_PROVIDER: ${{ vars.CODACY_ORGANIZATION_PROVIDER }}
+          CODACY_USERNAME: ${{ vars.CODACY_USERNAME }}
+          CODACY_PROJECT_NAME: ${{ vars.CODACY_PROJECT_NAME }}
+        continue-on-error: true
+        run: |
+          # Download and run the Codacy installer to report coverage in one step
+          # Pass the CODACY_API_TOKEN so the installer can upload coverage.xml
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml -t "$CODACY_API_TOKEN"
+
       - name: Run pre-commit
         if: ${{ matrix.run-precommit }}
         run: |

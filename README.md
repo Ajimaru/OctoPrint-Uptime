@@ -34,7 +34,7 @@
 
 - 🖥️ Navbar widget with configurable display formats (full / dhm / dh / d)
 - 🔒 Small read‑only API at `/api/plugin/octoprint_uptime` (OctoPrint auth enforced)
-- ⚙️ Configurable polling interval and optional systeminfo bundle support
+- ⚙️ Configurable polling interval
 
 ## Installation
 
@@ -68,7 +68,7 @@ The `releases/latest` URL always points to the newest stable release.
 The navbar widget polls the plugin API and shows a formatted uptime string. The tooltip displays the calculated start datetime (localized).
 
 1. **API endpoint**: `/api/plugin/octoprint_uptime` (requires OctoPrint API key / auth)
-2. **Settings**: `Polling interval`, `Display format`, `Show in navbar`, `Enable systeminfo bundle` (off by default)
+2. **Settings**: `Polling interval`, `Display format`, `Show in navbar` (off by default)
 
 Quick curl example:
 
@@ -89,7 +89,6 @@ Configure the plugin in **Settings** → **OctoPrint Uptime**:
 - `navbar_enabled`: `true` – Show uptime in the OctoPrint navbar
 - `display_format`: `full` – Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`)
 - `poll_interval_seconds`: `5` – Polling interval in seconds (validated and clamped between 1–120)
-- `bundle_enabled`: `false` – Enable systeminfo bundle (additional system info file)
 - `debug_logging`: `false` – Enable debug logging for troubleshooting
 - `debug_throttle`: `60` – Throttle debug logs to reduce log spam
 
@@ -136,8 +135,11 @@ Note: `main` is protected on GitHub, so changes go through PRs.
 
 ![Build Status](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/ci.yml)
 [![Coverage](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/graph/badge.svg?branch=main)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
+[![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![CI](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
 [![i18n](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
+[![Docs workflow](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml/badge.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml)
 ![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
