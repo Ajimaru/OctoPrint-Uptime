@@ -8,6 +8,8 @@ import sys
 import time
 import types
 
+import pytest
+
 
 def _prepare_dummy_env():
     """
@@ -403,11 +405,9 @@ def test_permission_denied_path(monkeypatch):
             raise RuntimeError("boom")
 
     p = PatchedPlugin()
-    result = p.on_api_get(None)
-    if not isinstance(result, dict):
-        raise AssertionError("result not dict")
-    if result.get("uptime") != "unknown":
-        raise AssertionError("uptime not unknown")
+    with pytest.raises(RuntimeError) as excinfo:
+        p.on_api_get(None)
+    assert str(excinfo.value) == "boom"
 
 
 def test_protected_format_uptime_d_zero_day_internal_for_coverage():

@@ -192,7 +192,14 @@ if [[ -z "$BUMP_TYPE" ]]; then
     choose_menu "Select bump type:" major minor bug rc cancel
     if [[ $? -ne 0 ]]; then printf "%b\n" "${RED}Cancelled.${RESET}"; exit 1; fi
     CHOICE="$CHOSEN"
-    case "$CHOICE" in major) BUMP_TYPE=major;; minor) BUMP_TYPE=minor;; bug) BUMP_TYPE=patch;; rc) BUMP_TYPE=rc;; cancel) printf "%b\n" "${RED}Aborted.${RESET}"; exit 0;; *) printf "%b\n" "${RED}Invalid choice.${RESET}"; exit 1;; esac
+    case "$CHOICE" in
+        major) BUMP_TYPE=major ;;
+        minor) BUMP_TYPE=minor ;;
+        bug) BUMP_TYPE=patch ;;
+        rc) BUMP_TYPE=rc ;;
+        cancel) printf "%b\n" "${RED}Aborted.${RESET}"; exit 0 ;;
+        *) printf "%b\n" "${RED}Invalid choice.${RESET}"; exit 1 ;;
+    esac
 
     read -r -p "Create a commit after bump? [y/N] " ans_commit
     ans_commit=${ans_commit:-N}

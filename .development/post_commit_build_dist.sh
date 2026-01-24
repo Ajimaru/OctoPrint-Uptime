@@ -41,7 +41,6 @@ else
 fi
 
 semver_is_lt() {
-  # Returns 0 if $1 < $2 for simple x.y.z (or x.y) versions, otherwise 1.
   "$PYTHON" -c '
 import sys
 
@@ -65,7 +64,6 @@ sys.exit(0 if a < b else 1)
 }
 
 semver_is_gt() {
-  # Returns 0 if $1 > $2 for simple x.y.z (or x.y) versions, otherwise 1.
   "$PYTHON" -c '
 import sys
 

@@ -7,6 +7,7 @@ Provides packaging metadata for the OctoPrint-Uptime plugin.
 import copy
 import os
 import re
+from typing import List, Optional
 
 from setuptools import setup
 
@@ -89,15 +90,16 @@ PLUGIN_REQUIRES = ["flask>=2.2", "psutil>=5.9"]
 # automatically if they exist. If you add items here, update MANIFEST.in
 # so python setup.py sdist produces a source distribution that contains
 # all your files (see http://stackoverflow.com/a/14159430/2028598).
-PLUGIN_ADDITIONAL_DATA = []
+
+PLUGIN_ADDITIONAL_DATA: List[str] = []
 
 # Any additional python packages you need to install with your plugin that
 # are not contained in <plugin_package>.*.
-PLUGIN_ADDITIONAL_PACKAGES = []
+PLUGIN_ADDITIONAL_PACKAGES: List[str] = []
 
 # Any python packages within <plugin_package>.* you do NOT want to install
 # with your plugin.
-PLUGIN_IGNORED_PACKAGES = []
+PLUGIN_IGNORED_PACKAGES: List[str] = []
 
 # Additional parameters for the call to setuptools.setup.
 # If your plugin wants to register additional entry points,
@@ -155,10 +157,14 @@ setup_parameters = octoprint_setuptools.create_plugin_setup_parameters(
 )
 
 if len(additional_setup_parameters):
+    import types
+
     try:
-        OCTOPRINT_UTIL = importlib.import_module("octoprint.util")
+        OCTOPRINT_UTIL: Optional[types.ModuleType] = importlib.import_module(
+            "octoprint.util"
+        )
     except ImportError:
-        OCTOPRINT_UTIL = None
+        OCTOPRINT_UTIL: Optional[types.ModuleType] = None
 
     if OCTOPRINT_UTIL and hasattr(OCTOPRINT_UTIL, "dict_merge"):
         dict_merge = getattr(OCTOPRINT_UTIL, "dict_merge")

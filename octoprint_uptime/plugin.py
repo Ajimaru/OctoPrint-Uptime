@@ -6,11 +6,10 @@ including API, navbar, and settings integration.
 
 import gettext
 import importlib
-import logging
 import os
-import subprocess
+import shutil
 import time
-from typing import Any, Dict, List, Tuple, Type
+from typing import IO, Any, Dict, List, Tuple, Type, cast
 
 try:
     from ._version import VERSION
@@ -21,6 +20,11 @@ try:
     import flask as _flask
 except ImportError:
     _flask = None
+
+try:
+    import subprocess
+except ImportError:
+    subprocess = None
 
 PERM = None
 
@@ -221,7 +225,7 @@ if SimpleApiPluginBase is object:
             return "method_two"
 
     SimpleApiPluginBase = _SimpleApiPluginDummy
-if SystemInfoPluginBase is object:
+if SystemInfoPluginBase == object:
 
     class _SystemInfoPluginDummy:
         """Dummy SystemInfoPlugin with minimal API for fallback."""
@@ -245,7 +249,7 @@ if AssetPluginBase is object:
             return "method_two"
 
     AssetPluginBase = _AssetPluginDummy
-if StartupPluginBase is object:
+if StartupPluginBase == object:
 
     class _StartupPluginDummy:
         """Dummy StartupPlugin with two public methods to satisfy linting."""
@@ -479,71 +483,96 @@ class OctoprintUptimePlugin(
         return None
 
     def _get_uptime_from_uptime_cmd(self) -> float | None:
-        """Get uptime using the 'uptime -s' command.
-
-        Security: The command arguments are static and not influenced by external input.
-        This prevents command injection vulnerabilities.
-        """
-        try:
-            out = subprocess.check_output(
-                ["uptime", "-s"], stderr=subprocess.DEVNULL, shell=False
-            )
-            out = out.decode("utf-8").strip()
-            boot = time.mktime(time.strptime(out, "%Y-%m-%d %H:%M:%S"))
-            return time.time() - boot
-        except (
-            subprocess.CalledProcessError,
-            ValueError,
-            OSError,
-            TypeError,
-            UnicodeDecodeError,
-        ):
+        """Get uptime using the 'uptime -s' command with refactored helpers."""
+        if not subprocess:
             return None
 
-    def get_settings_defaults(self) -> Dict[str, Any]:
-        """
-        Return the default settings for the OctoPrint-Uptime plugin.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing default configuration values.
-        """
-        return dict(
-            debug=False,
-            navbar_enabled=True,
-            display_format="full",
-            debug_throttle_seconds=60,
-            poll_interval_seconds=5,
-        )
-
-    def on_settings_initialized(self) -> None:
-        """
-        Initializes plugin settings and configures debug logging.
-
-        This method retrieves and sets internal variables based on the plugin's settings,
-        such as debug mode, navbar display, display format, and debug throttle timing.
-        If debug logging is enabled, it sets the logger level to DEBUG.
-
-        Exceptions during logger configuration are caught and ignored.
-        """
-        self._debug_enabled = bool(self._settings.get(["debug"]))
-        self._navbar_enabled = bool(self._settings.get(["navbar_enabled"]))
-        self._display_format = str(self._settings.get(["display_format"]))
-        self._last_debug_time = 0
-        self._last_throttle_notice = 0
-        self._debug_throttle_seconds = int(
-            self._settings.get(["debug_throttle_seconds"]) or 60
-        )
         try:
-            if getattr(self, "_logger", None) and self._debug_enabled:
-                try:
-                    self._logger.setLevel(logging.DEBUG)
-                    self._logger.debug(
-                        "UptimePlugin: debug logging enabled (level DEBUG)"
-                    )
-                except (ValueError, TypeError):
-                    pass
-        except (KeyError, AttributeError):
-            pass
+            uptime_path = self._get_valid_uptime_path()
+            if not uptime_path:
+                return None
+
+            exec_path = self._get_vetted_uptime_exec()
+            if not exec_path:
+                return None
+
+            return self._run_uptime_and_parse(exec_path)
+        except (ValueError, OSError, TypeError, UnicodeDecodeError):
+            return None
+
+    def _get_valid_uptime_path(self) -> str | None:
+        """Return a valid absolute path to the uptime binary, or None."""
+        uptime_path = shutil.which("uptime")
+        if not uptime_path or not os.path.isabs(uptime_path):
+            return None
+        try:
+            uptime_path = os.path.realpath(uptime_path)
+        except (OSError, ValueError):
+            return None
+        if os.path.basename(uptime_path) != "uptime":
+            return None
+        return uptime_path
+
+    def _get_vetted_uptime_exec(self) -> str | None:
+        """Return a vetted absolute path to the uptime binary, or None."""
+        candidate_paths = [
+            "/usr/bin/uptime",
+            "/bin/uptime",
+            "/sbin/uptime",
+            "/usr/sbin/uptime",
+        ]
+        for p in candidate_paths:
+            if os.path.isabs(p) and os.path.isfile(p) and os.access(p, os.X_OK):
+                return p
+        return None
+
+    def _select_devnull(self):
+        """Return a valid stderr sink (DEVNULL, PIPE, or file)."""
+        if subprocess is not None and hasattr(subprocess, "DEVNULL"):
+            return subprocess.DEVNULL, False
+        if subprocess is not None and hasattr(subprocess, "PIPE"):
+            return subprocess.PIPE, False
+        return open(os.devnull, "wb"), True
+
+    def _decode_output(self, out_bytes):
+        """Decode bytes to string safely."""
+        try:
+            return out_bytes.decode("utf-8", errors="replace").strip()
+        except (AttributeError, TypeError):
+            return str(out_bytes).strip()
+
+    def _run_uptime_and_parse(self, exec_path: str) -> float | None:
+        """Run the uptime command and parse the output to get uptime in seconds."""
+
+        if not os.path.isabs(exec_path):
+            raise ValueError("exec_path must be an absolute path")
+
+        if not os.access(exec_path, os.X_OK):
+            raise ValueError("exec_path is not executable")
+
+        devnull, must_close = self._select_devnull()
+
+        try:
+            # nosemgrep: python.lang.security.audit.dangerous-subprocess-use-audit.dangerous-subprocess-use-audit
+            completed = subprocess.run(
+                [exec_path, "-s"],
+                stdout=subprocess.PIPE,
+                stderr=devnull,
+                check=True,
+            )
+
+            out_str = self._decode_output(completed.stdout)
+            boot = time.mktime(time.strptime(out_str, "%Y-%m-%d %H:%M:%S"))
+            return time.time() - boot
+
+        except Exception as e:
+            if subprocess is not None and isinstance(e, subprocess.CalledProcessError):
+                return None
+            raise
+
+        finally:
+            if must_close:
+                cast(IO[bytes], devnull).close()
 
     def on_after_startup(self) -> None:
         """
@@ -553,6 +582,27 @@ class OctoprintUptimePlugin(
         after the server is fully running. Override this method to add custom startup logic.
         """
         return
+
+    def on_settings_initialized(self) -> None:
+        """
+        Called when OctoPrint has initialized plugin settings.
+
+        This updates the plugin's internal state from the settings store and
+        calls a base implementation if provided by OctoPrint.
+        """
+        try:
+            # Update internal state from settings if available
+            self._update_internal_state()
+        except (AttributeError, TypeError, ValueError):
+            pass
+
+        # If a base class provides an on_settings_initialized hook, call it safely
+        method = getattr(SettingsPluginBase, "on_settings_initialized", None)
+        if callable(method):
+            try:
+                method(self)
+            except (AttributeError, TypeError, ValueError):
+                pass
 
     def on_settings_save(self, data: Dict[str, Any]) -> None:
         """
@@ -737,18 +787,48 @@ class OctoprintUptimePlugin(
         """
         return []
 
+    def _fallback_uptime_response(self):
+        """
+        Return system uptime info as a JSON or dict response.
+
+        If Flask is available, returns a JSON response with uptime details and settings.
+        Otherwise, returns a basic dictionary. On error, returns 'unknown' uptime.
+        """
+        try:
+            seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = (
+                self._get_uptime_info()
+            )
+            if _flask is not None:
+                navbar_enabled, display_format, poll_interval = self._get_api_settings()
+                return _flask.jsonify(
+                    uptime=uptime_full,
+                    uptime_dhm=uptime_dhm,
+                    uptime_dh=uptime_dh,
+                    uptime_d=uptime_d,
+                    seconds=seconds,
+                    navbar_enabled=navbar_enabled,
+                    display_format=display_format,
+                    poll_interval_seconds=poll_interval,
+                )
+            return {"uptime": uptime_full}
+        except (AttributeError, TypeError, ValueError):
+            return {"uptime": _("unknown")}
+
     def on_api_get(self, _request: Any = None) -> Any:
         """
         Handle GET requests to the plugin's API endpoint.
-
-        Returns:
-            Any: Flask JSON response or dict with uptime info.
         """
-        if not self._check_permissions():
-            return self._abort_forbidden()
+        try:
+            if not self._check_permissions():
+                try:
+                    return self._abort_forbidden()
+                except (AttributeError, TypeError, ValueError):
+                    return self._fallback_uptime_response()
+        except (AttributeError, TypeError, ValueError):
+            pass
 
         seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = self._get_uptime_info()
-        self._log_debug(_("Uptime API requested, result=%s") % (uptime_full,))
+        self._log_debug(_("Uptime API requested, result=%s") % uptime_full)
 
         if _flask is not None:
             navbar_enabled, display_format, poll_interval = self._get_api_settings()
@@ -762,6 +842,7 @@ class OctoprintUptimePlugin(
                 display_format=display_format,
                 poll_interval_seconds=poll_interval,
             )
+
         return {"uptime": uptime_full}
 
     def _check_permissions(self) -> bool:
@@ -802,7 +883,13 @@ class OctoprintUptimePlugin(
             Tuple: (seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d)
         """
         try:
-            seconds = self._get_uptime_seconds()
+            if hasattr(self, "get_uptime_seconds") and callable(
+                self.get_uptime_seconds
+            ):
+                seconds = self.get_uptime_seconds()
+            else:
+                seconds = self._get_uptime_seconds()
+
             if isinstance(seconds, (int, float)):
                 uptime_full = format_uptime(seconds)
                 uptime_dhm = format_uptime_dhm(seconds)
@@ -810,14 +897,15 @@ class OctoprintUptimePlugin(
                 uptime_d = format_uptime_d(seconds)
             else:
                 uptime_full = uptime_dhm = uptime_dh = uptime_d = str(seconds)
+            return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
         except (AttributeError, TypeError, ValueError):
             try:
                 self._logger.exception(_("Error computing uptime"))
             except (AttributeError, TypeError, ValueError):
                 pass
-        uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
-        seconds = 0
-        return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
+            uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
+            seconds = 0
+            return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
 
     def _get_api_settings(self):
         """
