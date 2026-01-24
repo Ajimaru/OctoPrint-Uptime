@@ -680,6 +680,20 @@ class OctoprintUptimePlugin(
             except (AttributeError, TypeError, ValueError):
                 pass
 
+    def get_settings_defaults(self) -> Dict[str, Any]:
+        """Return default settings for the plugin.
+
+        OctoPrint populates `settings.plugins.<identifier>` from this mapping so the
+        frontend can safely bind to `settings.plugins.octoprint_uptime.*`.
+        """
+        return {
+            "debug": False,
+            "navbar_enabled": True,
+            "display_format": "full",
+            "debug_throttle_seconds": 60,
+            "poll_interval_seconds": 5,
+        }
+
     def _update_internal_state(self) -> None:
         """
         Updates the plugin's internal state variables based on the current settings.
