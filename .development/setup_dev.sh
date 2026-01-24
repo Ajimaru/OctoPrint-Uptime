@@ -71,12 +71,28 @@ fi
 BUMP_TOML=".development/bumpversion.toml"
 if [[ ! -f "$BUMP_TOML" ]]; then
     cat > "$BUMP_TOML" <<EOF
+# bump-my-version / bump2version-compatible TOML config (root copy)
+# Created for OctoPrint-Uptime. Adjust patterns if needed.
+
 [bumpversion]
 current_version = "0.0.1"
-commit = true
-tag = true
+tag = false
+tag_name = "v{new_version}"
+tag_message = "Bump version: {current_version} → {new_version}"
+commit = false
+message = "Bump version: {current_version} → {new_version}"
 
-[bumpversion:file:octoprint_uptime/_version.py]
+[[bumpversion.files]]
+path = "octoprint_uptime/_version.py"
+search = "VERSION = \"{current_version}\""
+replace = "VERSION = \"{new_version}\""
+
+[[bumpversion.files]]
+path = "pyproject.toml"
+search = "version = \"{current_version}\""
+replace = "version = \"{new_version}\""
+
+# Add additional files if you want documentation or README updated automatically.
 EOF
     echo "Created $BUMP_TOML with default content."
 fi

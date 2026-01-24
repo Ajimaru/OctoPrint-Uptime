@@ -68,9 +68,9 @@ choose_menu() {
 
     local lines_to_move=$((count + 2))
     while true; do
-            read -r -n1 -s key || true
+        read -r -n1 -s key || true
         if [[ $key == $'\x1b' ]]; then
-                read -r -n2 -s rest || true
+            read -r -n2 -s rest || true
             key+=$rest
         fi
         case "$key" in
@@ -163,7 +163,18 @@ while [[ $# -gt 0 ]]; do
         --config) CONFIG="$2"; shift 2 ;;
         --execute) EXECUTE=1; shift ;;
         -*) echo "Unknown option: $1" >&2; usage; exit 1 ;;
-        *) if [[ -z "$BUMP_TYPE" ]]; then BUMP_TYPE="$1"; elif [[ -z "$NEW_CURRENT" ]]; then NEW_CURRENT="$1"; elif [[ -z "$COMMIT" ]]; then COMMIT="$1"; elif [[ -z "$TAG" ]]; then TAG="$1"; fi; shift ;;
+        *)
+            if [[ -z "$BUMP_TYPE" ]]; then
+                BUMP_TYPE="$1"
+            elif [[ -z "$NEW_CURRENT" ]]; then
+                NEW_CURRENT="$1"
+            elif [[ -z "$COMMIT" ]]; then
+                COMMIT="$1"
+            elif [[ -z "$TAG" ]]; then
+                TAG="$1"
+            fi
+            shift
+            ;;
     esac
 done
 

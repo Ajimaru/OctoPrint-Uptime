@@ -27,7 +27,7 @@ Settings (defaults):
   uptime display. The frontend uses this to adjust its polling frequency. The
   plugin validates and clamps this value (1–120 seconds).
 
-Changing settings
+## Changing settings
 
 You can adjust these settings via OctoPrint's `Settings` → `Plugin OctoPrint-Uptime` UI,
 or programmatically using OctoPrint's settings API. Numeric fields are validated
