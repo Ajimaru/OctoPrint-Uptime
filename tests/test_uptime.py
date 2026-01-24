@@ -10,6 +10,21 @@ import types
 
 
 def _prepare_dummy_env():
+    """
+    Prepares a dummy environment by injecting stub modules and classes into sys.modules
+    to simulate the presence of OctoPrint and Flask dependencies for testing purposes.
+
+    This function ensures that:
+    - "octoprint" and "octoprint.plugin" modules exist, with minimal stubs for
+        SimpleApiPlugin and AssetPlugin classes.
+    - "octoprint.access.permissions" module exists, with a stub Permissions class
+        and nested SYSTEM class, both providing static methods for permission checks.
+    - "flask" module exists, with a stub jsonify function.
+
+    Intended for use in test environments where the actual OctoPrint and Flask
+    modules are not available, allowing code that depends on these modules to be
+    imported and linted without errors.
+    """
     if "octoprint" not in sys.modules:
         sys.modules["octoprint"] = types.ModuleType("octoprint")
     if "octoprint.plugin" not in sys.modules:
@@ -53,6 +68,11 @@ def _prepare_dummy_env():
                 """Return True if any permission check passes (stub)."""
                 return True
 
+            @staticmethod
+            def another_public_method():
+                """A second public method to satisfy linter requirements."""
+                return True
+
             class SYSTEM:
                 """Marker for system-level permission checks."""
 
@@ -84,12 +104,28 @@ def _prepare_dummy_env():
 
 
 def _ensure_repo_on_path():
+    """
+    Ensures that the repository root directory is included in the Python module
+    search path (sys.path).
+    This allows modules from the repository to be imported
+    regardless of the current working directory.
+    """
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     if repo_root not in sys.path:
         sys.path.insert(0, repo_root)
 
 
 def _load_octoprint_uptime():
+    """
+    Dynamically loads the 'octoprint_uptime' module from its __init__.py file located
+    one directory above the current file, and returns the loaded module object.
+
+    Returns:
+        module: The loaded 'octoprint_uptime' module.
+
+    Raises:
+        ImportError: If the module spec or loader cannot be created.
+    """
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     init_path = os.path.join(repo_root, "octoprint_uptime", "__init__.py")
     spec = importlib.util.spec_from_file_location("octoprint_uptime", init_path)
@@ -108,7 +144,7 @@ def test_format_uptime():
     """Verify human-readable uptime formatting."""
     _prepare_dummy_env()
     octoprint_uptime = _load_octoprint_uptime()
-    format_fn = getattr(octoprint_uptime, "_format_uptime")
+    format_fn = getattr(octoprint_uptime, "format_uptime")
 
     if format_fn(1) != "1s":
         raise AssertionError("expected '1s'")
@@ -281,6 +317,10 @@ def test_permission_denied_path(monkeypatch):
             """Dummy public method to satisfy linter."""
             return None
 
+        def another_public_method(self):
+            """Second dummy public method to satisfy linter."""
+            return True
+
         class SYSTEM:
             """Stub SYSTEM class for permission checks."""
 
@@ -325,6 +365,8 @@ def test_permission_denied_path(monkeypatch):
                 -------
                 get(key):
                     Returns None for any given key.
+                dummy_public_method():
+                    Returns True as a dummy public method.
                 """
 
                 def get(self, key):
@@ -338,6 +380,15 @@ def test_permission_denied_path(monkeypatch):
                         None: Always returns None regardless of the key.
                     """
                     return None if key else None
+
+                def dummy_public_method(self):
+                    """
+                    Dummy public method to satisfy linter requirements.
+
+                    Returns:
+                        bool: Always returns True.
+                    """
+                    return True
 
             return Settings()
 
@@ -369,7 +420,7 @@ def test_protected_format_uptime_d_zero_day_internal_for_coverage():
     _ensure_repo_on_path()
     mod = importlib.import_module("octoprint_uptime")
     # pylint: disable=protected-access
-    if mod._format_uptime_d(10) != "0d":
+    if mod.format_uptime_d(10) != "0d":
         raise AssertionError("expected '0d'")
 
 
@@ -384,9 +435,9 @@ def test_format_dh_and_durations_internal_for_coverage():
     # pylint: disable=protected-access
     _ensure_repo_on_path()
     mod = importlib.import_module("octoprint_uptime")
-    if mod._format_uptime_dh(3600 * 5) != "5h":
+    if mod.format_uptime_dh(3600 * 5) != "5h":
         raise AssertionError("expected '5h'")
-    if mod._format_uptime_dh(86400 + 3600 * 2) != "1d 2h":
+    if mod.format_uptime_dh(86400 + 3600 * 2) != "1d 2h":
         raise AssertionError("expected '1d 2h'")
 
 
@@ -400,9 +451,9 @@ def test_protected_format_dhm_and_durations_internal_for_coverage():
     _ensure_repo_on_path()
     mod = importlib.import_module("octoprint_uptime")
     # pylint: disable=protected-access
-    if mod._format_uptime_dhm(3600 * 5 + 60 * 30) != "5h 30m":
+    if mod.format_uptime_dhm(3600 * 5 + 60 * 30) != "5h 30m":
         raise AssertionError("expected '5h 30m'")
-    if mod._format_uptime_dhm(86400 + 3600 * 2 + 60 * 15) != "1d 2h 15m":
+    if mod.format_uptime_dhm(86400 + 3600 * 2 + 60 * 15) != "1d 2h 15m":
         raise AssertionError("expected '1d 2h 15m'")
 
 
@@ -417,9 +468,9 @@ def test_format_full_variants():
     _ensure_repo_on_path()
     mod = importlib.import_module("octoprint_uptime")
     # pylint: disable=protected-access
-    if mod._format_uptime(3600 * 5 + 60 * 30 + 10) != "5h 30m 10s":
+    if mod.format_uptime(3600 * 5 + 60 * 30 + 10) != "5h 30m 10s":
         raise AssertionError("expected '5h 30m 10s'")
-    val = mod._format_uptime(86400 + 3600 * 2 + 60 * 15 + 10)
+    val = mod.format_uptime(86400 + 3600 * 2 + 60 * 15 + 10)
     if val != "1d 2h 15m 10s":
         raise AssertionError("expected '1d 2h 15m 10s'")
 
@@ -485,6 +536,16 @@ def _setup_and_run_plugin_module(monkeypatch):
 
 
 def _setup_fake_octoprint_modules():
+    """
+    Sets up fake 'octoprint.plugin' and 'octoprint' modules in sys.modules for testing purposes.
+
+    This function creates a stub implementation of the 'octoprint.plugin' module, including
+    the 'SettingsPlugin' class and several other plugin base classes as empty types. It then
+    inserts these fake modules into sys.modules, allowing code that imports 'octoprint.plugin'
+    or 'octoprint' to run in a test environment without requiring the actual OctoPrint package.
+
+    Intended for use in unit tests to mock OctoPrint's plugin infrastructure.
+    """
     fake_plugin = types.ModuleType("octoprint.plugin")
 
     class SettingsPlugin:
@@ -508,9 +569,27 @@ def _setup_fake_octoprint_modules():
 
 
 def _setup_fake_psutil_and_flask():
+    """
+    Sets up fake 'psutil' and 'flask' modules in sys.modules for testing purposes.
+
+    This function creates mock versions of the 'psutil' and 'flask' modules:
+    - The fake 'psutil' module provides a 'boot_time' function that returns the current
+      time minus one hour.
+    - The fake 'flask' module provides a 'jsonify' function that returns its keyword
+      arguments as a dictionary.
+
+    These mocks are injected into 'sys.modules' to override the real modules during
+    tests.
+    """
     psutil_mod = types.ModuleType("psutil")
 
     def _boot_time():
+        """
+        Simulates the system boot time by returning the current time minus one hour.
+
+        Returns:
+            float: The simulated boot time as a Unix timestamp (seconds since epoch).
+        """
         return importlib.import_module("time").time() - 3600
 
     setattr(psutil_mod, "boot_time", _boot_time)
@@ -576,6 +655,24 @@ def _setup_plugin_instance(p):
 
 
 def _run_plugin_basic_methods(p, monkeypatch):
+    """
+    Runs a series of basic method calls and tests on the provided plugin instance.
+
+    This function exercises several core methods of the plugin, including asset retrieval,
+    template configuration, settings initialization, and settings saving. It also monkeypatches
+    the `os.path.exists` method to always return False, tests the internal uptime calculation,
+    and verifies that the uptime is non-negative. Additionally, it enables debug mode, disables
+    debug throttling, logs a debug message, and removes the 'psutil' module from sys.modules
+    if present.
+
+    Args:
+        p: The plugin instance to test.
+        monkeypatch: The pytest monkeypatch fixture used to modify or
+            replace objects during testing.
+
+    Raises:
+        AssertionError: If the calculated uptime in seconds is negative.
+    """
     _ = p.get_assets()
     _ = p.get_template_configs()
     _ = p.get_settings_defaults()
@@ -601,12 +698,28 @@ def _test_plugin_uptime_and_api_variant(monkeypatch):
     p = globals()["_plugin_instance"]
 
     def fake_check_output(_args, _stderr=None):
+        """
+        A fake implementation of subprocess.check_output for testing purposes.
+
+        Args:
+            _args: Command arguments (ignored in this fake).
+            _stderr: Standard error redirection (ignored in this fake).
+
+        Returns:
+            bytes: A fixed byte string representing a date and time.
+        """
         return b"2020-01-01 00:00:00\\n"
 
     _subp = sys.modules["subprocess"]
     monkeypatch.setattr(_subp, "check_output", fake_check_output)
 
     def _fake_time():
+        """
+        Simulates the passage of one day (86400 seconds) since the Unix timestamp 1577923200.0.
+
+        Returns:
+            float: The Unix timestamp representing exactly one day after 1577923200.0.
+        """
         return 1577923200.0 + 86400
 
     monkeypatch.setattr(sys.modules["time"], "time", _fake_time)
@@ -630,12 +743,29 @@ def _test_plugin_uptime_and_api(monkeypatch):
     p = globals()["_plugin_instance"]
 
     def fake_check_output(_args, _stderr=None):
+        """
+        A fake implementation of subprocess.check_output for testing purposes.
+
+        Args:
+            _args: Command arguments (ignored in this fake).
+            _stderr: Standard error redirection (ignored in this fake).
+
+        Returns:
+            bytes: A fixed byte string representing a datetime, simulating command output.
+        """
         return b"2020-01-01 00:00:00\\n"
 
     _subp = sys.modules["subprocess"]
     monkeypatch.setattr(_subp, "check_output", fake_check_output)
 
     def _fake_time():
+        """
+        Simulates the passage of time by returning a fixed timestamp.
+
+        Returns:
+            float: A Unix timestamp representing a specific point in time,
+                   exactly 86400 seconds (1 day) after 1577923200.0.
+        """
         return 1577923200.0 + 86400
 
     monkeypatch.setattr(sys.modules["time"], "time", _fake_time)

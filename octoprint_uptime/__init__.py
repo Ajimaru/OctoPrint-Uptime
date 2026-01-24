@@ -7,10 +7,21 @@ packaged and unit-tested without the OctoPrint runtime present.
 """
 
 from ._version import VERSION
-from .plugin import _format_uptime  # noqa: F401
-from .plugin import _format_uptime_d  # noqa: F401
-from .plugin import _format_uptime_dh  # noqa: F401
-from .plugin import _format_uptime_dhm  # noqa: F401,
+from .plugin import format_uptime  # noqa: F401
+from .plugin import format_uptime_d  # noqa: F401
+from .plugin import format_uptime_dh  # noqa: F401
+from .plugin import format_uptime_dhm  # noqa: F401
+
+# Public API
+__all__ = [
+    "VERSION",
+    "OctoprintUptimePlugin",
+    "UptimePlugin",
+    "format_uptime",
+    "format_uptime_d",
+    "format_uptime_dh",
+    "format_uptime_dhm",
+]
 from .plugin import OctoprintUptimePlugin
 
 # Backwards-compatible alias expected by tests
