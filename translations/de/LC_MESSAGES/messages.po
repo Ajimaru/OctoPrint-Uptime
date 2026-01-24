@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-21 00:01+0100\n"
+"POT-Creation-Date: 2026-01-24 23:39+0100\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -17,10 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
-
-#: octoprint_uptime/__init__.py:552
-msgid "Adds system uptime to the navbar and exposes a small uptime API."
-msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:30
 msgid "Choose how the uptime is shown in the navbar."
@@ -42,11 +38,11 @@ msgstr ""
 msgid "D + H + M + S (days + hours + minutes + seconds)"
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:58
+#: octoprint_uptime/templates/settings.jinja2:43
 msgid "Debug"
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:73
+#: octoprint_uptime/templates/settings.jinja2:58
 msgid "Debug throttle (s)"
 msgstr ""
 
@@ -54,20 +50,19 @@ msgstr ""
 msgid "Display format"
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:66
+#: octoprint_uptime/templates/settings.jinja2:51
 msgid "Enable debug logging (throttled)"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:505
+#: octoprint_uptime/plugin.py:917
 msgid "Error computing uptime"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:483
+#: octoprint_uptime/plugin.py:890
 msgid "Forbidden"
 msgstr ""
 
-
-#: octoprint_uptime/templates/settings.jinja2:76
+#: octoprint_uptime/templates/settings.jinja2:61
 msgid "Minimum seconds between debug log entries."
 msgstr ""
 
@@ -75,11 +70,10 @@ msgstr ""
 msgid "Navbar"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:217
+#: octoprint_uptime/plugin.py:431
 msgid "OctoPrint Uptime"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:549
 #: octoprint_uptime/templates/settings.jinja2:3
 msgid "OctoPrint-Uptime"
 msgstr ""
@@ -100,12 +94,11 @@ msgstr ""
 msgid "Started:"
 msgstr ""
 
-
 #: octoprint_uptime/templates/settings.jinja2:17
 msgid "Toggle whether the uptime is visible in the top navigation bar."
 msgstr ""
 
-#: octoprint_uptime/__init__.py:502
+#: octoprint_uptime/plugin.py:845
 #, python-format
 msgid "Uptime API requested, result=%s"
 msgstr ""
@@ -118,22 +111,24 @@ msgstr ""
 msgid "Use this plugin to display system uptime in the Navbar."
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:68
+#: octoprint_uptime/templates/settings.jinja2:53
 msgid ""
 "When enabled, the plugin will log debug messages. Messages are throttled "
 "to avoid spamming the log."
 msgstr ""
 
-#: octoprint_uptime/__init__.py:525
+#: octoprint_uptime/plugin.py:946
 msgid "full"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:211
+#: octoprint_uptime/plugin.py:425
 msgid "navbar_uptime"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:508 octoprint_uptime/__init__.py:509
-#: octoprint_uptime/__init__.py:510 octoprint_uptime/__init__.py:511
+#: octoprint_uptime/plugin.py:829 octoprint_uptime/plugin.py:920
 msgid "unknown"
 msgstr ""
+
+#~ msgid "Adds system uptime to the navbar and exposes a small uptime API."
+#~ msgstr ""
 
