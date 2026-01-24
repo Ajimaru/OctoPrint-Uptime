@@ -73,12 +73,6 @@ PLUGIN_AUTHOR_EMAIL = "ajimaru_gdr@pm.me"
 # data via __plugin_url__ in the plugin module.
 PLUGIN_URL = "https://github.com/Ajimaru/OctoPrint-Uptime"
 
-# The plugin's license. Can be overridden within OctoPrint's internal data
-# via __plugin_license__ in the plugin module.
-PLUGIN_LICENSE = "AGPLv3"
-
-# Any additional requirements besides OctoPrint should be listed here.
-PLUGIN_REQUIRES = ["flask>=2.2", "psutil>=5.9"]
 
 ### --------------------------------------------------------------------
 ### More advanced options that you usually shouldn't have to touch follow
@@ -151,14 +145,6 @@ setup_parameters = octoprint_setuptools.create_plugin_setup_parameters(
     ignored_packages=PLUGIN_IGNORED_PACKAGES,
     additional_data=PLUGIN_ADDITIONAL_DATA,
 )
-
-setup_parameters["install_requires"] = PLUGIN_REQUIRES
-setup_parameters["classifiers"] = [
-    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3)",
-]
-
-setup_parameters["install_requires"] = PLUGIN_REQUIRES
-
 if len(additional_setup_parameters):
     import types
 
