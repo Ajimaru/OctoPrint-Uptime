@@ -52,6 +52,36 @@ source "$VENV_DIR/bin/activate"
 echo "Upgrading pip..."
 python -m pip install --upgrade pip
 
+# Check for bump-my-version and offer to install into the venv
+if ! command -v bump-my-version >/dev/null 2>&1; then
+    echo "bump-my-version not found in the virtual environment."
+    read -r -p "Install bump-my-version into the virtualenv now? [Y/n] " _ans
+    _ans=${_ans:-Y}
+    if [[ "$_ans" =~ ^[Yy] ]]; then
+        echo "Installing bump-my-version into virtualenv..."
+        python -m pip install bump-my-version
+    else
+        echo "Skipping bump-my-version installation. You can install later with: python -m pip install bump-my-version"
+    fi
+else
+    echo "bump-my-version is already available in the virtual environment."
+fi
+
+# Create .development/bumpversion.toml if it does not exist
+BUMP_TOML=".development/bumpversion.toml"
+if [[ ! -f "$BUMP_TOML" ]]; then
+    cat > "$BUMP_TOML" <<EOF
+[bumpversion]
+current_version = "0.0.1"
+commit = true
+tag = true
+
+[bumpversion:file:setup.py]
+[bumpversion:file:octoprint_uptime/_version.py]
+EOF
+    echo "Created $BUMP_TOML with default content."
+fi
+
 # Install plugin with development dependencies
 echo "Installing plugin (editable) with development dependencies..."
 python -m pip install -e ".[develop]"

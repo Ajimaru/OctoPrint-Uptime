@@ -29,6 +29,12 @@ PLUGIN_NAME = "OctoPrint-Uptime"
 
 
 def _read_version():
+    """
+    Reads the version string from the _version.py file located in the plugin package directory.
+
+    Returns:
+        str: The version string if found, otherwise "0.0.0".
+    """
     here = os.path.abspath(os.path.dirname(__file__))
     ver_path = os.path.join(here, PLUGIN_PACKAGE, "_version.py")
     version = "0.0.0"
