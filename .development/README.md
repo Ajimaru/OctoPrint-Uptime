@@ -45,6 +45,32 @@ Notes:
 - To use a specific Python interpreter for the venv (e.g. Python 3.12), set `PYTHON_BIN`: `PYTHON_BIN=python3.12 .development/setup_dev.sh`.
 - To run an initial `pre-commit run --all-files` during setup, set `RUN_PRE_COMMIT_ALL_FILES=1`.
 
+### Notes about bump configuration
+
+- During setup the script will also ensure a default bump configuration exists at `.development/bumpversion.toml` (created if missing). This file is used by the helper `bump_control.sh` and is bump-my-version / bump2version-compatible. You can edit it to adjust which files are updated by version bumps.
+
+### bump_control.sh
+
+Interactive helper script to prepare and run version bumps using `bump-my-version`. Key points:
+
+- Location: `.development/bump_control.sh`
+- Default config: uses `.development/bumpversion.toml` when `--config` is not provided.
+- Verbosity: the script passes `-vv` to `bump-my-version` by default for detailed output; set `--silent` to disable verbose output.
+- RC mode: when bumping `rc`, the script can auto-increment RC numbers, update `octoprint_uptime/_version.py` and `pyproject.toml`, and optionally commit/tag (interactive prompts default to No).
+
+Quick examples:
+
+```bash
+# Interactive RC dry-run (default verbose)
+.development/bump_control.sh rc
+
+# Silent real bump (execute)
+.development/bump_control.sh --silent rc --execute
+
+# Use a custom config
+.development/bump_control.sh --config .development/bumpversion.toml minor --execute
+```
+
 Git hooks behavior:
 
 - `pre-commit` hook: runs from `./venv/bin/pre-commit` and requires the venv Python to be 3.10+. If unavailable, it fails with an error and instructs you to run `.development/setup_dev.sh`.
