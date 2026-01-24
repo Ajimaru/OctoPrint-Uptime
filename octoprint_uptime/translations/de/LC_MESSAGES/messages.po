@@ -37,14 +37,6 @@ msgstr ""
 msgid "Uptime API requested, result=%s"
 msgstr ""
 
-#: octoprint_uptime/__init__.py:510
-# msgid "full" removed
-# msgstr "" removed
-
-#: octoprint_uptime/__init__.py:510
-msgid "full"
-msgstr ""
-
 #: octoprint_uptime/templates/navbar.jinja2:6
 msgid "Started:"
 msgstr "Gestartet:"

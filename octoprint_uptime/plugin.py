@@ -5,6 +5,7 @@ including API, navbar, and settings integration.
 """
 
 import gettext
+import importlib
 import logging
 import os
 import subprocess
@@ -12,14 +13,16 @@ import time
 from typing import Any, Dict, List, Tuple, Type
 
 try:
-    import flask as _flask  # type: ignore
+    from ._version import VERSION
+except (ImportError, ModuleNotFoundError):
+    VERSION = "0.0.0"
+
+try:
+    import flask as _flask
 except ImportError:
     _flask = None
 
-try:
-    import psutil  # type: ignore
-except ImportError:
-    psutil = None
+PERM = None
 
 try:
     _ = gettext.gettext
@@ -33,9 +36,9 @@ try:
     import octoprint.plugin  # type: ignore
 
     try:
-        import octoprint.access.permissions as _perm  # type: ignore
+        import octoprint.access.permissions as PERM  # type: ignore
     except ImportError:
-        _perm = None
+        PERM = None
 except ModuleNotFoundError:
 
     class _OctoPrintPluginStubs:
@@ -134,27 +137,14 @@ except ModuleNotFoundError:
     class _OctoPrintStubs:
         plugin = _OctoPrintPluginStubs
 
-    octoprint = _OctoPrintStubs()  # type: ignore
+    octoprint = _OctoPrintStubs()
 
-SettingsPluginBase: Type[Any] = getattr(
-    octoprint.plugin, "SettingsPlugin", object
-)  # type: ignore[attr-defined]
-SimpleApiPluginBase: Type[Any] = getattr(
-    octoprint.plugin, "SimpleApiPlugin", object
-)  # type: ignore[attr-defined]
-AssetPluginBase: Type[Any] = getattr(
-    octoprint.plugin, "AssetPlugin", object
-)  # type: ignore[attr-defined]
-TemplatePluginBase: Type[Any] = getattr(
-    octoprint.plugin, "TemplatePlugin", object
-)  # type: ignore[attr-defined]
-StartupPluginBase: Type[Any] = getattr(
-    octoprint.plugin, "StartupPlugin", object
-)  # type: ignore[attr-defined]
-
-SystemInfoPluginBase: Type[Any] = getattr(
-    octoprint.plugin, "SystemInfoPlugin", object
-)  # type: ignore[attr-defined]
+SettingsPluginBase: Type[Any] = getattr(octoprint.plugin, "SettingsPlugin", object)
+SimpleApiPluginBase: Type[Any] = getattr(octoprint.plugin, "SimpleApiPlugin", object)
+AssetPluginBase: Type[Any] = getattr(octoprint.plugin, "AssetPlugin", object)
+TemplatePluginBase: Type[Any] = getattr(octoprint.plugin, "TemplatePlugin", object)
+StartupPluginBase: Type[Any] = getattr(octoprint.plugin, "StartupPlugin", object)
+SystemInfoPluginBase: Type[Any] = getattr(octoprint.plugin, "SystemInfoPlugin", object)
 
 if SettingsPluginBase is object:
 
@@ -182,6 +172,16 @@ if SimpleApiPluginBase is object:
             return "method_two"
 
     SimpleApiPluginBase = _SimpleApiPluginDummy
+if SystemInfoPluginBase is object:
+
+    class _SystemInfoPluginDummy:
+        """Dummy SystemInfoPlugin with minimal API for fallback."""
+
+        def get_additional_systeminfo_files(self):
+            """Return an empty list as a fallback."""
+            return []
+
+    SystemInfoPluginBase = _SystemInfoPluginDummy
 if AssetPluginBase is object:
 
     class _AssetPluginDummy:
@@ -278,14 +278,15 @@ class OctoprintUptimePlugin(
         Returns:
             dict: Update information dictionary.
         """
+
         return {
             "octoprint_uptime": {
                 "displayName": "OctoPrint-Uptime",
-                "displayVersion": "0.1.0rc5",
+                "displayVersion": VERSION,
                 "type": "github_release",
                 "user": "Ajimaru",
                 "repo": "OctoPrint-Uptime",
-                "current": "0.1.0rc5",
+                "current": VERSION,
                 "pip": "https://github.com/Ajimaru/OctoPrint-Uptime/archive/{target_version}.zip",
             }
         }
@@ -342,30 +343,65 @@ class OctoprintUptimePlugin(
         return True
 
     def _get_uptime_seconds(self) -> float:
+        """Attempts to retrieve system uptime using several strategies."""
+        strategies = [
+            self._get_uptime_from_proc,
+            self._get_uptime_from_psutil,
+            self._get_uptime_from_uptime_cmd,
+        ]
+        for strategy in strategies:
+            uptime = strategy()
+            if uptime is not None:
+                return uptime
+        return 0
+
+    def _get_uptime_from_proc(self) -> float | None:
+        """Get uptime from /proc/uptime if available."""
         try:
             if os.path.exists("/proc/uptime"):
                 with open("/proc/uptime", "r", encoding="utf-8") as f:
                     uptime_seconds = float(f.readline().split()[0])
                     return uptime_seconds
         except (ValueError, TypeError, OSError):
-            pass
+            return None
+        return None
+
+    def _get_uptime_from_psutil(self) -> float | None:
+        """Get uptime using psutil if available."""
         try:
-            if psutil is not None:
-                return time.time() - psutil.boot_time()
-        except (AttributeError, OSError):
-            pass
+            _ps = importlib.import_module("psutil")
+        except ImportError:
+            return None
         try:
-            args = ["uptime", "-s"]
-            out = subprocess.check_output(args, stderr=subprocess.DEVNULL, shell=False)
-            out = out.decode().strip()
+            boot = _ps.boot_time()
+            uptime = time.time() - boot
+            if isinstance(uptime, (int, float)) and 0 <= uptime < 10 * 365 * 24 * 3600:
+                return uptime
+        except (AttributeError, TypeError, ValueError):
+            return None
+        return None
+
+    def _get_uptime_from_uptime_cmd(self) -> float | None:
+        """Get uptime using the 'uptime -s' command.
+
+        Security: The command arguments are static and not influenced by external input.
+        This prevents command injection vulnerabilities.
+        """
+        try:
+            out = subprocess.check_output(
+                ["uptime", "-s"], stderr=subprocess.DEVNULL, shell=False
+            )
+            out = out.decode("utf-8").strip()
             boot = time.mktime(time.strptime(out, "%Y-%m-%d %H:%M:%S"))
             return time.time() - boot
-        except (subprocess.CalledProcessError, ValueError, OSError):
-            return 0
-
-    def get_uptime_seconds(self) -> float:
-        """Public wrapper for `_get_uptime_seconds` for tests and external callers."""
-        return self._get_uptime_seconds()
+        except (
+            subprocess.CalledProcessError,
+            ValueError,
+            OSError,
+            TypeError,
+            UnicodeDecodeError,
+        ):
+            return None
 
     def get_settings_defaults(self) -> Dict[str, Any]:
         """
@@ -540,7 +576,7 @@ class OctoprintUptimePlugin(
         """
         return []
 
-    def on_api_get(self) -> Any:
+    def on_api_get(self, _request: Any = None) -> Any:
         """
         Handle GET requests to the plugin's API endpoint.
 
@@ -569,8 +605,8 @@ class OctoprintUptimePlugin(
 
     def _check_permissions(self) -> bool:
         try:
-            if _perm is not None:
-                return _perm.Permissions.SYSTEM.can()
+            if PERM is not None:
+                return PERM.Permissions.SYSTEM.can()
             return True
         except (AttributeError, TypeError, ValueError):
             return True
@@ -581,9 +617,14 @@ class OctoprintUptimePlugin(
         return {"error": _("Forbidden")}
 
     def _get_uptime_info(self):
+        """
+        Retrieve uptime information and formatted strings.
+
+        Returns:
+            Tuple: (seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d)
+        """
         try:
-            getter = getattr(self, "get_uptime_seconds", None)
-            seconds = getter() if callable(getter) else self._get_uptime_seconds()
+            seconds = self._get_uptime_seconds()
             if isinstance(seconds, (int, float)):
                 uptime_full = _format_uptime(seconds)
                 uptime_dhm = _format_uptime_dhm(seconds)
@@ -591,13 +632,13 @@ class OctoprintUptimePlugin(
                 uptime_d = _format_uptime_d(seconds)
             else:
                 uptime_full = uptime_dhm = uptime_dh = uptime_d = str(seconds)
-        except (AttributeError, TypeError, ValueError, KeyError):
+        except (AttributeError, TypeError, ValueError):
             try:
                 self._logger.exception(_("Error computing uptime"))
             except (AttributeError, TypeError, ValueError):
                 pass
-            uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
-            seconds = 0
+        uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
+        seconds = 0
         return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
 
     def _get_api_settings(self):

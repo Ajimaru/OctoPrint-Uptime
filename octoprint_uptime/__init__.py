@@ -6,6 +6,7 @@ This module avoids importing OctoPrint/Flask at import-time so it can be
 packaged and unit-tested without the OctoPrint runtime present.
 """
 
+from ._version import VERSION
 from .plugin import _format_uptime  # noqa: F401
 from .plugin import _format_uptime_d  # noqa: F401
 from .plugin import _format_uptime_dh  # noqa: F401
@@ -22,5 +23,5 @@ __plugin_implementation__ = OctoprintUptimePlugin()
 __plugin_description__ = (
     "Adds system uptime to the navbar and exposes a small uptime API."
 )
-__plugin_version__ = "0.1.0rc5"
 __plugin_license__ = "AGPLv3"
+__plugin_version__ = VERSION

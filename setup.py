@@ -5,6 +5,8 @@ Provides packaging metadata for the OctoPrint-Uptime plugin.
 """
 
 import copy
+import os
+import re
 
 from setuptools import setup
 
@@ -22,9 +24,30 @@ PLUGIN_PACKAGE = "octoprint_uptime"
 # internal data via __plugin_name__ in the plugin module.
 PLUGIN_NAME = "OctoPrint-Uptime"
 
+# The plugin's version. This reads the single source-of-truth from
+# octoprint_uptime/_version.py so packaging and runtime use the same value.
+
+
+def _read_version():
+    here = os.path.abspath(os.path.dirname(__file__))
+    ver_path = os.path.join(here, PLUGIN_PACKAGE, "_version.py")
+    version = "0.0.0"
+    version_pattern = re.compile(r'^VERSION\s*=\s*[\'"]([^\'"]+)[\'"]')
+    try:
+        with open(ver_path, "r", encoding="utf-8") as f:
+            for line in f:
+                match = version_pattern.match(line)
+                if match:
+                    version = match.group(1)
+                    break
+    except (FileNotFoundError, OSError):
+        pass
+    return version
+
+
 # The plugin's version. Can be overridden within OctoPrint's internal data
 # via __plugin_version__ in the plugin module.
-PLUGIN_VERSION = "0.1.0rc5"
+PLUGIN_VERSION = _read_version()
 
 # The plugin's description. Can be overridden within OctoPrint's internal
 # data via __plugin_description__ in the plugin module.
@@ -45,7 +68,7 @@ PLUGIN_URL = "https://github.com/Ajimaru/OctoPrint-Uptime"
 
 # The plugin's license. Can be overridden within OctoPrint's internal data
 # via __plugin_license__ in the plugin module.
-PLUGIN_LICENSE = "MIT"
+PLUGIN_LICENSE = "AGPLv3"
 
 # Any additional requirements besides OctoPrint should be listed here.
 PLUGIN_REQUIRES = ["flask>=2.2", "psutil>=5.9"]
@@ -116,11 +139,13 @@ setup_parameters = octoprint_setuptools.create_plugin_setup_parameters(
     author=PLUGIN_AUTHOR,
     mail=PLUGIN_AUTHOR_EMAIL,
     url=PLUGIN_URL,
-    license=PLUGIN_LICENSE,
-    requires=PLUGIN_REQUIRES,
+    install_requires=PLUGIN_REQUIRES,
     additional_packages=PLUGIN_ADDITIONAL_PACKAGES,
     ignored_packages=PLUGIN_IGNORED_PACKAGES,
     additional_data=PLUGIN_ADDITIONAL_DATA,
+    classifiers=[
+        "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3)",
+    ],
 )
 
 if len(additional_setup_parameters):

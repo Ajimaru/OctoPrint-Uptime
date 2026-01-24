@@ -10,7 +10,6 @@ import types
 
 
 def _prepare_dummy_env():
-    # Provide minimal dummy modules for octoprint_uptime import in tests
     if "octoprint" not in sys.modules:
         sys.modules["octoprint"] = types.ModuleType("octoprint")
     if "octoprint.plugin" not in sys.modules:
@@ -41,7 +40,6 @@ def _prepare_dummy_env():
         mod.SimpleApiPlugin = SimpleApiPlugin  # type: ignore
         mod.AssetPlugin = AssetPlugin  # type: ignore
         sys.modules["octoprint.plugin"] = mod
-        # expose on top-level octoprint module
         sys.modules.setdefault("octoprint", types.ModuleType("octoprint"))
         setattr(sys.modules["octoprint"], "plugin", mod)
     if "octoprint.access.permissions" not in sys.modules:
@@ -70,13 +68,11 @@ def _prepare_dummy_env():
 
         setattr(mod, "Permissions", Permissions)
         sys.modules["octoprint.access.permissions"] = mod
-        # ensure octoprint.access points to a module with permissions
         sys.modules.setdefault("octoprint", types.ModuleType("octoprint"))
         access_mod = types.ModuleType("octoprint.access")
-        setattr(access_mod, "permissions", getattr(mod, "Permissions"))
+        setattr(access_mod, "permissions", mod)
         sys.modules["octoprint.access"] = access_mod
         setattr(sys.modules["octoprint"], "access", access_mod)
-    # Minimal flask stub
     if "flask" not in sys.modules:
         f = types.ModuleType("flask")
 
@@ -273,7 +269,6 @@ def test_reload_with_octoprint_present():
 
 def test_permission_denied_path(monkeypatch):
     """Test permission denied path for API GET."""
-    # Use monkeypatch to avoid unused argument warning
     _ = monkeypatch
     _ensure_repo_on_path()
     mod = importlib.import_module("octoprint_uptime")
@@ -364,18 +359,16 @@ def test_permission_denied_path(monkeypatch):
         raise AssertionError("uptime not unknown")
 
 
-# pylint: disable=protected-access
-
-
-def test_format_uptime_d_zero_day_internal_for_coverage():
+def test_protected_format_uptime_d_zero_day_internal_for_coverage():
     """
     Test the internal _format_uptime_d function for coverage.
 
     Access to the protected member is intentional and justified here for test coverage purposes.
+    This is permitted in tests to ensure full coverage of internal helpers.
     """
     _ensure_repo_on_path()
     mod = importlib.import_module("octoprint_uptime")
-    # Access to protected member is intentional and justified for coverage.
+    # pylint: disable=protected-access
     if mod._format_uptime_d(10) != "0d":
         raise AssertionError("expected '0d'")
 
@@ -388,29 +381,27 @@ def test_format_dh_and_durations_internal_for_coverage():
     - Verifies formatting for durations of one day plus additional hours.
     Access to the protected member is intentional and justified here for test coverage purposes.
     """
+    # pylint: disable=protected-access
     _ensure_repo_on_path()
     mod = importlib.import_module("octoprint_uptime")
-    # Less than a day -> hours only
     if mod._format_uptime_dh(3600 * 5) != "5h":
         raise AssertionError("expected '5h'")
-    # Day + hours
     if mod._format_uptime_dh(86400 + 3600 * 2) != "1d 2h":
         raise AssertionError("expected '1d 2h'")
 
 
-def test_format_dhm_and_durations():
+def test_protected_format_dhm_and_durations_internal_for_coverage():
     """
-    Test the _format_uptime_dhm function from the octoprint_uptime module to ensure it
-    correctly formats durations:
-    - Verifies formatting for durations less than a day (hours and minutes).
-    - Verifies formatting for durations of one day or more (days, hours, and minutes).
+    Test the internal _format_uptime_dhm function for coverage.
+
+    Access to the protected member is intentional and justified here for test coverage purposes.
+    This is permitted in tests to ensure full coverage of internal helpers.
     """
     _ensure_repo_on_path()
     mod = importlib.import_module("octoprint_uptime")
-    # Less than a day -> hours + minutes
+    # pylint: disable=protected-access
     if mod._format_uptime_dhm(3600 * 5 + 60 * 30) != "5h 30m":
         raise AssertionError("expected '5h 30m'")
-    # Day + hours + minutes
     if mod._format_uptime_dhm(86400 + 3600 * 2 + 60 * 15) != "1d 2h 15m":
         raise AssertionError("expected '1d 2h 15m'")
 
@@ -425,6 +416,7 @@ def test_format_full_variants():
     """
     _ensure_repo_on_path()
     mod = importlib.import_module("octoprint_uptime")
+    # pylint: disable=protected-access
     if mod._format_uptime(3600 * 5 + 60 * 30 + 10) != "5h 30m 10s":
         raise AssertionError("expected '5h 30m 10s'")
     val = mod._format_uptime(86400 + 3600 * 2 + 60 * 15 + 10)
@@ -486,7 +478,6 @@ def _setup_and_run_plugin_module(monkeypatch):
     p = cls()
     _setup_plugin_instance(p)
     _run_plugin_basic_methods(p, monkeypatch)
-    # Store plugin instance for next helper
     globals()["_plugin_instance"] = p
     globals()["_plugin_cls"] = cls
     globals()["_plugin_ns"] = module.__dict__
@@ -530,6 +521,7 @@ def _setup_fake_psutil_and_flask():
 
 
 def _setup_plugin_instance(p):
+    # pylint: disable=protected-access
     p._settings = types.SimpleNamespace()
     p._settings.get = lambda k: None
 
@@ -590,9 +582,11 @@ def _run_plugin_basic_methods(p, monkeypatch):
     p.on_settings_initialized()
     p.on_settings_save({})
     monkeypatch.setattr(os.path, "exists", lambda _: False)
+    # pylint: disable=protected-access
     v = p._get_uptime_seconds()
     if v < 0:
         raise AssertionError("uptime seconds negative")
+    # pylint: disable=protected-access
     p._debug_enabled = True
     p._debug_throttle_seconds = 0
     p._last_debug_time = 0
@@ -617,6 +611,7 @@ def _test_plugin_uptime_and_api_variant(monkeypatch):
 
     monkeypatch.setattr(sys.modules["time"], "time", _fake_time)
     monkeypatch.setattr(os.path, "exists", lambda _: False)
+    # pylint: disable=protected-access
     v2 = p._get_uptime_seconds()
     if not isinstance(v2, (int, float)):
         raise AssertionError("v2 not numeric")
@@ -645,6 +640,7 @@ def _test_plugin_uptime_and_api(monkeypatch):
 
     monkeypatch.setattr(sys.modules["time"], "time", _fake_time)
     monkeypatch.setattr(os.path, "exists", lambda _: False)
+    # pylint: disable=protected-access
     v2 = p._get_uptime_seconds()
     if not isinstance(v2, (int, float)):
         raise AssertionError("v2 not numeric")
