@@ -155,7 +155,7 @@ NEW_CURRENT=
 COMMIT=
 TAG=
 EXECUTE=0
-VERBOSE_FLAGS=("-vv")
+VERBOSE_FLAGS=()
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -270,7 +270,10 @@ if [[ "$BUMP_TYPE" == "rc" ]]; then
     exit 0
 else
     if [[ ! -f "$CONFIG" ]]; then printf "%b\n" "${RED}Config file '$CONFIG' not found.${RESET}" >&2; usage; exit 1; fi
-    if [[ -n "$NEW_CURRENT" ]]; then printf "%b\n" "Setting current_version => ${GREEN}$NEW_CURRENT${RESET} in $CONFIG"; update_toml "current_version" "$NEW_CURRENT" "$CONFIG"; fi
+    if [[ -n "$NEW_CURRENT" ]]; then
+        printf "%b\n" "Setting current_version => ${GREEN}$NEW_CURRENT${RESET} in $CONFIG"
+        update_toml "current_version" "$NEW_CURRENT" "$CONFIG"
+    fi
     if [[ -n "$COMMIT" ]]; then printf "%b\n" "Setting commit => $COMMIT in $CONFIG"; update_toml "commit" "$COMMIT" "$CONFIG"; fi
     if [[ -n "$TAG" ]]; then printf "%b\n" "Setting tag => $TAG in $CONFIG"; update_toml "tag" "$TAG" "$CONFIG"; fi
     check_versions_consistent "$CONFIG"
@@ -284,8 +287,20 @@ else
     read -r -p "Proceed with $run_type bump ($BUMP_TYPE)? [Y/n] " ans
     ans=${ans:-Y}
     if [[ ! "$ans" =~ ^[Yy] ]]; then printf "%b\n" "${RED}Aborted by user.${RESET}"; exit 0; fi
-    CMD=("$BUMP_CMD" "${VERBOSE_FLAGS[@]}" bump "$BUMP_TYPE" --config "$CONFIG")
-    if [[ $EXECUTE -eq 0 ]]; then CMD+=(--dry-run); fi
+    CMD=("$BUMP_CMD" "${VERBOSE_FLAGS[@]}" bump "$BUMP_TYPE" --config-file "$CONFIG")
+    if [[ -f "octoprint_uptime/_version.py" ]]; then
+        CURRENT_VERSION=$(grep -E "^VERSION\s*=" octoprint_uptime/_version.py | sed -E 's/.*"([^\"]+)".*/\1/' || true)
+        CURRENT_VERSION="$(printf '%s' "$CURRENT_VERSION" | tr -d '\r' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
+    fi
+    if [[ -n "${CURRENT_VERSION:-}" ]]; then
+        CMD+=(--current-version "$CURRENT_VERSION")
+    fi
+    if [[ -n "$NEW_CURRENT" ]]; then
+        CMD+=(--new-version "$NEW_CURRENT")
+    fi
+    if [[ $EXECUTE -eq 0 ]]; then
+        CMD+=(--dry-run --allow-dirty)
+    fi
     printf "%b\n" "Running: ${CYAN}${CMD[*]}${RESET}"
     "${CMD[@]}"
     if [[ $EXECUTE -eq 0 ]]; then
