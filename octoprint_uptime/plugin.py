@@ -658,33 +658,41 @@ class OctoprintUptimePlugin(
         if permission_result is not None:
             return permission_result
 
-        seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = self._get_uptime_info()
-        self._log_debug(_("Uptime API requested, result=%s") % uptime_full)
-
         logger = getattr(self, "_logger", None)
 
-        if _flask is not None:
-            navbar_enabled, display_format, poll_interval = self._get_api_settings()
-            try:
-                return _flask.jsonify(
-                    uptime=uptime_full,
-                    uptime_dhm=uptime_dhm,
-                    uptime_dh=uptime_dh,
-                    uptime_d=uptime_d,
-                    seconds=seconds,
-                    navbar_enabled=navbar_enabled,
-                    display_format=display_format,
-                    poll_interval_seconds=poll_interval,
-                )
-            except (TypeError, ValueError, RuntimeError, AttributeError):
-                if logger:
-                    logger.exception(
-                        "on_api_get: flask.jsonify failed, "
-                        "falling back to safe response"
-                    )
-                return self._fallback_uptime_response()
+        try:
+            seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = (
+                self._get_uptime_info()
+            )
+            self._log_debug(_("Uptime API requested, result=%s") % uptime_full)
 
-        return {"uptime": uptime_full}
+            if _flask is not None:
+                navbar_enabled, display_format, poll_interval = self._get_api_settings()
+                try:
+                    return _flask.jsonify(
+                        uptime=uptime_full,
+                        uptime_dhm=uptime_dhm,
+                        uptime_dh=uptime_dh,
+                        uptime_d=uptime_d,
+                        seconds=seconds,
+                        navbar_enabled=navbar_enabled,
+                        display_format=display_format,
+                        poll_interval_seconds=poll_interval,
+                    )
+                except (TypeError, ValueError, RuntimeError, AttributeError):
+                    if logger:
+                        logger.exception(
+                            "on_api_get: flask.jsonify failed, falling back to safe response"
+                        )
+                    return self._fallback_uptime_response()
+
+            return {"uptime": uptime_full}
+        except (AttributeError, TypeError, ValueError, RuntimeError):
+            if logger:
+                logger.exception(
+                    "on_api_get: unexpected error; returning safe uptime response"
+                )
+            return self._fallback_uptime_response()
 
     def _handle_permission_check(self) -> Optional[Any]:
         """
