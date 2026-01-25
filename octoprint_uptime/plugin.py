@@ -23,8 +23,10 @@ except ImportError:
 
 try:
     import subprocess
+    from subprocess import TimeoutExpired
 except ImportError:
     subprocess = None
+    TimeoutExpired = None
 
 PERM = None
 
@@ -402,17 +404,27 @@ class OctoprintUptimePlugin(
                 [exec_path, "-s"],
                 stdout=subprocess.PIPE,
                 stderr=devnull,
-                check=True,
+                check=False,
+                timeout=5,
+                close_fds=True,
+                env={"PATH": "/usr/bin:/bin"},
             )
+
+            if completed.returncode != 0:
+                return None
 
             out_str = self._decode_output(completed.stdout)
             boot = time.mktime(time.strptime(out_str, "%Y-%m-%d %H:%M:%S"))
             return time.time() - boot
 
-        except Exception as e:
-            if subprocess is not None and isinstance(e, subprocess.CalledProcessError):
-                return None
-            raise
+        except (TimeoutExpired, OSError, ValueError, UnicodeDecodeError) as e:
+            logger = getattr(self, "_logger", None)
+            if logger:
+                try:
+                    logger.error("Exception in _run_uptime_and_parse: %s", str(e))
+                except (AttributeError, TypeError, ValueError):
+                    pass
+            return None
 
         finally:
             if must_close:
