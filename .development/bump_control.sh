@@ -250,15 +250,16 @@ if [[ -z "$BUMP_TYPE" ]]; then
         fi
     fi
 
-    read -r -p "Create a commit after bump? [y/N] " ans_commit
-    ans_commit=${ans_commit:-N}
+    read -r -p "Create a commit after bump? [Y/n] " ans_commit
+    ans_commit=${ans_commit:-Y}
     if [[ "$ans_commit" =~ ^[Yy] ]]; then COMMIT=true; else COMMIT=false; fi
 
     read -r -p "Create a tag after bump? [y/N] " ans_tag
     ans_tag=${ans_tag:-N}
     if [[ "$ans_tag" =~ ^[Yy] ]]; then TAG=true; else TAG=false; fi
 
-    read -r -p "Perform actual bump (real run) or preview (dry-run)? [d/dry, r/real] " ans_run
+    read -r -p "Perform actual bump (real run) or preview (dry-run)? [d/dry, R/real] " ans_run
+    ans_run=${ans_run:-R}
     if [[ "$ans_run" =~ ^[Rr] ]]; then
         EXECUTE=1
     else
