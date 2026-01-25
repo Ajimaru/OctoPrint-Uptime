@@ -330,18 +330,12 @@ class OctoprintUptimePlugin(
                     e,
                 )
 
-    def _invoke_settings_hook(self, hook) -> None:
-        """Invoke a settings hook using signature inspection and log call errors.
+    def _get_hook_positional_param_count(self, hook) -> Optional[int]:
+        """Return the number of positional params a callable accepts or None on error.
 
-        Uses `inspect.signature` to determine the number of positional parameters
-        the `hook` expects. If it expects 0 parameters it is called as
-        `hook()`. If it expects 1 parameter it is called as `hook(self)`.
-        If signature inspection fails or reports an unexpected parameter
-        count the hook is skipped and a warning is logged. Any exception
-        raised by the invoked hook is logged via `self._logger`.
+        Uses `inspect.signature` and logs a warning on failure.
         """
         logger = getattr(self, "_logger", None)
-
         try:
             sig = inspect.signature(hook)
             params = [
@@ -353,29 +347,43 @@ class OctoprintUptimePlugin(
                     inspect.Parameter.POSITIONAL_OR_KEYWORD,
                 )
             ]
-            # Only positional parameters are considered: OctoPrint hook
-            # signatures vary — some hooks are defined as bound/unbound
-            # callables. We accept 0 or 1 positional parameters where
-            # 0 means the hook should be called as `hook()` and 1 means
-            # an unbound function expecting `self` should be called as
-            # `hook(self)`. VAR_POSITIONAL (`*args`) and keyword-only
-            # parameters are intentionally ignored for this heuristic.
-            param_count = len(params)
+            return len(params)
         except (ValueError, TypeError) as e:
             if logger:
                 logger.warning(
-                    "_invoke_settings_hook: unable to inspect signature for %r: %s",
+                    "_get_hook_positional_param_count: unable to inspect signature for %r: %s",
                     hook,
                     e,
                 )
-            return
+            return None
 
-        # Only accept hooks that explicitly take 0 or 1 positional
-        # parameter (see comment above about `inspect.signature`,
-        # `params` and how `param_count == 0` / `param_count == 1`
-        # map to calling conventions). Skip and warn for anything
-        # else to avoid attempting multiple calling conventions
-        # which can mask real errors.
+    def _safe_invoke_hook(self, hook, param_count: int) -> None:
+        """Invoke a hook with either zero or one positional parameter and log failures.
+
+        `param_count` should be 0 or 1; any exception raised by the hook is logged
+        but not propagated.
+        """
+        logger = getattr(self, "_logger", None)
+        try:
+            if param_count == 0:
+                hook()
+            else:
+                hook(self)
+        except (RuntimeError, AttributeError, TypeError, ValueError):
+            if logger:
+                logger.exception("_safe_invoke_hook: %r raised", hook)
+
+    def _invoke_settings_hook(self, hook) -> None:
+        """Invoke a settings hook using signature inspection and log call errors.
+
+        Delegates signature inspection and the actual call to small helpers to
+        reduce complexity and make failures easier to log/reason about.
+        """
+        logger = getattr(self, "_logger", None)
+
+        param_count = self._get_hook_positional_param_count(hook)
+        if param_count is None:
+            return
         if param_count not in (0, 1):
             if logger:
                 logger.warning(
@@ -385,14 +393,7 @@ class OctoprintUptimePlugin(
                 )
             return
 
-        try:
-            if param_count == 0:
-                hook()
-            else:
-                hook(self)
-        except (RuntimeError, AttributeError, TypeError, ValueError):
-            if logger:
-                logger.exception("_invoke_settings_hook: %r raised", hook)
+        self._safe_invoke_hook(hook, param_count)
 
     def _validate_and_sanitize_settings(self, data: Dict[str, Any]) -> None:
         """Validate and sanitize plugin settings in the provided data dict."""
