@@ -27,8 +27,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_ROOT_DEFAULT="$(cd "$SCRIPT_DIR/.." && pwd)"
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-$WORKSPACE_ROOT_DEFAULT}"
 
-OCTOPRINT_CMD="${OCTOPRINT_CMD:-}"  # if set, must be an executable
-OCTOPRINT_VENV="${OCTOPRINT_VENV:-}"  # if set, uses $OCTOPRINT_VENV/bin/octoprint
+OCTOPRINT_CMD="${OCTOPRINT_CMD:-}"
+OCTOPRINT_VENV="${OCTOPRINT_VENV:-}"
 
 resolve_octoprint_bin() {
   if [[ -n "$OCTOPRINT_CMD" ]]; then
@@ -41,7 +41,6 @@ resolve_octoprint_bin() {
     return 0
   fi
 
-  # Try common relative locations (repo-local, no system-specific absolute paths)
   local candidate
   for candidate in \
     "$WORKSPACE_ROOT/venv/bin/octoprint" \
@@ -54,7 +53,6 @@ resolve_octoprint_bin() {
     fi
   done
 
-  # Fall back to PATH
   command -v octoprint 2>/dev/null || true
 }
 
@@ -64,9 +62,6 @@ OCTOPRINT_BASEDIR="${OCTOPRINT_BASEDIR:-$HOME/.octoprint}"
 OCTOPRINT_LOG="${OCTOPRINT_LOG:-$OCTOPRINT_BASEDIR/logs/octoprint.log}"
 SAFE_MARKER="$OCTOPRINT_BASEDIR/data/last_safe_mode"
 WEBASSETS_DIR="$OCTOPRINT_BASEDIR/generated/webassets"
-
-# Line number in the OctoPrint log at the moment we (re)start.
-# Used to scope verification to new log output only.
 LOG_LINE_START=0
 
 usage() {
@@ -149,8 +144,6 @@ find_listener_pid() {
 }
 
 list_octoprint_pids() {
-  # Best-effort detection of OctoPrint server processes for the current user.
-  # We intentionally avoid sudo/system-wide process inspection.
   local uid
   uid="$(id -u)"
 
@@ -210,7 +203,7 @@ stop_all_octoprint() {
     kill -TERM "$pid" 2>/dev/null || true
   done <<<"$pids"
 
-  if wait_pids_exit 30 $(echo "$pids" | tr '\n' ' '); then
+  if wait_pids_exit 30 "$(echo "$pids" | tr '\n' ' ')"; then
     echo "All detected OctoPrint instances stopped."
     return 0
   fi
@@ -225,7 +218,7 @@ stop_all_octoprint() {
       fi
     done <<<"$pids"
 
-    if wait_pids_exit 10 $(echo "$pids" | tr '\n' ' '); then
+    if wait_pids_exit 10 "$(echo "$pids" | tr '\n' ' ')"; then
       echo "All detected OctoPrint instances stopped after SIGKILL." >&2
       return 0
     fi
@@ -286,7 +279,6 @@ clear_octoprint_cache() {
 }
 
 clear_octoprint_log() {
-  # Start every restart from a clean log to make troubleshooting unambiguous.
   echo "Clearing OctoPrint log (best-effort): $OCTOPRINT_LOG"
   mkdir -p "$(dirname "$OCTOPRINT_LOG")" || true
   rm -f "$OCTOPRINT_LOG" || true
@@ -333,7 +325,6 @@ wait_for_log() {
 }
 
 start_octoprint() {
-  # Ensure we start from a clean log for this restart.
   clear_octoprint_log
   LOG_LINE_START=0
 
@@ -345,8 +336,7 @@ start_octoprint() {
   : > "$NOHUP_OUT"
 
   echo "Starting OctoPrint: $OCTOPRINT_BIN $OCTOPRINT_ARGS"
-  # shellcheck disable=SC2086
-  nohup "$OCTOPRINT_BIN" $OCTOPRINT_ARGS >"$NOHUP_OUT" 2>&1 &
+  nohup "$OCTOPRINT_BIN" "$OCTOPRINT_ARGS" >"$NOHUP_OUT" 2>&1 &
 
   local new_pid=$!
   echo "Started pid=$new_pid; waiting for listen on port $OCTOPRINT_PORT"
@@ -390,10 +380,6 @@ verify_plugin_loaded() {
   fi
 
   echo "--- uptime plugin verification (log tail) ---"
-  # Wait for a real API access log line indicating the frontend/navbar
-  # requested the uptime endpoint. We assume the navbar is enabled and
-  # that within the user's configured polling interval (max 120s) a
-  # GET will appear. Wait up to 120 seconds for the tornado.access line.
   sleep 1
   if wait_for_log "tornado\.access - INFO - 200 GET \/api\/plugin\/octoprint_uptime" 120 1; then
     echo "uptime: detected API access (tornado.access GET /api/plugin/octoprint_uptime)"
