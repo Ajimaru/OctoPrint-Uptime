@@ -267,8 +267,7 @@ main() {
     sdist="$candidate"
     break
   done
-  shopt -u nullglob || true
-  shopt -u nocaseglob || true
+  shopt -u nullglob nocaseglob || true
 
   if [[ -z "$sdist" ]]; then
     log "Expected sdist not found for version ${new_version}; skipping zip creation"
