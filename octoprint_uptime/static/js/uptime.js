@@ -117,6 +117,19 @@ $(function () {
             displayValue = data.uptime || "unknown";
           }
 
+          // If server explicitly reports uptime unavailable, show localized "Unavailable"
+          try {
+            if (data && data.uptime_available === false) {
+              if (typeof gettext === "function") {
+                displayValue = gettext("Unavailable");
+              } else if (typeof _ === "function") {
+                displayValue = _("Unavailable");
+              } else {
+                displayValue = "Unavailable";
+              }
+            }
+          } catch (e) {}
+
           // update visible text
           self.uptimeDisplay(displayValue);
 

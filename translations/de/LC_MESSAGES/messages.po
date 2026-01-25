@@ -129,6 +129,16 @@ msgstr ""
 msgid "unknown"
 msgstr ""
 
+# UI: uptime unavailable indicator and install hint
+#: octoprint_uptime/static/js/uptime.js:1
+msgid "Unavailable"
+msgstr "Nicht verfügbar"
+
+#: octoprint_uptime/plugin.py:512
+#: octoprint_uptime/templates/settings.jinja2:1
+msgid "Uptime could not be determined. You can install psutil in the OctoPrint virtualenv: pip install psutil"
+msgstr "Die Uptime konnte nicht ermittelt werden. Sie können psutil in der OctoPrint‑Virtualenv nachinstallieren: pip install psutil"
+
 #~ msgid "Adds system uptime to the navbar and exposes a small uptime API."
 #~ msgstr ""
 

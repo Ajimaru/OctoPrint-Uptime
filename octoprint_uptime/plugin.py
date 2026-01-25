@@ -8,7 +8,7 @@ import gettext
 import importlib
 import os
 import time
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 try:
     from ._version import VERSION
@@ -165,6 +165,7 @@ class OctoprintUptimePlugin(
         self._last_debug_time = 0
         self._last_throttle_notice = 0
         self._debug_throttle_seconds = 60
+        self._last_uptime_source: str | None = None
 
     def get_update_information(self):
         """Return update information for the OctoPrint-Uptime plugin.
@@ -238,17 +239,24 @@ class OctoprintUptimePlugin(
         """
         return True
 
-    def _get_uptime_seconds(self) -> float:
-        """Attempts to retrieve system uptime using several strategies."""
-        strategies = [
-            self._get_uptime_from_proc,
-            self._get_uptime_from_psutil,
-        ]
-        for strategy in strategies:
-            uptime = strategy()
-            if uptime is not None:
-                return uptime
-        return 0
+    def _get_uptime_seconds(self) -> Tuple[float | None, str]:
+        """Attempts to retrieve system uptime using several strategies.
+
+        Returns a tuple of (seconds|None, source) where source is one of
+        "proc", "psutil" or "none".
+        """
+        uptime = self._get_uptime_from_proc()
+        if uptime is not None:
+            self._last_uptime_source = "proc"
+            return uptime, "proc"
+
+        uptime = self._get_uptime_from_psutil()
+        if uptime is not None:
+            self._last_uptime_source = "psutil"
+            return uptime, "psutil"
+
+        self._last_uptime_source = "none"
+        return None, "none"
 
     def _get_uptime_from_proc(self) -> float | None:
         """Get uptime from /proc/uptime if available."""
@@ -502,19 +510,33 @@ class OctoprintUptimePlugin(
             seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = (
                 self._get_uptime_info()
             )
+            uptime_available = isinstance(seconds, (int, float)) and seconds >= 0
             if _flask is not None:
                 navbar_enabled, display_format, poll_interval = self._get_api_settings()
-                return _flask.jsonify(
-                    uptime=uptime_full,
-                    uptime_dhm=uptime_dhm,
-                    uptime_dh=uptime_dh,
-                    uptime_d=uptime_d,
-                    seconds=seconds,
-                    navbar_enabled=navbar_enabled,
-                    display_format=display_format,
-                    poll_interval_seconds=poll_interval,
+                resp = {
+                    "uptime": uptime_full,
+                    "uptime_dhm": uptime_dhm,
+                    "uptime_dh": uptime_dh,
+                    "uptime_d": uptime_d,
+                    "seconds": seconds,
+                    "navbar_enabled": navbar_enabled,
+                    "display_format": display_format,
+                    "poll_interval_seconds": poll_interval,
+                    "uptime_available": uptime_available,
+                }
+                if not uptime_available:
+                    resp["uptime_note"] = _(
+                        "Uptime could not be determined. You can install psutil in the "
+                        "OctoPrint virtualenv: pip install psutil"
+                    )
+                return _flask.jsonify(**resp)
+            resp = {"uptime": uptime_full, "uptime_available": uptime_available}
+            if not uptime_available:
+                resp["uptime_note"] = _(
+                    "Uptime could not be determined. You can install psutil in the "
+                    "OctoPrint virtualenv: pip install psutil"
                 )
-            return {"uptime": uptime_full}
+            return resp
         except (AttributeError, TypeError, ValueError):
             return {"uptime": _("unknown")}
 
@@ -590,9 +612,15 @@ class OctoprintUptimePlugin(
             if hasattr(self, "get_uptime_seconds") and callable(
                 self.get_uptime_seconds
             ):
-                seconds = self.get_uptime_seconds()
+                res = self.get_uptime_seconds()
+                if isinstance(res, tuple) and len(res) == 2:
+                    seconds, _source = res
+                    self._last_uptime_source = _source
+                else:
+                    seconds = res
+                    self._last_uptime_source = "custom"
             else:
-                seconds = self._get_uptime_seconds()
+                seconds, _source = self._get_uptime_seconds()
 
             if isinstance(seconds, (int, float)):
                 uptime_full = format_uptime(seconds)
@@ -600,7 +628,7 @@ class OctoprintUptimePlugin(
                 uptime_dh = format_uptime_dh(seconds)
                 uptime_d = format_uptime_d(seconds)
             else:
-                uptime_full = uptime_dhm = uptime_dh = uptime_d = str(seconds)
+                uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
             return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
         except (AttributeError, TypeError, ValueError):
             try:
