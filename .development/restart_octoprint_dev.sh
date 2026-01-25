@@ -336,7 +336,8 @@ start_octoprint() {
   : > "$NOHUP_OUT"
 
   echo "Starting OctoPrint: $OCTOPRINT_BIN $OCTOPRINT_ARGS"
-  nohup "$OCTOPRINT_BIN" "$OCTOPRINT_ARGS" >"$NOHUP_OUT" 2>&1 &
+  read -r -a _octo_args <<< "$OCTOPRINT_ARGS"
+  nohup "$OCTOPRINT_BIN" "${_octo_args[@]}" >"$NOHUP_OUT" 2>&1 &
 
   local new_pid=$!
   echo "Started pid=$new_pid; waiting for listen on port $OCTOPRINT_PORT"
