@@ -1,3 +1,6 @@
-"# Duplicate translations removed. The authoritative German catalog is at
-"translations/de/LC_MESSAGES/messages.po". This file is left intentionally
-"empty to avoid duplication.
+# Duplicate translations removed. The authoritative German catalog is at
+# translations/de/LC_MESSAGES/messages.po. This file is left intentionally
+# empty to avoid duplication.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"

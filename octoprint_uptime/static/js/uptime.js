@@ -120,8 +120,6 @@ $(function () {
             if (data && data.uptime_available === false) {
               if (typeof gettext === "function") {
                 displayValue = gettext("Unavailable");
-              } else if (typeof _ === "function") {
-                displayValue = _("Unavailable");
               } else {
                 displayValue = "Unavailable";
               }
