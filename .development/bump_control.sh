@@ -118,7 +118,7 @@ check_versions_consistent() {
     for v in "$config_version" "$py_version" "$toml_version"; do
         [[ -n "$v" ]] && versions+=("$v")
     done
-    local uniq_versions=($(printf "%s\n" "${versions[@]}" | sort -u))
+    readarray -t uniq_versions < <(printf "%s\n" "${versions[@]}" | sort -u)
 
     if (( ${#uniq_versions[@]} > 1 )); then
         printf "%b\n" "${YELLOW}WARNING: Version mismatch detected!${RESET}"
@@ -127,8 +127,10 @@ check_versions_consistent() {
         printf "%b\n" "  ${CYAN}pyproject.toml:${RESET}   $toml_version"
         printf "\n"
         local opts=("${uniq_versions[@]}" "Abort")
-        choose_menu "Choose version or Abort:" "${opts[@]}"
-        if [[ $? -ne 0 ]]; then printf "%b\n" "${RED}Aborted by user.${RESET}"; exit 1; fi
+        if ! choose_menu "Choose version or Abort:" "${opts[@]}"; then
+            printf "%b\n" "${RED}Aborted by user.${RESET}"
+            exit 1
+        fi
         local chosen="$CHOSEN"
         if [[ "$chosen" == "Abort" ]]; then printf "%b\n" "${RED}Aborted by user due to version mismatch.${RESET}"; exit 1; fi
         printf "%b\n" "Setting all files to version: ${GREEN}$chosen${RESET}"
@@ -142,9 +144,9 @@ update_toml() {
     local key="$1" val="$2" file="$3"
     if [[ -z "$val" ]]; then return; fi
     if [[ "$val" =~ ^(true|false)$ ]]; then
-        sed -E -i "s/^[[:space:]]*$key[[:space:]]*=.*/$key = $val/" "$file"
+        sed -E -i "s/^[[:space:]]*${key}[[:space:]]*=.*/${key} = $val/" "$file"
     else
-        sed -E -i "s/^[[:space:]]*$key[[:space:]]*=.*/$key = \"$val\"/" "$file"
+        sed -E -i "s/^[[:space:]]*${key}[[:space:]]*=.*/${key} = \"$val\"/" "$file"
     fi
 }
 
@@ -189,14 +191,19 @@ if [[ -z "$BUMP_TYPE" ]]; then
     CURRENT_VERSION="$(printf '%s' "$CURRENT_VERSION" | tr -d '\r' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
     printf "%b\n" "Current package version: ${CYAN}${CURRENT_VERSION:-(unknown)}${RESET}"
 
-    choose_menu "Select bump type:" major minor bug rc cancel
-    if [[ $? -ne 0 ]]; then printf "%b\n" "${RED}Cancelled.${RESET}"; exit 1; fi
+    if ! choose_menu "Select bump type:" dev rc major minor bug cancel; then
+        printf "%b\n" "${RED}Cancelled.${RESET}"
+        exit 1
+    fi
     CHOICE="$CHOSEN"
     case "$CHOICE" in
+        dev) BUMP_TYPE=dev ;;
+        rc) BUMP_TYPE=rc ;;
         major) BUMP_TYPE=major ;;
         minor) BUMP_TYPE=minor ;;
-        bug) BUMP_TYPE=patch ;;
-        rc) BUMP_TYPE=rc ;;
+        bug)
+            BUMP_TYPE="patch"
+            ;;
         cancel) printf "%b\n" "${RED}Aborted.${RESET}"; exit 0 ;;
         *) printf "%b\n" "${RED}Invalid choice.${RESET}"; exit 1 ;;
     esac
@@ -205,7 +212,7 @@ if [[ -z "$BUMP_TYPE" ]]; then
     if [[ ! -x "$BUMP_CANDIDATE_CMD" ]]; then
         BUMP_CANDIDATE_CMD="bump-my-version"
     fi
-    if [[ "$BUMP_TYPE" != "rc" ]]; then
+    if [[ "$BUMP_TYPE" != "rc" && "$BUMP_TYPE" != "dev" ]]; then
         if [[ -z "${CONFIG:-}" ]]; then CONFIG=".development/bumpversion.toml"; fi
         if [[ -z "${CURRENT_VERSION:-}" && -f "octoprint_uptime/_version.py" ]]; then
             CURRENT_VERSION=$(grep -E "^VERSION\s*=" octoprint_uptime/_version.py | sed -E 's/.*"([^\"]+)".*/\1/' || true)
@@ -219,12 +226,13 @@ if [[ -z "$BUMP_TYPE" ]]; then
         if [[ -z "$NEW_GUESS" ]]; then
             local_ver="${CURRENT_VERSION:-0.0.0}"
             local_ver=$(printf '%s' "$local_ver" | tr -d '\r' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')
-            if [[ "$local_ver" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)(rc([0-9]+))?$ ]]; then
+            if [[ "$local_ver" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)(-([a-zA-Z]+)([0-9]+))?$ ]]; then
                 major=${BASH_REMATCH[1]}
                 minor=${BASH_REMATCH[2]}
                 patch=${BASH_REMATCH[3]}
-                rcpart=${BASH_REMATCH[4]}
-                rcnum=${BASH_REMATCH[5]:-}
+                _suffix=${BASH_REMATCH[4]:-}
+                _suftype=${BASH_REMATCH[5]:-}
+                _sufnum=${BASH_REMATCH[6]:-}
                 case "$BUMP_TYPE" in
                     major)
                         major=$((major+1)); minor=0; patch=0; NEW_GUESS="$major.$minor.$patch" ;;
@@ -232,12 +240,6 @@ if [[ -z "$BUMP_TYPE" ]]; then
                         minor=$((minor+1)); patch=0; NEW_GUESS="$major.$minor.$patch" ;;
                     patch|bug)
                         patch=$((patch+1)); NEW_GUESS="$major.$minor.$patch" ;;
-                    rc)
-                        if [[ -n "$rcnum" ]]; then
-                            rcnum=$((rcnum+1)); NEW_GUESS="$major.$minor.$patch""rc$rcnum"
-                        else
-                            NEW_GUESS="$major.$minor.$patch""rc1"
-                        fi ;;
                     *) NEW_GUESS="" ;;
                 esac
             fi
@@ -264,65 +266,122 @@ if [[ -z "$BUMP_TYPE" ]]; then
     fi
 
     if [[ "$BUMP_TYPE" == "rc" ]]; then
-        if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ rc([0-9]+)$ ]]; then
+        if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ -dev([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%-dev*}
+            NEW_CURRENT="${base}-rc1"
+        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ dev([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%dev*}
+            NEW_CURRENT="${base}-rc1"
+        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ -rc([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%-rc*}
+            num=${BASH_REMATCH[1]}
+            next=$((num+1))
+            NEW_CURRENT="${base}-rc${next}"
+        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ rc([0-9]+)$ ]]; then
             base=${CURRENT_VERSION%rc*}
             num=${BASH_REMATCH[1]}
             next=$((num+1))
-            NEW_CURRENT="${base}rc${next}"
+            NEW_CURRENT="${base}-rc${next}"
         elif [[ -n "$CURRENT_VERSION" && ! "$CURRENT_VERSION" =~ rc ]]; then
-            NEW_CURRENT="${CURRENT_VERSION}rc1"
+            NEW_CURRENT="${CURRENT_VERSION}-rc1"
         else
             NEW_CURRENT=""
         fi
         if [[ -z "$NEW_CURRENT" ]]; then
-            read -r -p "Enter RC version to set (e.g. 0.2.0rc1): " NEW_CURRENT
+            read -r -p "Enter RC version to set (e.g. 0.2.0-rc1): " NEW_CURRENT
             if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
         else
             printf "%b\n" "Auto-selected RC version: ${GREEN}$NEW_CURRENT${RESET}"
             read -r -p "Accept this version? [Y/n] " accept_rc
             accept_rc=${accept_rc:-Y}
             if [[ ! "$accept_rc" =~ ^[Yy] ]]; then
-                read -r -p "Enter RC version to set (e.g. 0.2.0rc1): " NEW_CURRENT
+                read -r -p "Enter RC version to set (e.g. 0.2.0-rc1): " NEW_CURRENT
                 if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
             fi
         fi
     fi
-fi
 
-if [[ -x "${REPO_ROOT}/venv/bin/bump-my-version" ]]; then BUMP_CMD="${REPO_ROOT}/venv/bin/bump-my-version"; else BUMP_CMD="bump-my-version"; fi
-
-echo "Using config: $CONFIG"
-
-if [[ "$BUMP_TYPE" == "rc" ]]; then
-    printf "%b\n" "RC mode: will set version to ${GREEN}$NEW_CURRENT${RESET} in known files"
-    printf "%b\n" "Preview of changes (first 50 lines of config):"
-    sed -n '1,50p' "$CONFIG" || true
-    if [[ $EXECUTE -eq 0 ]]; then
-        printf "%b\n" "DRY-RUN: Files that would be updated:"
-        echo "  - octoprint_uptime/_version.py"
-        echo "  - setup.py"
-        echo "  - pyproject.toml"
-        echo "  - $CONFIG (current_version)"
-        printf "%b\n" "New version: ${GREEN}$NEW_CURRENT${RESET}"
+    if [[ "$BUMP_TYPE" == "rc" || "$BUMP_TYPE" == "dev" ]]; then
+        if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ -rc([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%-rc*}
+            NEW_CURRENT="${base}-dev1"
+        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ rc([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%rc*}
+            NEW_CURRENT="${base}-dev1"
+        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ -dev([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%-dev*}
+            num=${BASH_REMATCH[1]}
+            next=$((num+1))
+            NEW_CURRENT="${base}-dev${next}"
+        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ dev([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%dev*}
+            num=${BASH_REMATCH[1]}
+            next=$((num+1))
+            NEW_CURRENT="${base}-dev${next}"
+        elif [[ -n "$CURRENT_VERSION" && ! "$CURRENT_VERSION" =~ dev ]]; then
+            NEW_CURRENT="${CURRENT_VERSION}-dev1"
+        else
+            NEW_CURRENT=""
+        fi
+        if [[ "$BUMP_TYPE" == "dev" ]]; then
+            if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ -rc([0-9]+)$ ]]; then
+                base=${CURRENT_VERSION%-rc*}
+                NEW_CURRENT="${base}-dev1"
+            elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ rc([0-9]+)$ ]]; then
+                base=${CURRENT_VERSION%rc*}
+                NEW_CURRENT="${base}-dev1"
+            elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ -dev([0-9]+)$ ]]; then
+                base=${CURRENT_VERSION%-dev*}
+                num=${BASH_REMATCH[1]}
+                next=$((num+1))
+                NEW_CURRENT="${base}-dev${next}"
+            elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ dev([0-9]+)$ ]]; then
+                base=${CURRENT_VERSION%dev*}
+                num=${BASH_REMATCH[1]}
+                next=$((num+1))
+                NEW_CURRENT="${base}-dev${next}"
+            elif [[ -n "$CURRENT_VERSION" && ! "$CURRENT_VERSION" =~ dev ]]; then
+                NEW_CURRENT="${CURRENT_VERSION}-dev1"
+            else
+                NEW_CURRENT=""
+            fi
+        fi
+        if [[ -z "$NEW_CURRENT" ]]; then
+            read -r -p "Enter $BUMP_TYPE version to set (e.g. 0.2.0-${BUMP_TYPE}1): " NEW_CURRENT
+            if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
+        else
+            printf "%b\n" "Auto-selected $BUMP_TYPE version: ${GREEN}$NEW_CURRENT${RESET}"
+            read -r -p "Accept this version? [Y/n] " accept_pre
+            accept_pre=${accept_pre:-Y}
+            if [[ ! "$accept_pre" =~ ^[Yy] ]]; then
+                read -r -p "Enter $BUMP_TYPE version to set (e.g. 0.2.0-${BUMP_TYPE}1): " NEW_CURRENT
+                if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
+            fi
+        fi
+        printf "%b\n" "$BUMP_TYPE mode: will set version to ${GREEN}$NEW_CURRENT${RESET} in known files"
+        printf "%b\n" "Preview of changes (first 50 lines of config):"
+        sed -n '1,50p' "$CONFIG" || true
+        if [[ $EXECUTE -eq 0 ]]; then
+            printf "%b\n" "DRY-RUN: Files that would be updated:"
+            echo "  - octoprint_uptime/_version.py"
+            echo "  - setup.py"
+            echo "  - pyproject.toml"
+            echo "  - $CONFIG (current_version)"
+            printf "%b\n" "New version: ${GREEN}$NEW_CURRENT${RESET}"
+            exit 0
+        fi
+        sed -E -i "s/VERSION = \"[^\"]+\"/VERSION = \"$NEW_CURRENT\"/" octoprint_uptime/_version.py
+        sed -E -i "s/version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$NEW_CURRENT\"/" pyproject.toml
+        sed -E -i "s/^current_version[[:space:]]*=[[:space:]]*\"[^\"]+\"/current_version = \"$NEW_CURRENT\"/" "$CONFIG"
+        if [[ "$COMMIT" == "true" ]]; then
+            git add octoprint_uptime/_version.py pyproject.toml "$CONFIG"
+            git commit -m "Bump version to $NEW_CURRENT"
+        fi
+        if [[ "$TAG" == "true" ]]; then
+            git tag "$NEW_CURRENT"
+        fi
+        printf "%b\n" "$BUMP_TYPE bump completed."
         exit 0
-    fi
-    sed -E -i "s/VERSION = \"[^\"]+\"/VERSION = \"$NEW_CURRENT\"/" octoprint_uptime/_version.py
-    sed -E -i "s/version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$NEW_CURRENT\"/" pyproject.toml
-    sed -E -i "s/^current_version[[:space:]]*=[[:space:]]*\"[^\"]+\"/current_version = \"$NEW_CURRENT\"/" "$CONFIG"
-
-    if [[ "$COMMIT" == "true" ]]; then
-        git add octoprint_uptime/_version.py pyproject.toml "$CONFIG"
-        git commit -m "Bump version to $NEW_CURRENT"
-    fi
-    if [[ "$TAG" == "true" ]]; then
-        git tag "$NEW_CURRENT"
-    fi
-    printf "%b\n" "RC bump completed."
-    exit 0
-else
-    if [[ ! -f "$CONFIG" ]]; then printf "%b\n" "${RED}Config file '$CONFIG' not found.${RESET}" >&2; usage; exit 1; fi
-    if [[ -n "$NEW_CURRENT" ]]; then
-        printf "%b\n" "Would set current_version => ${GREEN}$NEW_CURRENT${RESET} in $CONFIG"
     fi
     if [[ -n "$COMMIT" ]]; then
         printf "%b\n" "Would set commit => $COMMIT in $CONFIG"
