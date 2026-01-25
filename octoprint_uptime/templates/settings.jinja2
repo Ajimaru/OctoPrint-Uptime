@@ -31,7 +31,7 @@
 
           function _fetchUptimeNote() {
             if (uptimeNoteRendered) {
-              return;
+              return $.Deferred().resolve().promise();
             }
             return OctoPrint.simpleApiGet('octoprint_uptime')
               .done(function(data) {
@@ -47,24 +47,17 @@
               });
           }
 
-          // If the settings section is already visible, fetch immediately;
-          // otherwise wait for the settings modal to be shown to avoid extra
-          // requests when navigating settings pages.
-          if ($uptimeContainer.is(':visible')) {
-            _fetchUptimeNote();
-          } else {
-            var $modal = $uptimeContainer.closest('.modal');
-            if ($modal.length) {
-              $modal.on('shown.bs.modal shown', function _uptimeModalHandler() {
-                $modal.off('shown.bs.modal shown', _uptimeModalHandler);
-                _fetchUptimeNote();
-              });
-            } else {
-              // No enclosing modal found (non-modal settings page). Fetch
-              // immediately to ensure the uptime note is rendered in
-              // non-modal contexts.
+          // Prefer waiting for an enclosing modal to be shown. If the settings
+          // section is inside a modal, attach a one-time shown handler so we
+          // only fetch when the modal becomes visible; otherwise fetch now.
+          var $modal = $uptimeContainer.closest('.modal');
+          if ($modal.length) {
+            $modal.on('shown.bs.modal shown', function _uptimeModalHandler() {
+              $modal.off('shown.bs.modal shown', _uptimeModalHandler);
               _fetchUptimeNote();
-            }
+            });
+          } else {
+            _fetchUptimeNote();
           }
         });
       })();
