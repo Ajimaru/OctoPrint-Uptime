@@ -293,11 +293,7 @@ class OctoprintUptimePlugin(
             return None
 
         try:
-            uptime_path = self._get_valid_uptime_path()
-            if not uptime_path:
-                return None
-
-            exec_path = self._get_vetted_uptime_exec()
+            exec_path = self._get_valid_uptime_path()
             if not exec_path:
                 return None
 
@@ -358,19 +354,6 @@ class OctoprintUptimePlugin(
         if os.path.basename(rp) != "uptime":
             return None
         return rp
-
-    def _get_vetted_uptime_exec(self) -> str | None:
-        """Return a vetted absolute path to the uptime binary, or None."""
-        candidate_paths = [
-            "/usr/bin/uptime",
-            "/bin/uptime",
-            "/sbin/uptime",
-            "/usr/sbin/uptime",
-        ]
-        for p in candidate_paths:
-            if os.path.isabs(p) and os.path.isfile(p) and os.access(p, os.X_OK):
-                return p
-        return None
 
     def _select_devnull(self):
         """Return a valid stderr sink (DEVNULL, PIPE, or file)."""
