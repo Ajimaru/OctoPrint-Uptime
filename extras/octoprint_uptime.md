@@ -48,6 +48,10 @@ OctoPrint-Uptime is a lightweight plugin that displays the system uptime of your
 - Secure (authenticated API, no unauthorized access)
 - Translatable (i18n ready, German/English)
 
+## Uptime retrieval changes
+
+The plugin no longer executes the system `uptime` binary. Uptime is retrieved from `/proc/uptime` on Linux or via the `psutil` Python package when available. If neither source is available, the API will indicate `uptime_available: false` and may include an `uptime_note` with remediation instructions (for example suggesting `pip install psutil` in the OctoPrint virtualenv).
+
 **Installation:**
 Via the Plugin Manager using the URL from the README or manually via pip.
 
