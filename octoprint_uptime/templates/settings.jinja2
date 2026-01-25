@@ -29,8 +29,7 @@
           }
 
           function _fetchUptimeNote() {
-            // Use OctoPrint helper so base path and API handling are correct.
-            return OctoPrint.simpleApiGet('api/plugin/octoprint_uptime')
+            return OctoPrint.simpleApiGet('plugin/octoprint_uptime')
               .done(function(data) {
                 _renderUptimeNote(data);
               })
