@@ -33,7 +33,7 @@
             if (uptimeNoteRendered) {
               return;
             }
-            return OctoPrint.simpleApiGet('plugin/octoprint_uptime')
+            return OctoPrint.simpleApiGet('octoprint_uptime')
               .done(function(data) {
                 _renderUptimeNote(data);
                 uptimeNoteRendered = true;
