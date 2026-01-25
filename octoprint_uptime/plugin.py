@@ -6,6 +6,7 @@ including API, navbar, and settings integration.
 
 import gettext
 import importlib
+import inspect
 import os
 import time
 from typing import Any, Dict, List, Optional, Tuple
@@ -291,19 +292,17 @@ class OctoprintUptimePlugin(
         This updates the plugin's internal state from the settings store and
         calls a base implementation if provided by OctoPrint.
         """
-        try:
-            # Update internal state from settings if available
-            self._update_internal_state()
-        except (AttributeError, TypeError, ValueError):
-            pass
 
-        # If a base class provides an on_settings_initialized hook, call it safely
-        method = getattr(SettingsPluginBase, "on_settings_initialized", None)
-        if callable(method):
-            try:
-                method(self)
-            except (AttributeError, TypeError, ValueError):
-                pass
+        self._safe_update_internal_state()
+
+        hook = getattr(
+            super(OctoprintUptimePlugin, self), "on_settings_initialized", None
+        )
+        if not callable(hook):
+            hook = getattr(SettingsPluginBase, "on_settings_initialized", None)
+
+        if callable(hook):
+            self._invoke_settings_hook(hook)
 
     def on_settings_save(self, data: Dict[str, Any]) -> None:
         """
@@ -318,6 +317,60 @@ class OctoprintUptimePlugin(
         prev_navbar = getattr(self, "_navbar_enabled", None)
         self._update_internal_state()
         self._log_settings_after_save(prev_navbar)
+
+    def _safe_update_internal_state(self) -> None:
+        """Helper that updates internal state and logs expected failures."""
+        logger = getattr(self, "_logger", None)
+        try:
+            self._update_internal_state()
+        except (AttributeError, KeyError, ValueError) as e:
+            if logger:
+                logger.warning(
+                    "on_settings_initialized: failed to update internal state: %s",
+                    e,
+                )
+
+    def _invoke_settings_hook(self, hook) -> None:
+        """Invoke a settings hook (MRO-bound or class-level) and log call errors."""
+        logger = getattr(self, "_logger", None)
+        try:
+            is_bound = (
+                inspect.ismethod(hook) or getattr(hook, "__self__", None) is not None
+            )
+            param_count = None
+            try:
+                sig = inspect.signature(hook)
+                params = [
+                    p
+                    for p in sig.parameters.values()
+                    if p.kind
+                    in (
+                        inspect.Parameter.POSITIONAL_ONLY,
+                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                    )
+                ]
+                param_count = len(params)
+            except (ValueError, TypeError):
+                param_count = None
+
+            if is_bound or param_count == 0:
+                hook()
+            elif param_count == 1:
+                hook(self)
+            else:
+                try:
+                    hook()
+                except (AttributeError, TypeError, ValueError):
+                    try:
+                        hook(self)
+                    except (AttributeError, TypeError, ValueError) as e:
+                        if logger:
+                            logger.exception(
+                                "on_settings_initialized: %r raised: %s", hook, e
+                            )
+        except (AttributeError, TypeError, ValueError) as e:
+            if logger:
+                logger.exception("on_settings_initialized: %r raised: %s", hook, e)
 
     def _validate_and_sanitize_settings(self, data: Dict[str, Any]) -> None:
         """Validate and sanitize plugin settings in the provided data dict."""

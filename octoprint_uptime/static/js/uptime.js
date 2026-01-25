@@ -87,7 +87,6 @@ $(function () {
       $.get(url)
         .done(function (data) {
           // Prefer server-side settings
-          // (reflect saved values immediately)
           var navbarEnabled =
             data && typeof data.navbar_enabled !== "undefined"
               ? data.navbar_enabled
