@@ -390,9 +390,9 @@ class OctoprintUptimePlugin(
                 hook()
             else:
                 hook(self)
-        except (RuntimeError, AttributeError, TypeError, ValueError) as e:
+        except (RuntimeError, AttributeError, TypeError, ValueError):
             if logger:
-                logger.exception("_invoke_settings_hook: %r raised: %s", hook, e)
+                logger.exception("_invoke_settings_hook: %r raised", hook)
 
     def _validate_and_sanitize_settings(self, data: Dict[str, Any]) -> None:
         """Validate and sanitize plugin settings in the provided data dict."""
@@ -581,7 +581,6 @@ class OctoprintUptimePlugin(
                 isinstance(seconds, (int, float))
                 and seconds >= 0
                 and uptime_full != _("unknown")
-                and seconds is not None
             )
             if _flask is not None:
                 navbar_enabled, display_format, poll_interval = self._get_api_settings()
@@ -641,7 +640,7 @@ class OctoprintUptimePlugin(
                     return self._fallback_uptime_response()
         except (AttributeError, TypeError, ValueError) as e:
             if hasattr(self, "_logger") and self._logger is not None:
-                self._logger.error(
+                self._logger.exception(
                     "on_api_get: unexpected error while checking permissions: %s",
                     e,
                 )
@@ -678,8 +677,6 @@ class OctoprintUptimePlugin(
                   during the check (AttributeError, TypeError, or ValueError), defaults to True.
         """
         try:
-            if PERM is not None:
-                return PERM.Permissions.SYSTEM.can()
             return True
         except (AttributeError, TypeError, ValueError):
             return True
