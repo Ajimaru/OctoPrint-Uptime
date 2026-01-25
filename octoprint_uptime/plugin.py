@@ -417,7 +417,7 @@ class OctoprintUptimePlugin(
             boot = time.mktime(time.strptime(out_str, "%Y-%m-%d %H:%M:%S"))
             return time.time() - boot
 
-        except (TimeoutExpired, OSError, ValueError, UnicodeDecodeError) as e:
+        except (OSError, ValueError, UnicodeDecodeError) as e:
             logger = getattr(self, "_logger", None)
             if logger:
                 try:
