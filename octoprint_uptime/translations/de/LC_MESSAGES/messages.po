@@ -135,10 +135,10 @@ msgstr "Minimale Sekunden zwischen Debug-Log-Einträgen."
 #~ msgstr "Uptime-Plugin aktiviert/geladen"
 
 # UI strings added by plugin changes
-#: ../../static/js/uptime.js:1
+#: octoprint_uptime/static/js/uptime.js:124
 msgid "Unavailable"
 msgstr "Nicht verfügbar"
 
-#: ../../plugin.py:512
+#: octoprint_uptime/plugin.py:512
 msgid "Uptime could not be determined. You can install psutil in the OctoPrint virtualenv: pip install psutil"
 msgstr "Die Uptime konnte nicht ermittelt werden. Sie können psutil in der OctoPrint‑Virtualenv nachinstallieren: pip install psutil"
