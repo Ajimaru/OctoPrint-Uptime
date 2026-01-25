@@ -637,6 +637,8 @@ class OctoprintUptimePlugin(
                     return self._abort_forbidden()
                 except (AttributeError, TypeError, ValueError):
                     return self._fallback_uptime_response()
+                except (RuntimeError, OSError):
+                    return self._fallback_uptime_response()
         except (AttributeError, TypeError, ValueError):
             pass
 
