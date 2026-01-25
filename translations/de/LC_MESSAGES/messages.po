@@ -130,7 +130,7 @@ msgid "unknown"
 msgstr ""
 
 # UI: uptime unavailable indicator and install hint
-#: octoprint_uptime/static/js/uptime.js:1
+#: octoprint_uptime/static/js/uptime.js:124
 msgid "Unavailable"
 msgstr "Nicht verfügbar"
 

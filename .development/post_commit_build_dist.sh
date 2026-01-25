@@ -279,18 +279,28 @@ main() {
     exit 0
   fi
 
-  # Derive zip name from found sdist (replace .tar.gz or .tgz with .zip)
-  if [[ "$sdist" == *.tar.gz ]]; then
-    zip="${sdist%.tar.gz}.zip"
-  elif [[ "$sdist" == *.tgz ]]; then
-    zip="${sdist%.tgz}.zip"
-  else
-    zip="${sdist}.zip"
-  fi
-
-  log "Creating zip from sdist: ${zip} (source: ${sdist})"
-  rm -f "$zip"
-  create_zip_from_sdist "$sdist" "$zip"
+  case "$sdist" in
+    *.tar.gz)
+      zip="${sdist%.tar.gz}.zip"
+      log "Creating zip from tar.gz sdist: ${zip} (source: ${sdist})"
+      rm -f "$zip"
+      create_zip_from_sdist "$sdist" "$zip"
+      ;;
+    *.tgz)
+      zip="${sdist%.tgz}.zip"
+      log "Creating zip from tgz sdist: ${zip} (source: ${sdist})"
+      rm -f "$zip"
+      create_zip_from_sdist "$sdist" "$zip"
+      ;;
+    *.zip)
+      zip="$sdist"
+      log "Found sdist already in zip format: ${sdist}; skipping conversion"
+      ;;
+    *)
+      zip=""
+      log "WARNING: sdist ${sdist} has an unrecognized extension; skipping zip creation"
+      ;;
+  esac
 
   log "Done: dist/ artifacts updated"
 }

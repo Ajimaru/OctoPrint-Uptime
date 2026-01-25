@@ -331,46 +331,68 @@ class OctoprintUptimePlugin(
                 )
 
     def _invoke_settings_hook(self, hook) -> None:
-        """Invoke a settings hook (MRO-bound or class-level) and log call errors."""
-        logger = getattr(self, "_logger", None)
-        try:
-            is_bound = (
-                inspect.ismethod(hook) or getattr(hook, "__self__", None) is not None
-            )
-            param_count = None
-            try:
-                sig = inspect.signature(hook)
-                params = [
-                    p
-                    for p in sig.parameters.values()
-                    if p.kind
-                    in (
-                        inspect.Parameter.POSITIONAL_ONLY,
-                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                    )
-                ]
-                param_count = len(params)
-            except (ValueError, TypeError):
-                param_count = None
+        """Invoke a settings hook using signature inspection and log call errors.
 
-            if is_bound or param_count == 0:
-                hook()
-            elif param_count == 1:
-                hook(self)
-            else:
-                try:
-                    hook()
-                except (AttributeError, TypeError, ValueError):
-                    try:
-                        hook(self)
-                    except (AttributeError, TypeError, ValueError) as e:
-                        if logger:
-                            logger.exception(
-                                "on_settings_initialized: %r raised: %s", hook, e
-                            )
-        except (AttributeError, TypeError, ValueError) as e:
+        Uses `inspect.signature` to determine the number of positional parameters
+        the `hook` expects. If it expects 0 parameters it is called as
+        `hook()`. If it expects 1 parameter it is called as `hook(self)`.
+        If signature inspection fails or reports an unexpected parameter
+        count the hook is skipped and a warning is logged. Any exception
+        raised by the invoked hook is logged via `self._logger`.
+        """
+        logger = getattr(self, "_logger", None)
+
+        try:
+            sig = inspect.signature(hook)
+            params = [
+                p
+                for p in sig.parameters.values()
+                if p.kind
+                in (
+                    inspect.Parameter.POSITIONAL_ONLY,
+                    inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                )
+            ]
+            # Only positional parameters are considered: OctoPrint hook
+            # signatures vary — some hooks are defined as bound/unbound
+            # callables. We accept 0 or 1 positional parameters where
+            # 0 means the hook should be called as `hook()` and 1 means
+            # an unbound function expecting `self` should be called as
+            # `hook(self)`. VAR_POSITIONAL (`*args`) and keyword-only
+            # parameters are intentionally ignored for this heuristic.
+            param_count = len(params)
+        except (ValueError, TypeError) as e:
             if logger:
-                logger.exception("on_settings_initialized: %r raised: %s", hook, e)
+                logger.warning(
+                    "_invoke_settings_hook: unable to inspect signature for %r: %s",
+                    hook,
+                    e,
+                )
+            return
+
+        # Only accept hooks that explicitly take 0 or 1 positional
+        # parameter (see comment above about `inspect.signature`,
+        # `params` and how `param_count == 0` / `param_count == 1`
+        # map to calling conventions). Skip and warn for anything
+        # else to avoid attempting multiple calling conventions
+        # which can mask real errors.
+        if param_count not in (0, 1):
+            if logger:
+                logger.warning(
+                    "_invoke_settings_hook: unexpected parameter count %s for %r; skipping",
+                    param_count,
+                    hook,
+                )
+            return
+
+        try:
+            if param_count == 0:
+                hook()
+            else:
+                hook(self)
+        except (RuntimeError, AttributeError, TypeError, ValueError) as e:
+            if logger:
+                logger.exception("_invoke_settings_hook: %r raised: %s", hook, e)
 
     def _validate_and_sanitize_settings(self, data: Dict[str, Any]) -> None:
         """Validate and sanitize plugin settings in the provided data dict."""
@@ -602,7 +624,7 @@ class OctoprintUptimePlugin(
                     "_fallback_uptime_response: unexpected error while building response: %s",
                     e,
                 )
-            return {"uptime": _("unknown")}
+                return {"uptime": _("unknown"), "uptime_available": False}
 
     def on_api_get(self, _request: Any = None) -> Any:
         """

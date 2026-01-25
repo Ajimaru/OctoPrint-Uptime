@@ -8,7 +8,9 @@
     <script type="text/javascript">
       (function() {
         $(function() {
-          $.get('/api/plugin/octoprint_uptime').done(function(data) {
+          var $uptimeContainer = $('#settings_plugin_octoprint_uptime');
+
+          function _renderUptimeNote(data) {
             try {
               if (data && data.uptime_available === false) {
                 var installNote = $('#uptime_note_container').attr('data-note') || '';
@@ -18,19 +20,39 @@
                 $('#uptime_note_container').empty().append(el).show();
               }
             } catch (e) {
-              if (window && window.UptimeDebug) {
+              if (typeof window.UptimeDebug !== 'undefined' && window.UptimeDebug) {
                 console.error('octoprint_uptime: error handling uptime API response in settings template', e, data);
               } else {
                 console.warn('octoprint_uptime: error handling uptime API response in settings template');
               }
             }
-          }).fail(function(jqXHR, textStatus, errorThrown){
-            if (window && window.UptimeDebug) {
-              console.error('octoprint_uptime: failed to fetch uptime API for settings template', textStatus, errorThrown, jqXHR);
-            } else {
-              console.warn('octoprint_uptime: failed to fetch uptime API for settings template:', textStatus);
-            }
-          });
+          }
+
+          function _fetchUptimeNote() {
+            // Use OctoPrint helper so base path and API handling are correct.
+            return OctoPrint.simpleApiGet('api/plugin/octoprint_uptime')
+              .done(function(data) {
+                _renderUptimeNote(data);
+              })
+              .fail(function(jqXHR, textStatus, errorThrown) {
+                if (typeof window.UptimeDebug !== 'undefined' && window.UptimeDebug) {
+                  console.error('octoprint_uptime: failed to fetch uptime API for settings template', textStatus, errorThrown, jqXHR);
+                } else {
+                  console.warn('octoprint_uptime: failed to fetch uptime API for settings template:', textStatus);
+                }
+              });
+          }
+
+          // If the settings section is already visible, fetch immediately;
+          // otherwise wait for the settings modal to be shown to avoid extra
+          // requests when navigating settings pages.
+          if ($uptimeContainer.is(':visible')) {
+            _fetchUptimeNote();
+          } else {
+            $uptimeContainer.closest('.modal').on('shown.bs.modal shown', function() {
+              _fetchUptimeNote();
+            });
+          }
         });
       })();
     </script>

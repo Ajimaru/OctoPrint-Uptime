@@ -83,8 +83,7 @@ $(function () {
         return;
       }
 
-      var url = "/api/plugin/octoprint_uptime";
-      $.get(url)
+      OctoPrint.simpleApiGet("api/plugin/octoprint_uptime")
         .done(function (data) {
           // Prefer server-side settings
           var navbarEnabled =
@@ -128,7 +127,10 @@ $(function () {
               }
             }
           } catch (e) {
-            if (window && window.UptimeDebug) {
+            if (
+              typeof window.UptimeDebug !== "undefined" &&
+              window.UptimeDebug
+            ) {
               console.error(
                 "octoprint_uptime: error processing uptime_available flag",
                 e,
@@ -169,7 +171,10 @@ $(function () {
                   anchor.tooltip("dispose");
                 }
               } catch (disposeErr) {
-                if (window && window.UptimeDebug) {
+                if (
+                  typeof window.UptimeDebug !== "undefined" &&
+                  window.UptimeDebug
+                ) {
                   console.error(
                     "octoprint_uptime: failed to dispose existing tooltip",
                     disposeErr,
@@ -186,7 +191,10 @@ $(function () {
               anchor.removeAttr("data-original-title");
             }
           } catch (e) {
-            if (window && window.UptimeDebug) {
+            if (
+              typeof window.UptimeDebug !== "undefined" &&
+              window.UptimeDebug
+            ) {
               console.error(
                 "octoprint_uptime: tooltip calculation error",
                 e,
@@ -208,7 +216,10 @@ $(function () {
             }
             scheduleNext(pollInterval);
           } catch (e) {
-            if (window && window.UptimeDebug) {
+            if (
+              typeof window.UptimeDebug !== "undefined" &&
+              window.UptimeDebug
+            ) {
               console.error(
                 "octoprint_uptime: poll interval calculation error",
                 e,
@@ -219,7 +230,6 @@ $(function () {
         })
         .fail(function () {
           self.uptimeDisplay("Error");
-          // If request fails, respect local setting
           if (!isNavbarEnabled()) {
             navbarEl.hide();
           }
