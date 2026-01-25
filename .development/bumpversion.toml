@@ -2,11 +2,11 @@
 # Created for OctoPrint-Uptime. Adjust patterns if needed.
 
 [bumpversion]
-current_version = "0.1.0rc10"
-tag = false
+current_version = "0.1.0rc11"
+tag = true
 tag_name = "v{new_version}"
 tag_message = "Bump version: {current_version} → {new_version}"
-commit = false
+commit = true
 message = "Bump version: {current_version} → {new_version}"
 
 [[bumpversion.files]]
