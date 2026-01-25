@@ -212,7 +212,6 @@ main() {
     exit 0
   fi
 
-  # Only consider commits that touched pyproject.toml
   if ! git show --name-only --pretty=format: HEAD | grep -qx "pyproject.toml"; then
     log "No version bump detected (pyproject.toml unchanged in last commit)."
     exit 0
@@ -227,7 +226,6 @@ main() {
   fi
 
   if [[ -z "$old_version" ]]; then
-    # No baseline to compare (e.g. first commit) -> do nothing.
     log "No version bump detected (no previous version to compare)."
     exit 0
   fi
@@ -237,8 +235,6 @@ main() {
     exit 0
   fi
 
-  # Prefer a "previous released" version from dist/ for display, if available.
-  # This avoids confusing output when the git baseline doesn't match what was built locally.
   local display_old
   display_old="$(get_previous_version_from_dist "$new_version")"
   if [[ -z "$display_old" ]]; then
@@ -259,16 +255,14 @@ main() {
   local sdist=""
   local zip=""
 
-  # Find an sdist matching the new version using a glob (case-insensitive),
-  # since build tools may produce different normalized filenames (hyphen vs
-  # underscore, different casing, etc.).
   shopt -s nullglob nocaseglob
-  for candidate in dist/*${new_version}*.tar.gz dist/*${new_version}*.tgz; do
+  normalized_version="${new_version//-/.}"
+  candidates=(dist/*${new_version}*.tar.gz dist/*${new_version}*.tgz dist/*${normalized_version}*.tar.gz dist/*${normalized_version}*.tgz)
+  for candidate in "${candidates[@]}"; do
     [[ -f "$candidate" ]] || continue
     sdist="$candidate"
     break
   done
-  # restore shell options (turn off nocaseglob but keep nullglob behavior minimal)
   shopt -u nocaseglob || true
 
   if [[ -z "$sdist" ]]; then

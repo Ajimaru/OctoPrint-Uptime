@@ -9,7 +9,7 @@ import importlib
 import os
 import shutil
 import time
-from typing import IO, Any, Dict, List, Tuple, cast
+from typing import IO, Any, Dict, List, cast
 
 try:
     from ._version import VERSION
@@ -36,7 +36,6 @@ except (ImportError, AttributeError):
 
 
 try:
-
     plugin_pkg = importlib.import_module("octoprint.plugin")
     try:
         perm_pkg = importlib.import_module("octoprint.access.permissions")
@@ -48,8 +47,6 @@ try:
     SimpleApiPluginBase = getattr(plugin_pkg, "SimpleApiPlugin", object)
     AssetPluginBase = getattr(plugin_pkg, "AssetPlugin", object)
     TemplatePluginBase = getattr(plugin_pkg, "TemplatePlugin", object)
-    StartupPluginBase = getattr(plugin_pkg, "StartupPlugin", object)
-    SystemInfoPluginBase = getattr(plugin_pkg, "SystemInfoPlugin", object)
 except ModuleNotFoundError:
     PERM = None
 
@@ -65,18 +62,10 @@ except ModuleNotFoundError:
     class _TemplatePluginBase:  # pragma: no cover - trivial fallback
         pass
 
-    class _StartupPluginBase:  # pragma: no cover - trivial fallback
-        pass
-
-    class _SystemInfoPluginBase:  # pragma: no cover - trivial fallback
-        pass
-
     SettingsPluginBase = _SettingsPluginBase
     SimpleApiPluginBase = _SimpleApiPluginBase
     AssetPluginBase = _AssetPluginBase
     TemplatePluginBase = _TemplatePluginBase
-    StartupPluginBase = _StartupPluginBase
-    SystemInfoPluginBase = _SystemInfoPluginBase
 
 
 def format_uptime(seconds: float) -> str:
@@ -169,7 +158,6 @@ class OctoprintUptimePlugin(
     AssetPluginBase,
     SettingsPluginBase,
     TemplatePluginBase,
-    SystemInfoPluginBase,
 ):
     """OctoPrint plugin implementation.
     Uses lazy imports for OctoPrint/Flask integration points so the module
@@ -602,18 +590,6 @@ class OctoprintUptimePlugin(
                 pass
         except (AttributeError, TypeError, ValueError):
             pass
-
-    def get_additional_systeminfo_files(self) -> List[Tuple[str, bytes]]:
-        """
-        Returns a list of additional system information files to be included.
-
-        Each item in the list is a tuple containing the file name and its contents as bytes.
-        By default, this method returns an empty list, indicating no additional files.
-
-        Returns:
-            List[Tuple[str, bytes]]: A list of tuples with file names and their contents.
-        """
-        return []
 
     def _fallback_uptime_response(self):
         """
