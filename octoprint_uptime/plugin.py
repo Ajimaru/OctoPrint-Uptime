@@ -584,16 +584,40 @@ class OctoprintUptimePlugin(
                 and uptime_full != _("unknown")
             )
             if _flask is not None:
-                return self._build_flask_uptime_response(
-                    seconds,
-                    uptime_full,
-                    uptime_dhm,
-                    uptime_dh,
-                    uptime_d,
-                    uptime_available,
-                    logger,
+                navbar_enabled, display_format, poll_interval = self._get_api_settings()
+                resp = {
+                    "uptime": uptime_full,
+                    "uptime_dhm": uptime_dhm,
+                    "uptime_dh": uptime_dh,
+                    "uptime_d": uptime_d,
+                    "seconds": seconds,
+                    "navbar_enabled": navbar_enabled,
+                    "display_format": display_format,
+                    "poll_interval_seconds": poll_interval,
+                    "uptime_available": uptime_available,
+                }
+                if not uptime_available:
+                    resp["uptime_note"] = _(
+                        "Uptime could not be determined. You can install psutil in the "
+                        "OctoPrint virtualenv: pip install psutil"
+                    )
+                try:
+                    return _flask.jsonify(**resp)
+                except (TypeError, ValueError, RuntimeError):
+                    if logger:
+                        logger.exception(
+                            "_fallback_uptime_response: flask.jsonify failed, "
+                            "falling back to dict"
+                        )
+                    return resp
+
+            resp = {"uptime": uptime_full, "uptime_available": uptime_available}
+            if not uptime_available:
+                resp["uptime_note"] = _(
+                    "Uptime could not be determined. You can install psutil in the "
+                    "OctoPrint virtualenv: pip install psutil"
                 )
-            return self._build_dict_uptime_response(uptime_full, uptime_available)
+            return resp
         except (AttributeError, TypeError, ValueError):
             if logger:
                 logger.exception(
@@ -601,56 +625,7 @@ class OctoprintUptimePlugin(
                 )
             return {"uptime": _("unknown"), "uptime_available": False}
 
-    def _build_flask_uptime_response(
-        self,
-        seconds,
-        uptime_full,
-        uptime_dhm,
-        uptime_dh,
-        uptime_d,
-        uptime_available,
-        logger,
-    ):
-        navbar_enabled, display_format, poll_interval = self._get_api_settings()
-        resp = {
-            "uptime": uptime_full,
-            "uptime_dhm": uptime_dhm,
-            "uptime_dh": uptime_dh,
-            "uptime_d": uptime_d,
-            "seconds": seconds,
-            "navbar_enabled": navbar_enabled,
-            "display_format": display_format,
-            "poll_interval_seconds": poll_interval,
-            "uptime_available": uptime_available,
-        }
-        if not uptime_available:
-            resp["uptime_note"] = _(
-                "Uptime could not be determined. You can install psutil in the "
-                "OctoPrint virtualenv: pip install psutil"
-            )
-        try:
-            if _flask is not None and hasattr(_flask, "jsonify"):
-                return _flask.jsonify(**resp)
-            else:
-                return resp
-        except (TypeError, ValueError, RuntimeError, AttributeError):
-            if logger:
-                logger.exception(
-                    "_fallback_uptime_response: flask.jsonify failed, "
-                    "falling back to dict"
-                )
-            return resp
-
-    def _build_dict_uptime_response(self, uptime_full, uptime_available):
-        resp = {"uptime": uptime_full, "uptime_available": uptime_available}
-        if not uptime_available:
-            resp["uptime_note"] = _(
-                "Uptime could not be determined. You can install psutil in the "
-                "OctoPrint virtualenv: pip install psutil"
-            )
-        return resp
-
-    def on_api_get(self) -> Any:
+    def on_api_get(self, _request: Any = None) -> Any:
         """
         Handle GET requests to the plugin's API endpoint.
         """
@@ -658,41 +633,23 @@ class OctoprintUptimePlugin(
         if permission_result is not None:
             return permission_result
 
-        logger = getattr(self, "_logger", None)
+        seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = self._get_uptime_info()
+        self._log_debug(_("Uptime API requested, result=%s") % uptime_full)
 
-        try:
-            seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = (
-                self._get_uptime_info()
+        if _flask is not None:
+            navbar_enabled, display_format, poll_interval = self._get_api_settings()
+            return _flask.jsonify(
+                uptime=uptime_full,
+                uptime_dhm=uptime_dhm,
+                uptime_dh=uptime_dh,
+                uptime_d=uptime_d,
+                seconds=seconds,
+                navbar_enabled=navbar_enabled,
+                display_format=display_format,
+                poll_interval_seconds=poll_interval,
             )
-            self._log_debug(_("Uptime API requested, result=%s") % uptime_full)
 
-            if _flask is not None:
-                navbar_enabled, display_format, poll_interval = self._get_api_settings()
-                try:
-                    return _flask.jsonify(
-                        uptime=uptime_full,
-                        uptime_dhm=uptime_dhm,
-                        uptime_dh=uptime_dh,
-                        uptime_d=uptime_d,
-                        seconds=seconds,
-                        navbar_enabled=navbar_enabled,
-                        display_format=display_format,
-                        poll_interval_seconds=poll_interval,
-                    )
-                except (TypeError, ValueError, RuntimeError, AttributeError):
-                    if logger:
-                        logger.exception(
-                            "on_api_get: flask.jsonify failed, falling back to safe response"
-                        )
-                    return self._fallback_uptime_response()
-
-            return {"uptime": uptime_full}
-        except (AttributeError, TypeError, ValueError, RuntimeError):
-            if logger:
-                logger.exception(
-                    "on_api_get: unexpected error; returning safe uptime response"
-                )
-            return self._fallback_uptime_response()
+        return {"uptime": uptime_full}
 
     def _handle_permission_check(self) -> Optional[Any]:
         """
@@ -708,11 +665,10 @@ class OctoprintUptimePlugin(
                     return self._abort_forbidden()
                 except (AttributeError, TypeError, ValueError, RuntimeError, OSError):
                     return self._fallback_uptime_response()
-        except (AttributeError, TypeError, ValueError) as e:
-            logger = getattr(self, "_logger", None)
-            if logger:
-                logger.exception(
-                    "on_api_get: unexpected error while checking permissions: %s", e
+        except (AttributeError, TypeError, ValueError):
+            if hasattr(self, "_logger") and self._logger is not None:
+                self._logger.exception(
+                    "on_api_get: unexpected error while checking permissions"
                 )
             try:
                 return self._abort_forbidden()
@@ -729,10 +685,10 @@ class OctoprintUptimePlugin(
                   otherwise, returns the result of the permission check. If an exception occurs
                   during the check (AttributeError, TypeError, or ValueError), defaults to True.
         """
-        # Allow read-only access for the uptime API (navbar GETs). If you need
-        # admin-only behavior, implement explicit checks here using OctoPrint's
-        # auth helpers. Returning True keeps the navbar functional for all users.
-        return True
+        try:
+            return True
+        except (AttributeError, TypeError, ValueError):
+            return True
 
     def _abort_forbidden(self):
         """
