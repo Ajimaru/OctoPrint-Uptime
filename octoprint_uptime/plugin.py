@@ -7,10 +7,8 @@ including API, navbar, and settings integration.
 import gettext
 import importlib
 import os
-import shutil
-import stat
 import time
-from typing import IO, Any, Dict, List, cast
+from typing import Any, Dict, List
 
 try:
     from ._version import VERSION
@@ -20,12 +18,6 @@ try:
     import flask as _flask
 except ImportError:
     _flask = None
-
-try:
-    import subprocess
-except ImportError:
-    subprocess = None
-
 PERM = None
 
 try:
@@ -251,7 +243,6 @@ class OctoprintUptimePlugin(
         strategies = [
             self._get_uptime_from_proc,
             self._get_uptime_from_psutil,
-            self._get_uptime_from_uptime_cmd,
         ]
         for strategy in strategies:
             uptime = strategy()
@@ -284,132 +275,6 @@ class OctoprintUptimePlugin(
         except (AttributeError, TypeError, ValueError):
             return None
         return None
-
-    def _get_uptime_from_uptime_cmd(self) -> float | None:
-        """Get uptime using the 'uptime -s' command with refactored helpers."""
-        if not subprocess:
-            return None
-
-        try:
-            exec_path = self._get_valid_uptime_path()
-            if not exec_path:
-                return None
-
-            return self._run_uptime_and_parse(exec_path)
-        except (ValueError, OSError, TypeError, UnicodeDecodeError):
-            return None
-
-    def _get_valid_uptime_path(self) -> str | None:
-        """Return a valid absolute path to the uptime binary, or None.
-
-        This performs a best-effort, more secure validation on POSIX systems by
-        attempting to open the candidate path with O_NOFOLLOW and validating the
-        resulting file descriptor (regular file, executable bit set). If that
-        is not available or fails, it falls back to resolving the realpath and
-        performing conservative checks. The function always returns a canonical
-        path (via realpath) when it decides the candidate is acceptable.
-        """
-        uptime_path = shutil.which("uptime")
-        if not uptime_path or not os.path.isabs(uptime_path):
-            return None
-
-        rp: str | None = None
-
-        nofollow = getattr(os, "O_NOFOLLOW", 0)
-        flags = os.O_RDONLY
-        if nofollow:
-            flags |= nofollow
-
-        try:
-            fd = os.open(uptime_path, flags)
-        except OSError:
-            try:
-                rp = os.path.realpath(uptime_path)
-            except (OSError, ValueError):
-                return None
-            if os.path.basename(rp) != "uptime":
-                return None
-            try:
-                st = os.stat(rp)
-            except OSError:
-                return None
-        else:
-            try:
-                st = os.fstat(fd)
-                if not stat.S_ISREG(st.st_mode):
-                    return None
-                if not st.st_mode & (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH):
-                    return None
-                try:
-                    rp = os.path.realpath(uptime_path)
-                except (OSError, ValueError):
-                    rp = uptime_path
-            finally:
-                os.close(fd)
-
-        if not rp:
-            return None
-        if os.path.basename(rp) != "uptime":
-            return None
-        return rp
-
-    def _select_devnull(self):
-        """Return a valid stderr sink (DEVNULL, PIPE, or file)."""
-        if subprocess is not None and hasattr(subprocess, "DEVNULL"):
-            return subprocess.DEVNULL, False
-        if subprocess is not None and hasattr(subprocess, "PIPE"):
-            return subprocess.PIPE, False
-        return open(os.devnull, "wb"), True
-
-    def _decode_output(self, out_bytes):
-        """Decode bytes to string safely."""
-        try:
-            return out_bytes.decode("utf-8", errors="replace").strip()
-        except (AttributeError, TypeError):
-            return str(out_bytes).strip()
-
-    def _run_uptime_and_parse(self, exec_path: str) -> float | None:
-        """Run the uptime command and parse the output to get uptime in seconds."""
-
-        if not os.path.isabs(exec_path):
-            raise ValueError("exec_path must be an absolute path")
-
-        if not os.access(exec_path, os.X_OK):
-            raise ValueError("exec_path is not executable")
-
-        devnull, must_close = self._select_devnull()
-
-        try:
-            # nosemgrep: python.lang.security.audit.dangerous-subprocess-use-audit.dangerous-subprocess-use-audit
-            completed = subprocess.run(
-                [exec_path, "-s"],
-                stdout=subprocess.PIPE,
-                stderr=devnull,
-                check=False,
-                timeout=5,
-                close_fds=True,
-                env={"PATH": "/usr/bin:/bin"},
-            )
-
-            if completed.returncode != 0:
-                return None
-
-            out_str = self._decode_output(completed.stdout)
-            boot = time.mktime(time.strptime(out_str, "%Y-%m-%d %H:%M:%S"))
-            return time.time() - boot
-
-        except (OSError, ValueError, UnicodeDecodeError) as e:
-            logger = getattr(self, "_logger", None)
-            if logger:
-                try:
-                    logger.error("Exception in _run_uptime_and_parse: %s", str(e))
-                except (AttributeError, TypeError, ValueError):
-                    pass
-            return None
-
-        finally:
-            if must_close:
-                cast(IO[bytes], devnull).close()
 
     def on_after_startup(self) -> None:
         """
