@@ -27,7 +27,7 @@ $(function () {
     self.uptimeDisplay = ko.observable("Loading...");
 
     var navbarEl = $("#navbar_plugin_navbar_uptime");
-
+    var DEFAULT_POLL = 5;
     var isNavbarEnabled = function () {
       try {
         return settings.plugins.octoprint_uptime.navbar_enabled();
@@ -239,7 +239,6 @@ $(function () {
     };
 
     var pollTimer = null;
-    var DEFAULT_POLL = 5;
 
     /**
      * Schedule the next polling cycle.
