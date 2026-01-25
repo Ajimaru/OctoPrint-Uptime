@@ -284,15 +284,6 @@ class OctoprintUptimePlugin(
             return None
         return None
 
-    def on_after_startup(self) -> None:
-        """
-        Called after the OctoPrint server has started up.
-
-        This method can be used to perform any initialization tasks or setup required
-        after the server is fully running. Override this method to add custom startup logic.
-        """
-        return
-
     def on_settings_initialized(self) -> None:
         """
         Called when OctoPrint has initialized plugin settings.
