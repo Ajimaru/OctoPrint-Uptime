@@ -9,13 +9,12 @@ import importlib
 import os
 import shutil
 import time
-from typing import IO, Any, Dict, List, Tuple, Type, cast
+from typing import IO, Any, Dict, List, Tuple, cast
 
 try:
     from ._version import VERSION
 except (ImportError, ModuleNotFoundError):
     VERSION = "0.0.0"
-
 try:
     import flask as _flask
 except ImportError:
@@ -37,232 +36,47 @@ except (ImportError, AttributeError):
 
 
 try:
-    import octoprint.plugin  # type: ignore
 
+    plugin_pkg = importlib.import_module("octoprint.plugin")
     try:
-        import octoprint.access.permissions as PERM  # type: ignore
-    except ImportError:
+        perm_pkg = importlib.import_module("octoprint.access.permissions")
+        PERM = perm_pkg
+    except ModuleNotFoundError:
         PERM = None
+
+    SettingsPluginBase = getattr(plugin_pkg, "SettingsPlugin", object)
+    SimpleApiPluginBase = getattr(plugin_pkg, "SimpleApiPlugin", object)
+    AssetPluginBase = getattr(plugin_pkg, "AssetPlugin", object)
+    TemplatePluginBase = getattr(plugin_pkg, "TemplatePlugin", object)
+    StartupPluginBase = getattr(plugin_pkg, "StartupPlugin", object)
+    SystemInfoPluginBase = getattr(plugin_pkg, "SystemInfoPlugin", object)
 except ModuleNotFoundError:
+    PERM = None
 
-    class _OctoPrintPluginStubs:
-        def public_method_one(self):
-            """A dummy public method for linting compliance."""
-            return "method_one"
+    class _SettingsPluginBase:  # pragma: no cover - trivial fallback
+        pass
 
-        def public_method_two(self):
-            """Another dummy public method for linting compliance."""
-            return "method_two"
+    class _SimpleApiPluginBase:  # pragma: no cover - trivial fallback
+        pass
 
-        class SettingsPlugin:
-            """
-            A plugin class for handling settings operations.
+    class _AssetPluginBase:  # pragma: no cover - trivial fallback
+        pass
 
-            This class provides methods to manage and process settings data
-            within the OctoPrint-Uptime plugin.
-            """
+    class _TemplatePluginBase:  # pragma: no cover - trivial fallback
+        pass
 
-            def on_settings_save(self: Any, data: dict) -> dict:
-                """
-                Handle actions to perform when plugin settings are saved.
+    class _StartupPluginBase:  # pragma: no cover - trivial fallback
+        pass
 
-                Args:
-                    data (dict): The settings data to be saved.
+    class _SystemInfoPluginBase:  # pragma: no cover - trivial fallback
+        pass
 
-                Returns:
-                    dict: The processed settings data.
-                """
-                return data
-
-            def public_method_one(self):
-                """A dummy public method for linting compliance."""
-                return "method_one"
-
-            def public_method_two(self):
-                """Another dummy public method for linting compliance."""
-                return "method_two"
-
-        class SimpleApiPlugin:
-            """Stub for OctoPrint's SimpleApiPlugin.
-
-            This class provides basic API plugin structure for environments
-            where OctoPrint is not installed.
-            """
-
-            def on_api_get(self, _request: Any) -> Any:
-                """Handle GET requests to the plugin's API endpoint.
-
-                Args:
-                    _request (Any): The incoming request object.
-
-                Returns:
-                    Any: The response to be returned.
-                """
-                return {}
-
-            def is_api_protected(self) -> bool:
-                """Indicate whether the API endpoint requires authentication.
-
-                Returns:
-                    bool: True if API is protected, False otherwise.
-                """
-                return True
-
-        class AssetPlugin:
-            """Stub for OctoPrint's AssetPlugin.
-
-            This class provides basic asset plugin structure for environments
-            where OctoPrint is not installed.
-            """
-
-            def get_assets(self) -> dict:
-                """Return plugin asset files (stub).
-
-                Returns:
-                    dict: Asset file mapping.
-                """
-                return {}
-
-            def asset_enabled(self) -> bool:
-                """Indicate whether assets are enabled (stub).
-
-                Returns:
-                    bool: True if enabled, False otherwise.
-                """
-                return True
-
-        class TemplatePlugin:
-            """Stub for OctoPrint's TemplatePlugin.
-
-            This class provides basic template plugin structure for environments
-            where OctoPrint is not installed.
-            """
-
-            def get_template_configs(self) -> dict:
-                """Return template configuration (stub).
-
-                Returns:
-                    dict: Template configuration mapping.
-                """
-                return {}
-
-            def is_template_autoescaped(self) -> bool:
-                """Indicate whether template autoescaping is enabled (stub).
-
-                Returns:
-                    bool: True if autoescaping is enabled, False otherwise.
-                """
-                return True
-
-    class _OctoPrintStubs:
-        plugin = _OctoPrintPluginStubs
-
-        def public_method_one(self):
-            """A dummy public method for linting compliance."""
-            return "method_one"
-
-        def public_method_two(self):
-            """Another dummy public method for linting compliance."""
-            return "method_two"
-
-    octoprint = _OctoPrintStubs()
-
-SettingsPluginBase: Type[Any] = getattr(octoprint.plugin, "SettingsPlugin", object)
-SimpleApiPluginBase: Type[Any] = getattr(octoprint.plugin, "SimpleApiPlugin", object)
-AssetPluginBase: Type[Any] = getattr(octoprint.plugin, "AssetPlugin", object)
-TemplatePluginBase: Type[Any] = getattr(octoprint.plugin, "TemplatePlugin", object)
-StartupPluginBase: Type[Any] = getattr(octoprint.plugin, "StartupPlugin", object)
-SystemInfoPluginBase: Type[Any] = getattr(octoprint.plugin, "SystemInfoPlugin", object)
-
-if SettingsPluginBase is object:
-
-    class _SettingsPluginDummy:
-        """
-        A dummy placeholder class for settings plugin functionality.
-
-        This class is used as a stub or mock implementation where a full settings plugin
-        class is not required. It currently does not implement any public methods or attributes.
-        """
-
-        def public_method_one(self):
-            """A dummy public method."""
-            return "method_one"
-
-        def public_method_two(self):
-            """Another dummy public method."""
-            return "method_two"
-
-    SettingsPluginBase = _SettingsPluginDummy
-if TemplatePluginBase is object:
-
-    class _TemplatePluginDummy:
-        """
-        A dummy class used as a placeholder for template plugin functionality.
-
-        This class currently does not implement any public methods or attributes.
-        """
-
-        def public_method_one(self):
-            """A dummy public method."""
-            return "method_one"
-
-        def public_method_two(self):
-            """Another dummy public method."""
-            return "method_two"
-
-    TemplatePluginBase = _TemplatePluginDummy
-if SimpleApiPluginBase is object:
-
-    class _SimpleApiPluginDummy:
-        """Dummy SimpleApiPlugin with two public methods to satisfy linting."""
-
-        def public_method_one(self):
-            """A dummy public method."""
-            return "method_one"
-
-        def public_method_two(self):
-            """Another dummy public method."""
-            return "method_two"
-
-    SimpleApiPluginBase = _SimpleApiPluginDummy
-if SystemInfoPluginBase == object:
-
-    class _SystemInfoPluginDummy:
-        """Dummy SystemInfoPlugin with minimal API for fallback."""
-
-        def get_additional_systeminfo_files(self):
-            """Return an empty list as a fallback."""
-            return []
-
-    SystemInfoPluginBase = _SystemInfoPluginDummy
-if AssetPluginBase is object:
-
-    class _AssetPluginDummy:
-        """Dummy AssetPlugin with two public methods to satisfy linting."""
-
-        def public_method_one(self):
-            """A dummy public method."""
-            return "method_one"
-
-        def public_method_two(self):
-            """Another dummy public method."""
-            return "method_two"
-
-    AssetPluginBase = _AssetPluginDummy
-if StartupPluginBase == object:
-
-    class _StartupPluginDummy:
-        """Dummy StartupPlugin with two public methods to satisfy linting."""
-
-        def public_method_one(self):
-            """A dummy public method."""
-            return "method_one"
-
-        def public_method_two(self):
-            """Another dummy public method."""
-            return "method_two"
-
-    StartupPluginBase = _StartupPluginDummy
+    SettingsPluginBase = _SettingsPluginBase
+    SimpleApiPluginBase = _SimpleApiPluginBase
+    AssetPluginBase = _AssetPluginBase
+    TemplatePluginBase = _TemplatePluginBase
+    StartupPluginBase = _StartupPluginBase
+    SystemInfoPluginBase = _SystemInfoPluginBase
 
 
 def format_uptime(seconds: float) -> str:
