@@ -624,7 +624,7 @@ class OctoprintUptimePlugin(
                     "_fallback_uptime_response: unexpected error while building response: %s",
                     e,
                 )
-                return {"uptime": _("unknown"), "uptime_available": False}
+            return {"uptime": _("unknown"), "uptime_available": False}
 
     def on_api_get(self, _request: Any = None) -> Any:
         """

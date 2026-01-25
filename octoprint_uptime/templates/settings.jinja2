@@ -9,6 +9,7 @@
       (function() {
         $(function() {
           var $uptimeContainer = $('#settings_plugin_octoprint_uptime');
+          var uptimeNoteRendered = false;
 
           function _renderUptimeNote(data) {
             try {
@@ -29,9 +30,13 @@
           }
 
           function _fetchUptimeNote() {
+            if (uptimeNoteRendered) {
+              return;
+            }
             return OctoPrint.simpleApiGet('plugin/octoprint_uptime')
               .done(function(data) {
                 _renderUptimeNote(data);
+                uptimeNoteRendered = true;
               })
               .fail(function(jqXHR, textStatus, errorThrown) {
                 if (typeof window.UptimeDebug !== 'undefined' && window.UptimeDebug) {
