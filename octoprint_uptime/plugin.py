@@ -50,16 +50,16 @@ try:
 except ModuleNotFoundError:
     PERM = None
 
-    class _SettingsPluginBase:  # pragma: no cover - trivial fallback
+    class _SettingsPluginBase(object):  # pragma: no cover - trivial fallback
         pass
 
-    class _SimpleApiPluginBase:  # pragma: no cover - trivial fallback
+    class _SimpleApiPluginBase(object):  # pragma: no cover - trivial fallback
         pass
 
-    class _AssetPluginBase:  # pragma: no cover - trivial fallback
+    class _AssetPluginBase(object):  # pragma: no cover - trivial fallback
         pass
 
-    class _TemplatePluginBase:  # pragma: no cover - trivial fallback
+    class _TemplatePluginBase(object):  # pragma: no cover - trivial fallback
         pass
 
     SettingsPluginBase = _SettingsPluginBase
