@@ -201,6 +201,53 @@ if [[ -z "$BUMP_TYPE" ]]; then
         *) printf "%b\n" "${RED}Invalid choice.${RESET}"; exit 1 ;;
     esac
 
+    BUMP_CANDIDATE_CMD="${REPO_ROOT}/venv/bin/bump-my-version"
+    if [[ ! -x "$BUMP_CANDIDATE_CMD" ]]; then
+        BUMP_CANDIDATE_CMD="bump-my-version"
+    fi
+    if [[ "$BUMP_TYPE" != "rc" ]]; then
+        if [[ -z "${CONFIG:-}" ]]; then CONFIG=".development/bumpversion.toml"; fi
+        if [[ -z "${CURRENT_VERSION:-}" && -f "octoprint_uptime/_version.py" ]]; then
+            CURRENT_VERSION=$(grep -E "^VERSION\s*=" octoprint_uptime/_version.py | sed -E 's/.*"([^\"]+)".*/\1/' || true)
+            CURRENT_VERSION="$(printf '%s' "$CURRENT_VERSION" | tr -d '\r' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
+        fi
+        NEW_GUESS=""
+        if command -v "$BUMP_CANDIDATE_CMD" >/dev/null 2>&1; then
+            NEW_GUESS=$("$BUMP_CANDIDATE_CMD" show-bump --config-file "$CONFIG" --current-version "${CURRENT_VERSION:-}" "$BUMP_TYPE" 2>/dev/null || true)
+            NEW_GUESS=$(printf '%s' "$NEW_GUESS" | sed -n '1p' | awk '{print $NF}')
+        fi
+        if [[ -z "$NEW_GUESS" ]]; then
+            local_ver="${CURRENT_VERSION:-0.0.0}"
+            local_ver=$(printf '%s' "$local_ver" | tr -d '\r' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')
+            if [[ "$local_ver" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)(rc([0-9]+))?$ ]]; then
+                major=${BASH_REMATCH[1]}
+                minor=${BASH_REMATCH[2]}
+                patch=${BASH_REMATCH[3]}
+                rcpart=${BASH_REMATCH[4]}
+                rcnum=${BASH_REMATCH[5]:-}
+                case "$BUMP_TYPE" in
+                    major)
+                        major=$((major+1)); minor=0; patch=0; NEW_GUESS="$major.$minor.$patch" ;;
+                    minor)
+                        minor=$((minor+1)); patch=0; NEW_GUESS="$major.$minor.$patch" ;;
+                    patch|bug)
+                        patch=$((patch+1)); NEW_GUESS="$major.$minor.$patch" ;;
+                    rc)
+                        if [[ -n "$rcnum" ]]; then
+                            rcnum=$((rcnum+1)); NEW_GUESS="$major.$minor.$patch""rc$rcnum"
+                        else
+                            NEW_GUESS="$major.$minor.$patch""rc1"
+                        fi ;;
+                    *) NEW_GUESS="" ;;
+                esac
+            fi
+        fi
+        if [[ -n "$NEW_GUESS" ]]; then
+            NEW_CURRENT="$NEW_GUESS"
+            printf "%b\n" "Selected bump: ${GREEN}$BUMP_TYPE${RESET} → new version: ${CYAN}$NEW_CURRENT${RESET}"
+        fi
+    fi
+
     read -r -p "Create a commit after bump? [y/N] " ans_commit
     ans_commit=${ans_commit:-N}
     if [[ "$ans_commit" =~ ^[Yy] ]]; then COMMIT=true; else COMMIT=false; fi
@@ -210,7 +257,11 @@ if [[ -z "$BUMP_TYPE" ]]; then
     if [[ "$ans_tag" =~ ^[Yy] ]]; then TAG=true; else TAG=false; fi
 
     read -r -p "Perform actual bump (real run) or preview (dry-run)? [d/dry, r/real] " ans_run
-    if [[ "$ans_run" =~ ^[Rr] ]]; then EXECUTE=1; else EXECUTE=0; fi
+    if [[ "$ans_run" =~ ^[Rr] ]]; then
+        EXECUTE=1
+    else
+        EXECUTE=0
+    fi
 
     if [[ "$BUMP_TYPE" == "rc" ]]; then
         if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ rc([0-9]+)$ ]]; then
@@ -271,11 +322,14 @@ if [[ "$BUMP_TYPE" == "rc" ]]; then
 else
     if [[ ! -f "$CONFIG" ]]; then printf "%b\n" "${RED}Config file '$CONFIG' not found.${RESET}" >&2; usage; exit 1; fi
     if [[ -n "$NEW_CURRENT" ]]; then
-        printf "%b\n" "Setting current_version => ${GREEN}$NEW_CURRENT${RESET} in $CONFIG"
-        update_toml "current_version" "$NEW_CURRENT" "$CONFIG"
+        printf "%b\n" "Would set current_version => ${GREEN}$NEW_CURRENT${RESET} in $CONFIG"
     fi
-    if [[ -n "$COMMIT" ]]; then printf "%b\n" "Setting commit => $COMMIT in $CONFIG"; update_toml "commit" "$COMMIT" "$CONFIG"; fi
-    if [[ -n "$TAG" ]]; then printf "%b\n" "Setting tag => $TAG in $CONFIG"; update_toml "tag" "$TAG" "$CONFIG"; fi
+    if [[ -n "$COMMIT" ]]; then
+        printf "%b\n" "Would set commit => $COMMIT in $CONFIG"
+    fi
+    if [[ -n "$TAG" ]]; then
+        printf "%b\n" "Would set tag => $TAG in $CONFIG"
+    fi
     check_versions_consistent "$CONFIG"
     printf "%b\n" "Prepared config. Preview (first 50 lines):"
     sed -n '1,50p' "$CONFIG" || true
@@ -287,6 +341,21 @@ else
     read -r -p "Proceed with $run_type bump ($BUMP_TYPE)? [Y/n] " ans
     ans=${ans:-Y}
     if [[ ! "$ans" =~ ^[Yy] ]]; then printf "%b\n" "${RED}Aborted by user.${RESET}"; exit 0; fi
+    if [[ $EXECUTE -eq 1 ]]; then
+        if [[ -n "$NEW_CURRENT" ]]; then
+            printf "%b\n" "Setting current_version => ${GREEN}$NEW_CURRENT${RESET} in $CONFIG"
+            update_toml "current_version" "$NEW_CURRENT" "$CONFIG"
+        fi
+        if [[ -n "$COMMIT" ]]; then
+            printf "%b\n" "Setting commit => $COMMIT in $CONFIG"
+            update_toml "commit" "$COMMIT" "$CONFIG"
+        fi
+        if [[ -n "$TAG" ]]; then
+            printf "%b\n" "Setting tag => $TAG in $CONFIG"
+            update_toml "tag" "$TAG" "$CONFIG"
+        fi
+    fi
+
     CMD=("$BUMP_CMD" "${VERBOSE_FLAGS[@]}" bump "$BUMP_TYPE" --config-file "$CONFIG")
     if [[ -f "octoprint_uptime/_version.py" ]]; then
         CURRENT_VERSION=$(grep -E "^VERSION\s*=" octoprint_uptime/_version.py | sed -E 's/.*"([^\"]+)".*/\1/' || true)
@@ -301,6 +370,31 @@ else
     if [[ $EXECUTE -eq 0 ]]; then
         CMD+=(--dry-run --allow-dirty)
     fi
+    # If executing for real, ensure git working tree is acceptable
+    if [[ $EXECUTE -eq 1 ]]; then
+        unstaged=$(git status --porcelain 2>/dev/null || true)
+        if [[ -n "$unstaged" ]]; then
+            printf "%b\n" "${YELLOW}Git working directory appears dirty:${RESET}"
+            printf "%s\n" "$unstaged"
+            printf "%b\n" "Choose action: [c]ommit local changes now, [d]o it anyway (pass --allow-dirty), [a]bort"
+            read -r -p "Action [a/c/d]? " action
+            action=${action:-a}
+            case "$action" in
+                c)
+                    git add -A
+                    git commit -m "Prepare bump: commit local modifications before bump"
+                    ;;
+                d)
+                    CMD+=(--allow-dirty)
+                    ;;
+                *)
+                    printf "%b\n" "Aborted due to dirty working tree." >&2
+                    exit 1
+                    ;;
+            esac
+        fi
+    fi
+
     printf "%b\n" "Running: ${CYAN}${CMD[*]}${RESET}"
     "${CMD[@]}"
     if [[ $EXECUTE -eq 0 ]]; then
