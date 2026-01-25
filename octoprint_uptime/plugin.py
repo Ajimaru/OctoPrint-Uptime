@@ -690,11 +690,11 @@ class OctoprintUptimePlugin(
                     return self._abort_forbidden()
                 except (AttributeError, TypeError, ValueError, RuntimeError, OSError):
                     return self._fallback_uptime_response()
-        except (AttributeError, TypeError, ValueError):
+        except (AttributeError, TypeError, ValueError) as e:
             logger = getattr(self, "_logger", None)
             if logger:
                 logger.exception(
-                    "on_api_get: unexpected error while checking permissions"
+                    "on_api_get: unexpected error while checking permissions: %s", e
                 )
             try:
                 return self._abort_forbidden()
@@ -711,30 +711,10 @@ class OctoprintUptimePlugin(
                   otherwise, returns the result of the permission check. If an exception occurs
                   during the check (AttributeError, TypeError, or ValueError), defaults to True.
         """
-        logger = getattr(self, "_logger", None)
-
-        try:
-            if _flask is not None:
-                try:
-                    fl_login = importlib.import_module("flask_login")
-                    current_user = getattr(fl_login, "current_user", None)
-                    if current_user is not None:
-                        if getattr(current_user, "is_admin", False):
-                            return True
-                        if getattr(current_user, "is_authenticated", False):
-                            return False
-                except ModuleNotFoundError:
-                    pass
-
-            if PERM is not None:
-                if hasattr(PERM, "SYSTEM"):
-                    return False
-
-            return False
-        except (AttributeError, TypeError, ValueError) as e:
-            if logger:
-                logger.exception("_check_permissions: unexpected error: %s", e)
-            return False
+        # Allow read-only access for the uptime API (navbar GETs). If you need
+        # admin-only behavior, implement explicit checks here using OctoPrint's
+        # auth helpers. Returning True keeps the navbar functional for all users.
+        return True
 
     def _abort_forbidden(self):
         """
