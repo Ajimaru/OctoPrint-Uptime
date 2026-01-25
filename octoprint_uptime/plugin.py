@@ -23,10 +23,8 @@ except ImportError:
 
 try:
     import subprocess
-    from subprocess import TimeoutExpired
 except ImportError:
     subprocess = None
-    TimeoutExpired = None
 
 PERM = None
 
