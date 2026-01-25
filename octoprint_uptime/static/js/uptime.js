@@ -83,7 +83,7 @@ $(function () {
         return;
       }
 
-      OctoPrint.simpleApiGet("plugin/octoprint_uptime")
+      OctoPrint.simpleApiGet("octoprint_uptime")
         .done(function (data) {
           // Prefer server-side settings
           var navbarEnabled =

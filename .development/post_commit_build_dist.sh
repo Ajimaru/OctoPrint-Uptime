@@ -175,7 +175,7 @@ zip_path = Path(sys.argv[2])
 
 zip_path.parent.mkdir(parents=True, exist_ok=True)
 
-with tarfile.open(tar_path, 'r:gz') as tf, zipfile.ZipFile(
+with tarfile.open(tar_path, 'r:*') as tf, zipfile.ZipFile(
     zip_path, 'w', compression=zipfile.ZIP_DEFLATED
 ) as zf:
     for member in tf.getmembers():
