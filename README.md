@@ -63,6 +63,18 @@ The `releases/latest` URL always points to the newest stable release.
 </details>
 <!-- markdownlint-enable MD033 -->
 
+## Dependencies
+
+Uptime is retrieved from `/proc/uptime` on Linux or via the Python package `psutil` when available. On systems without `/proc` (non-Linux) or when OctoPrint runs in a virtualenv that does not include `psutil`, uptime may not be available.
+
+To add `psutil` to an OctoPrint virtualenv, activate the environment and install:
+
+```bash
+venv/bin/pip install psutil
+```
+
+If OctoPrint is managed by a system package or Docker image, follow your environment's package management or image update process to ensure `psutil` is installed in the runtime environment.
+
 ## How It Works
 
 The navbar widget polls the plugin API and shows a formatted uptime string. The tooltip displays the calculated start datetime (localized).

@@ -20,14 +20,6 @@ npm install --save-dev jsdoc jsdoc-to-markdown
 mkdocs serve
 ```
 
-Uptime dependency note
+## Notes
 
----
-
-The plugin uses `/proc/uptime` on Linux and `psutil` when available. For non-Linux systems or virtualenvs without `psutil`, uptime may not be available. To add `psutil` to your OctoPrint virtualenv:
-
-```bash
-venv/bin/pip install psutil
-```
-
-If you manage OctoPrint via a system package or Docker image, follow your installation method to add `psutil` in the environment where OctoPrint runs.
+This document is contributor-focused and omits end-user installation guidance such as package dependencies. For user-facing instructions about uptime dependencies (for example how to install `psutil` in your OctoPrint virtualenv), see the `Installation` and `Dependencies` sections in the project README.
