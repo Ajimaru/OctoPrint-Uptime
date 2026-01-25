@@ -88,8 +88,9 @@ The navbar widget polls the plugin API and shows a formatted uptime string. The 
 As of this release the plugin determines uptime using either `/proc/uptime` (on Linux) or the Python package `psutil` when available.
 If uptime cannot be determined the plugin API returns `uptime_available: false` and a human‑readable `uptime_note` (for example, suggesting `pip install psutil` in the OctoPrint virtualenv).
 
-1. **API endpoint**: `/api/plugin/octoprint_uptime` (requires OctoPrint API key / auth)
-2. **Settings**: `Polling interval`, `Display format`, `Show in navbar` (off by default)
+1. **API endpoint (server)**: `/api/plugin/octoprint_uptime` (requires OctoPrint API key / auth)
+
+Note for frontend code: when calling the plugin from JavaScript use the OctoPrint API helper and pass the plugin identifier only — for example `OctoPrint.simpleApiGet('octoprint_uptime')`. Do not prefix the plugin id with `plugin/` when using the `OctoPrint.simpleApiGet` helper, as the helper already scopes requests to `/api/plugin/`. 2. **Settings**: `Polling interval`, `Display format`, `Show in navbar` (off by default)
 
 Quick curl example:
 

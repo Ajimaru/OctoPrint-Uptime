@@ -581,6 +581,7 @@ class OctoprintUptimePlugin(
                 isinstance(seconds, (int, float))
                 and seconds >= 0
                 and uptime_full != _("unknown")
+                and seconds is not None
             )
             if _flask is not None:
                 navbar_enabled, display_format, poll_interval = self._get_api_settings()

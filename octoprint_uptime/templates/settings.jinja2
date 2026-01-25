@@ -54,6 +54,9 @@
             _fetchUptimeNote();
           } else {
             $uptimeContainer.closest('.modal').on('shown.bs.modal shown', function() {
+            var $modal = $uptimeContainer.closest('.modal');
+            $modal.on('shown.bs.modal shown', function _uptimeModalHandler() {
+              $modal.off('shown.bs.modal shown', _uptimeModalHandler);
               _fetchUptimeNote();
             });
           }
