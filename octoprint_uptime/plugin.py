@@ -602,7 +602,7 @@ class OctoprintUptimePlugin(
                         "OctoPrint virtualenv: pip install psutil"
                     )
                 try:
-                    return _flask.jsonify(**resp)
+                    json_resp = _flask.jsonify(**resp)
                 except (TypeError, ValueError, RuntimeError):
                     if logger:
                         logger.exception(
@@ -610,14 +610,17 @@ class OctoprintUptimePlugin(
                             "falling back to dict"
                         )
                     return resp
+                else:
+                    return json_resp
 
-            resp = {"uptime": uptime_full, "uptime_available": uptime_available}
-            if not uptime_available:
-                resp["uptime_note"] = _(
-                    "Uptime could not be determined. You can install psutil in the "
-                    "OctoPrint virtualenv: pip install psutil"
-                )
-            return resp
+            else:
+                resp = {"uptime": uptime_full, "uptime_available": uptime_available}
+                if not uptime_available:
+                    resp["uptime_note"] = _(
+                        "Uptime could not be determined. You can install psutil in the "
+                        "OctoPrint virtualenv: pip install psutil"
+                    )
+                return resp
         except (AttributeError, TypeError, ValueError):
             if logger:
                 logger.exception(

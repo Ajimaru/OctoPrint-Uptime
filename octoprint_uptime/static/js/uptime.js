@@ -258,10 +258,9 @@ $(function () {
       pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
     }
 
-    // Start the polling loop; each fetch will reschedule itself based on
+    // Start the polling loop; the initial fetch will reschedule itself based on
     // the server-provided `poll_interval_seconds` or local setting.
     fetchUptime();
-    scheduleNext(DEFAULT_POLL);
 
     // Validate numeric settings on save: enforce integers in [1,120].
     try {
