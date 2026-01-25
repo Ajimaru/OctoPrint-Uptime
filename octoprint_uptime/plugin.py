@@ -760,16 +760,85 @@ class OctoprintUptimePlugin(
         Returns:
             tuple: (navbar_enabled, display_format, poll_interval)
         """
+        logger = getattr(self, "_logger", None)
+
         try:
-            navbar_enabled = bool(self._settings.get(["navbar_enabled"]))
-        except (AttributeError, TypeError, ValueError, KeyError):
+            raw_nav = self._settings.get(["navbar_enabled"])
+            if raw_nav is None:
+                navbar_enabled = True
+                if logger:
+                    logger.debug(
+                        "_get_api_settings: navbar_enabled missing, defaulting to True"
+                    )
+            else:
+                navbar_enabled = bool(raw_nav)
+        except (AttributeError, TypeError, ValueError) as e:
             navbar_enabled = True
+            if logger:
+                logger.exception(
+                    "_get_api_settings: failed to read navbar_enabled, defaulting to True: %s",
+                    e,
+                )
+
         try:
-            display_format = str(self._settings.get(["display_format"]))
-        except (AttributeError, TypeError, ValueError, KeyError):
+            raw_fmt = self._settings.get(["display_format"])
+            if raw_fmt is None:
+                display_format = _("full")
+                if logger:
+                    logger.debug(
+                        "_get_api_settings: display_format missing, defaulting to 'full'"
+                    )
+            else:
+                display_format = str(raw_fmt)
+        except (AttributeError, TypeError, ValueError) as e:
             display_format = _("full")
+            if logger:
+                logger.exception(
+                    "_get_api_settings: failed to read display_format, defaulting to 'full': %s",
+                    e,
+                )
+
         try:
-            poll_interval = int(self._settings.get(["poll_interval_seconds"]) or 5)
-        except (AttributeError, TypeError, ValueError, KeyError):
+            raw_poll = self._settings.get(["poll_interval_seconds"])
+            if raw_poll is None or raw_poll == "":
+                poll_interval = 5
+                if logger:
+                    logger.debug(
+                        "_get_api_settings: poll_interval_seconds missing, "
+                        "defaulting to 5"
+                    )
+            else:
+                try:
+                    poll_interval = int(raw_poll)
+                except (TypeError, ValueError):
+                    poll_interval = 5
+                    if logger:
+                        logger.debug(
+                            "_get_api_settings: poll_interval_seconds invalid (%r), "
+                            "defaulting to 5",
+                            raw_poll,
+                        )
+
+            if poll_interval < 1:
+                if logger:
+                    logger.debug(
+                        "_get_api_settings: poll_interval_seconds %s < 1, clamping to 1",
+                        poll_interval,
+                    )
+                poll_interval = 1
+            elif poll_interval > 120:
+                if logger:
+                    logger.debug(
+                        "_get_api_settings: poll_interval_seconds %s > 120, clamping to 120",
+                        poll_interval,
+                    )
+                poll_interval = 120
+        except (AttributeError, TypeError, ValueError) as e:
             poll_interval = 5
+            if logger:
+                logger.exception(
+                    "_get_api_settings: failed to read poll_interval_seconds, defaulting to 5: %s",
+                    e,
+                )
+
         return navbar_enabled, display_format, poll_interval
