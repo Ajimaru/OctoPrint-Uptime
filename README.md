@@ -61,9 +61,9 @@ pip install https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download
 The `releases/latest` URL always points to the newest stable release.
 
 </details>
-<!-- markdownlint-enable MD033 -->
 
-## Dependencies
+<details>
+<summary>Dependencies</summary>
 
 Uptime is retrieved from `/proc/uptime` on Linux or via the Python package `psutil` when available. On systems without `/proc` (non-Linux) or when OctoPrint runs in a virtualenv that does not include `psutil`, uptime may not be available.
 
@@ -74,6 +74,10 @@ venv/bin/pip install psutil
 ```
 
 If OctoPrint is managed by a system package or Docker image, follow your environment's package management or image update process to ensure `psutil` is installed in the runtime environment.
+
+</details>
+
+<!-- markdownlint-enable MD033 -->
 
 ## How It Works
 

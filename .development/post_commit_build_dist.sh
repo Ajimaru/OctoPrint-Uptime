@@ -256,6 +256,8 @@ main() {
   local zip=""
 
   shopt -s nullglob nocaseglob
+  local normalized_version
+  local candidates
   normalized_version="${new_version//-/.}"
   candidates=(dist/*${new_version}*.tar.gz dist/*${new_version}*.tgz dist/*${normalized_version}*.tar.gz dist/*${normalized_version}*.tgz)
   for candidate in "${candidates[@]}"; do
@@ -263,6 +265,7 @@ main() {
     sdist="$candidate"
     break
   done
+  shopt -u nullglob || true
   shopt -u nocaseglob || true
 
   if [[ -z "$sdist" ]]; then
