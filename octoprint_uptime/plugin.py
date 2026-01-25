@@ -8,7 +8,7 @@ import gettext
 import importlib
 import os
 import time
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     from ._version import VERSION
@@ -165,7 +165,7 @@ class OctoprintUptimePlugin(
         self._last_debug_time = 0
         self._last_throttle_notice = 0
         self._debug_throttle_seconds = 60
-        self._last_uptime_source: str | None = None
+        self._last_uptime_source: Optional[str] = None
 
     def get_update_information(self):
         """Return update information for the OctoPrint-Uptime plugin.
@@ -239,7 +239,7 @@ class OctoprintUptimePlugin(
         """
         return True
 
-    def _get_uptime_seconds(self) -> Tuple[float | None, str]:
+    def _get_uptime_seconds(self) -> Tuple[Optional[float], str]:
         """Attempts to retrieve system uptime using several strategies.
 
         Returns a tuple of (seconds|None, source) where source is one of
@@ -258,7 +258,7 @@ class OctoprintUptimePlugin(
         self._last_uptime_source = "none"
         return None, "none"
 
-    def _get_uptime_from_proc(self) -> float | None:
+    def _get_uptime_from_proc(self) -> Optional[float]:
         """Get uptime from /proc/uptime if available."""
         try:
             if os.path.exists("/proc/uptime"):
@@ -269,7 +269,7 @@ class OctoprintUptimePlugin(
             return None
         return None
 
-    def _get_uptime_from_psutil(self) -> float | None:
+    def _get_uptime_from_psutil(self) -> Optional[float]:
         """Get uptime using psutil if available."""
         try:
             _ps = importlib.import_module("psutil")
