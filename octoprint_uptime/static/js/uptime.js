@@ -226,6 +226,8 @@ $(function () {
                 data,
               );
             }
+            // Ensure polling continues even if interval calculation fails
+            scheduleNext(DEFAULT_POLL);
           }
         })
         .fail(function () {

@@ -602,12 +602,11 @@ class OctoprintUptimePlugin(
                     )
                 try:
                     return _flask.jsonify(**resp)
-                except (TypeError, ValueError, RuntimeError) as e:
+                except (TypeError, ValueError, RuntimeError):
                     if logger:
                         logger.exception(
                             "_fallback_uptime_response: flask.jsonify failed, "
-                            "falling back to dict: %s",
-                            e,
+                            "falling back to dict"
                         )
                     return resp
 
@@ -618,11 +617,10 @@ class OctoprintUptimePlugin(
                     "OctoPrint virtualenv: pip install psutil"
                 )
             return resp
-        except (AttributeError, TypeError, ValueError) as e:
+        except (AttributeError, TypeError, ValueError):
             if logger:
                 logger.exception(
-                    "_fallback_uptime_response: unexpected error while building response: %s",
-                    e,
+                    "_fallback_uptime_response: unexpected error while building response"
                 )
             return {"uptime": _("unknown"), "uptime_available": False}
 
@@ -666,11 +664,10 @@ class OctoprintUptimePlugin(
                     return self._abort_forbidden()
                 except (AttributeError, TypeError, ValueError, RuntimeError, OSError):
                     return self._fallback_uptime_response()
-        except (AttributeError, TypeError, ValueError) as e:
+        except (AttributeError, TypeError, ValueError):
             if hasattr(self, "_logger") and self._logger is not None:
                 self._logger.exception(
-                    "on_api_get: unexpected error while checking permissions: %s",
-                    e,
+                    "on_api_get: unexpected error while checking permissions"
                 )
             try:
                 return self._abort_forbidden()
