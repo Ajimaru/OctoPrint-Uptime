@@ -550,11 +550,16 @@ class OctoprintUptimePlugin(
         If Flask is available, returns a JSON response with uptime details and settings.
         Otherwise, returns a basic dictionary. On error, returns 'unknown' uptime.
         """
+        logger = getattr(self, "_logger", None)
         try:
             seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = (
                 self._get_uptime_info()
             )
-            uptime_available = isinstance(seconds, (int, float)) and seconds >= 0
+            uptime_available = (
+                isinstance(seconds, (int, float))
+                and seconds >= 0
+                and uptime_full != _("unknown")
+            )
             if _flask is not None:
                 navbar_enabled, display_format, poll_interval = self._get_api_settings()
                 resp = {
@@ -573,7 +578,17 @@ class OctoprintUptimePlugin(
                         "Uptime could not be determined. You can install psutil in the "
                         "OctoPrint virtualenv: pip install psutil"
                     )
-                return _flask.jsonify(**resp)
+                try:
+                    return _flask.jsonify(**resp)
+                except (TypeError, ValueError, RuntimeError) as e:
+                    if logger:
+                        logger.exception(
+                            "_fallback_uptime_response: flask.jsonify failed, "
+                            "falling back to dict: %s",
+                            e,
+                        )
+                    return resp
+
             resp = {"uptime": uptime_full, "uptime_available": uptime_available}
             if not uptime_available:
                 resp["uptime_note"] = _(
@@ -581,7 +596,12 @@ class OctoprintUptimePlugin(
                     "OctoPrint virtualenv: pip install psutil"
                 )
             return resp
-        except (AttributeError, TypeError, ValueError):
+        except (AttributeError, TypeError, ValueError) as e:
+            if logger:
+                logger.exception(
+                    "_fallback_uptime_response: unexpected error while building response: %s",
+                    e,
+                )
             return {"uptime": _("unknown")}
 
     def on_api_get(self, _request: Any = None) -> Any:
