@@ -188,3 +188,4 @@ Note: For logs and troubleshooting, enable "debug logging" in the plugin setting
 ---
 
 **Like this plugin?** ⭐ Star the repo and share it with the OctoPrint community!
+**Like this plugin?** ⭐ Star the repo and share it with the OctoPrint community!
