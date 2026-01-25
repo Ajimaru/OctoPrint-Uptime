@@ -276,65 +276,78 @@ $(function () {
          * // "Polling interval must be an integer between 1 and 120 seconds."
          */
         var origSave = settingsVM.save.bind(settingsVM);
-        settingsVM.save = function () {
+        // Helper: Validate debug throttle
+        function validateDebugThrottle() {
           try {
-            var errors = [];
-            try {
-              var throttle = Number(
-                settings.plugins.octoprint_uptime.debug_throttle_seconds(),
-              );
-              if (
-                !Number.isFinite(throttle) ||
-                throttle < 1 ||
-                throttle > 120 ||
-                Math.floor(throttle) !== throttle
-              ) {
-                errors.push(
-                  typeof gettext === "function"
-                    ? gettext(
-                        "Debug throttle must be an integer between 1 and 120 seconds.",
-                      )
-                    : "Debug throttle must be an integer between 1 and 120 seconds.",
-                );
-              }
-            } catch (e) {}
-            try {
-              var poll = Number(
-                settings.plugins.octoprint_uptime.poll_interval_seconds(),
-              );
-              if (
-                !Number.isFinite(poll) ||
-                poll < 1 ||
-                poll > 120 ||
-                Math.floor(poll) !== poll
-              ) {
-                errors.push(
-                  typeof gettext === "function"
-                    ? gettext(
-                        "Polling interval must be an integer between 1 and 120 seconds.",
-                      )
-                    : "Polling interval must be an integer between 1 and 120 seconds.",
-                );
-              }
-            } catch (e) {}
-
-            if (errors.length) {
-              try {
-                if (
-                  typeof OctoPrint !== "undefined" &&
-                  OctoPrint.notifications &&
-                  OctoPrint.notifications.error
-                ) {
-                  OctoPrint.notifications.error(errors.join("\n"));
-                } else {
-                  alert(errors.join("\n"));
-                }
-              } catch (e) {
-                alert(errors.join("\n"));
-              }
-              return;
+            var throttle = Number(
+              settings.plugins.octoprint_uptime.debug_throttle_seconds(),
+            );
+            if (
+              !Number.isFinite(throttle) ||
+              throttle < 1 ||
+              throttle > 120 ||
+              Math.floor(throttle) !== throttle
+            ) {
+              return typeof gettext === "function"
+                ? gettext(
+                    "Debug throttle must be an integer between 1 and 120 seconds.",
+                  )
+                : "Debug throttle must be an integer between 1 and 120 seconds.";
             }
           } catch (e) {}
+          return null;
+        }
+
+        // Helper: Validate poll interval
+        function validatePollInterval() {
+          try {
+            var poll = Number(
+              settings.plugins.octoprint_uptime.poll_interval_seconds(),
+            );
+            if (
+              !Number.isFinite(poll) ||
+              poll < 1 ||
+              poll > 120 ||
+              Math.floor(poll) !== poll
+            ) {
+              return typeof gettext === "function"
+                ? gettext(
+                    "Polling interval must be an integer between 1 and 120 seconds.",
+                  )
+                : "Polling interval must be an integer between 1 and 120 seconds.";
+            }
+          } catch (e) {}
+          return null;
+        }
+
+        // Helper: Show error notification
+        function showValidationErrors(errors) {
+          try {
+            if (
+              typeof OctoPrint !== "undefined" &&
+              OctoPrint.notifications &&
+              OctoPrint.notifications.error
+            ) {
+              OctoPrint.notifications.error(errors.join("\n"));
+            } else {
+              alert(errors.join("\n"));
+            }
+          } catch (e) {
+            alert(errors.join("\n"));
+          }
+        }
+
+        settingsVM.save = function () {
+          var errors = [];
+          var throttleError = validateDebugThrottle();
+          if (throttleError) errors.push(throttleError);
+          var pollError = validatePollInterval();
+          if (pollError) errors.push(pollError);
+
+          if (errors.length) {
+            showValidationErrors(errors);
+            return undefined;
+          }
           return origSave();
         };
       }
