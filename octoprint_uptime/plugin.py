@@ -8,6 +8,7 @@ import gettext
 import importlib
 import os
 import shutil
+import stat
 import time
 from typing import IO, Any, Dict, List, cast
 
@@ -303,17 +304,58 @@ class OctoprintUptimePlugin(
             return None
 
     def _get_valid_uptime_path(self) -> str | None:
-        """Return a valid absolute path to the uptime binary, or None."""
+        """Return a valid absolute path to the uptime binary, or None.
+
+        This performs a best-effort, more secure validation on POSIX systems by
+        attempting to open the candidate path with O_NOFOLLOW and validating the
+        resulting file descriptor (regular file, executable bit set). If that
+        is not available or fails, it falls back to resolving the realpath and
+        performing conservative checks. The function always returns a canonical
+        path (via realpath) when it decides the candidate is acceptable.
+        """
         uptime_path = shutil.which("uptime")
         if not uptime_path or not os.path.isabs(uptime_path):
             return None
+
+        rp: str | None = None
+
+        nofollow = getattr(os, "O_NOFOLLOW", 0)
+        flags = os.O_RDONLY
+        if nofollow:
+            flags |= nofollow
+
         try:
-            uptime_path = os.path.realpath(uptime_path)
-        except (OSError, ValueError):
+            fd = os.open(uptime_path, flags)
+        except OSError:
+            try:
+                rp = os.path.realpath(uptime_path)
+            except (OSError, ValueError):
+                return None
+            if os.path.basename(rp) != "uptime":
+                return None
+            try:
+                st = os.stat(rp)
+            except OSError:
+                return None
+        else:
+            try:
+                st = os.fstat(fd)
+                if not stat.S_ISREG(st.st_mode):
+                    return None
+                if not st.st_mode & (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH):
+                    return None
+                try:
+                    rp = os.path.realpath(uptime_path)
+                except (OSError, ValueError):
+                    rp = uptime_path
+            finally:
+                os.close(fd)
+
+        if not rp:
             return None
-        if os.path.basename(uptime_path) != "uptime":
+        if os.path.basename(rp) != "uptime":
             return None
-        return uptime_path
+        return rp
 
     def _get_vetted_uptime_exec(self) -> str | None:
         """Return a vetted absolute path to the uptime binary, or None."""
