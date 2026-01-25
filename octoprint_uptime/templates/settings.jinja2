@@ -3,15 +3,15 @@
     <legend>{{ _("OctoPrint-Uptime") }}</legend>
     <p>{{ _("Use this plugin to display system uptime in the Navbar.") }}</p>
 
-    <div id="uptime_note_container" style="display:none; margin-bottom:10px;"></div>
+    <div id="uptime_note_container" data-note="{{ _('Uptime could not be determined. You can install psutil in the OctoPrint virtualenv: pip install psutil')|e }}" style="display:none; margin-bottom:10px;"></div>
 
     <script type="text/javascript">
       (function() {
-        var installNote = "{{ _('Uptime could not be determined. You can install psutil in the OctoPrint virtualenv: pip install psutil')|escapejs }}";
         $(function() {
           $.get('/api/plugin/octoprint_uptime').done(function(data) {
             try {
               if (data && data.uptime_available === false) {
+                var installNote = $('#uptime_note_container').attr('data-note') || '';
                 var el = $('<div/>')
                   .addClass('alert alert-warning')
                   .text(installNote);
