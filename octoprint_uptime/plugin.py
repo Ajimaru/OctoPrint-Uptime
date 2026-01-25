@@ -685,10 +685,10 @@ class OctoprintUptimePlugin(
                   otherwise, returns the result of the permission check. If an exception occurs
                   during the check (AttributeError, TypeError, or ValueError), defaults to True.
         """
-        try:
-            return True
-        except (AttributeError, TypeError, ValueError):
-            return True
+        # Intentionally permissive placeholder: permission enforcement is not implemented
+        # in this plugin. Always allow access for now; replace with real checks when
+        # permission enforcement is required.
+        return True
 
     def _abort_forbidden(self):
         """
