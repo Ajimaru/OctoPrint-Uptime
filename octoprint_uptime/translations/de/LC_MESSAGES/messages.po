@@ -141,4 +141,4 @@ msgstr "Nicht verfügbar"
 
 #: octoprint_uptime/plugin.py:512
 msgid "Uptime could not be determined. You can install psutil in the OctoPrint virtualenv: pip install psutil"
-msgstr "Die Uptime konnte nicht ermittelt werden. Sie können psutil in der OctoPrint‑Virtualenv nachinstallieren: pip install psutil"
+msgstr "Die Uptime konnte nicht ermittelt werden. Sie können psutil in der OctoPrint-Virtualenv nachinstallieren: pip install psutil"
