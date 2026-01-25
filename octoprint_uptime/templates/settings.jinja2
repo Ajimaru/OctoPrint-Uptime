@@ -11,14 +11,34 @@
           $.get('/api/plugin/octoprint_uptime').done(function(data) {
             try {
               if (data && data.uptime_available === false) {
-                var installNote = $('#uptime_note_container').attr('data-note') || '';
-                var el = $('<div/>')
-                  .addClass('alert alert-warning')
-                  .text(installNote);
-                $('#uptime_note_container').empty().append(el).show();
+                try {
+                  var installNote = $('#uptime_note_container').attr('data-note') || '';
+                  var el = $('<div/>')
+                    .addClass('alert alert-warning')
+                    .text(installNote);
+                  $('#uptime_note_container').empty().append(el).show();
+                } catch (renderErr) {
+                  if (window && window.UptimeDebug) {
+                    console.error('octoprint_uptime: failed to render uptime install note', renderErr, data);
+                  } else {
+                    console.warn('octoprint_uptime: failed to render uptime install note');
+                  }
+                }
               }
-            } catch (e) {}
-          }).fail(function(){});
+            } catch (e) {
+              if (window && window.UptimeDebug) {
+                console.error('octoprint_uptime: error handling uptime API response in settings template', e, data);
+              } else {
+                console.warn('octoprint_uptime: error handling uptime API response in settings template');
+              }
+            }
+          }).fail(function(jqXHR, textStatus, errorThrown){
+            if (window && window.UptimeDebug) {
+              console.error('octoprint_uptime: failed to fetch uptime API for settings template', textStatus, errorThrown, jqXHR);
+            } else {
+              console.warn('octoprint_uptime: failed to fetch uptime API for settings template:', textStatus);
+            }
+          });
         });
       })();
     </script>
