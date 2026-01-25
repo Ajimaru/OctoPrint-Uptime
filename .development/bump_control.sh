@@ -461,5 +461,23 @@ if [[ -z "$BUMP_TYPE" ]]; then
         printf "%b\n" "Done (dry-run). Note: remove --dry-run (use --execute) to perform real bump."
     else
         printf "%b\n" "Done."
+
+        if [[ -t 0 ]]; then
+            read -r -p "Run .development/post_commit_build_dist.sh now? [Y/n] " run_post
+            run_post=${run_post:-Y}
+        else
+            run_post=Y
+        fi
+        if [[ "$run_post" =~ ^[Yy] ]]; then
+            if [[ -x ".development/post_commit_build_dist.sh" ]]; then
+                if ! ./.development/post_commit_build_dist.sh; then
+                    printf "%b\n" "Warning: post_commit_build_dist.sh exited with an error." >&2
+                fi
+            else
+                if ! bash .development/post_commit_build_dist.sh; then
+                    printf "%b\n" "Warning: post_commit_build_dist.sh exited with an error." >&2
+                fi
+            fi
+        fi
     fi
 fi

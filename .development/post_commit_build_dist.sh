@@ -8,6 +8,19 @@ log() {
   printf '[OctoPrint-Uptime post-commit] %s\n' "$*"
 }
 
+usage() {
+  cat <<'USAGE'
+Usage: .development/post_commit_build_dist.sh [OPTIONS]
+
+Options:
+  -f, --force    Bypass the "pyproject.toml unchanged" check and force building artifacts.
+  -h, --help     Show this help message and exit.
+
+This script is intended to run as a git post-commit helper. Use --force to build
+artifacts even when `pyproject.toml` was not changed in the last commit.
+USAGE
+}
+
 python_is_at_least_310() {
   local python_bin="$1"
   "$python_bin" -c 'import sys; sys.exit(0 if sys.version_info[:2] >= (3, 10) else 1)' >/dev/null 2>&1
@@ -195,6 +208,19 @@ PY
 }
 
 main() {
+  local FORCE=0
+  for _arg in "$@"; do
+    case "${_arg}" in
+      --force|-f)
+        FORCE=1
+        ;;
+      -h|--help)
+        usage
+        exit 0
+        ;;
+    esac
+  done
+
   if ! command -v git >/dev/null 2>&1; then
     exit 0
   fi
@@ -213,8 +239,12 @@ main() {
   fi
 
   if ! git show --name-only --pretty=format: HEAD | grep -qx "pyproject.toml"; then
-    log "No version bump detected (pyproject.toml unchanged in last commit)."
-    exit 0
+    if [[ "$FORCE" -eq 1 ]]; then
+      log "pyproject.toml unchanged in last commit, but --force given — continuing"
+    else
+      log "No version bump detected (pyproject.toml unchanged in last commit)."
+      exit 0
+    fi
   fi
 
   local new_version old_version
@@ -275,15 +305,13 @@ main() {
   fi
 
   case "$sdist" in
-    *.tar.gz)
-      zip="${sdist%.tar.gz}.zip"
-      log "Creating zip from tar.gz sdist: ${zip} (source: ${sdist})"
-      rm -f "$zip"
-      create_zip_from_sdist "$sdist" "$zip"
-      ;;
-    *.tgz)
-      zip="${sdist%.tgz}.zip"
-      log "Creating zip from tgz sdist: ${zip} (source: ${sdist})"
+    *.tar.gz|*.tgz)
+      if [[ "$sdist" == *.tar.gz ]]; then
+        zip="${sdist%.tar.gz}.zip"
+      else
+        zip="${sdist%.tgz}.zip"
+      fi
+      log "Creating zip from sdist: ${zip} (source: ${sdist})"
       rm -f "$zip"
       create_zip_from_sdist "$sdist" "$zip"
       ;;

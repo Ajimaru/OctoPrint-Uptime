@@ -132,6 +132,13 @@ Builds fresh distribution artifacts into `dist/` after a commit **only when the 
 
 You usually don't run this manually. It is called by the git `post-commit` hook.
 
+Options:
+
+- `--force`, `-f` — bypass the `pyproject.toml` unchanged check and force creation of dist artifacts.
+- `-h`, `--help` — show a short usage message and exit.
+
+Note: `.development/bump_control.sh` will offer to run this helper automatically after a real (executed) bump; you can also run it manually when needed.
+
 ### test_checklist.sh
 
 Prints a human-readable quick checklist (versions, file presence, rough counts). It does **not** run automated tests.
