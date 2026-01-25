@@ -235,6 +235,8 @@ $(function () {
           if (!isNavbarEnabled()) {
             navbarEl.hide();
           }
+          // Continue polling even after failure (with default interval)
+          scheduleNext(DEFAULT_POLL);
         });
     };
 
@@ -276,48 +278,51 @@ $(function () {
          * // "Polling interval must be an integer between 1 and 120 seconds."
          */
         var origSave = settingsVM.save.bind(settingsVM);
-        // Helper: Validate debug throttle
-        function validateDebugThrottle() {
+        // Helper: Validate integer in range with localized message on failure.
+        function validateIntegerRange(rawValue, min, max, message) {
           try {
-            var throttle = Number(
-              settings.plugins.octoprint_uptime.debug_throttle_seconds(),
-            );
+            var n = Number(rawValue);
             if (
-              !Number.isFinite(throttle) ||
-              throttle < 1 ||
-              throttle > 120 ||
-              Math.floor(throttle) !== throttle
+              !Number.isFinite(n) ||
+              n < min ||
+              n > max ||
+              Math.floor(n) !== n
             ) {
-              return typeof gettext === "function"
-                ? gettext(
-                    "Debug throttle must be an integer between 1 and 120 seconds.",
-                  )
-                : "Debug throttle must be an integer between 1 and 120 seconds.";
+              return typeof gettext === "function" ? gettext(message) : message;
             }
           } catch (e) {}
           return null;
         }
 
+        // Helper: Validate debug throttle
+        function validateDebugThrottle() {
+          try {
+            var raw =
+              settings.plugins.octoprint_uptime.debug_throttle_seconds();
+          } catch (e) {
+            return null;
+          }
+          return validateIntegerRange(
+            raw,
+            1,
+            120,
+            "Debug throttle must be an integer between 1 and 120 seconds.",
+          );
+        }
+
         // Helper: Validate poll interval
         function validatePollInterval() {
           try {
-            var poll = Number(
-              settings.plugins.octoprint_uptime.poll_interval_seconds(),
-            );
-            if (
-              !Number.isFinite(poll) ||
-              poll < 1 ||
-              poll > 120 ||
-              Math.floor(poll) !== poll
-            ) {
-              return typeof gettext === "function"
-                ? gettext(
-                    "Polling interval must be an integer between 1 and 120 seconds.",
-                  )
-                : "Polling interval must be an integer between 1 and 120 seconds.";
-            }
-          } catch (e) {}
-          return null;
+            var raw = settings.plugins.octoprint_uptime.poll_interval_seconds();
+          } catch (e) {
+            return null;
+          }
+          return validateIntegerRange(
+            raw,
+            1,
+            120,
+            "Polling interval must be an integer between 1 and 120 seconds.",
+          );
         }
 
         // Helper: Show error notification
