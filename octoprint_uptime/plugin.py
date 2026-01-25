@@ -630,24 +630,9 @@ class OctoprintUptimePlugin(
         """
         Handle GET requests to the plugin's API endpoint.
         """
-        try:
-            if not self._check_permissions():
-                try:
-                    return self._abort_forbidden()
-                except (AttributeError, TypeError, ValueError):
-                    return self._fallback_uptime_response()
-                except (RuntimeError, OSError):
-                    return self._fallback_uptime_response()
-        except (AttributeError, TypeError, ValueError) as e:
-            if hasattr(self, "_logger") and self._logger is not None:
-                self._logger.exception(
-                    "on_api_get: unexpected error while checking permissions: %s",
-                    e,
-                )
-            try:
-                return self._abort_forbidden()
-            except (AttributeError, TypeError, ValueError, RuntimeError, OSError):
-                return self._fallback_uptime_response()
+        permission_result = self._handle_permission_check()
+        if permission_result is not None:
+            return permission_result
 
         seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = self._get_uptime_info()
         self._log_debug(_("Uptime API requested, result=%s") % uptime_full)
@@ -666,6 +651,32 @@ class OctoprintUptimePlugin(
             )
 
         return {"uptime": uptime_full}
+
+    def _handle_permission_check(self) -> Optional[Any]:
+        """
+        Handles permission checking and error handling for API GET requests.
+
+        Returns:
+            The forbidden response or fallback response if permission is denied or an error occurs,
+            otherwise None if permission is granted.
+        """
+        try:
+            if not self._check_permissions():
+                try:
+                    return self._abort_forbidden()
+                except (AttributeError, TypeError, ValueError, RuntimeError, OSError):
+                    return self._fallback_uptime_response()
+        except (AttributeError, TypeError, ValueError) as e:
+            if hasattr(self, "_logger") and self._logger is not None:
+                self._logger.exception(
+                    "on_api_get: unexpected error while checking permissions: %s",
+                    e,
+                )
+            try:
+                return self._abort_forbidden()
+            except (AttributeError, TypeError, ValueError, RuntimeError, OSError):
+                return self._fallback_uptime_response()
+        return None
 
     def _check_permissions(self) -> bool:
         """
