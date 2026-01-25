@@ -120,26 +120,12 @@ $(function () {
           // If server explicitly reports uptime unavailable, show localized "Unavailable"
           try {
             if (data && data.uptime_available === false) {
-              try {
-                if (typeof gettext === "function") {
-                  displayValue = gettext("Unavailable");
-                } else if (typeof _ === "function") {
-                  displayValue = _("Unavailable");
-                } else {
-                  displayValue = "Unavailable";
-                }
-              } catch (renderErr) {
-                if (window && window.UptimeDebug) {
-                  console.error(
-                    'octoprint_uptime: failed to compute localized "Unavailable"',
-                    renderErr,
-                    data,
-                  );
-                } else {
-                  console.warn(
-                    'octoprint_uptime: failed to compute localized "Unavailable"',
-                  );
-                }
+              if (typeof gettext === "function") {
+                displayValue = gettext("Unavailable");
+              } else if (typeof _ === "function") {
+                displayValue = _("Unavailable");
+              } else {
+                displayValue = "Unavailable";
               }
             }
           } catch (e) {
@@ -200,7 +186,15 @@ $(function () {
               anchor.attr("title", startedText);
               anchor.removeAttr("data-original-title");
             }
-          } catch (e) {}
+          } catch (e) {
+            if (window && window.UptimeDebug) {
+              console.error(
+                "octoprint_uptime: tooltip calculation error",
+                e,
+                data,
+              );
+            }
+          }
           // Determine poll interval from server or local settings
           try {
             var pollInterval = DEFAULT_POLL;
@@ -214,7 +208,15 @@ $(function () {
               } catch (e) {}
             }
             scheduleNext(pollInterval);
-          } catch (e) {}
+          } catch (e) {
+            if (window && window.UptimeDebug) {
+              console.error(
+                "octoprint_uptime: poll interval calculation error",
+                e,
+                data,
+              );
+            }
+          }
         })
         .fail(function () {
           self.uptimeDisplay("Error");
