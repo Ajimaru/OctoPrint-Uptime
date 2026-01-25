@@ -259,14 +259,10 @@ main() {
   local normalized_version
   local candidates
   normalized_version="${new_version//-/.}"
-  # The glob patterns below will be expanded immediately by the shell into
-  # actual file paths. `nullglob` is enabled so patterns that don't match
-  # vanish instead of remaining literal strings; `normalized_version` and
-  # `new_version` are intentionally embedded here to target artifacts for
-  # this version. The later loop over `candidates` and the `-f` guard when
-  # picking `sdist` are deliberate safeties to avoid assuming any match.
-  candidates=(dist/*${new_version}*.tar.gz dist/*${new_version}*.tgz dist/*${normalized_version}*.tar.gz dist/*${normalized_version}*.tgz)
-  for candidate in "${candidates[@]}"; do
+  mapfile -d '' -t candidates < <(
+    printf '%s\0' dist/*"${new_version}"*.tar.gz dist/*"${new_version}"*.tgz dist/*"${normalized_version}"*.tar.gz dist/*"${normalized_version}"*.tgz
+  )
+  for candidate in "${candidates[@]:-}"; do
     [[ -f "$candidate" ]] || continue
     sdist="$candidate"
     break
