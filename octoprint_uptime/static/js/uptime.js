@@ -120,15 +120,41 @@ $(function () {
           // If server explicitly reports uptime unavailable, show localized "Unavailable"
           try {
             if (data && data.uptime_available === false) {
-              if (typeof gettext === "function") {
-                displayValue = gettext("Unavailable");
-              } else if (typeof _ === "function") {
-                displayValue = _("Unavailable");
-              } else {
-                displayValue = "Unavailable";
+              try {
+                if (typeof gettext === "function") {
+                  displayValue = gettext("Unavailable");
+                } else if (typeof _ === "function") {
+                  displayValue = _("Unavailable");
+                } else {
+                  displayValue = "Unavailable";
+                }
+              } catch (renderErr) {
+                if (window && window.UptimeDebug) {
+                  console.error(
+                    'octoprint_uptime: failed to compute localized "Unavailable"',
+                    renderErr,
+                    data,
+                  );
+                } else {
+                  console.warn(
+                    'octoprint_uptime: failed to compute localized "Unavailable"',
+                  );
+                }
               }
             }
-          } catch (e) {}
+          } catch (e) {
+            if (window && window.UptimeDebug) {
+              console.error(
+                "octoprint_uptime: error processing uptime_available flag",
+                e,
+                data,
+              );
+            } else {
+              console.warn(
+                "octoprint_uptime: error processing uptime_available flag",
+              );
+            }
+          }
 
           // update visible text
           self.uptimeDisplay(displayValue);
@@ -157,7 +183,18 @@ $(function () {
                 if (anchor.data("bs.tooltip")) {
                   anchor.tooltip("dispose");
                 }
-              } catch (e) {}
+              } catch (disposeErr) {
+                if (window && window.UptimeDebug) {
+                  console.error(
+                    "octoprint_uptime: failed to dispose existing tooltip",
+                    disposeErr,
+                  );
+                } else {
+                  console.warn(
+                    "octoprint_uptime: failed to dispose existing tooltip",
+                  );
+                }
+              }
               // Restore native browser tooltip by setting `title` and
               // removing any Bootstrap-specific attributes.
               anchor.attr("title", startedText);
