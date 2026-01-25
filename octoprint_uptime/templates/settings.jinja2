@@ -54,10 +54,17 @@
             _fetchUptimeNote();
           } else {
             var $modal = $uptimeContainer.closest('.modal');
-            $modal.on('shown.bs.modal shown', function _uptimeModalHandler() {
-              $modal.off('shown.bs.modal shown', _uptimeModalHandler);
+            if ($modal.length) {
+              $modal.on('shown.bs.modal shown', function _uptimeModalHandler() {
+                $modal.off('shown.bs.modal shown', _uptimeModalHandler);
+                _fetchUptimeNote();
+              });
+            } else {
+              // No enclosing modal found (non-modal settings page). Fetch
+              // immediately to ensure the uptime note is rendered in
+              // non-modal contexts.
               _fetchUptimeNote();
-            });
+            }
           }
         });
       })();

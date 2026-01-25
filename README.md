@@ -90,7 +90,9 @@ If uptime cannot be determined the plugin API returns `uptime_available: false` 
 
 1. **API endpoint (server)**: `/api/plugin/octoprint_uptime` (requires OctoPrint API key / auth)
 
-Note for frontend code: when calling the plugin from JavaScript use the OctoPrint API helper and pass the plugin identifier only — for example `OctoPrint.simpleApiGet('octoprint_uptime')`. Do not prefix the plugin id with `plugin/` when using the `OctoPrint.simpleApiGet` helper, as the helper already scopes requests to `/api/plugin/`. 2. **Settings**: `Polling interval`, `Display format`, `Show in navbar` (off by default)
+Note for frontend code: when calling the plugin from JavaScript use the OctoPrint API helper and pass the plugin identifier only — for example `OctoPrint.simpleApiGet('octoprint_uptime')`. Do not prefix the plugin id with `plugin/` when using the `OctoPrint.simpleApiGet` helper, as the helper already scopes requests to `/api/plugin/`.
+
+2. **Settings**: `Polling interval`, `Display format`, `Show in navbar` (off by default)
 
 Quick curl example:
 
@@ -187,5 +189,4 @@ Note: For logs and troubleshooting, enable "debug logging" in the plugin setting
 
 ---
 
-**Like this plugin?** ⭐ Star the repo and share it with the OctoPrint community!
 **Like this plugin?** ⭐ Star the repo and share it with the OctoPrint community!

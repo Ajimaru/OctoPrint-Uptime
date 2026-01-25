@@ -639,8 +639,16 @@ class OctoprintUptimePlugin(
                     return self._fallback_uptime_response()
                 except (RuntimeError, OSError):
                     return self._fallback_uptime_response()
-        except (AttributeError, TypeError, ValueError):
-            pass
+        except (AttributeError, TypeError, ValueError) as e:
+            if hasattr(self, "_logger") and self._logger is not None:
+                self._logger.error(
+                    "on_api_get: unexpected error while checking permissions: %s",
+                    e,
+                )
+            try:
+                return self._abort_forbidden()
+            except (AttributeError, TypeError, ValueError, RuntimeError, OSError):
+                return self._fallback_uptime_response()
 
         seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = self._get_uptime_info()
         self._log_debug(_("Uptime API requested, result=%s") % uptime_full)
