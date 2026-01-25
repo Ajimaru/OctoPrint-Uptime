@@ -218,6 +218,11 @@ main() {
         usage
         exit 0
         ;;
+      *)
+        printf 'ERROR: Unrecognized option: %s\n' "${_arg}" >&2
+        usage
+        exit 2
+        ;;
     esac
   done
 
