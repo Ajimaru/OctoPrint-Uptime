@@ -11,19 +11,11 @@
           $.get('/api/plugin/octoprint_uptime').done(function(data) {
             try {
               if (data && data.uptime_available === false) {
-                try {
-                  var installNote = $('#uptime_note_container').attr('data-note') || '';
-                  var el = $('<div/>')
-                    .addClass('alert alert-warning')
-                    .text(installNote);
-                  $('#uptime_note_container').empty().append(el).show();
-                } catch (renderErr) {
-                  if (window && window.UptimeDebug) {
-                    console.error('octoprint_uptime: failed to render uptime install note', renderErr, data);
-                  } else {
-                    console.warn('octoprint_uptime: failed to render uptime install note');
-                  }
-                }
+                var installNote = $('#uptime_note_container').attr('data-note') || '';
+                var el = $('<div/>')
+                  .addClass('alert alert-warning')
+                  .text(installNote);
+                $('#uptime_note_container').empty().append(el).show();
               }
             } catch (e) {
               if (window && window.UptimeDebug) {
