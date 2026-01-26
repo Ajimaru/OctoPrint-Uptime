@@ -41,7 +41,7 @@ plugins:
             merge_init_into_class: true
             separate_signature: true
             filters:
-              - "!^_"
+              - "!^__"
 
 nav:
   - Overview: index.md
