@@ -46,5 +46,10 @@ repos:
         name: Generate JavaScript docs
         entry: bash scripts/generate-jsdocs.sh
         language: system
-        files: '^octoprint_temp_eta/static/js/.*\.js$'
+        files: '^octoprint_uptime/static/js/.*\.js$'
+        pass_filenames: true
+      - id: check-translations
+        name: Check translations are in sync with POT
+        entry: bash .githooks/check_translations_sync.sh
+        language: system
         pass_filenames: false
