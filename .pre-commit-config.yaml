@@ -38,15 +38,14 @@ repos:
         exclude: '\\.md$|\\.yaml$|\\.yml$|\\.json$|\\.txt$|\\.po$|\\.pot$|\\.mo$'
         args: ["--max-line-length=120", "--extend-ignore=E203,W503"]
 
-  # Prettier: use project-local installation (package.json) via node_modules/.bin/prettier or npx
-  # This requires developers to run `npm install` (setup script will do this when needed).
   - repo: local
     hooks:
-      - id: prettier-check
-        name: Prettier (check)
-        entry: bash -c 'if [ -x "./node_modules/.bin/prettier" ]; then ./node_modules/.bin/prettier --check "$@"; else npx --yes prettier --check "$@"; fi'
+      - id: prettier-write
+        name: Prettier (write)
+        entry: bash scripts/prettier-hook.sh
         language: system
         types_or: [javascript, css, markdown, json, yaml]
+        pass_filenames: true
         exclude: '^docs/api/python\\.md$'
 
   - repo: local
