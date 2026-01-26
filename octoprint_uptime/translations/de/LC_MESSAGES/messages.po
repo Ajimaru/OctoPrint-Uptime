@@ -116,7 +116,7 @@ msgstr "Abfrageintervall (s)"
 
 #: octoprint_uptime/templates/settings.jinja2:98
 msgid "Seconds between navbar API polls. Low values may spam logs; default is 5s."
-msgstr "Sekunden zwischen API-Abfragen für die Navbar. Niedrige Werte können das \nProtokoll füllen; Standard ist 5s."
+msgstr "Sekunden zwischen API-Abfragen für die Navbar. Niedrige Werte können das Protokoll füllen; Standard ist 5s."
 
 #: octoprint_uptime/templates/settings.jinja2:103
 msgid "Debug"
