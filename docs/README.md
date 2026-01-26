@@ -94,14 +94,14 @@ docs/
 │   ├── testing.md                    # Testing guide (commands, coverage)
 │   └── release-process.md            # Release process (notes about .development helpers)
 └── reference/                        # Reference docs
-  ├── configuration.md             # Configuration reference
-  ├── cli-dev-scripts.md           # Dev scripts reference
-  ├── frontend.md                  # Frontend reference
-  └── diagrams/
-    └── classes.svg              # UML/diagrams used in docs
-    └── classes_detailed.svg     # Detailed UML diagram
-    └── packages.svg             # Package diagram
-    └── overview.md              # Conceptual diagram (Mermaid)
+    ├── configuration.md             # Configuration reference
+    ├── cli-dev-scripts.md           # Dev scripts reference
+    ├── frontend.md                  # Frontend reference
+    └── diagrams/
+        ├── classes.svg              # UML/diagrams used in docs
+        ├── classes_detailed.svg     # Detailed UML diagram
+        ├── packages.svg             # Package diagram
+        └── overview.md              # Conceptual diagram (Mermaid)
 
 Diagrams
 
@@ -157,7 +157,7 @@ Documentation is automatically deployed to GitHub Pages on push to `main` branch
 
 Workflow: `.github/workflows/docs.yml`
 
-Developer guides
+### Developer guides
 
 The developer-facing pages under `docs/development/` have been synchronized with the repository `CONTRIBUTING.md` and `tests/README.md` and include details on the `.development` helper scripts (setup, bumping, packaging, restart helpers). See the `development` section in the docs for contributor, testing and release guidance.
 

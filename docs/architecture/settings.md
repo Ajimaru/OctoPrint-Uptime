@@ -2,7 +2,7 @@
 
 This document lists the plugin settings that affect the uptime display and polling behavior.
 
-Settings
+## Settings
 
 | Setting                 | Type    | Default | Description                                                                 |
 | ----------------------- | ------- | ------: | --------------------------------------------------------------------------- |
@@ -10,6 +10,6 @@ Settings
 | `display_format`        | string  |   `dhm` | Format of uptime display. One of `full`, `dhm`, `dh`, `d`, `short`.         |
 | `poll_interval_seconds` | integer |     `5` | Client polling interval in seconds (frontend may respect server overrides). |
 
-Where to change
+## Where to change
 
 Change these values in the plugin settings panel in OctoPrint or via the configuration file when installing headless.

@@ -34,7 +34,7 @@ Check / test poll interval:
 - The UI uses the server-side stored `poll_interval_seconds` if set. The client queries this value on each poll and adjusts its timer accordingly.
 - For testing, you can change the value `Polling interval` in the plugin settings (`Settings` → `Plugin OctoPrint Uptime`) and observe if the client polling frequency in the browser adapts.
 
-Handling unavailable uptime
+## Handling unavailable uptime
 
 - If the API returns `uptime_available: false` the client should fall back to a sensible UI state (for example display "unknown") and surface the localized `uptime_note` when present to guide remediation (e.g., "install psutil in OctoPrint virtualenv").
 

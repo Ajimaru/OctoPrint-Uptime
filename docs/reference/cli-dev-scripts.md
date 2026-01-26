@@ -2,11 +2,11 @@
 
 This page documents the helper scripts in the repository `.development/` that are useful when developing, testing, bumping versions and preparing release artifacts.
 
-Location
+## Location
 
 All helper scripts live under the `.development/` directory at the project root. They are intended for maintainers and contributors and may rely on a local Python virtual environment.
 
-Important scripts
+## Important scripts
 
 - `.development/setup_dev.sh`
   - Sets up a local development environment (creates `venv/`, installs editable dependencies, and configures local git hooks when applicable).
@@ -59,17 +59,17 @@ Tip: instead of `OCTOPRINT_ARGS` you can set `OCTOPRINT_CMD` to an absolute octo
 .development/post_commit_build_dist.sh --sdist --wheel
 ```
 
-Other helpers
+## Other helpers
 
 - `.development/monitor_octoprint_performance.sh` — lightweight monitor for file descriptor and process checks (useful during long-running tests).
 - `.development/test_checklist.sh` — interactive checklist script for manual release verification.
 
-Best practices
+## Best practices
 
 - Run `bash .development/setup_dev.sh` once to prepare your development environment and enable recommended pre-commit hooks.
 - When bumping versions, review the changes produced by `.development/bump_control.sh` before committing or tagging.
 - After adding dependencies, run the repository's security checks as documented (see `codacy` rules in the top-level `.github/instructions` if applicable) and compile translation catalogs if strings changed.
 
-Notes
+## Notes
 
 - These scripts are convenience helpers and are not a shield against manual verification. Always run tests (`pytest`) and check the generated artifacts before publishing.
