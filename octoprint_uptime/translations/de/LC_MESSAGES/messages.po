@@ -1,13 +1,14 @@
-# Duplicate translations removed. The authoritative German catalog for this
-# plugin is the single source of truth at
-# octoprint_uptime/translations/de/LC_MESSAGES/messages.po; this file is
-# intentionally left empty to avoid duplicate entries.
+## German translations for OctoPrint-Uptime plugin
+##
+## This is the authoritative German locale for the OctoPrint-Uptime
+## plugin. It contains German `msgstr` entries used at runtime.
+##
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-26 10:50+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 2026-01-26 00:18+0100\n"
+"PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
 "Language-Team: de <LL@li.org>\n"
@@ -19,16 +20,16 @@ msgstr ""
 
 #: octoprint_uptime/plugin.py:222
 msgid "navbar_uptime"
-msgstr ""
+msgstr "Navbar‑Uptime"
 
 #: octoprint_uptime/plugin.py:228
 msgid "OctoPrint Uptime"
-msgstr ""
+msgstr "OctoPrint Uptime"
 
 #: octoprint_uptime/plugin.py:584 octoprint_uptime/plugin.py:629
 #: octoprint_uptime/plugin.py:737 octoprint_uptime/plugin.py:744
 msgid "unknown"
-msgstr ""
+msgstr "unbekannt"
 
 #: octoprint_uptime/plugin.py:601 octoprint_uptime/plugin.py:620
 #: octoprint_uptime/templates/settings.jinja2:6
@@ -36,103 +37,107 @@ msgid ""
 "Uptime could not be determined. You can install psutil in the OctoPrint "
 "virtualenv: pip install psutil"
 msgstr ""
+"Die Uptime konnte nicht ermittelt werden. Sie können psutil in der "
+"OctoPrint‑Virtualenv nachinstallieren: pip install psutil"
 
 #: octoprint_uptime/plugin.py:640
 #, python-format
 msgid "Uptime API requested, result=%s"
-msgstr ""
+msgstr "Uptime-API angefragt, Ergebnis=%s"
 
 #: octoprint_uptime/plugin.py:670 octoprint_uptime/plugin.py:679
 #: octoprint_uptime/plugin.py:708
 msgid "Forbidden"
-msgstr ""
+msgstr "Zugriff verweigert"
 
 #: octoprint_uptime/plugin.py:741
 msgid "Error computing uptime"
-msgstr ""
+msgstr "Fehler bei der Ermittlung der Uptime"
 
 #: octoprint_uptime/plugin.py:786 octoprint_uptime/plugin.py:794
 msgid "full"
-msgstr ""
+msgstr "voll"
 
 #: octoprint_uptime/templates/navbar.jinja2:3
 msgid "Uptime:"
-msgstr ""
+msgstr "Uptime:"
 
 #: octoprint_uptime/templates/navbar.jinja2:6
 msgid "Started:"
-msgstr ""
+msgstr "Gestartet:"
 
 #: octoprint_uptime/templates/settings.jinja2:3
 msgid "OctoPrint-Uptime"
-msgstr ""
+msgstr "OctoPrint-Uptime"
 
 #: octoprint_uptime/templates/settings.jinja2:4
 msgid "Use this plugin to display system uptime in the Navbar."
-msgstr ""
+msgstr "Dieses Plugin zeigt die System-Uptime in der Navbar an."
 
 #: octoprint_uptime/templates/settings.jinja2:67
 msgid "Navbar"
-msgstr ""
+msgstr "Navbar"
 
 #: octoprint_uptime/templates/settings.jinja2:75
 msgid "Show uptime in navbar"
-msgstr ""
+msgstr "Uptime in der Navbar anzeigen"
 
 #: octoprint_uptime/templates/settings.jinja2:77
 msgid "Toggle whether the uptime is visible in the top navigation bar."
-msgstr ""
+msgstr "Umschalten, ob die Uptime in der oberen Navigationsleiste sichtbar ist."
 
 #: octoprint_uptime/templates/settings.jinja2:82
 msgid "Display format"
-msgstr ""
+msgstr "Anzeigeformat"
 
 #: octoprint_uptime/templates/settings.jinja2:85
 msgid "D + H + M + S (days + hours + minutes + seconds)"
-msgstr ""
+msgstr "D + H + M + S (Tage + Stunden + Minuten + Sekunden)"
 
 #: octoprint_uptime/templates/settings.jinja2:86
 msgid "D + H + M (days + hours + minutes)"
-msgstr ""
+msgstr "D + H + M (Tage + Stunden + Minuten)"
 
 #: octoprint_uptime/templates/settings.jinja2:87
 msgid "D + H (days + hours)"
-msgstr ""
+msgstr "D + H (Tage + Stunden)"
 
 #: octoprint_uptime/templates/settings.jinja2:88
 msgid "D (days only)"
-msgstr ""
+msgstr "D (nur Tage)"
 
 #: octoprint_uptime/templates/settings.jinja2:90
 msgid "Choose how the uptime is shown in the navbar."
-msgstr ""
+msgstr "Wählen Sie, wie die Uptime in der Navbar angezeigt wird."
 
 #: octoprint_uptime/templates/settings.jinja2:95
 msgid "Polling interval (s)"
-msgstr ""
+msgstr "Abfrageintervall (s)"
 
 #: octoprint_uptime/templates/settings.jinja2:98
 msgid "Seconds between navbar API polls. Low values may spam logs; default is 5s."
-msgstr ""
+msgstr "Sekunden zwischen API-Abfragen für die Navbar. Niedrige Werte können das \nProtokoll füllen; Standard ist 5s."
 
 #: octoprint_uptime/templates/settings.jinja2:103
 msgid "Debug"
-msgstr ""
+msgstr "Debug"
 
 #: octoprint_uptime/templates/settings.jinja2:111
 msgid "Enable debug logging (throttled)"
-msgstr ""
+msgstr "Debug-Protokollierung aktivieren (gedrosselt)"
 
 #: octoprint_uptime/templates/settings.jinja2:113
 msgid ""
 "When enabled, the plugin will log debug messages. Messages are throttled "
 "to avoid spamming the log."
 msgstr ""
+"Wenn aktiviert, schreibt das Plugin Debug-Meldungen ins Protokoll. "
+"Meldungen werden gedrosselt, um Log‑Spam zu vermeiden."
 
 #: octoprint_uptime/templates/settings.jinja2:118
 msgid "Debug throttle (s)"
-msgstr ""
+msgstr "Debug-Drossel (s)"
 
 #: octoprint_uptime/templates/settings.jinja2:121
 msgid "Minimum seconds between debug log entries."
-msgstr ""
+msgstr "Minimale Sekunden zwischen Debug-Protokolleinträgen."

@@ -28,14 +28,14 @@ msgstr "OctoPrint-Uptime"
 #: octoprint_uptime/plugin.py:584 octoprint_uptime/plugin.py:629
 #: octoprint_uptime/plugin.py:737 octoprint_uptime/plugin.py:744
 msgid "unknown"
-msgstr ""
+msgstr "unknown"
 
 #: octoprint_uptime/plugin.py:601 octoprint_uptime/plugin.py:620
 #: octoprint_uptime/templates/settings.jinja2:6
 msgid ""
 "Uptime could not be determined. You can install psutil in the OctoPrint "
 "virtualenv: pip install psutil"
-msgstr ""
+msgstr "Uptime could not be determined. You can install psutil in the OctoPrint virtualenv: pip install psutil"
 
 #: octoprint_uptime/plugin.py:640
 #, python-format
