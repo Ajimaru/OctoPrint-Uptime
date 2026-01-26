@@ -19,12 +19,10 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 
 #: octoprint_uptime/plugin.py:222
-#, fuzzy
 msgid "navbar_uptime"
 msgstr "Navbar"
 
 #: octoprint_uptime/plugin.py:228
-#, fuzzy
 msgid "OctoPrint Uptime"
 msgstr "OctoPrint-Uptime"
 
