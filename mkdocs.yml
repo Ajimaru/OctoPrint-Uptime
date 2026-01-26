@@ -69,4 +69,4 @@ nav:
           - Classes (auto): reference/diagrams/classes.md
           - Classes (detailed): reference/diagrams/classes_detailed.md
           - Packages: reference/diagrams/packages.md
-          - Conceptual (Mermaid): reference/diagrams/overview.md
+          - Overview (Mermaid): reference/diagrams/overview.md
