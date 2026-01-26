@@ -124,7 +124,7 @@ if ! python_is_at_least_310 "$PYTHON_BIN"; then
     die "Python 3.10+ required. Hint: run .development/setup_dev.sh"
 fi
 
-log "Using Python: $PYTHON_BIN ($($PYTHON_BIN -c 'import sys; print("%d.%d" % sys.version_info[:2])'))"
+log "Using Python: \"$PYTHON_BIN\" ($("$PYTHON_BIN" -c 'import sys; print("%d.%d" % sys.version_info[:2])'))"
 
 # Ensure dependencies are present inside the selected environment.
 log "Installing/refreshing CI dependencies (editable + dev extras)"

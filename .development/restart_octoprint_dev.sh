@@ -203,6 +203,7 @@ stop_all_octoprint() {
     kill -TERM "$pid" 2>/dev/null || true
   done <<<"$pids"
 
+  # shellcheck disable=SC2046
   if wait_pids_exit 30 "$(echo "$pids" | tr '\n' ' ')"; then
     echo "All detected OctoPrint instances stopped."
     return 0
