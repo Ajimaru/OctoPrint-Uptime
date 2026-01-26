@@ -168,7 +168,7 @@ safe_stat_bytes() {
 count_fds() {
   local pid="$1"
   if [[ -n "$pid" && -d "/proc/$pid/fd" ]]; then
-    ls -1 "/proc/$pid/fd" 2>/dev/null | wc -l | awk '{print $1}'
+    find "/proc/$pid/fd" -maxdepth 1 -mindepth 1 -printf '.' 2>/dev/null | wc -c
   else
     echo 0
   fi

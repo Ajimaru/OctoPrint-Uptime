@@ -203,8 +203,8 @@ stop_all_octoprint() {
     kill -TERM "$pid" 2>/dev/null || true
   done <<<"$pids"
 
-  # shellcheck disable=SC2046
-  if wait_pids_exit 30 "$(echo "$pids" | tr '\n' ' ')"; then
+  readarray -t _pids <<<"$pids"
+  if wait_pids_exit 30 "${_pids[@]}"; then
     echo "All detected OctoPrint instances stopped."
     return 0
   fi
@@ -219,7 +219,7 @@ stop_all_octoprint() {
       fi
     done <<<"$pids"
 
-    if wait_pids_exit 10 "$(echo "$pids" | tr '\n' ' ')"; then
+    if wait_pids_exit 10 "${_pids[@]}"; then
       echo "All detected OctoPrint instances stopped after SIGKILL." >&2
       return 0
     fi

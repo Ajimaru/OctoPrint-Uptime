@@ -37,11 +37,7 @@ if ! "$PYTHON_BIN" -c 'import sys; sys.exit(0 if sys.version_info[:2] >= (3, 10)
     exit 1
 fi
 
-REPO_ROOT_CMD="<repo-root>"
-if command -v git >/dev/null 2>&1; then
-
-    REPO_ROOT_CMD='"$(git rev-parse --show-toplevel)"'
-fi
+REPO_ROOT_CMD="$REPO_ROOT"
 
 echo "======================================"
 echo "OctoPrint Plugin Template - Test Setup"

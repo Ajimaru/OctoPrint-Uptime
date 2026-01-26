@@ -136,7 +136,9 @@ check_versions_consistent() {
         printf "%b\n" "Setting all files to version: ${GREEN}$chosen${RESET}"
         sed -E -i "s/^current_version[[:space:]]*=[[:space:]]*\"[^\"]+\"/current_version = \"$chosen\"/" "$config_file"
         sed -E -i "s/VERSION = \"[^\"]+\"/VERSION = \"$chosen\"/" octoprint_uptime/_version.py
-        sed -E -i "s/^version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$chosen\"/" pyproject.toml
+        # Use PEP 440 compatible dev separator in pyproject.toml (0.1.0.dev35)
+        py_ver="${chosen/-dev/.dev}"
+        sed -E -i "s/^version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$py_ver\"/" pyproject.toml
     fi
 }
 
@@ -160,14 +162,15 @@ run_post_commit_build() {
     fi
 
     if [[ "$run_post" =~ ^[Yy] ]]; then
+        local -a cmd
         if [[ -x ".development/post_commit_build_dist.sh" ]]; then
-            if ! ./.development/post_commit_build_dist.sh; then
-                printf "%b\n" "Warning: post_commit_build_dist.sh exited with an error." >&2
-            fi
+            cmd=( "./.development/post_commit_build_dist.sh" )
         else
-            if ! bash .development/post_commit_build_dist.sh; then
-                printf "%b\n" "Warning: post_commit_build_dist.sh exited with an error." >&2
-            fi
+            cmd=( "bash" ".development/post_commit_build_dist.sh" )
+        fi
+
+        if ! "${cmd[@]}"; then
+            printf "%b\n" "Warning: .development/post_commit_build_dist.sh exited with an error." >&2
         fi
     fi
 }
@@ -394,7 +397,9 @@ if [[ -z "$BUMP_TYPE" ]]; then
             exit 0
         fi
         sed -E -i "s/VERSION = \"[^\"]+\"/VERSION = \"$NEW_CURRENT\"/" octoprint_uptime/_version.py
-        sed -E -i "s/version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$NEW_CURRENT\"/" pyproject.toml
+        # Use PEP 440 compatible dev separator when updating pyproject.toml
+        py_ver="${NEW_CURRENT/-dev/.dev}"
+        sed -E -i "s/version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$py_ver\"/" pyproject.toml
         sed -E -i "s/^current_version[[:space:]]*=[[:space:]]*\"[^\"]+\"/current_version = \"$NEW_CURRENT\"/" "$CONFIG"
         if [[ "$COMMIT" == "true" ]]; then
             git add octoprint_uptime/_version.py pyproject.toml "$CONFIG"

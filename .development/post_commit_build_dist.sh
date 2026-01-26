@@ -29,7 +29,7 @@ python_is_at_least_310() {
 resolve_python() {
   local candidate
 
-  for candidate in "./venv/bin/python"; do
+  for candidate in "./venv/bin/python" "./.venv/bin/python"; do
     if [[ -x "$candidate" ]] && python_is_at_least_310 "$candidate"; then
       echo "$candidate"
       return 0
