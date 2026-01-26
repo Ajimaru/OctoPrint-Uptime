@@ -6,7 +6,7 @@
 <!-- markdownlint-enable MD041 MD033 -->
 
 [![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/ajitroids#-license)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org)
+[![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://python.org)
 ![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
 [![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
 [![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
@@ -92,7 +92,10 @@ If uptime cannot be determined the plugin API returns `uptime_available: false` 
 
 Note for frontend code: when calling the plugin from JavaScript use the OctoPrint API helper and pass the plugin identifier only — for example `OctoPrint.simpleApiGet('octoprint_uptime')`. Do not prefix the plugin id with `plugin/` when using the `OctoPrint.simpleApiGet` helper, as the helper already scopes requests to `/api/plugin/`.
 
+<!-- markdownlint-disable MD029 -->
+
 2. **Settings**: `Polling interval`, `Display format`, `Show in navbar` (off by default)
+<!-- markdownlint-enable MD029 -->
 
 Quick curl example:
 

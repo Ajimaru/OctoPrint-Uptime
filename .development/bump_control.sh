@@ -37,6 +37,14 @@ Examples:
 EOF
 }
 
+to_pep440() {
+    # Convert a developer-suffixed version ("-dev") to PEP 440 ".dev" form.
+    # Accepts a single version string argument and writes the converted
+    # version to stdout so callers can use: result="$(to_pep440 "$ver")".
+    local ver="${1:-}"
+    printf '%s' "${ver/-dev/.dev}"
+}
+
 choose_menu() {
     local prompt="$1"; shift
     local options=("$@")
@@ -137,7 +145,7 @@ check_versions_consistent() {
         sed -E -i "s/^current_version[[:space:]]*=[[:space:]]*\"[^\"]+\"/current_version = \"$chosen\"/" "$config_file"
         sed -E -i "s/VERSION = \"[^\"]+\"/VERSION = \"$chosen\"/" octoprint_uptime/_version.py
         # Use PEP 440 compatible dev separator in pyproject.toml (0.1.0.dev35)
-        py_ver="${chosen/-dev/.dev}"
+        py_ver="$(to_pep440 "$chosen")"
         sed -E -i "s/^version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$py_ver\"/" pyproject.toml
     fi
 }
@@ -398,7 +406,7 @@ if [[ -z "$BUMP_TYPE" ]]; then
         fi
         sed -E -i "s/VERSION = \"[^\"]+\"/VERSION = \"$NEW_CURRENT\"/" octoprint_uptime/_version.py
         # Use PEP 440 compatible dev separator when updating pyproject.toml
-        py_ver="${NEW_CURRENT/-dev/.dev}"
+        py_ver="$(to_pep440 "$NEW_CURRENT")"
         sed -E -i "s/version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$py_ver\"/" pyproject.toml
         sed -E -i "s/^current_version[[:space:]]*=[[:space:]]*\"[^\"]+\"/current_version = \"$NEW_CURRENT\"/" "$CONFIG"
         if [[ "$COMMIT" == "true" ]]; then

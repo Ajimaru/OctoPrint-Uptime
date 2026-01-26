@@ -278,6 +278,13 @@ $(function () {
         // Helper: Validate integer in range with localized message on failure.
         function validateIntegerRange(rawValue, min, max, message) {
           try {
+            if (
+              rawValue === "" ||
+              rawValue === null ||
+              rawValue === undefined
+            ) {
+              return typeof gettext === "function" ? gettext(message) : message;
+            }
             var n = Number(rawValue);
             if (
               !Number.isFinite(n) ||
@@ -297,7 +304,9 @@ $(function () {
             var raw =
               settings.plugins.octoprint_uptime.debug_throttle_seconds();
           } catch (e) {
-            return null;
+            return typeof gettext === "function"
+              ? gettext("Unable to read debug throttle setting.")
+              : "Unable to read debug throttle setting.";
           }
           return validateIntegerRange(
             raw,

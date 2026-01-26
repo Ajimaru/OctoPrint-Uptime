@@ -14,7 +14,7 @@
           function _renderUptimeNote(data) {
             try {
               if (data && data.uptime_available === false) {
-                var installNote = $('#uptime_note_container').attr('data-note') || '';
+                var installNote = data.uptime_note || $('#uptime_note_container').attr('data-note') || '';
                 var el = $('<div/>')
                   .addClass('alert alert-warning')
                   .text(installNote);
@@ -33,7 +33,7 @@
             if (uptimeNoteRendered) {
               return $.Deferred().resolve().promise();
             }
-            return OctoPrint.simpleApiGet('octoprint_uptime')
+            return OctoPrint.simpleApiGet('octoprint_uptime', {timeout: 10000})
               .done(function(data) {
                 _renderUptimeNote(data);
                 uptimeNoteRendered = true;

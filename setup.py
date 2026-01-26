@@ -58,9 +58,7 @@ PLUGIN_VERSION = _read_version()
 
 # The plugin's description. Can be overridden within OctoPrint's internal
 # data via __plugin_description__ in the plugin module.
-PLUGIN_DESCRIPTION = (
-    "OctoPrint plugin that exposes system uptime to the About → System dialog."
-)
+PLUGIN_DESCRIPTION = "Adds system uptime to the navbar and exposes a small uptime API."
 
 # The plugin's author. Can be overridden within OctoPrint's internal data
 # via __plugin_author__ in the plugin module.
@@ -158,7 +156,7 @@ if len(additional_setup_parameters):
     if OCTOPRINT_UTIL and hasattr(OCTOPRINT_UTIL, "dict_merge"):
         dict_merge = getattr(OCTOPRINT_UTIL, "dict_merge")
     else:
-        # Fallback dict_merge implementation (recursive, does not mutate inputs)
+
         def dict_merge(a, b):
             """Recursively merge two dicts without mutating inputs."""
             result = copy.deepcopy(a)

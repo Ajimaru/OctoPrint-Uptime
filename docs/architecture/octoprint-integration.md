@@ -17,7 +17,7 @@ OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {
 });
 ```
 
-Consuming from Python (other plugins)
+## Consuming from Python (other plugins)
 
 ```py
 from octoprint_uptime.plugin import format_uptime

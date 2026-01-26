@@ -35,7 +35,7 @@ compatibility:
     - 1.10.0
   os:
     - linux
-  python: ">=3.7,<4"
+  python: ">=3.7,<3.13"
 ---
 
 OctoPrint-Uptime is a lightweight plugin that displays the system uptime of your OctoPrint server directly in the navbar. Additionally, it provides a small, authenticated JSON API that can be queried by external tools or scripts.

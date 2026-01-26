@@ -267,7 +267,7 @@ class OctoprintUptimePlugin(
                     uptime_seconds = float(f.readline().split()[0])
                     return uptime_seconds
         except (ValueError, TypeError, OSError):
-            return None
+            pass
         return None
 
     def _get_uptime_from_psutil(self) -> Optional[float]:

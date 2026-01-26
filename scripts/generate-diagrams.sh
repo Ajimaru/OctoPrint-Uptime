@@ -19,8 +19,7 @@ if command -v dot >/dev/null 2>&1; then
   echo "Wrote ${OUT_SVG}"
 else
   echo "graphviz 'dot' not found — trying PNG fallback for compact diagram"
-  if command -v pyreverse >/dev/null 2>&1; then
-    pyreverse -A -S -m y -o png -p OctoPrint-Uptime octoprint_uptime
+  pyreverse -A -S -m y -o png -p OctoPrint-Uptime octoprint_uptime
     PNGFILE="classes_OctoPrint-Uptime.png"
     PNMFILE="classes_OctoPrint-Uptime.pnm"
     if command -v convert >/dev/null 2>&1 && command -v potrace >/dev/null 2>&1; then
@@ -32,7 +31,6 @@ else
     else
       echo "Neither graphviz nor ImageMagick+potrace available; cannot render compact diagram" >&2
     fi
-  fi
 fi
 
 # detailed diagram (show private/protected and expanded details)
@@ -64,11 +62,27 @@ PKG_OUT="docs/reference/diagrams/packages.svg"
 if command -v dot >/dev/null 2>&1; then
   dot -Tsvg "${PKG_DOT}" -o "${PKG_OUT}"
   echo "Wrote ${PKG_OUT}"
+else
+  echo "graphviz 'dot' not found — attempting PNG fallback for packages diagram"
+  pyreverse -o png -p OctoPrint-Uptime octoprint_uptime
+  PKG_PNG="packages_OctoPrint-Uptime.png"
+  PKG_PNM="packages_OctoPrint-Uptime.pnm"
+  if command -v convert >/dev/null 2>&1 && command -v potrace >/dev/null 2>&1; then
+    convert "${PKG_PNG}" "${PKG_PNM}"
+    potrace -s -o "${PKG_OUT}" "${PKG_PNM}"
+    echo "Wrote ${PKG_OUT}"
+  else
+    echo "Cannot render packages diagram: missing graphviz and potrace/ImageMagick" >&2
+  fi
 fi
 
 # Cleanup intermediate files produced by pyreverse (DOT/PNG/PNM)
 echo "Cleaning up intermediate files..."
-for f in classes_OctoPrint-Uptime*.dot classes_OctoPrint-Uptime*.png classes_OctoPrint-Uptime*.pnm packages_OctoPrint-Uptime*.dot packages_OctoPrint-Uptime*.png packages_OctoPrint-Uptime*.pnm; do
+# Use an array of glob patterns so each pattern is preserved as an element
+# and iterated safely. `nullglob` is enabled at the top of the script so
+# patterns that match nothing expand to an empty list instead of themselves.
+patterns=(classes_OctoPrint-Uptime*.{dot,png,pnm} packages_OctoPrint-Uptime*.{dot,png,pnm})
+for f in "${patterns[@]}"; do
   if [ -e "$f" ]; then
     rm -f -- "$f"
     echo "removed $f"

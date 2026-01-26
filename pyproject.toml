@@ -9,23 +9,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "OctoPrint-Uptime"
 version = "0.1.0-dev35"
-description = "OctoPrint plugin that exposes system uptime to the About → System dialog"
+description = "Adds system uptime to the navbar and exposes a small uptime API."
 authors = [
     {name = "Ajimaru", email = "ajimaru_gdr@pm.me"}
 ]
 readme = {file = "README.md", content-type = "text/markdown"}
 
-requires-python = ">=3.10, <4"
+requires-python = ">=3.7, <4"
 
-classifiers = [
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
+dynamic = [
+    "license"
 ]
 
-# Add runtime dependencies for your plugin here (besides OctoPrint itself)
 dependencies = [
 ]
 
