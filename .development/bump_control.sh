@@ -162,6 +162,20 @@ update_toml() {
 
 run_post_commit_build() {
     local run_post
+    # If dist artifacts for the new version already exist (post-commit hook ran),
+    # skip asking/running the build script again.
+    if [[ -n "${NEW_CURRENT:-}" ]]; then
+        local normalized
+        normalized="${NEW_CURRENT//-/.}"
+        shopt -s nullglob nocaseglob
+        local candidates=(dist/*"${NEW_CURRENT}"*.tar.gz dist/*"${NEW_CURRENT}"*.tgz dist/*"${NEW_CURRENT}"*.whl dist/*"${normalized}"*.tar.gz dist/*"${normalized}"*.tgz dist/*"${normalized}"*.whl dist/*"${normalized}"*.zip)
+        shopt -u nullglob nocaseglob
+        if (( ${#candidates[@]} > 0 )); then
+            printf "%b
+" "[OctoPrint-Uptime] Detected dist artifacts for ${GREEN}${NEW_CURRENT}${RESET}; skipping post-commit build." >&2
+            return 0
+        fi
+    fi
     if [[ -t 0 ]]; then
         read -r -p "Run .development/post_commit_build_dist.sh now? [Y/n] " run_post
         run_post=${run_post:-Y}
