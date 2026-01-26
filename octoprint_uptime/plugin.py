@@ -22,6 +22,15 @@ except ImportError:
 PERM = None
 
 try:
+    # Bind the bundled translations so gettext.lookup will find them.
+    _localedir = os.path.join(os.path.dirname(__file__), "translations")
+    try:
+        gettext.bindtextdomain("messages", _localedir)
+        gettext.textdomain("messages")
+    except (OSError, RuntimeError):
+        # non-fatal: fall back to default gettext behavior
+        pass
+
     _ = gettext.gettext
 except (ImportError, AttributeError):
 
