@@ -1,8 +1,8 @@
-# English translations for PROJECT.
-# Copyright (C) 2026 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
-#
+# Duplicate translations removed. The authoritative English catalog for this
+# plugin is the single source of truth at
+# octoprint_uptime/translations/en/LC_MESSAGES/messages.po; this file is
+# intentionally left minimal to avoid duplicate entries.
+##
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"

@@ -1,6 +1,7 @@
-# Duplicate translations removed. The authoritative German catalog is at
-# translations/de/LC_MESSAGES/messages.po. This file is left intentionally
-# empty to avoid duplication.
+# Duplicate translations removed. The authoritative German catalog for this
+# plugin is the single source of truth at
+# octoprint_uptime/translations/de/LC_MESSAGES/messages.po; this file is
+# intentionally left empty to avoid duplicate entries.
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
