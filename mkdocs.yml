@@ -65,4 +65,8 @@ nav:
   - Reference:
       - Configuration: reference/configuration.md
       - Dev scripts: reference/cli-dev-scripts.md
-      - Diagrams: reference/diagrams/classes.svg
+      - Diagrams:
+          - Classes (auto): reference/diagrams/classes.svg
+          - Classes (detailed): reference/diagrams/classes_detailed.svg
+          - Packages: reference/diagrams/packages.svg
+          - Conceptual (Mermaid): reference/diagrams/overview.md
