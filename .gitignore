@@ -32,6 +32,7 @@ node_modules/
 .qodo
 .codacy
 gh_logs
+.codacyignore
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
