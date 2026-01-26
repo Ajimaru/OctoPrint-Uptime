@@ -219,18 +219,29 @@ fi
     # devDependency). If `npm` is not present, print a warning but do not fail.
     echo "Ensuring jsdoc-to-markdown is available for generating JavaScript docs..."
     if command -v npm >/dev/null 2>&1; then
-        if [[ -x "${REPO_ROOT}/node_modules/.bin/jsdoc2md" ]]; then
-            echo "jsdoc-to-markdown already installed locally"
-        else
-            echo "Installing Node.js dev dependencies (this will install jsdoc-to-markdown)..."
+        # Ensure the local node dev deps are present (jsdoc2md, prettier, etc.)
+        NEED_INSTALL=0
+        if [[ ! -x "${REPO_ROOT}/node_modules/.bin/jsdoc2md" ]]; then
+            echo "jsdoc-to-markdown missing"
+            NEED_INSTALL=1
+        fi
+        if [[ ! -x "${REPO_ROOT}/node_modules/.bin/prettier" ]]; then
+            echo "prettier missing"
+            NEED_INSTALL=1
+        fi
+
+        if [[ ${NEED_INSTALL} -eq 1 ]]; then
+            echo "Installing Node.js dev dependencies (this will install jsdoc-to-markdown, prettier, etc.)..."
             if (cd "${REPO_ROOT}" && npm install --no-audit --no-fund); then
                 echo "Node dev dependencies installed"
             else
                 echo "WARNING: 'npm install' failed. You can install manually by running 'npm install' in the project root." >&2
             fi
+        else
+            echo "Node dev dependencies already installed locally"
         fi
     else
-        echo "WARNING: 'npm' not found on PATH — skipping automatic installation of jsdoc-to-markdown. Install Node.js and run 'npm install' to enable JS doc generation." >&2
+        echo "WARNING: 'npm' not found on PATH — skipping automatic installation of Node dev dependencies. Install Node.js and run 'npm install' to enable JS doc generation and Prettier." >&2
     fi
 
 # Run pre-commit on all files (optional, can take time)
