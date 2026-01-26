@@ -297,7 +297,7 @@ main() {
   mapfile -d '' -t candidates < <(
     printf '%s\0' dist/*"${new_version}"*.tar.gz dist/*"${new_version}"*.tgz dist/*"${normalized_version}"*.tar.gz dist/*"${normalized_version}"*.tgz
   )
-  for candidate in "${candidates[@]:-}"; do
+  for candidate in "${candidates[@]+"${candidates[@]}"}"; do
     [[ -f "$candidate" ]] || continue
     sdist="$candidate"
     break

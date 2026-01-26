@@ -184,8 +184,8 @@ data_dir_metrics() {
   if [[ -d "$dir" ]]; then
     data_bytes=$(du -sb "$dir" 2>/dev/null | awk '{print $1}' || echo 0)
 
-    json_count=$(find "$dir" -maxdepth 1 -type f -name 'history_*.json' 2>/dev/null | wc -l | awk '{print $1}')
-    tmp_count=$(find "$dir" -maxdepth 1 -type f -name 'history_*.tmp' 2>/dev/null | wc -l | awk '{print $1}')
+    json_count=$(find "$dir" -maxdepth 1 -type f -name 'history_*.json' -printf '.' 2>/dev/null | wc -c)
+    tmp_count=$(find "$dir" -maxdepth 1 -type f -name 'history_*.tmp' -printf '.' 2>/dev/null | wc -c)
 
     if command -v stat >/dev/null 2>&1; then
       json_bytes=$(find "$dir" -maxdepth 1 -type f -name 'history_*.json' -print0 2>/dev/null | xargs -0 -r stat -c %s | awk '{s+=$1} END{print s+0}')
