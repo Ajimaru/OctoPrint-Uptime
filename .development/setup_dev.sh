@@ -52,6 +52,14 @@ source "$VENV_DIR/bin/activate"
 echo "Upgrading pip..."
 python -m pip install --upgrade pip
 
+# Ensure `tomli` is available for scripts that parse pyproject.toml on Python <3.11
+echo "Ensuring tomli is installed in the virtualenv..."
+if ! python -c "import tomli" >/dev/null 2>&1; then
+    python -m pip install tomli || echo "WARNING: failed to install tomli into virtualenv"
+else
+    echo "tomli already present in virtualenv"
+fi
+
 # Check for bump-my-version and offer to install into the venv
 if ! command -v bump-my-version >/dev/null 2>&1; then
     echo "bump-my-version not found in the virtual environment."

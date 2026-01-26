@@ -1,1 +1,5 @@
 pylint>=2.17.0
+pytest
+mock
+tomli
+pylint>=2.17.0
