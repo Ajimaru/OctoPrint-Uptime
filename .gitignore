@@ -36,6 +36,14 @@ gh_logs
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
 
+# Generated diagram intermediates
+# pyreverse/graphviz intermediate files
+classes_OctoPrint-Uptime*.dot
+packages_OctoPrint-Uptime*.dot
+*.pnm
+
+# Generated diagram outputs (created by CI)
+docs/reference/diagrams/*.svg
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md

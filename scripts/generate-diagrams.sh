@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+shopt -s nullglob
 
 # Generate class/package diagrams for the docs.
 # Primary path: pyreverse -> dot -> svg
@@ -56,7 +57,6 @@ else
   fi
 fi
 
-# packages diagram
 echo "Generating packages diagram..."
 pyreverse -o dot -p OctoPrint-Uptime octoprint_uptime
 PKG_DOT="packages_OctoPrint-Uptime.dot"
@@ -65,3 +65,12 @@ if command -v dot >/dev/null 2>&1; then
   dot -Tsvg "${PKG_DOT}" -o "${PKG_OUT}"
   echo "Wrote ${PKG_OUT}"
 fi
+
+# Cleanup intermediate files produced by pyreverse (DOT/PNG/PNM)
+echo "Cleaning up intermediate files..."
+for f in classes_OctoPrint-Uptime*.dot classes_OctoPrint-Uptime*.png classes_OctoPrint-Uptime*.pnm packages_OctoPrint-Uptime*.dot packages_OctoPrint-Uptime*.png packages_OctoPrint-Uptime*.pnm; do
+  if [ -e "$f" ]; then
+    rm -f -- "$f"
+    echo "removed $f"
+  fi
+done
