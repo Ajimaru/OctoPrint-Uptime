@@ -2,16 +2,20 @@
 set -euo pipefail
 
 # Git post-commit hook.
-# Delegates to the version-bump-aware artifact builder.
+# Ensures that the repo root can be determined; if not, exits with 0 to avoid
+# blocking commits in weird situations (e.g. detached HEAD with no remote).
+# Only run when invoked by Git (hooks are executed with GIT_DIR set).
+if [[ -z "${GIT_DIR-}" ]]; then
+  # Not running as a Git hook — skip silently.
+  exit 0
+fi
 
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 if [[ -z "$repo_root" ]]; then
   exit 0
 fi
 
-script="$repo_root/.development/post_commit_build_dist.sh"
-if [[ ! -x "$script" ]]; then
-  exit 0
-fi
+cd "$repo_root"
 
-"$script"
+# No post-commit actions configured; exit silently.
+exit 0

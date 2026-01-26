@@ -42,6 +42,8 @@ From the repository root:
 
 If a commit fails due to translations being out of sync, run the `update` command above, add the changed PO files, and re-commit.
 
+Note: the repository's translations pre-commit check is non-destructive — it reports when PO files would change and fails the commit so you can run the update step manually.
+
 ## Notes
 
 This document is contributor-focused and omits end-user installation guidance such as package dependencies. For user-facing instructions about uptime dependencies (for example how to install `psutil` in your OctoPrint virtualenv), see the `Installation` and `Dependencies` sections in the [project README](../README.md).

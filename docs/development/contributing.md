@@ -59,6 +59,16 @@ pre-commit run --hook-stage manual --all-files
 - The repository includes a `jsdoc-gen` pre-commit hook that runs `./scripts/generate-jsdocs.sh` when JS files under `octoprint_uptime/static/js` are modified. The hook now uses `pass_filenames: true` so it only passes changed files to the script (faster local commits).
 - `./.development/setup_dev.sh` will populate `node_modules` by running `npm install` when `npm` is available, installing `jsdoc-to-markdown` so the generator can run without a separate `npm install` step.
 
+### Post-commit artifact policy
+
+Artifact creation is handled in CI; to build locally use the packaging helper manually:
+
+```bash
+./.development/post_commit_build_dist.sh --sdist --wheel
+```
+
+This avoids unexpected local builds during routine commits.
+
 ## Internationalization
 
 - Use the repository helper `./.development/compile_translations.sh` when extracting, updating or compiling translations. It uses the project's `venv` `pybabel` and treats the top-level `translations/` directory as the single source of truth. Common commands:

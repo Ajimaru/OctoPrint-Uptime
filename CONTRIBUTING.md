@@ -113,6 +113,15 @@ git commit
 
 This hook helps prevent missing or stale translations being merged. The helper script uses the project's `venv` `pybabel`, so ensure you ran `.development/setup_dev.sh` to have the necessary tooling available.
 
+### Post-commit / artifact creation
+
+Artifact builds belong in CI; if you need to create local distributions, run the build helper manually:
+
+```bash
+# create sdist and wheel locally
+./.development/post_commit_build_dist.sh --sdist --wheel
+```
+
 ## Coding style
 
 - Indentation: **4 spaces** (no tabs)
