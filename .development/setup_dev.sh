@@ -97,9 +97,48 @@ EOF
     echo "Created $BUMP_TOML with default content."
 fi
 
+# Command-line parsing: support `-h|--help` and optional `editable` arg
+INSTALL_MODE="${1:-}"
+if [[ "${1:-}" = "-h" || "${1:-}" = "--help" ]]; then
+        cat <<'USAGE'
+Usage: setup_dev.sh [editable]
+
+This script prepares a development virtual environment. It will NOT
+install any distribution artifacts from the `dist/` folder. To install
+the package into the venv for development, pass the single argument
+`editable` or set `DEV_EDITABLE=1` in the environment to perform an
+editable install (`pip install -e .`).
+
+Examples:
+    # default: create venv and prepare dev environment (no dist installs)
+    ./.development/setup_dev.sh
+
+    # install in editable mode (dev workflow)
+    ./.development/setup_dev.sh editable
+
+    # equivalent via env
+    DEV_EDITABLE=1 ./.development/setup_dev.sh
+
+Options:
+    -h, --help    Show this help message and exit
+USAGE
+        exit 0
+fi
+
 # Install plugin with development dependencies
-echo "Installing plugin (editable) with development dependencies..."
-python -m pip install -e ".[develop]"
+# IMPORTANT: This dev setup MUST NOT install artifacts from `dist/`.
+# If the developer wants an editable install, pass `editable` or set
+# `DEV_EDITABLE=1`. Otherwise this script only prepares the venv and
+# dev tooling (no dist installs are performed).
+if [[ "${DEV_EDITABLE:-0}" = "1" ]] || [[ "${INSTALL_MODE}" = "editable" ]]; then
+    echo "Installing plugin in editable mode with development dependencies..."
+    python -m pip install -e ".[develop]"
+else
+    echo "Skipping installation of distribution artifacts from dist/."
+    echo "This script only prepares the development environment by default."
+    echo "To install the package into the venv for testing, build a wheel and then:"
+    echo "  python -m pip install dist/<your-wheel-file>.whl"
+fi
 
 # Enable repo-local git hooks (post-commit build on version bump)
 echo "Enabling repository git hooks (.githooks)..."

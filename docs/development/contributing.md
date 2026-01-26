@@ -19,6 +19,22 @@ If you prefer helper scripts, run the repository helper to set up a dev environm
 bash .development/setup_dev.sh
 ```
 
+Note: The helper prepares the venv and common developer tooling but does **not**
+install distribution artifacts from `dist/` by default. To install in editable
+mode (for live editable development), pass the argument `editable` or set
+`DEV_EDITABLE=1`:
+
+```bash
+.development/setup_dev.sh editable
+DEV_EDITABLE=1 .development/setup_dev.sh
+```
+
+Use `-h` for help:
+
+```bash
+.development/setup_dev.sh -h
+```
+
 ## Branches & PRs
 
 - Create a feature branch and open a PR into `main` (direct pushes to `main` are blocked).

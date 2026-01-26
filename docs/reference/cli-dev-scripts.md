@@ -9,10 +9,12 @@ All helper scripts live under the `.development/` directory at the project root.
 ## Important scripts
 
 - `.development/setup_dev.sh`
-  - Sets up a local development environment (creates `venv/`, installs editable dependencies, and configures local git hooks when applicable).
+  - Prepares a local development environment (creates `venv/`, restores executable bits, configures local git hooks and installs common developer tooling).
+  - IMPORTANT: by default it does NOT install distribution artifacts from `dist/`. To install the package into the venv for live-editing, run with `editable` or set `DEV_EDITABLE=1`.
   - Usage: `bash .development/setup_dev.sh` (may require executable permission).
 
 - `.development/restart_octoprint_dev.sh`
+  - This will not install `dist/` artifacts by default.
   - Convenience script to stop/start or restart a local OctoPrint instance used for manual testing of the plugin.
   - It forwards `OCTOPRINT_ARGS` as separate argv tokens so commands like `serve --debug` are passed correctly.
   - Usage example:

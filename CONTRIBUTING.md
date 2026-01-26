@@ -40,9 +40,37 @@ python -m pip install -U pip
 python -m pip install -e ".[develop]"
 ```
 
+### Using the repository helper script (recommended)
+
+The repository provides a helper script at `.development/setup_dev.sh` that
+creates a `venv` and prepares the development tooling. IMPORTANT: by default
+the helper will NOT install distribution artifacts from `dist/`. Its purpose
+is to create the virtualenv, restore repo executable bits, enable repo-local
+git hooks and optionally install helpful developer utilities.
+
+To prepare the environment (default):
+
+```bash
+.development/setup_dev.sh
+```
+
+To install the package into the venv in editable mode for active development,
+pass `editable` or set the `DEV_EDITABLE=1` environment variable:
+
+```bash
+.development/setup_dev.sh editable
+DEV_EDITABLE=1 .development/setup_dev.sh
+```
+
+Use `-h` or `--help` to see usage:
+
+```bash
+.development/setup_dev.sh -h
+```
+
 If you use the helper scripts, see `.development/README.md`.
 
-Notes:
+## Notes
 
 - The helper scripts target a Python 3.10+ development environment. The plugin runtime supports Python 3.10+.
 - If you downloaded the repo as a ZIP, executable bits may be missing. In that case run `bash .development/setup_dev.sh` (or `chmod +x .development/setup_dev.sh`).

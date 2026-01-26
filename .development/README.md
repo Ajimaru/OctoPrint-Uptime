@@ -31,13 +31,34 @@ chmod +x .development/setup_dev.sh
 
 ### setup_dev.sh
 
-Creates/uses a local Python virtual environment in `./venv`, installs the plugin in editable mode with dev dependencies, and enables the repo-local git hooks.
+Creates/uses a local Python virtual environment in `./venv`, and prepares the
+development tooling. IMPORTANT: by default this helper does NOT install any
+distribution artifacts from the `dist/` folder. Its purpose is to create the
+venv, restore executable bits, enable repo-local git hooks and install common
+developer tooling (e.g. `bump-my-version`) when requested.
+
+If you want the package available inside the venv for live-edit development,
+run the helper with the single argument `editable` or set `DEV_EDITABLE=1` in
+the environment; this performs an editable install (`pip install -e "[develop]"`).
+Use `-h` or `--help` to show usage.
+
+#### Examples
 
 ```bash
+# prepare venv and dev tooling (does not install dist artifacts)
 .development/setup_dev.sh
+
+# install in editable mode (development workflow)
+.development/setup_dev.sh editable
+
+# equivalent via env
+DEV_EDITABLE=1 .development/setup_dev.sh
+
+# show help
+.development/setup_dev.sh -h
 ```
 
-Notes:
+#### Notes
 
 - The helper scripts target a Python 3.10+ development environment. The plugin itself supports Python 3.10+ as declared in `pyproject.toml`.
 - It automatically sets `git config core.hooksPath .githooks` (if the repo is a git checkout).
