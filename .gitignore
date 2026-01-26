@@ -23,7 +23,7 @@ GITHUB_UPLOAD.md
 # pre-commit/prettier temporary install artifacts
 node_modules/
 
-# Development-only folders (not for GitHub)
+# Development-only folders and files (not for GitHub)
 .drafts/
 .local/
 .notes/
@@ -33,6 +33,7 @@ node_modules/
 .codacy
 gh_logs
 .codacyignore
+codacy_trivy_results.json
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
