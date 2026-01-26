@@ -58,7 +58,7 @@ DEV_EDITABLE=1 .development/setup_dev.sh
 .development/setup_dev.sh -h
 ```
 
-#### Notes
+Notes
 
 - The helper scripts target a Python 3.10+ development environment. The plugin itself supports Python 3.10+ as declared in `pyproject.toml`.
 - It automatically sets `git config core.hooksPath .githooks` (if the repo is a git checkout).
@@ -212,3 +212,33 @@ The repo uses a versioned hooks directory:
 - Enabled via: `git config core.hooksPath .githooks`
 
 The `post-commit` hook triggers `post_commit_build_dist.sh` after version bumps.
+
+## Prettier helper
+
+The repository uses a project-local Prettier installation for frontend/JS
+formatting. A small helper script lives at `.development/prettier-hook.sh` and
+is invoked by the `pre-commit` hook to run the project `node_modules/.bin/prettier`
+when available, or fall back to `npx --yes prettier`.
+
+If you run `npm install` in the repository root the hook will prefer the
+locally-installed binary which avoids `npx` network calls during commits.
+
+### Automatic autoupdate option
+
+If you prefer `pre-commit` hook definitions to be kept up-to-date automatically
+before hooks run locally, you can enable an opt-in behavior by setting the
+environment variable `PRECOMMIT_AUTOUPDATE=1`. When enabled the repo-local
+`pre-commit` wrapper will invoke `pre-commit autoupdate` at most once every 24
+hours (a timestamp marker is written into the repo git dir). This is
+intentionally opt-in to avoid unexpected network calls on every commit.
+
+To enable for your shell session:
+
+```bash
+export PRECOMMIT_AUTOUPDATE=1
+```
+
+Notes
+
+- `pre-commit autoupdate` may modify `.pre-commit-config.yaml`; review changesbefore committing them.
+- For automated, repository-level updates prefer `pre-commit.ci` or ascheduled GitHub Action that runs `pre-commit autoupdate` and opens a PR.

@@ -40,6 +40,22 @@ python -m pip install -U pip
 python -m pip install -e ".[develop]"
 ```
 
+## Automatic pre-commit autoupdate
+
+If you want your local hooks to attempt to keep themselves updated before running,
+set the environment variable `PRECOMMIT_AUTOUPDATE=1`. The repo-local wrapper will
+run `pre-commit autoupdate` at most once per 24 hours. This is opt-in — running
+autoupdate on every commit by default is not recommended because it may change
+`.pre-commit-config.yaml` unexpectedly.
+
+To enable:
+
+```bash
+export PRECOMMIT_AUTOUPDATE=1
+```
+
+Review any changes created by `autoupdate` before committing them.
+
 ### Using the repository helper script (recommended)
 
 The repository provides a helper script at `.development/setup_dev.sh` that
@@ -112,6 +128,16 @@ git commit
 ```
 
 This hook helps prevent missing or stale translations being merged. The helper script uses the project's `venv` `pybabel`, so ensure you ran `.development/setup_dev.sh` to have the necessary tooling available.
+
+### Prettier and formatting
+
+We use a project-local Prettier for JS/HTML/Markdown formatting. The `pre-commit`
+hook runs a helper script located at `.development/prettier-hook.sh` which will
+prefer the repository `node_modules/.bin/prettier` if present, otherwise it will
+fall back to `npx --yes prettier --write`.
+
+Note: the generated API document `docs/api/python.md` is intentionally excluded
+from automatic formatting to avoid changes from generated artifacts.
 
 ### Post-commit / artifact creation
 

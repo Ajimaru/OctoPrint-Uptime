@@ -1,7 +1,6 @@
+Babel>=2.17.0
+build
+mock
 pylint>=2.17.0
 pytest
-mock
 tomli
-build
-pylint>=2.17.0
-Babel>=2.17.0

@@ -1,14 +1,14 @@
 {
-  "tags": {
-    "allowUnknownTags": true
+  "opts": {
+    "encoding": "utf8",
+    "recurse": true
   },
   "source": {
+    "excludePattern": "(^|\\/)node_modules($|\\/)",
     "include": ["octoprint_uptime/static/js"],
-    "includePattern": ".+\\.js$",
-    "excludePattern": "(^|\\/)node_modules($|\\/)"
+    "includePattern": ".+\\.js$"
   },
-  "opts": {
-    "recurse": true,
-    "encoding": "utf8"
+  "tags": {
+    "allowUnknownTags": true
   }
 }

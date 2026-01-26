@@ -1,10 +1,10 @@
 {
-  "source": {
-    "includePattern": ".+\\.js(doc|x)?$",
-    "excludePattern": "(^|/|\\\\)_"
-  },
-  "plugins": ["plugins/markdown"],
   "opts": {
     "encoding": "utf8"
+  },
+  "plugins": ["plugins/markdown"],
+  "source": {
+    "excludePattern": "(^|/|\\\\)_",
+    "includePattern": ".+\\.js(doc|x)?$"
   }
 }

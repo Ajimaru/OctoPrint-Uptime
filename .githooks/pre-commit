@@ -30,3 +30,36 @@ run_pre_commit_from_venv "./venv"
 
 echo "ERROR: pre-commit not available in ./venv. Run: .development/setup_dev.sh" >&2
 exit 1
+
+maybe_run_autoupdate() {
+    # If PRECOMMIT_AUTOUPDATE=1 is set in the environment, run autoupdate
+    # at most once per 24 hours. This avoids network calls on every commit.
+    local marker_file
+    marker_file="$(git rev-parse --git-common-dir 2>/dev/null)/pre-commit-autoupdate"
+
+    if [[ "${PRECOMMIT_AUTOUPDATE:-0}" != "1" ]]; then
+        return 0
+    fi
+
+    local now
+    now=$(date +%s)
+    if [[ -f "$marker_file" ]]; then
+        local last
+        last=$(cat "$marker_file" 2>/dev/null || echo 0)
+        if (( now - last < 86400 )); then
+            return 0
+        fi
+    fi
+
+    if [[ -x "./venv/bin/pre-commit" ]]; then
+        echo "PRECOMMIT_AUTOUPDATE=1: running 'pre-commit autoupdate'..."
+        # Run autoupdate but do not auto-stage or commit changes; user must review.
+        ./venv/bin/pre-commit autoupdate || true
+        date +%s > "$marker_file" || true
+    else
+        echo "PRECOMMIT_AUTOUPDATE=1 but ./venv/bin/pre-commit not available" >&2
+    fi
+}
+
+# Try running autoupdate (no-op unless PRECOMMIT_AUTOUPDATE=1)
+maybe_run_autoupdate
