@@ -38,11 +38,23 @@ Check / test poll interval:
 
 - If the API returns `uptime_available: false` the client should fall back to a sensible UI state (for example display "unknown") and surface the localized `uptime_note` when present to guide remediation (e.g., "install psutil in OctoPrint virtualenv").
 
-Debugging tips:
+## Debugging tips
 
 - If the navbar is not displayed, check `navbar_enabled` in the API response.
 - For empty or faulty responses: check OctoPrint logs and use `curl -v` for troubleshooting.
 
-Further additions:
+## Further additions
 
 - If you want, I can add a short example on how to change plugin settings via API (requires authentication and knowledge of the OctoPrint Settings API).
+
+## Translations / testing localized strings
+
+When you need to test localized frontend strings, compile the translations and copy compiled catalogs into the package with the repository helper, then restart OctoPrint:
+
+```bash
+./.development/compile_translations.sh update
+./.development/compile_translations.sh compile
+# restart OctoPrint or reload plugin
+```
+
+This ensures localized strings (e.g. `uptime_note`) are available at runtime.

@@ -7,6 +7,8 @@ shopt -s nullglob
 # Fallback: pyreverse -> png -> potrace (requires ImageMagick + potrace)
 
 mkdir -p docs/reference/diagrams
+RENDER_FAILED=0
+FAILED_TARGETS=()
 
 echo "Generating UML DOT with pyreverse (include ancestors + associations + module names)..."
 pyreverse -A -S -m y -o dot -p OctoPrint-Uptime octoprint_uptime
@@ -20,17 +22,19 @@ if command -v dot >/dev/null 2>&1; then
 else
   echo "graphviz 'dot' not found — trying PNG fallback for compact diagram"
   pyreverse -A -S -m y -o png -p OctoPrint-Uptime octoprint_uptime
-    PNGFILE="classes_OctoPrint-Uptime.png"
-    PNMFILE="classes_OctoPrint-Uptime.pnm"
-    if command -v convert >/dev/null 2>&1 && command -v potrace >/dev/null 2>&1; then
-      echo "Converting ${PNGFILE} -> ${PNMFILE}..."
-      convert "${PNGFILE}" "${PNMFILE}"
-      echo "Tracing ${PNMFILE} -> ${OUT_SVG} with potrace..."
-      potrace -s -o "${OUT_SVG}" "${PNMFILE}"
-      echo "Wrote ${OUT_SVG}"
-    else
-      echo "Neither graphviz nor ImageMagick+potrace available; cannot render compact diagram" >&2
-    fi
+  PNGFILE="classes_OctoPrint-Uptime.png"
+  PNMFILE="classes_OctoPrint-Uptime.pnm"
+  if command -v convert >/dev/null 2>&1 && command -v potrace >/dev/null 2>&1; then
+    echo "Converting ${PNGFILE} -> ${PNMFILE}..."
+    convert "${PNGFILE}" "${PNMFILE}"
+    echo "Tracing ${PNMFILE} -> ${OUT_SVG} with potrace..."
+    potrace -s -o "${OUT_SVG}" "${PNMFILE}"
+    echo "Wrote ${OUT_SVG}"
+  else
+    echo "Neither graphviz nor ImageMagick+potrace available; cannot render compact diagram" >&2
+    RENDER_FAILED=1
+    FAILED_TARGETS+=("${DOTFILE} -> ${OUT_SVG}")
+  fi
 fi
 
 # detailed diagram (show private/protected and expanded details)
@@ -52,6 +56,8 @@ else
     echo "Wrote ${DETAILED_OUT}"
   else
     echo "Cannot render detailed diagram: missing graphviz and potrace/ImageMagick" >&2
+    RENDER_FAILED=1
+    FAILED_TARGETS+=("${DETAILED_DOT} -> ${DETAILED_OUT}")
   fi
 fi
 
@@ -73,7 +79,19 @@ else
     echo "Wrote ${PKG_OUT}"
   else
     echo "Cannot render packages diagram: missing graphviz and potrace/ImageMagick" >&2
+    RENDER_FAILED=1
+    FAILED_TARGETS+=("${PKG_DOT} -> ${PKG_OUT}")
   fi
+fi
+
+# If any rendering failed above, print a concise summary and exit non-zero so CI
+# or callers can detect the problem.
+if [[ "${RENDER_FAILED}" -ne 0 ]]; then
+  echo "Some diagram targets failed to render:" >&2
+  for t in "${FAILED_TARGETS[@]}"; do
+    echo " - ${t}" >&2
+  done
+  exit 2
 fi
 
 # Cleanup intermediate files produced by pyreverse (DOT/PNG/PNM)

@@ -56,7 +56,29 @@ pre-commit run --hook-stage manual --all-files
 
 ## Internationalization
 
-- Follow the i18n instructions in `CONTRIBUTING.md` when adding or changing strings (use `pybabel extract`, `update`, `compile`).
+- Use the repository helper `./.development/compile_translations.sh` when extracting, updating or compiling translations. It uses the project's `venv` `pybabel` and treats the top-level `translations/` directory as the single source of truth. Common commands:
+
+```bash
+# extract updated msgids to translations/messages.pot
+./.development/compile_translations.sh extract
+
+# update existing PO files from the POT
+./.development/compile_translations.sh update
+
+# initialize a new language
+./.development/compile_translations.sh init de
+
+# compile top-level translations and copy compiled catalogs into the package
+./.development/compile_translations.sh compile
+
+# compile only package translations
+./.development/compile_translations.sh compile --plugin-only
+
+# compile both top-level and package translations
+./.development/compile_translations.sh compile --all
+```
+
+- After compiling, restart OctoPrint or reload the plugin so the runtime picks up the new `.mo` files (they are copied into `octoprint_uptime/translations/`).
 
 ## Notes
 

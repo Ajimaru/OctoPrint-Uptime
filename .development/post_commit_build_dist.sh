@@ -290,19 +290,17 @@ main() {
   local sdist=""
   local zip=""
 
-  shopt -s nullglob nocaseglob
+  shopt -s nullglob
   local normalized_version
   local candidates
   normalized_version="${new_version//-/.}"
-  mapfile -d '' -t candidates < <(
-    printf '%s\0' dist/*"${new_version}"*.tar.gz dist/*"${new_version}"*.tgz dist/*"${normalized_version}"*.tar.gz dist/*"${normalized_version}"*.tgz
-  )
-  for candidate in "${candidates[@]+"${candidates[@]}"}"; do
+  candidates=(dist/*"${new_version}"*.tar.gz dist/*"${new_version}"*.tgz dist/*"${normalized_version}"*.tar.gz dist/*"${normalized_version}"*.tgz)
+  for candidate in "${candidates[@]}"; do
     [[ -f "$candidate" ]] || continue
     sdist="$candidate"
     break
   done
-  shopt -u nullglob nocaseglob || true
+  shopt -u nullglob || true
 
   if [[ -z "$sdist" ]]; then
     log "Expected sdist not found for version ${new_version}; skipping zip creation"

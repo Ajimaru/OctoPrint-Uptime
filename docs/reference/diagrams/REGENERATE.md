@@ -2,10 +2,10 @@
 
 Prerequisites:
 
-- Install the docs Python requirements (provides `pyreverse` via `pylint`):
+- Install the project development Python requirements (contains `pyreverse` via the `pylint` package). See `requirements-dev.txt`:
 
 ```bash
-pip install -r requirements-docs.txt
+pip install -r requirements-dev.txt
 ```
 
 - System tools required: `graphviz` (provides `dot`). Optional fallback tools: `imagemagick` (`convert`) and `potrace`.

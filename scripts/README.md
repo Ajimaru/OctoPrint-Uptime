@@ -6,10 +6,10 @@ This script runs `pyreverse` (from `pylint`) to analyse the plugin package, uses
 
 ## Prerequisites
 
-- Python: install project docs requirements for `pyreverse`:
+- Python: install the project development requirements which include `pyreverse` (provided by `pylint`)—this lives in `requirements-dev.txt`:
 
 ```bash
-pip install -r requirements-docs.txt
+pip install -r requirements-dev.txt
 ```
 
 - System utilities: `graphviz` (dot). Optional: `imagemagick` (`convert`) and `potrace` for fallback.
@@ -21,6 +21,23 @@ From the repository root:
 ```bash
 ./scripts/generate-diagrams.sh
 ```
+
+## Translations helper
+
+For working with translations during development, use the repository helper which wraps `pybabel` and copies compiled catalogs into the plugin package for runtime testing.
+
+From the repository root:
+
+```bash
+./.development/compile_translations.sh extract    # refresh translations/messages.pot
+./.development/compile_translations.sh update     # merge POT into existing PO files
+./.development/compile_translations.sh init de    # create a new language (example)
+./.development/compile_translations.sh compile    # compile top-level translations and copy into octoprint_uptime/translations/
+./.development/compile_translations.sh compile --plugin-only  # compile only package translations
+./.development/compile_translations.sh compile --all          # compile both top-level and plugin translations
+```
+
+Run `./.development/compile_translations.sh --help` for full details.
 
 ## Output
 

@@ -508,6 +508,28 @@ if [[ -z "$BUMP_TYPE" ]]; then
 
     printf "%b\n" "Running: ${CYAN}${CMD[*]}${RESET}"
     "${CMD[@]}"
+    # After bumping, normalize pyproject.toml to use PEP 440 '.dev' for dev
+    # versions so tooling that expects PEP 440 sees the correct form.
+    if [[ $EXECUTE -eq 1 && -n "${NEW_CURRENT:-}" && -f pyproject.toml ]]; then
+        py_ver="$(to_pep440 "$NEW_CURRENT")"
+        sed -E -i "s/^[[:space:]]*version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"${py_ver}\"/" pyproject.toml || true
+
+        # If a commit exists, stage and try to amend it so the pyproject change
+        # is included in the bump commit. If amend fails, create a follow-up commit.
+        if git rev-parse --verify HEAD >/dev/null 2>&1; then
+            git add pyproject.toml || true
+            if ! git diff --cached --quiet; then
+                if git commit --amend --no-edit >/dev/null 2>&1; then
+                    if [[ "${TAG:-}" == "true" || "${TAG:-}" == "True" ]]; then
+                        git tag -f "${NEW_CURRENT}" >/dev/null 2>&1 || true
+                    fi
+                else
+                    git commit -m "Normalize pyproject version to PEP440 (${py_ver})" || true
+                fi
+            fi
+        fi
+    fi
+
     if [[ $EXECUTE -eq 0 ]]; then
         printf "%b\n" "Done (dry-run). Note: remove --dry-run (use --execute) to perform real bump."
     else
