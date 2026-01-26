@@ -1,7 +1,7 @@
 # GitHub Copilot Instructions - OctoPrint Plugin Template
 
 **Issue**: <https://github.com/OctoPrint/OctoPrint/issues/4355>
-**Target**: OctoPrint 1.12.0+, Python 3.10+ | Implements 2021 feature request
+**Target**: OctoPrint 1.12.0+, Python 3.7+ | Implements 2021 feature request
 
 ## Code Standards (CRITICAL)
 
