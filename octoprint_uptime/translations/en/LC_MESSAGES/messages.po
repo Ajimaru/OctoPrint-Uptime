@@ -2,7 +2,6 @@
 # plugin is the single source of truth at
 # octoprint_uptime/translations/en/LC_MESSAGES/messages.po; this file is
 # intentionally left minimal to avoid duplicate entries.
-# #
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
