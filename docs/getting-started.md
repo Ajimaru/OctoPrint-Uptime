@@ -46,4 +46,4 @@ Note: the repository's translations pre-commit check is non-destructive — it r
 
 ## Notes
 
-This document is contributor-focused and omits end-user installation guidance such as package dependencies. For user-facing instructions about uptime dependencies (for example how to install `psutil` in your OctoPrint virtualenv), see the `Installation` and `Dependencies` sections in the [project README](../README.md).
+This document is contributor-focused and omits end-user installation guidance such as package dependencies. For user-facing instructions about uptime dependencies (for example how to install `psutil` in your OctoPrint virtualenv), see the `Installation` and `Dependencies` sections in this documentation or the [project website](https://github.com/Ajimaru/OctoPrint-Uptime#readme).

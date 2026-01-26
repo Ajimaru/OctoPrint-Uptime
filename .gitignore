@@ -47,3 +47,6 @@ docs/reference/diagrams/*.svg
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
+
+# Local MkDocs build output
+site/

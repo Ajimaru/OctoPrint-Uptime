@@ -58,6 +58,7 @@ nav:
   - Frontend:
       - UI placements: frontend/ui-placements.md
       - Internationalization: frontend/i18n.md
+      - Reference: reference/frontend.md
   - Development:
       - Contributing: development/contributing.md
       - Testing: development/testing.md
@@ -70,3 +71,4 @@ nav:
           - Classes (detailed): reference/diagrams/classes_detailed.md
           - Packages: reference/diagrams/packages.md
           - Overview (Mermaid): reference/diagrams/overview.md
+          - Regenerate: reference/diagrams/REGENERATE.md

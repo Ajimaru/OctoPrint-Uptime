@@ -78,6 +78,15 @@ else
     echo "No requirements-dev.txt found at ${REQ_DEV}; skipping full dev install"
 fi
 
+# Full dev requirements install: ensure all documentation dependencies are available
+REQ_DOCS="$REPO_ROOT/requirements-docs.txt"
+if [[ -f "${REQ_DOCS}" ]]; then
+    echo "Installing documentation requirements from: ${REQ_DOCS}"
+    python -m pip install -r "${REQ_DOCS}" || echo "WARNING: Some docs requirements failed to install. You can retry manually: python -m pip install -r ${REQ_DOCS}"
+else
+    echo "No requirements-docs.txt found at ${REQ_DOCS}; skipping docs requirements install"
+fi
+
 # Check for bump-my-version and offer to install into the venv
 if ! command -v bump-my-version >/dev/null 2>&1; then
     echo "bump-my-version not found in the virtual environment."
