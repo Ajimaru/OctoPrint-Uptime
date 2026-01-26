@@ -148,6 +148,6 @@ msgstr "Minimale Sekunden zwischen Debug-Protokolleinträgen."
 #~ msgstr ""
 
 # UI: uptime unavailable indicator and install hint
-#~ msgid "Unavailable"
-#~ msgstr "Nicht verfügbar"
+msgid "Unavailable"
+msgstr "Nicht verfügbar"
 

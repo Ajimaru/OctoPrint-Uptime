@@ -1,8 +1,8 @@
-## German translations for OctoPrint-Uptime plugin
-##
-## This is the authoritative German locale for the OctoPrint-Uptime
-## plugin. It contains German `msgstr` entries used at runtime.
-##
+# German translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
@@ -18,6 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
+
 #: octoprint_uptime/plugin.py:222
 msgid "navbar_uptime"
 msgstr "Navbar‑Uptime"
@@ -26,12 +27,12 @@ msgstr "Navbar‑Uptime"
 msgid "OctoPrint Uptime"
 msgstr "OctoPrint Uptime"
 
-#: octoprint_uptime/plugin.py:584 octoprint_uptime/plugin.py:629
-#: octoprint_uptime/plugin.py:737 octoprint_uptime/plugin.py:744
+#: octoprint_uptime/plugin.py:584 octoprint_uptime/plugin.py:626
+#: octoprint_uptime/plugin.py:734 octoprint_uptime/plugin.py:741
 msgid "unknown"
 msgstr "unbekannt"
 
-#: octoprint_uptime/plugin.py:601 octoprint_uptime/plugin.py:620
+#: octoprint_uptime/plugin.py:600 octoprint_uptime/plugin.py:616
 #: octoprint_uptime/templates/settings.jinja2:6
 msgid ""
 "Uptime could not be determined. You can install psutil in the OctoPrint "
@@ -40,21 +41,20 @@ msgstr ""
 "Die Uptime konnte nicht ermittelt werden. Sie können psutil in der "
 "OctoPrint‑Virtualenv nachinstallieren: pip install psutil"
 
-#: octoprint_uptime/plugin.py:640
+#: octoprint_uptime/plugin.py:637
 #, python-format
 msgid "Uptime API requested, result=%s"
 msgstr "Uptime-API angefragt, Ergebnis=%s"
 
-#: octoprint_uptime/plugin.py:670 octoprint_uptime/plugin.py:679
-#: octoprint_uptime/plugin.py:708
+#: octoprint_uptime/plugin.py:705
 msgid "Forbidden"
 msgstr "Zugriff verweigert"
 
-#: octoprint_uptime/plugin.py:741
+#: octoprint_uptime/plugin.py:738
 msgid "Error computing uptime"
 msgstr "Fehler bei der Ermittlung der Uptime"
 
-#: octoprint_uptime/plugin.py:786 octoprint_uptime/plugin.py:794
+#: octoprint_uptime/plugin.py:767
 msgid "full"
 msgstr "voll"
 
@@ -116,7 +116,9 @@ msgstr "Abfrageintervall (s)"
 
 #: octoprint_uptime/templates/settings.jinja2:98
 msgid "Seconds between navbar API polls. Low values may spam logs; default is 5s."
-msgstr "Sekunden zwischen API-Abfragen für die Navbar. Niedrige Werte können das Protokoll füllen; Standard ist 5s."
+msgstr ""
+"Sekunden zwischen API-Abfragen für die Navbar. Niedrige Werte können das "
+"Protokoll füllen; Standard ist 5s."
 
 #: octoprint_uptime/templates/settings.jinja2:103
 msgid "Debug"
@@ -141,3 +143,10 @@ msgstr "Debug-Drossel (s)"
 #: octoprint_uptime/templates/settings.jinja2:121
 msgid "Minimum seconds between debug log entries."
 msgstr "Minimale Sekunden zwischen Debug-Protokolleinträgen."
+
+#~ msgid "Adds system uptime to the navbar and exposes a small uptime API."
+#~ msgstr ""
+
+# UI: uptime unavailable indicator and install hint
+msgid "Unavailable"
+msgstr "Nicht verfügbar"

@@ -10,6 +10,9 @@
         $(function() {
           var $uptimeContainer = $('#settings_plugin_octoprint_uptime');
           var uptimeNoteRendered = false;
+          // Guard for an in-flight API request to avoid duplicate calls when
+          // the settings view/modal is opened multiple times.
+          var uptimeNotePromise = null;
 
           function _renderUptimeNote(data) {
             try {
@@ -33,18 +36,28 @@
             if (uptimeNoteRendered) {
               return $.Deferred().resolve().promise();
             }
-            return OctoPrint.simpleApiGet('octoprint_uptime', {timeout: 10000})
+            if (uptimeNotePromise) {
+              return uptimeNotePromise;
+            }
+
+            uptimeNotePromise = OctoPrint.simpleApiGet('octoprint_uptime', {timeout: 10000})
               .done(function(data) {
                 _renderUptimeNote(data);
                 uptimeNoteRendered = true;
+                // clear the in-flight promise now that we completed
+                uptimeNotePromise = null;
               })
               .fail(function(jqXHR, textStatus, errorThrown) {
+                // clear the in-flight promise so callers can retry later
+                uptimeNotePromise = null;
                 if (typeof window.UptimeDebug !== 'undefined' && window.UptimeDebug) {
                   console.error('octoprint_uptime: failed to fetch uptime API for settings template', textStatus, errorThrown, jqXHR);
                 } else {
                   console.warn('octoprint_uptime: failed to fetch uptime API for settings template:', textStatus);
                 }
               });
+
+            return uptimeNotePromise;
           }
 
           // Prefer waiting for an enclosing modal to be shown. If the settings
