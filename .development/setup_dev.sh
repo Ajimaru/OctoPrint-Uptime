@@ -60,6 +60,24 @@ else
     echo "tomli already present in virtualenv"
 fi
 
+# Ensure `build` is available for creating distribution artifacts
+echo "Ensuring build is installed in the virtualenv..."
+if ! python -c "import build" >/dev/null 2>&1; then
+    python -m pip install build || echo "WARNING: failed to install build into virtualenv"
+else
+    echo "build already present in virtualenv"
+fi
+
+# Full dev requirements install: ensure all development dependencies are available
+REQ_DEV="$REPO_ROOT/requirements-dev.txt"
+if [[ -f "${REQ_DEV}" ]]; then
+    echo "Installing full development requirements from: ${REQ_DEV}"
+    # Try to install; don't fail the script if some optional packages fail
+    python -m pip install -r "${REQ_DEV}" || echo "WARNING: Some dev requirements failed to install. You can retry manually: python -m pip install -r ${REQ_DEV}"
+else
+    echo "No requirements-dev.txt found at ${REQ_DEV}; skipping full dev install"
+fi
+
 # Check for bump-my-version and offer to install into the venv
 if ! command -v bump-my-version >/dev/null 2>&1; then
     echo "bump-my-version not found in the virtual environment."

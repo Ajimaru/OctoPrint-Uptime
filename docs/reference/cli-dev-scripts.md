@@ -12,6 +12,7 @@ All helper scripts live under the `.development/` directory at the project root.
   - Prepares a local development environment (creates `venv/`, restores executable bits, configures local git hooks and installs common developer tooling).
   - IMPORTANT: by default it does NOT install distribution artifacts from `dist/`. To install the package into the venv for live-editing, run with `editable` or set `DEV_EDITABLE=1`.
   - Usage: `bash .development/setup_dev.sh` (may require executable permission).
+  - Note: the setup helper now also installs the full development requirements from `requirements-dev.txt` into the created `venv` to ensure tooling such as `pre-commit`, `build` and `tomli` are available automatically.
 
 - `.development/restart_octoprint_dev.sh`
   - This will not install `dist/` artifacts by default.

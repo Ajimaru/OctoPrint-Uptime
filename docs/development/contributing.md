@@ -19,7 +19,8 @@ If you prefer helper scripts, run the repository helper to set up a dev environm
 bash .development/setup_dev.sh
 ```
 
-Note: The helper prepares the venv and common developer tooling but does **not**
+### Note: The helper prepares the venv and common developer tooling but does **not**
+
 install distribution artifacts from `dist/` by default. To install in editable
 mode (for live editable development), pass the argument `editable` or set
 `DEV_EDITABLE=1`:
@@ -28,6 +29,11 @@ mode (for live editable development), pass the argument `editable` or set
 .development/setup_dev.sh editable
 DEV_EDITABLE=1 .development/setup_dev.sh
 ```
+
+### Note: The setup helper now installs the full development requirements from
+
+`requirements-dev.txt` into the created `venv` to ensure common tooling (for
+example `pre-commit`, `build`, `tomli`) is present automatically.
 
 Use `-h` for help:
 
