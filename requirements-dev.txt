@@ -3,4 +3,5 @@ build
 mock
 pylint>=2.17.0
 pytest
+pytest-cov
 tomli
