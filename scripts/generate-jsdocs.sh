@@ -6,18 +6,42 @@ echo "Generating JavaScript API documentation..."
 # Resolve repository root (one level up from this script)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." >/dev/null 2>&1 && pwd)"
-JS_SRC_DIR="$PROJECT_ROOT/octoprint_temp_eta/static/js"
+JS_SRC_DIR="$PROJECT_ROOT/octoprint_uptime/static/js"
 DOCS_API_DIR="$PROJECT_ROOT/docs/api"
 OUTPUT="${DOCS_API_DIR}/javascript.md"
 
-# Check if JS files exist (robust recursive check)
-if ! find "$JS_SRC_DIR" -type f -name '*.js' -print -quit >/dev/null 2>&1; then
-    echo "Warning: No JavaScript files found"
-    mkdir -p "$DOCS_API_DIR"
-    echo "# JavaScript API" > "$OUTPUT"
-    echo "" >> "$OUTPUT"
-    echo "No JavaScript files found for documentation generation." >> "$OUTPUT"
-    exit 0
+# Allow processing only the files passed on the command line (pre-commit optimization).
+# If no filenames are passed, fall back to scanning the full package.
+ARGS=("$@")
+USE_PASSED_FILES=0
+if [ "${#ARGS[@]}" -gt 0 ]; then
+    USE_PASSED_FILES=1
+fi
+
+# If caller passed specific files (pre-commit), validate they exist; otherwise
+# perform the original recursive check to decide whether to generate full docs.
+if [ "$USE_PASSED_FILES" -eq 1 ]; then
+    missing=0
+    for f in "${ARGS[@]}"; do
+        if [ ! -f "$PROJECT_ROOT/$f" ]; then
+            echo "Warning: passed file not found: $f" >&2
+            missing=1
+        fi
+    done
+    if [ "$missing" -eq 1 ]; then
+        echo "Aborting jsdoc generation due to missing files." >&2
+        exit 1
+    fi
+else
+    # Check if JS files exist (robust recursive check)
+    if ! find "$JS_SRC_DIR" -type f -name '*.js' -print -quit >/dev/null 2>&1; then
+        echo "Warning: No JavaScript files found"
+        mkdir -p "$DOCS_API_DIR"
+        echo "# JavaScript API" > "$OUTPUT"
+        echo "" >> "$OUTPUT"
+        echo "No JavaScript files found for documentation generation." >> "$OUTPUT"
+        exit 0
+    fi
 fi
 
 # Generate documentation
@@ -51,10 +75,19 @@ else
     fi
 fi
 
-# Run the generator from the project root so relative patterns resolve correctly
-if ! (cd "$PROJECT_ROOT" && "$JSdoc2md" --configure "jsdoc.json" "octoprint_temp_eta/static/js/**/*.js" > "$OUTPUT"); then
-    echo "JSDoc generation failed" >&2
-    exit 1
+# Run the generator from the project root so relative patterns resolve correctly.
+# If filenames were passed, document only those files; otherwise document the
+# full package glob as before.
+if [ "$USE_PASSED_FILES" -eq 1 ]; then
+    if ! (cd "$PROJECT_ROOT" && "$JSdoc2md" --configure "jsdoc.json" "${ARGS[@]}" > "$OUTPUT"); then
+        echo "JSDoc generation failed" >&2
+        exit 1
+    fi
+else
+    if ! (cd "$PROJECT_ROOT" && "$JSdoc2md" --configure "jsdoc.json" "octoprint_uptime/static/js/**/*.js" > "$OUTPUT"); then
+        echo "JSDoc generation failed" >&2
+        exit 1
+    fi
 fi
 
 # Normalize generated output to avoid accidental diffs from trailing whitespace
@@ -106,7 +139,7 @@ function calculateETA(heater, data) {
 
 ## Source Files
 
-- `octoprint_temp_eta/static/js/temp_eta.js`
+- `octoprint_uptime/static/js/uptime.js`
 
 ## Manual Overview
 

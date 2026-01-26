@@ -91,6 +91,28 @@ pre-commit run --hook-stage manual --all-files
 
 If you use `.development/setup_dev.sh`, it enables repo-local git hooks via `core.hooksPath=.githooks`.
 
+### Translations sync check
+
+We added a repository-local pre-commit hook `check-translations` that ensures PO files in `translations/` are kept in sync with `translations/messages.pot`.
+
+If a commit is rejected due to the translations check, do the following:
+
+```bash
+# merge POT into PO files
+./.development/compile_translations.sh update
+
+# inspect and stage updated PO files
+git add translations/*/LC_MESSAGES/*.po
+
+# optionally compile and copy compiled catalogs into the package for runtime testing
+./.development/compile_translations.sh compile
+
+# then retry committing
+git commit
+```
+
+This hook helps prevent missing or stale translations being merged. The helper script uses the project's `venv` `pybabel`, so ensure you ran `.development/setup_dev.sh` to have the necessary tooling available.
+
 ## Coding style
 
 - Indentation: **4 spaces** (no tabs)
@@ -110,13 +132,22 @@ If you use `.development/setup_dev.sh`, it enables repo-local git hooks via `cor
 - In templates use `{{ _('...') }}`.
 - In JavaScript use OctoPrint's `gettext`.
 
-If you add or change strings, update and compile catalogs:
+### If you add or change strings, update and compile catalogs
+
+We provide a repository helper that wraps `pybabel` and keeps the plugin package catalogs in sync. Use it from the repository root:
 
 ```bash
-pybabel extract -F babel.cfg -o translations/messages.pot .
-pybabel update -i translations/messages.pot -d translations
-pybabel compile -d translations
+# refresh POT (extract)
+./.development/compile_translations.sh extract
+
+# merge POT into existing PO files
+./.development/compile_translations.sh update
+
+# compile top-level translations and copy compiled catalogs into the package
+./.development/compile_translations.sh compile
 ```
+
+Note: A `pre-commit` local hook (`check-translations`) will run `./.development/compile_translations.sh update` and block commits if PO files would be modified by the update step. If your commit is rejected with a translations error, run the above `update` command, review and commit the changed PO files (and compiled MO if you keep them in the repo), then retry the commit.
 
 ## What not to commit
 

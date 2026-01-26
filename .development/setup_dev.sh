@@ -204,6 +204,26 @@ else
     fi
 fi
 
+    # Ensure JavaScript documentation tooling is available (jsdoc-to-markdown)
+    # If a local `node_modules/.bin/jsdoc2md` is missing, run `npm install` in the
+    # repository root to populate `node_modules` (package.json already lists the
+    # devDependency). If `npm` is not present, print a warning but do not fail.
+    echo "Ensuring jsdoc-to-markdown is available for generating JavaScript docs..."
+    if command -v npm >/dev/null 2>&1; then
+        if [[ -x "${REPO_ROOT}/node_modules/.bin/jsdoc2md" ]]; then
+            echo "jsdoc-to-markdown already installed locally"
+        else
+            echo "Installing Node.js dev dependencies (this will install jsdoc-to-markdown)..."
+            if (cd "${REPO_ROOT}" && npm install --no-audit --no-fund); then
+                echo "Node dev dependencies installed"
+            else
+                echo "WARNING: 'npm install' failed. You can install manually by running 'npm install' in the project root." >&2
+            fi
+        fi
+    else
+        echo "WARNING: 'npm' not found on PATH — skipping automatic installation of jsdoc-to-markdown. Install Node.js and run 'npm install' to enable JS doc generation." >&2
+    fi
+
 # Run pre-commit on all files (optional, can take time)
 if [[ "${RUN_PRE_COMMIT_ALL_FILES:-0}" == "1" ]]; then
     echo "Running initial pre-commit checks..."

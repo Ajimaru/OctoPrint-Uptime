@@ -10,7 +10,10 @@ pip install -r requirements-docs.txt
 - Generate JS docs (if desired):
 
 ```bash
-npm install --save-dev jsdoc jsdoc-to-markdown
+# recommended: run the repository setup helper which installs Node dev deps
+.development/setup_dev.sh
+
+# then generate JS docs
 ./scripts/generate-jsdocs.sh
 ```
 
@@ -19,6 +22,25 @@ npm install --save-dev jsdoc jsdoc-to-markdown
 ```bash
 mkdocs serve
 ```
+
+## Developer utilities
+
+When working on translations during development, use the repository helper which wraps `pybabel` and copies compiled catalogs into the package for runtime testing.
+
+From the repository root:
+
+```bash
+# refresh POT
+./.development/compile_translations.sh extract
+
+# merge POT into existing PO files
+./.development/compile_translations.sh update
+
+# compile and copy into octoprint_uptime/translations/
+./.development/compile_translations.sh compile
+```
+
+If a commit fails due to translations being out of sync, run the `update` command above, add the changed PO files, and re-commit.
 
 ## Notes
 

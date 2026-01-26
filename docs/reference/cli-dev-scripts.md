@@ -13,6 +13,7 @@ All helper scripts live under the `.development/` directory at the project root.
   - IMPORTANT: by default it does NOT install distribution artifacts from `dist/`. To install the package into the venv for live-editing, run with `editable` or set `DEV_EDITABLE=1`.
   - Usage: `bash .development/setup_dev.sh` (may require executable permission).
   - Note: the setup helper now also installs the full development requirements from `requirements-dev.txt` into the created `venv` to ensure tooling such as `pre-commit`, `build` and `tomli` are available automatically.
+  - Additionally, when `npm` is available the helper will populate `node_modules` (run `npm install`) so Node-based dev tools listed in `package.json` (for example `jsdoc-to-markdown`) are available for documentation generation. This makes `./scripts/generate-jsdocs.sh` usable without a separate `npm install` step.
 
 - `.development/restart_octoprint_dev.sh`
   - This will not install `dist/` artifacts by default.
@@ -72,6 +73,25 @@ Tip: instead of `OCTOPRINT_ARGS` you can set `OCTOPRINT_CMD` to an absolute octo
 - Run `bash .development/setup_dev.sh` once to prepare your development environment and enable recommended pre-commit hooks.
 - When bumping versions, review the changes produced by `.development/bump_control.sh` before committing or tagging.
 - After adding dependencies, run the repository's security checks as documented (see `codacy` rules in the top-level `.github/instructions` if applicable) and compile translation catalogs if strings changed.
+
+- The repository includes a `pre-commit` hook `check-translations` which will run during commits to ensure PO files are up-to-date with the POT. If a commit fails with a translations check, run:
+
+```bash
+./.development/compile_translations.sh update
+git add translations/*/LC_MESSAGES/*.po
+```
+
+Then re-run the commit. To compile and copy compiled catalogs into the package for runtime testing, run:
+
+```bash
+./.development/compile_translations.sh compile
+```
+
+## JS documentation generation
+
+The repository provides an automated JSDoc → Markdown step integrated into pre-commit. The `jsdoc-gen` hook runs `./scripts/generate-jsdocs.sh`. To make local commits faster the hook passes only changed filenames to the script (`pass_filenames: true`) and the script documents only the files it receives. When running the script manually it still documents the whole package if no filenames are given.
+
+If you rely on the JS docs generator, ensure you've run `.development/setup_dev.sh` (it will install `jsdoc-to-markdown` into `node_modules` when `npm` is present).
 
 ## Notes
 
