@@ -7,7 +7,6 @@
 
 [![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/ajitroids#-license)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://python.org)
-![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
 [![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
 [![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
 ![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)
@@ -157,6 +156,11 @@ Note: `main` is protected on GitHub, so changes go through PRs.
 [![Closed PRs](https://img.shields.io/github/issues-pr-closed/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aclosed)
 
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Ajimaru/OctoPrint-Uptime/main.svg)](https://results.pre-commit.ci/latest/github/Ajimaru/OctoPrint-Uptime/main)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+
 ![Commit Activity (year)](https://img.shields.io/github/commit-activity/y/Ajimaru/OctoPrint-Uptime)
 ![Last Commit](https://img.shields.io/github/last-commit/Ajimaru/OctoPrint-Uptime)
 
@@ -169,9 +173,8 @@ Note: `main` is protected on GitHub, so changes go through PRs.
 [![Docs workflow](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml/badge.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml)
 ![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime)
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 ![Languages Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)
+![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
 
 ## License
 
