@@ -157,12 +157,25 @@ fi
 
 # Install pre-commit environments (hooks are managed via core.hooksPath=.githooks)
 echo "Setting up pre-commit..."
-if command -v pre-commit >/dev/null 2>&1; then
-    pre-commit install-hooks
+# Prefer the virtualenv's pre-commit binary to ensure hooks run inside the venv
+VENV_PRECOMMIT="$VENV_DIR/bin/pre-commit"
+VENV_PYTHON="$VENV_DIR/bin/python"
+
+if [[ -x "${VENV_PRECOMMIT}" ]]; then
+    "${VENV_PRECOMMIT}" install-hooks || echo "WARNING: failed to install hooks using ${VENV_PRECOMMIT}"
 else
-    echo "WARNING: pre-commit not found, skipping pre-commit setup"
-    echo "         Install via: python -m pip install pre-commit (recommended)"
-    echo "         or system-wide: sudo apt install pre-commit"
+    echo "pre-commit not found in venv; installing into venv via ${VENV_PYTHON}..."
+    # Ensure packaging tools are reasonably up-to-date before installing
+    "${VENV_PYTHON}" -m pip install --upgrade pip setuptools wheel || true
+    if "${VENV_PYTHON}" -m pip install pre-commit; then
+        if [[ -x "${VENV_PRECOMMIT}" ]]; then
+            "${VENV_PRECOMMIT}" install-hooks || echo "WARNING: pre-commit installed but installing hooks failed"
+        else
+            echo "WARNING: pre-commit installed into venv but ${VENV_PRECOMMIT} not found"
+        fi
+    else
+        echo "WARNING: Failed to install pre-commit into the virtualenv. You can install it manually with: ${VENV_PYTHON} -m pip install pre-commit"
+    fi
 fi
 
 # Run pre-commit on all files (optional, can take time)
