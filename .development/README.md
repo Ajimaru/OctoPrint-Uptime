@@ -238,7 +238,7 @@ To enable for your shell session:
 export PRECOMMIT_AUTOUPDATE=1
 ```
 
-### Notes
+Notes
 
 - `pre-commit autoupdate` may modify `.pre-commit-config.yaml`; review changesbefore committing them.
-- For automated, repository-level updates prefer `pre-commit.ci` or ascheduled GitHub Action that runs `pre-commit autoupdate` and opens a PR.
+- For automated, repository-level updates prefer `pre-commit.ci` or a scheduled GitHub Action that runs `pre-commit autoupdate` and opens a PR.

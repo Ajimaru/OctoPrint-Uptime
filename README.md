@@ -45,8 +45,8 @@
 github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip
 ```
 
-6. Click **Install**
-7. Restart OctoPrint
+5. Click **Install**
+6. Restart OctoPrint
 
 ### Manual Installation
 
@@ -115,7 +115,7 @@ Quick curl example:
 curl -s -H "X-Api-Key: $API_KEY" http://localhost:5000/api/plugin/octoprint_uptime | jq
 ```
 
-**Q: Witch OSes are supported?**
+**Q: Which OSes are supported?**
 A: Linux is tested and supported. Other OSes may work but are not officially supported. See details in #how-it-works.
 
 ## Contributing
