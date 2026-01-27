@@ -2,9 +2,9 @@ name: Bandit SARIF
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
     - cron: "27 01 * * *"
   workflow_dispatch: {}

@@ -2,8 +2,8 @@ Babel>=2.17.0
 build
 flask>=2.3.2
 mock
+pre-commit>=3.0.0
 pylint>=2.17.0
 pytest
 pytest-cov
 tomli
-pre-commit>=3.0.0

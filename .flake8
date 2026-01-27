@@ -1,6 +1,6 @@
 [flake8]
-# Allow slightly longer lines to match project style (OctoPrint templates use 120 cols).
-max-line-length = 120
+# Allow slightly longer lines.
+max-line-length = 100
 
 # Ignore a couple compatibility rules that conflict with Black formatting where used.
 extend-ignore = E203, W503

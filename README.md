@@ -109,7 +109,7 @@ A: You can change the display format in the plugin settings under `Display forma
 
 **Q: How do I access the uptime API?**
 A: The uptime API is available at `/api/plugin/octoprint_uptime`. You need to include your OctoPrint API key in the request headers for authentication.
-   Quick curl example:
+Quick curl example:
 
 ```bash
 curl -s -H "X-Api-Key: $API_KEY" http://localhost:5000/api/plugin/octoprint_uptime | jq
