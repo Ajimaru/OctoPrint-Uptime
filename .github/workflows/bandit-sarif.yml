@@ -1,0 +1,61 @@
+name: Bandit SARIF
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: "27 01 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+concurrency:
+  group: bandit-sarif-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bandit-security-scan:
+    name: Bandit Security Scan (SARIF)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          cache: "pip"
+
+      - name: Install tools
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          # Bandit mit festem Pin empfohlen; Version bei Bedarf anpassen
+          pip install "bandit==1.9.3"
+
+      - name: Run Bandit with SARIF output
+        run: |
+          mkdir -p reports
+          bandit -r . -x tests,.venv,venv,.git -ll \
+            --format sarif --output reports/bandit.sarif
+
+      - name: Upload SARIF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-sarif
+          path: reports/bandit.sarif
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload SARIF to GitHub Code Scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: reports/bandit.sarif
+          category: bandit
