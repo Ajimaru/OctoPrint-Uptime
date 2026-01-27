@@ -147,9 +147,7 @@ if len(additional_setup_parameters):
     import types
 
     try:
-        OCTOPRINT_UTIL: Optional[types.ModuleType] = importlib.import_module(
-            "octoprint.util"
-        )
+        OCTOPRINT_UTIL: Optional[types.ModuleType] = importlib.import_module("octoprint.util")
     except ImportError:
         OCTOPRINT_UTIL = None
 
@@ -161,11 +159,7 @@ if len(additional_setup_parameters):
             """Recursively merge two dicts without mutating inputs."""
             result = copy.deepcopy(a)
             for key, value in b.items():
-                if (
-                    key in result
-                    and isinstance(result[key], dict)
-                    and isinstance(value, dict)
-                ):
+                if key in result and isinstance(result[key], dict) and isinstance(value, dict):
                     result[key] = dict_merge(result[key], value)
                 else:
                     result[key] = copy.deepcopy(value)

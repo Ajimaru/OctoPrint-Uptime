@@ -390,9 +390,7 @@ def test_fallback_uptime_response_no_flask_and_with_flask(monkeypatch):
     else:
         data = None
     assert (
-        isinstance(data, dict)
-        and data.get("uptime_available") is False
-        and "uptime_note" in data
+        isinstance(data, dict) and data.get("uptime_available") is False and "uptime_note" in data
     )
 
     class FakeFlask:
@@ -450,9 +448,7 @@ def test_on_api_get_permission_and_response(monkeypatch):
     """
     p = plugin.OctoprintUptimePlugin()
 
-    monkeypatch.setattr(
-        plugin.OctoprintUptimePlugin, "_check_permissions", lambda self: True
-    )
+    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_check_permissions", lambda self: True)
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_uptime_info",
@@ -462,9 +458,7 @@ def test_on_api_get_permission_and_response(monkeypatch):
     out = p.on_api_get()
     assert out == {"uptime": "42s"}
 
-    monkeypatch.setattr(
-        plugin.OctoprintUptimePlugin, "_check_permissions", lambda self: False
-    )
+    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_check_permissions", lambda self: False)
     p2 = plugin.OctoprintUptimePlugin()
     plugin._flask = None
     got = p2._handle_permission_check()
@@ -620,12 +614,8 @@ def test_module_simple_methods_and_uptime_seconds_none(monkeypatch):
     assert p.is_api_protected() is True
     assert p.is_template_autoescaped() is True
 
-    monkeypatch.setattr(
-        plugin.OctoprintUptimePlugin, "_get_uptime_from_proc", lambda self: None
-    )
-    monkeypatch.setattr(
-        plugin.OctoprintUptimePlugin, "_get_uptime_from_psutil", lambda self: None
-    )
+    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_get_uptime_from_proc", lambda self: None)
+    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_get_uptime_from_psutil", lambda self: None)
     secs, src = p._get_uptime_seconds()
     assert secs is None and src == "none"
 
@@ -692,15 +682,11 @@ def test_on_settings_initialized_invokes_hook_variants(monkeypatch):
     def base1(self):
         called["base1"] = self
 
-    monkeypatch.setattr(
-        plugin.SettingsPluginBase, "on_settings_initialized", base0, raising=False
-    )
+    monkeypatch.setattr(plugin.SettingsPluginBase, "on_settings_initialized", base0, raising=False)
     p.on_settings_initialized()
     assert called["base0"] is True
 
-    monkeypatch.setattr(
-        plugin.SettingsPluginBase, "on_settings_initialized", base1, raising=False
-    )
+    monkeypatch.setattr(plugin.SettingsPluginBase, "on_settings_initialized", base1, raising=False)
     p.on_settings_initialized()
     assert called["base1"] is not None
 
@@ -832,9 +818,7 @@ def test_on_api_get_with_flask_returns_json(monkeypatch):
             return {"json": kwargs}
 
     monkeypatch.setattr(plugin, "_flask", FakeFlask)
-    monkeypatch.setattr(
-        plugin.OctoprintUptimePlugin, "_handle_permission_check", lambda self: None
-    )
+    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_handle_permission_check", lambda self: None)
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_uptime_info",
@@ -1055,10 +1039,7 @@ def test_fallback_uptime_response_handles_exceptions(monkeypatch):
     else:
         data = None
     if isinstance(data, dict):
-        assert (
-            data.get("uptime") == plugin._("unknown")
-            and data.get("uptime_available") is False
-        )
+        assert data.get("uptime") == plugin._("unknown") and data.get("uptime_available") is False
     else:
         assert False, "Response is not a dict and cannot check keys"
 
@@ -1280,9 +1261,7 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
     monkeypatch.setattr(p, "_validate_and_sanitize_settings", fake_validate)
     monkeypatch.setattr(p, "_log_settings_save_data", fake_log)
     monkeypatch.setattr(p, "_call_base_on_settings_save", fake_call_base)
-    monkeypatch.setattr(
-        p, "_update_internal_state", lambda: called.__setitem__("updated", True)
-    )
+    monkeypatch.setattr(p, "_update_internal_state", lambda: called.__setitem__("updated", True))
 
     p.on_settings_save({})
     assert (

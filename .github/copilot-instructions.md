@@ -11,6 +11,7 @@
 **Contributing** <https://github.com/OctoPrint/OctoPrint/blob/main/CONTRIBUTING.md>
 
 **Mixins** <https://docs.octoprint.org/en/main/plugins/mixins.html>
+
 **Knockout.js** <https://knockoutjs.com/documentation/introduction.html>
 
 **Template Autoescape**: [How do I improve my plugin's security by enabling autoescape?](https://faq.octoprint.org/plugin-autoescape)
@@ -21,14 +22,20 @@
 - **Language**: English only (code, comments, docs)
 - **Docstrings**: All public methods/classes
 - **Comments**: Explain WHY, not WHAT
-- **Line length**: 120 chars max (black)
+- **Line length**: 100 chars max (black)
 - **No dead code**: Remove all commented-out experiments
 - **Import order**: stdlib → third-party → octoprint → local
 - **All public-facing repository communication must be in English only**: GitHub Issues, Pull Requests, Discussions, Wiki pages, and Security advisories.
 
-## Testing: pytest, min 70% coverage, test edge cases, mock OctoPrint internals
+## Testing
 
-## Logging (use self.\_logger)
+- pytest, min 70% coverage
+- test edge cases
+- mock OctoPrint internals
+
+## Logging
+
+**use self.\_logger**
 
 ```python
 self._logger.info("Plugin loaded")
@@ -38,6 +45,8 @@ self._logger.error("Failed: %s", str(e))
 
 ## Internationalization
 
+**Languages** English (en) + German (de) (extend as needed)
+
 **Babel Translation**
 
 ```bash
@@ -45,8 +54,6 @@ pybabel extract -F babel.cfg -o translations/messages.pot .
 pybabel init -i translations/messages.pot -d translations -l de
 pybabel compile -d translations
 ```
-
-**Languages** English (en) + German (de) (extend as needed)
 
 ## Files to Ignore (Don't Commit)
 

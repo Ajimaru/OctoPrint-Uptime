@@ -32,9 +32,7 @@ __all__ = [
 # Plugin registration for OctoPrint
 __plugin_name__ = "OctoPrint-Uptime"
 __plugin_version__ = VERSION
-__plugin_description__ = (
-    "Adds system uptime to the navbar and exposes a small uptime API."
-)
+__plugin_description__ = "Adds system uptime to the navbar and exposes a small uptime API."
 __plugin_author__ = "Ajimaru"
 __plugin_url__ = "https://github.com/Ajimaru/OctoPrint-Uptime"
 __plugin_license__ = "AGPLv3"
