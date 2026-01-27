@@ -19,7 +19,6 @@ repos:
       - id: check-case-conflict
       - id: mixed-line-ending
         args: ["--fix=lf"]
-      - id: check-case-conflict
       - id: check-executables-have-shebangs
       - id: check-shebang-scripts-are-executable
       - id: check-illegal-windows-names
@@ -61,6 +60,20 @@ repos:
         types_or: [javascript, css, markdown, json, yaml]
         pass_filenames: true
         exclude: '^docs/api/python\\.md$'
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.9.3
+    hooks:
+      - id: bandit
+        args: ["-x", "tests,.venv,venv,.git", "-ll"]
+
+  - repo: local
+    hooks:
+      - id: check-translations
+        name: Check translations are in sync with POT
+        entry: bash .githooks/check_translations_sync.sh
+        language: system
+        pass_filenames: false
 
   - repo: local
     hooks:
