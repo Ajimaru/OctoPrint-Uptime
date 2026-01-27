@@ -58,7 +58,7 @@ DEV_EDITABLE=1 .development/setup_dev.sh
 .development/setup_dev.sh -h
 ```
 
-Notes
+#### Notes
 
 - The helper scripts target a Python 3.10+ development environment. The plugin itself supports Python 3.10+ as declared in `pyproject.toml`.
 - It automatically sets `git config core.hooksPath .githooks` (if the repo is a git checkout).
@@ -66,7 +66,7 @@ Notes
 - To use a specific Python interpreter for the venv (e.g. Python 3.12), set `PYTHON_BIN`: `PYTHON_BIN=python3.12 .development/setup_dev.sh`.
 - To run an initial `pre-commit run --all-files` during setup, set `RUN_PRE_COMMIT_ALL_FILES=1`.
 
-### Notes about bump configuration
+#### Notes about bump configuration
 
 - During setup the script will also ensure a default bump configuration exists at `.development/bumpversion.toml` (created if missing). This file is used by the helper `bump_control.sh` and is bump-my-version / bump2version-compatible. You can edit it to adjust which files are updated by version bumps.
 
@@ -77,7 +77,7 @@ Interactive helper script to prepare and run version bumps using `bump-my-versio
 - Location: `.development/bump_control.sh`
 - Default config: uses `.development/bumpversion.toml` when `--config` is not provided.
 - Verbosity: the script passes `-vv` to `bump-my-version` by default for detailed output; set `--silent` to disable verbose output.
-- RC mode: when bumping `rc`, the script can auto-increment RC numbers, update `octoprint_uptime/_version.py` and `pyproject.toml`, and optionally commit/tag (interactive prompts default to No).
+- DEV / RC mode: when bumping `dev` / `rc`, the script can auto-increment DEV / RC numbers, update `octoprint_uptime/_version.py` and `pyproject.toml`, and optionally commit/tag (interactive prompts default to No).
 
 Quick examples:
 
@@ -97,11 +97,6 @@ Single-step example (silent, real bump to minor):
 ```bash
 .development/bump_control.sh --silent minor --execute
 ```
-
-Git hooks behavior:
-
-- `pre-commit` hook: runs from `./venv/bin/pre-commit` and requires the venv Python to be 3.10+. The `setup_dev.sh` helper will install `pre-commit` into the venv and install hook environments when necessary; if you opt out of setup or the install fails, the hook will still fail and instruct you to run `.development/setup_dev.sh`.
-- `post-commit` hook: builds dist artifacts on version bumps using Python 3.10+ (prefers `./venv/bin/python`, otherwise `python3`). If Python/build tooling is unavailable, it fails with an error.
 
 ### restart_octoprint_dev.sh
 
@@ -127,7 +122,7 @@ Stops OctoPrint (by default: the instance listening on `OCTOPRINT_PORT`), option
 .development/restart_octoprint_dev.sh --help
 ```
 
-Configuration (environment variables):
+#### Configuration (environment variables)
 
 - `OCTOPRINT_CMD=/path/to/octoprint` (preferred)
 - `OCTOPRINT_VENV=/path/to/venv` (uses `$OCTOPRINT_VENV/bin/octoprint`)
@@ -153,12 +148,12 @@ Builds fresh distribution artifacts into `dist/` after a commit **only when the 
 
 You usually don't run this manually. It is called by the git `post-commit` hook.
 
-Options:
+### Options
 
 - `--force`, `-f` — bypass the `pyproject.toml` unchanged check and force creation of dist artifacts.
 - `-h`, `--help` — show a short usage message and exit.
 
-Note: `.development/bump_control.sh` will offer to run this helper automatically after a real (executed) bump; you can also run it manually when needed.
+#### Note `.development/bump_control.sh` will offer to run this helper automatically after a real (executed) bump; you can also run it manually when needed.
 
 ### test_checklist.sh
 
@@ -189,7 +184,7 @@ It samples OctoPrint process metrics (CPU, RSS, threads, open FDs), watches the 
 
 Logs are written to the repo-local `.logs/` folder (gitignored).
 
-Examples:
+#### Examples
 
 ```bash
 # run until Ctrl+C (sample every 10s)
@@ -212,6 +207,11 @@ The repo uses a versioned hooks directory:
 - Enabled via: `git config core.hooksPath .githooks`
 
 The `post-commit` hook triggers `post_commit_build_dist.sh` after version bumps.
+
+### Git hooks behavior
+
+- `pre-commit` hook: runs from `./venv/bin/pre-commit` and requires the venv Python to be 3.10+. The `setup_dev.sh` helper will install `pre-commit` into the venv and install hook environments when necessary; if you opt out of setup or the install fails, the hook will still fail and instruct you to run `.development/setup_dev.sh`.
+- `post-commit` hook: builds dist artifacts on version bumps using Python 3.10+ (prefers `./venv/bin/python`, otherwise `python3`). If Python/build tooling is unavailable, it fails with an error.
 
 ## Prettier helper
 
@@ -238,7 +238,7 @@ To enable for your shell session:
 export PRECOMMIT_AUTOUPDATE=1
 ```
 
-Notes
+### Notes
 
 - `pre-commit autoupdate` may modify `.pre-commit-config.yaml`; review changesbefore committing them.
 - For automated, repository-level updates prefer `pre-commit.ci` or ascheduled GitHub Action that runs `pre-commit autoupdate` and opens a PR.
