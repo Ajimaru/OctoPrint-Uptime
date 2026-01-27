@@ -3,23 +3,18 @@ set -e
 
 echo "Generating JavaScript API documentation..."
 
-# Resolve repository root (one level up from this script)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." >/dev/null 2>&1 && pwd)"
 JS_SRC_DIR="$PROJECT_ROOT/octoprint_uptime/static/js"
 DOCS_API_DIR="$PROJECT_ROOT/docs/api"
 OUTPUT="${DOCS_API_DIR}/javascript.md"
 
-# Allow processing only the files passed on the command line (pre-commit optimization).
-# If no filenames are passed, fall back to scanning the full package.
 ARGS=("$@")
 USE_PASSED_FILES=0
 if [ "${#ARGS[@]}" -gt 0 ]; then
     USE_PASSED_FILES=1
 fi
 
-# If caller passed specific files (pre-commit), validate they exist; otherwise
-# perform the original recursive check to decide whether to generate full docs.
 if [ "$USE_PASSED_FILES" -eq 1 ]; then
     missing=0
     for f in "${ARGS[@]}"; do
@@ -33,7 +28,6 @@ if [ "$USE_PASSED_FILES" -eq 1 ]; then
         exit 1
     fi
 else
-    # Check if JS files exist (robust recursive check)
     if ! find "$JS_SRC_DIR" -type f -name '*.js' -print -quit >/dev/null 2>&1; then
         echo "Warning: No JavaScript files found"
         mkdir -p "$DOCS_API_DIR"
@@ -44,16 +38,13 @@ else
     fi
 fi
 
-# Generate documentation
 mkdir -p "$DOCS_API_DIR"
 
-# Locate local jsdoc-to-markdown binary (prefer local dev dependency)
 if [ -x "$PROJECT_ROOT/node_modules/.bin/jsdoc2md" ]; then
     JSdoc2md="$PROJECT_ROOT/node_modules/.bin/jsdoc2md"
 elif command -v jsdoc2md >/dev/null 2>&1; then
     JSdoc2md="jsdoc2md"
 else
-    # Interactive prompt to optionally install the dev dependency
     if [ -t 0 ]; then
         read -r -p "jsdoc-to-markdown not found locally. Install as dev-dependency now? (y/N) " REPLY
         case "$REPLY" in
@@ -75,38 +66,28 @@ else
     fi
 fi
 
-# Run the generator from the project root so relative patterns resolve correctly.
-# If filenames were passed, document only those files; otherwise document the
-# full package glob as before.
 if [ "$USE_PASSED_FILES" -eq 1 ]; then
-    if ! (cd "$PROJECT_ROOT" && "$JSdoc2md" --configure "jsdoc.json" "${ARGS[@]}" > "$OUTPUT"); then
+    if ! (cd "$PROJECT_ROOT" && "$JSdoc2md" --configure "docs/jsdoc.json" "${ARGS[@]}" > "$OUTPUT"); then
         echo "JSDoc generation failed" >&2
         exit 1
     fi
 else
-    if ! (cd "$PROJECT_ROOT" && "$JSdoc2md" --configure "jsdoc.json" "octoprint_uptime/static/js/**/*.js" > "$OUTPUT"); then
+    if ! (cd "$PROJECT_ROOT" && "$JSdoc2md" --configure "docs/jsdoc.json" "octoprint_uptime/static/js/**/*.js" > "$OUTPUT"); then
         echo "JSDoc generation failed" >&2
         exit 1
     fi
 fi
 
-# Normalize generated output to avoid accidental diffs from trailing whitespace
-# and ensure consistent formatting across environments. This prevents
-# pre-commit hooks from modifying the file in CI.
 if command -v sed >/dev/null 2>&1; then
     sed -E -i 's/[[:space:]]+$//' "$OUTPUT" || true
 fi
 
-# Ensure file ends with exactly one newline (remove extra blank lines at EOF)
 if command -v perl >/dev/null 2>&1; then
-    # Remove trailing whitespace on lines and ensure exactly one newline at EOF
     perl -0777 -pe 's/[ \t]+$//mg; s/\n+\z/\n/' "$OUTPUT" > "$OUTPUT.tmp" && mv "$OUTPUT.tmp" "$OUTPUT" || true
 else
-    # Fallback: try awk to ensure there is a single trailing newline
     awk 'BEGIN{ORS=""} {print}' "$OUTPUT" | sed -E ':a;/\n$/{$!{N;ba}};s/\n+$/\n/' > "$OUTPUT.tmp" && mv "$OUTPUT.tmp" "$OUTPUT" || true
 fi
 
-# Check if output is empty (no JSDoc comments)
 if [ ! -s "$OUTPUT" ]; then
     echo "Warning: No JSDoc comments found in JavaScript files"
     cat > "$OUTPUT" << 'EOF'

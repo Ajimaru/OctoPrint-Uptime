@@ -1,10 +1,14 @@
 {
   "opts": {
-    "encoding": "utf8"
+    "encoding": "utf8",
+    "recurse": true
   },
-  "plugins": ["plugins/markdown"],
   "source": {
-    "excludePattern": "(^|/|\\\\)_",
-    "includePattern": ".+\\.js(doc|x)?$"
+    "excludePattern": "(^|\\/)node_modules($|\\/)",
+    "include": ["octoprint_uptime/static/js"],
+    "includePattern": ".+\\.js$"
+  },
+  "tags": {
+    "allowUnknownTags": true
   }
 }

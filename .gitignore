@@ -34,6 +34,7 @@ node_modules/
 gh_logs
 .codacyignore
 codacy_trivy_results.json
+OctoPrint-Uptime/.github/instructions
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
