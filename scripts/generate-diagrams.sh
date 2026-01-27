@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
+
+# Description: Generate UML class and package diagrams used in project documentation.
+# Behavior:
+#  - Uses `pyreverse` to emit DOT (or PNG fallback) files for classes and packages.
+#  - Renders DOT -> SVG via `graphviz` (`dot`). If `dot` is unavailable, falls back to
+#    PNG + ImageMagick `convert` + `potrace` to produce SVGs when possible.
+#  - Outputs are written to `docs/reference/diagrams/` and intermediate files are cleaned.
+#  - Exits non-zero when rendering fails so CI can detect the problem.
+
 set -euo pipefail
 shopt -s nullglob
-
-# Generate class/package diagrams for the docs.
-# Primary path: pyreverse -> dot -> svg
-# Fallback: pyreverse -> png -> potrace (requires ImageMagick + potrace)
 
 mkdir -p docs/reference/diagrams
 RENDER_FAILED=0

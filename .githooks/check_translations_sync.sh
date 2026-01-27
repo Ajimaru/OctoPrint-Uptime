@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-# Check that top-level PO files are up-to-date with the POT.
-# This script is intended to be called from a pre-commit hook.
+# Helper: verify that top-level PO catalogs are synchronized with translations/messages.pot
+# Behavior:
+#  - Creates a temporary copy of `translations/`, runs `pybabel update` against the POT
+#    on the temporary copy and compares it to the real `translations/` directory.
+#  - Performs a read-only check (does not modify the working tree); intended for pre-commit.
+#  - Exits 0 when translations are up-to-date; otherwise prints diffs and exits non-zero.
+# Usage:
+#  - Typically invoked from a pre-commit hook or CI to ensure translators are synchronized.
+
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"

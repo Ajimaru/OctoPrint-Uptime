@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
-# OctoPrint Plugin Template - Quick Test Checklist
+
+# Description: Quick checklist to verify the development environment and basic project sanity.
+# Behavior:
+#  - Verifies Python version and virtualenv presence, checks project metadata in `pyproject.toml`,
+#    confirms presence of templates, translations, and sample frontend assets.
+#  - Prints simple installation instructions for development and isolated testing.
+# Usage:
+#  - Run interactively to get a quick overview before running tests or manual testing.
 
 set -euo pipefail
 

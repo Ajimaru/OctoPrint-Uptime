@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-# Restart OctoPrint safely (tries to avoid Safe Mode) and optionally clear caches.
-#
-# This script intentionally avoids hardcoded machine-specific paths so it can be committed.
-# It will resolve the `octoprint` executable in this order:
-#   1) OCTOPRINT_CMD (explicit path to the octoprint executable)
-#   2) OCTOPRINT_VENV (uses $OCTOPRINT_VENV/bin/octoprint)
-#   3) common repo-relative locations (e.g. ./venv/bin/octoprint)
-#   4) `octoprint` on PATH
-#
-# Configure via environment variables:
-#   OCTOPRINT_CMD=/path/to/octoprint
-#   OCTOPRINT_VENV=/path/to/venv
-#   OCTOPRINT_PORT=5000
-#   OCTOPRINT_ARGS="serve --debug"    # appended after the octoprint executable
-#   OCTOPRINT_BASEDIR=$HOME/.octoprint
+# Description: Safely stop and restart local OctoPrint instances for development.
+# Behavior:
+#  - Resolves the `octoprint` executable from `OCTOPRINT_CMD`, `OCTOPRINT_VENV`, common
+#    repo-relative locations, or the PATH.
+#  - Can stop/restart a single instance (by listening port) or stop/restart all instances
+#    for the current user. Provides options to force-kill and to clear generated webassets.
+#  - Waits for ports to free and attempts graceful shutdown before SIGKILL (when allowed).
+#  - Verifies plugin startup by observing log entries and can clear safe-mode markers.
+# Environment variables:
+#  - OCTOPRINT_CMD, OCTOPRINT_VENV, OCTOPRINT_PORT, OCTOPRINT_ARGS, OCTOPRINT_BASEDIR
+# Usage examples:
+#  - Stop and restart: ./.development/restart_octoprint_dev.sh
+#  - Stop all instances: ./.development/restart_octoprint_dev.sh --stop-all
+#  - Restart with cache clear: ./.development/restart_octoprint_dev.sh --clear-cache
+
+set -euo pipefail
 
 OCTOPRINT_PORT_DEFAULT="5000"
 OCTOPRINT_ARGS_DEFAULT="serve --debug"

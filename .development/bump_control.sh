@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
+
+# Description: Interactive helper to choose and apply version bumps across the project.
+# Behavior:
+#  - Provides interactive selection of bump types (dev, rc, major, minor, patch) and
+#    computes suggested new versions when possible.
+#  - Checks and reconciles versions in the bump config, `octoprint_uptime/_version.py`,
+#    and `pyproject.toml`, offering to synchronize them when mismatches are found.
+#  - Supports dry-run vs real execution, creating commits and tags when requested,
+#    and can trigger a post-commit distribution build helper.
+# Usage examples:
+#  - Run interactively: ./.development/bump_control.sh
+#  - Non-interactive: ./.development/bump_control.sh minor 1.2.0 true true --execute
+
 set -euo pipefail
 
-# Clean, single-copy bump_control.sh
-# - choose_menu: arrow keys + numeric + Enter fallback
-# - version consistency check and RC handling
-
-# ANSI colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'

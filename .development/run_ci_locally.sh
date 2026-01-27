@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+# Description: Run CI-like checks locally to validate the repository for development.
+# Behavior:
+#  - Runs `pytest`, `pre-commit` hooks, i18n catalog checks/compilation, and `python -m build`.
+#  - Installs required CI/dev dependencies into the selected Python environment before running.
+#  - Supports flags to skip specific steps (`--no-tests`, `--no-pre-commit`, `--no-i18n`, `--no-build`).
+#  - Attempts to emulate CI pins for Babel/Jinja2 versions during i18n checks.
+# Usage examples:
+#  - .development/run_ci_locally.sh
+#  - .development/run_ci_locally.sh --no-build --apply-fixes
+
 set -euo pipefail
 
 log() {

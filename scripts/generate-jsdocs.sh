@@ -1,5 +1,39 @@
 #!/usr/bin/env bash
+
+# Description: Generate JavaScript API documentation (docs/api/javascript.md) using jsdoc-to-markdown.
+# Behavior:
+#  - Uses `jsdoc-to-markdown` (local `node_modules/.bin/jsdoc2md` or global `jsdoc2md`).
+#  - Accepts explicit file paths as arguments or scans `octoprint_uptime/static/js/**/*.js`.
+#  - Optionally offers to install `jsdoc-to-markdown` interactively when run in a TTY.
+#  - Normalizes and trims trailing whitespace from the generated Markdown output.
+# Usage examples:
+#  - ./scripts/generate-jsdocs.sh
+#  - ./scripts/generate-jsdocs.sh octoprint_uptime/static/js/uptime.js
+
 set -e
+
+usage() {
+cat <<'USAGE'
+Usage: scripts/generate-jsdocs.sh [FILES...]
+
+Generate JavaScript API documentation into `docs/api/javascript.md`.
+
+If FILES are provided they are used as the input list; otherwise the script
+scans `octoprint_uptime/static/js/**/*.js` for source files.
+
+Options:
+    -h, --help    Show this help message and exit
+
+Examples:
+    ./scripts/generate-jsdocs.sh
+    ./scripts/generate-jsdocs.sh octoprint_uptime/static/js/uptime.js
+USAGE
+}
+
+if [[ "${1:-}" = "-h" || "${1:-}" = "--help" || "${1:-}" = "help" ]]; then
+        usage
+        exit 0
+fi
 
 echo "Generating JavaScript API documentation..."
 

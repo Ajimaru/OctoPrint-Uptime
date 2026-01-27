@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
-# Setup script for OctoPrint OctoPrint-Uptime plugin development.
+
+# Description: Create and prepare a development virtual environment and install tooling.
+# Behavior:
+#  - Creates a `venv/` virtualenv (if missing), activates it, and installs packaging/dev tools.
+#  - Installs optional development and docs requirements from `requirements-dev.txt` and
+#  - `requirements-docs.txt` when present.
+#  - Ensures helper tools (`bump-my-version`, `pre-commit`, `build`, etc.) are available
+#    in the venv and configures repo-local git hooks (`.githooks`).
+#  - Optionally installs Node.js dev dependencies (`npm install`) to populate `node_modules`.
+# Usage examples:
+#  - .development/setup_dev.sh
+#  - DEV_EDITABLE=1 .development/setup_dev.sh  # install editable for development
 
 set -euo pipefail
 

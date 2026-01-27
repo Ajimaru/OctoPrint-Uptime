@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-# Helper to manage and compile translations using the project's venv pybabel.
+# Description: Manage translation workflow for the repository: extract, init, update, and compile PO/MO using pybabel.
 # Behavior / subcommands:
 #  extract             - run `pybabel extract` to refresh `translations/messages.pot`
 #  init <lang>         - initialize a new language from the POT into `translations/<lang>`
@@ -19,6 +18,8 @@ set -euo pipefail
 #   ./compile_translations.sh compile          # default: compile top-level and copy to package
 #   ./compile_translations.sh compile --all    # compile both top-level and plugin translations
 #   ./compile_translations.sh compile --plugin-only
+
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"

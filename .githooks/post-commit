@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
+
+# Description: Minimal git post-commit hook placeholder.
+# Behavior:
+#  - Ensures the script is running as a Git hook (GIT_DIR set) and that the repo root
+#    can be determined; otherwise exits quietly to avoid blocking commits.
+#  - Currently a no-op by default but keeps a repository-local hook file available
+#    for future post-commit actions such as building distribution artifacts.
+# Usage:
+#  - Placed in `.githooks/post-commit` and activated via `git config core.hooksPath .githooks`.
+
 set -euo pipefail
 
-# Git post-commit hook.
-# Ensures that the repo root can be determined; if not, exits with 0 to avoid
-# blocking commits in weird situations (e.g. detached HEAD with no remote).
-# Only run when invoked by Git (hooks are executed with GIT_DIR set).
 if [[ -z "${GIT_DIR-}" ]]; then
   # Not running as a Git hook — skip silently.
   exit 0

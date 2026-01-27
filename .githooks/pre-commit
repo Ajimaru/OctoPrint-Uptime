@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+
+# Description: Wrapper to run pre-commit hooks from the repository virtualenv.
+# Behavior:
+#  - Attempts to execute `./venv/bin/pre-commit` to ensure hooks run inside the project's venv.
+#  - Validates that the venv Python meets the minimum required version (Python 3.10+).
+#  - Optionally runs `pre-commit autoupdate` once per 24h when `PRECOMMIT_AUTOUPDATE=1`.
+# Usage:
+#  - Installed as a git hook via `core.hooksPath` and invoked automatically by Git.
+
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
