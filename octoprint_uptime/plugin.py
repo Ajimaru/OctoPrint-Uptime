@@ -1,3 +1,4 @@
+# pyright: reportGeneralTypeIssues=false
 """OctoPrint-Uptime plugin module.
 
 Provides uptime information for OctoPrint instances,
