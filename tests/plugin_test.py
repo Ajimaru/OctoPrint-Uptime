@@ -52,6 +52,9 @@ class FakeLogger:
     """
 
     def __init__(self):
+        """
+        Initializes the object and creates an empty list to track calls.
+        """
         self.calls = []
 
     def debug(self, msg, *args):
@@ -192,17 +195,14 @@ def test_log_settings_save_data_and_call_base_on_settings_save(monkeypatch):
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
     data = {"x": 1}
-    # should not raise
     p._log_settings_save_data(data)
 
-    # patch base SettingsPluginBase to have an on_settings_save that raises
     monkeypatch.setattr(
         plugin.SettingsPluginBase,
         "on_settings_save",
         lambda _self, _d: (_ for _ in ()).throw(ValueError("boom")),
         raising=False,
     )
-    # should swallow the exception
     p._call_base_on_settings_save({})
 
 
@@ -228,7 +228,6 @@ def test_update_internal_state_and_get_api_settings_and_logging(monkeypatch):
     assert p._display_format == "compact"
     assert p._debug_throttle_seconds == 30
 
-    # poll interval should be clamped to 120
     nav, fmt, poll = p._get_api_settings()
     assert nav is False
     assert fmt == "compact"
@@ -252,7 +251,6 @@ def test_log_settings_after_save_prev_navbar_change():
     p._display_format = "f"
     p._debug_throttle_seconds = 7
     p._log_settings_after_save(prev_navbar=False)
-    # expect at least two info calls (state and change)
     infos = [c for c in p._logger.calls if c[0] == "info"]
     assert len(infos) >= 2
 
@@ -283,7 +281,6 @@ def test_fallback_uptime_response_no_flask_and_with_flask(monkeypatch):
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
 
-    # case: uptime available, no flask
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_uptime_info",
@@ -293,7 +290,6 @@ def test_fallback_uptime_response_no_flask_and_with_flask(monkeypatch):
     resp = p._fallback_uptime_response()
     assert resp["uptime"] == "1m 40s"
 
-    # case: uptime not available -> uptime_note present
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_uptime_info",
@@ -302,7 +298,6 @@ def test_fallback_uptime_response_no_flask_and_with_flask(monkeypatch):
     resp = p._fallback_uptime_response()
     assert resp["uptime_available"] is False and "uptime_note" in resp
 
-    # with flask: jsonify used
     class FakeFlask:
         """
         A minimal fake Flask class for testing purposes.
@@ -341,8 +336,19 @@ def test_fallback_uptime_response_no_flask_and_with_flask(monkeypatch):
 
 
 def test_on_api_get_permission_and_response(monkeypatch):
+    """Test on_api_get behavior for permitted and denied requests.
+
+    Verifies two code paths:
+    - Permission granted: patches _check_permissions to True and _get_uptime_info to a known tuple,
+        ensures on_api_get() returns the expected uptime dictionary {"uptime": "42s"}.
+    - Permission denied: patches _check_permissions to False and verifies that
+        _handle_permission_check() returns a truthy dict (expected permission-denied response).
+
+    Uses monkeypatch to control plugin internals and sets plugin._flask to None to avoid
+    Flask dependency.
+    """
     p = plugin.OctoprintUptimePlugin()
-    # permission granted path
+
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin, "_check_permissions", lambda self: True
     )
@@ -355,7 +361,6 @@ def test_on_api_get_permission_and_response(monkeypatch):
     out = p.on_api_get()
     assert out == {"uptime": "42s"}
 
-    # permission denied path
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin, "_check_permissions", lambda self: False
     )
@@ -366,6 +371,13 @@ def test_on_api_get_permission_and_response(monkeypatch):
 
 
 def test_get_uptime_info_custom_getter():
+    """
+    Test that the OctoprintUptimePlugin correctly uses a custom uptime getter.
+
+    This test replaces the plugin's `get_uptime_seconds` method with a lambda that returns
+    a fixed uptime value and a custom source string. It then verifies that the returned
+    uptime seconds match the expected value and that the plugin records the correct source.
+    """
     p = plugin.OctoprintUptimePlugin()
     p.get_uptime_seconds = lambda: (200, "custom")
     seconds, full, dhm, dh, d = p._get_uptime_info()
@@ -374,8 +386,15 @@ def test_get_uptime_info_custom_getter():
 
 
 def test_get_uptime_from_psutil_and_proc(monkeypatch):
+    """
+    Test that uptime can be retrieved from both psutil and /proc/uptime sources.
+
+    This test verifies that the plugin correctly calculates uptime using psutil's boot_time
+    and by reading from /proc/uptime,
+    ensuring both code paths are exercised and return expected values.
+    """
     p = plugin.OctoprintUptimePlugin()
-    # psutil path
+
     fake_ps = SimpleNamespace(boot_time=lambda: time.time() - 1234)
     monkeypatch.setattr(
         importlib,
@@ -385,7 +404,6 @@ def test_get_uptime_from_psutil_and_proc(monkeypatch):
     val = p._get_uptime_from_psutil()
     assert isinstance(val, float) and abs(val - 1234) < 5
 
-    # proc path: monkeypatch exists and open
     monkeypatch.setattr(plugin.os.path, "exists", lambda path: True)
     mo = mock.mock_open(read_data="987.65 0.00\n")
     monkeypatch.setattr(builtins, "open", mo)
@@ -394,42 +412,92 @@ def test_get_uptime_from_psutil_and_proc(monkeypatch):
 
 
 def test_hook_inspection_and_safe_invoke(monkeypatch):
+    """
+    Test hook inspection and safe invocation logic in OctoprintUptimePlugin.
+
+    This test verifies that the plugin correctly determines the number of positional parameters
+    for various hook functions, handles exceptions raised by inspect.signature, and safely
+    invokes hooks, logging exceptions without raising them.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
 
     def foo():
+        """
+        Returns the integer 1.
+
+        Returns:
+            int: The value 1.
+        """
         return 1
 
     def bar(x):
+        """
+        Returns the input value unchanged.
+
+        Args:
+            x: The value to be returned.
+
+        Returns:
+            The same value as the input `x`.
+        """
         return x
 
     def two(a, b):
+        """
+        Adds two values together.
+
+        Args:
+            a: The first value to add.
+            b: The second value to add.
+
+        Returns:
+            The sum of a and b.
+        """
         return a + b
 
     assert p._get_hook_positional_param_count(foo) == 0
     assert p._get_hook_positional_param_count(bar) == 1
     assert p._get_hook_positional_param_count(two) == 2
 
-    # cause inspect.signature to raise
     monkeypatch.setattr(
         plugin.inspect, "signature", lambda h: (_ for _ in ()).throw(ValueError("nope"))
     )
     p._logger = FakeLogger()
+
     assert p._get_hook_positional_param_count(foo) is None
 
-    # safe invoke with exception
     def bad(one):
+        """
+        Raises a RuntimeError with the message "boom".
+
+        Args:
+            one: Unused parameter.
+
+        Raises:
+            RuntimeError: Always raised when the function is called.
+        """
         raise RuntimeError("boom")
 
     p._logger = FakeLogger()
     p._safe_invoke_hook(bad, 1)
-    # exception should be logged, not raised
     assert any(c[0] == "exception" for c in p._logger.calls)
 
 
 def test_module_simple_methods_and_uptime_seconds_none(monkeypatch):
+    """
+    Test the basic public methods of OctoprintUptimePlugin and the behavior of _get_uptime_seconds
+    when both _get_uptime_from_proc and _get_uptime_from_psutil return None.
+
+    This test verifies:
+    - get_update_information returns expected plugin info.
+    - get_assets returns the correct JS asset.
+    - get_template_configs returns a list containing at least one dict.
+    - is_api_protected returns True.
+    - is_template_autoescaped returns True.
+    - _get_uptime_seconds returns (None, "none") when both uptime sources return None.
+    """
     p = plugin.OctoprintUptimePlugin()
-    # simple public methods
     info = p.get_update_information()
     assert "octoprint_uptime" in info
     assert p.get_assets() == {"js": ["js/uptime.js"]}
@@ -438,7 +506,6 @@ def test_module_simple_methods_and_uptime_seconds_none(monkeypatch):
     assert p.is_api_protected() is True
     assert p.is_template_autoescaped() is True
 
-    # uptime seconds none path
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin, "_get_uptime_from_proc", lambda self: None
     )
@@ -450,6 +517,14 @@ def test_module_simple_methods_and_uptime_seconds_none(monkeypatch):
 
 
 def test_get_uptime_from_proc_bad_content(monkeypatch):
+    """
+    Test that _get_uptime_from_proc returns None when /proc/uptime contains invalid
+    (non-numeric) content.
+
+    This test mocks the existence of the /proc/uptime file and provides invalid content
+    ("not-a-number\n"). It verifies that the method correctly handles the bad content by
+    returning None.
+    """
     p = plugin.OctoprintUptimePlugin()
     monkeypatch.setattr(plugin.os.path, "exists", lambda path: True)
     mo = mock.mock_open(read_data="not-a-number\n")
@@ -458,8 +533,15 @@ def test_get_uptime_from_proc_bad_content(monkeypatch):
 
 
 def test_get_uptime_from_psutil_import_error_and_bad_boot(monkeypatch):
+    """
+    Test the _get_uptime_from_psutil method for handling ImportError and invalid boot_time values.
+
+    This test verifies that:
+    - When the psutil module cannot be imported (ImportError), the method returns None.
+    - When the psutil module is imported but its boot_time method returns an invalid value,
+      the method also returns None.
+    """
     p = plugin.OctoprintUptimePlugin()
-    # import error
     monkeypatch.setattr(
         importlib,
         "import_module",
@@ -467,17 +549,24 @@ def test_get_uptime_from_psutil_import_error_and_bad_boot(monkeypatch):
     )
     assert p._get_uptime_from_psutil() is None
 
-    # import works but boot_time invalid
     fake_ps = SimpleNamespace(boot_time=lambda: "invalid")
     monkeypatch.setattr(importlib, "import_module", lambda name: fake_ps)
     assert p._get_uptime_from_psutil() is None
 
 
 def test_on_settings_initialized_invokes_hook_variants(monkeypatch):
+    """
+    Test that the `on_settings_initialized` method of `OctoprintUptimePlugin` correctly invokes
+    the base class hook with both 0 and 1 argument variants.
+
+    This test uses monkeypatching to replace the `on_settings_initialized` method of
+    `SettingsPluginBase` with functions that accept either zero or one argument, ensuring
+    that the plugin's method can handle both cases without error and passes the correct
+    parameters when required.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
 
-    # define base hooks with 0 and 1 param
     def base0():
         base0.called = True
 
@@ -487,11 +576,9 @@ def test_on_settings_initialized_invokes_hook_variants(monkeypatch):
     monkeypatch.setattr(
         plugin.SettingsPluginBase, "on_settings_initialized", base0, raising=False
     )
-    # should call without error
     p.on_settings_initialized()
     assert getattr(base0, "called", True) is True
 
-    # now set a one-arg hook
     monkeypatch.setattr(
         plugin.SettingsPluginBase, "on_settings_initialized", base1, raising=False
     )
@@ -500,22 +587,30 @@ def test_on_settings_initialized_invokes_hook_variants(monkeypatch):
 
 
 def test_invoke_settings_hook_unexpected_param_count():
+    """
+    Test that _invoke_settings_hook logs a warning when the hook function has an
+    unexpected number of positional parameters.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
-    # force unexpected param count path
     mp = pytest.MonkeyPatch()
     mp.setattr(p, "_get_hook_positional_param_count", lambda hook: 3)
     p._invoke_settings_hook(lambda: None)
-    # should have logged a warning
     assert any(c[0] == "warning" for c in p._logger.calls)
     mp.undo()
 
 
 def test_log_debug_throttled_no_logging(monkeypatch):
+    """
+    Test that the _log_debug method does not log a debug message when throttling is in effect.
+
+    This test sets up the OctoprintUptimePlugin with debug logging enabled and simulates the
+    current time such that the last debug log was just now, and the throttle interval has not
+    yet passed. It verifies that no debug log is emitted under these conditions.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
     p._debug_enabled = True
-    # set last debug time to just now so throttle prevents logging
     monkeypatch.setattr(time, "time", lambda: 1000)
     p._last_debug_time = 1000
     p._debug_throttle_seconds = 60
@@ -524,12 +619,37 @@ def test_log_debug_throttled_no_logging(monkeypatch):
 
 
 def test_fallback_uptime_response_flask_jsonify_raises(monkeypatch):
+    """
+    Test that the _fallback_uptime_response method returns a dictionary when Flask's
+    jsonify raises a TypeError.
+
+    This test simulates a failure in the Flask jsonify function by monkeypatching it
+    to always raise a TypeError.
+    It verifies that the method under test properly handles this exception and falls
+    back to returning a plain dictionary.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
 
     class BadFlask:
+        """
+        A mock Flask-like class used for testing purposes.
+
+        This class simulates a Flask object with a static `jsonify` method that
+        always raises a TypeError to emulate failure scenarios when calling `jsonify`.
+        """
+
         @staticmethod
         def jsonify(**kwargs):
+            """
+            Raises a TypeError indicating that the 'jsonify' function is not implemented.
+
+            Args:
+                **kwargs: Arbitrary keyword arguments.
+
+            Raises:
+                TypeError: Always raised to indicate improper usage.
+            """
             raise TypeError("bad jsonify")
 
     monkeypatch.setattr(
@@ -544,16 +664,43 @@ def test_fallback_uptime_response_flask_jsonify_raises(monkeypatch):
         lambda self: (True, "full", 5),
     )
     out = p._fallback_uptime_response()
-    # when jsonify fails, it should fall back to dict
     assert isinstance(out, dict)
 
 
 def test_on_api_get_with_flask_returns_json(monkeypatch):
+    """
+    Test that the `on_api_get` method of `OctoprintUptimePlugin` returns a JSON response
+    when using a Flask-like `jsonify` function.
+
+    This test uses monkeypatching to:
+    - Replace the `_flask` module with a fake class that provides a `jsonify` method.
+    - Bypass the permission check in `_handle_permission_check`.
+    - Stub the `_get_uptime_info` method to return fixed uptime values.
+
+    Asserts that the output is a dictionary containing a "json" key.
+    """
     p = plugin.OctoprintUptimePlugin()
 
     class FakeFlask:
+        """
+        A fake Flask class used for testing purposes.
+
+        Provides a static method `jsonify` that simulates Flask's `jsonify` by returning
+        the provided keyword arguments in a dictionary under the 'json' key.
+        """
+
         @staticmethod
         def jsonify(**kwargs):
+            """
+            Converts keyword arguments into a dictionary under the 'json' key.
+
+            Args:
+                **kwargs: Arbitrary keyword arguments to include in the JSON dictionary.
+
+            Returns:
+                dict: A dictionary with a single key 'json' containing the provided
+                keyword arguments.
+            """
             return {"json": kwargs}
 
     monkeypatch.setattr(plugin, "_flask", FakeFlask)
@@ -570,15 +717,18 @@ def test_on_api_get_with_flask_returns_json(monkeypatch):
 
 
 def test_handle_permission_check_abort_raises(monkeypatch):
+    """
+    Test that _handle_permission_check handles exceptions raised by both
+    _check_permissions and _abort_forbidden,
+    and returns a dictionary response when both methods raise errors.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
-    # make _check_permissions raise so handler goes into exception branch
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_check_permissions",
         lambda self: (_ for _ in ()).throw(AttributeError("boom")),
     )
-    # make _abort_forbidden also raise
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_abort_forbidden",
@@ -589,11 +739,31 @@ def test_handle_permission_check_abort_raises(monkeypatch):
 
 
 def test_get_api_settings_exceptions(monkeypatch):
+    """
+    Test that _get_api_settings handles exceptions when accessing settings,
+    returning default values when a ValueError is raised by the settings object.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
 
     class BadSettings:
+        """
+        A mock settings class that simulates a failure when attempting to retrieve a value.
+
+        Raises:
+            ValueError: Always raised when the 'get' method is called.
+        """
+
         def get(self, k):
+            """
+            Raises a ValueError with the message "bad" when called.
+
+            Args:
+                k: The key or parameter to retrieve (not used).
+
+            Raises:
+                ValueError: Always raised with the message "bad".
+            """
             raise ValueError("bad")
 
     p._settings = BadSettings()
@@ -602,9 +772,14 @@ def test_get_api_settings_exceptions(monkeypatch):
 
 
 def test_reload_with_octoprint_present_and_flask_abort(monkeypatch):
+    """
+    Test that the plugin reloads correctly when OctoPrint and Flask are present,
+    and that the _abort_forbidden method triggers a Flask abort with code 403,
+    returning the appropriate error response. Uses monkeypatching to inject
+    fake modules and verifies cleanup after the test.
+    """
     import types
 
-    # create fake octoprint.plugin module
     fake_plugin_mod = types.ModuleType("octoprint.plugin")
     FakeSettings = type("FakeSettings", (), {})
     FakeSimpleApi = type("FakeSimpleApi", (), {})
@@ -616,18 +791,21 @@ def test_reload_with_octoprint_present_and_flask_abort(monkeypatch):
     setattr(fake_plugin_mod, "TemplatePlugin", FakeTemplate)
 
     fake_perm = types.ModuleType("octoprint.access.permissions")
-
-    # fake flask with abort
     fake_flask = types.ModuleType("flask")
     aborted = {}
 
     def fake_abort(code):
+        """
+        Simulates an abort operation by setting the provided code in the 'aborted' dictionary.
+
+        Args:
+            code: The code to set as the abort reason.
+        """
         aborted["code"] = code
 
     fake_flask.abort = fake_abort
     fake_flask.jsonify = lambda **kwargs: {"json": kwargs}
 
-    # inject into sys.modules and reload plugin module
     monkeypatch.setitem(sys.modules, "octoprint.plugin", fake_plugin_mod)
     monkeypatch.setitem(sys.modules, "octoprint.access.permissions", fake_perm)
     monkeypatch.setitem(sys.modules, "flask", fake_flask)
@@ -635,12 +813,11 @@ def test_reload_with_octoprint_present_and_flask_abort(monkeypatch):
     importlib.reload(plugin)
 
     p = plugin.OctoprintUptimePlugin()
-    # abort should call fake abort and still return a dict
+
     res = p._abort_forbidden()
     assert res == {"error": plugin._("Forbidden")} or isinstance(res, dict)
     assert aborted.get("code") == 403
 
-    # cleanup: remove fake modules and reload
     monkeypatch.delitem(sys.modules, "octoprint.plugin", raising=False)
     monkeypatch.delitem(sys.modules, "octoprint.access.permissions", raising=False)
     monkeypatch.delitem(sys.modules, "flask", raising=False)
@@ -648,12 +825,25 @@ def test_reload_with_octoprint_present_and_flask_abort(monkeypatch):
 
 
 def test_reload_with_missing_gettext_uses_fallback(monkeypatch):
+    """
+    Test that when the 'gettext' module is present but lacks the 'gettext' function,
+    the plugin falls back to a default translation function that returns the input unchanged.
+    """
     import types
 
-    # create fake gettext module that lacks gettext
     fake_gettext = types.ModuleType("gettext")
 
     def bindtextdomain(domain, localedir):
+        """
+        Mock implementation of the gettext.bindtextdomain function.
+
+        Args:
+            domain (str): The domain name for the translation.
+            localedir (str): The directory where the translation files are located.
+
+        Returns:
+            None
+        """
         return None
 
     fake_gettext.bindtextdomain = bindtextdomain
@@ -661,18 +851,23 @@ def test_reload_with_missing_gettext_uses_fallback(monkeypatch):
 
     monkeypatch.setitem(sys.modules, "gettext", fake_gettext)
     importlib.reload(plugin)
-    # plugin._ should be fallback that returns input unchanged
     assert plugin._("something") == "something"
-    # cleanup
     monkeypatch.delitem(sys.modules, "gettext", raising=False)
     importlib.reload(plugin)
 
 
 def test_get_api_settings_multiple_cases():
+    """
+    Test multiple scenarios for the _get_api_settings method of OctoprintUptimePlugin.
+
+    This test covers:
+    - Default values and debug logging when all settings are missing.
+    - Clamping of poll_interval_seconds to minimum and maximum allowed values.
+    - Handling of invalid poll_interval_seconds values.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
 
-    # case: all missing -> defaults and debug messages
     p._settings = DummySettings({})
     nav, fmt, poll = p._get_api_settings()
     assert nav is True
@@ -683,7 +878,6 @@ def test_get_api_settings_multiple_cases():
         for c in p._logger.calls
     )
 
-    # case: poll clamped low and high
     p._settings = DummySettings(
         {"navbar_enabled": False, "display_format": "x", "poll_interval_seconds": "0"}
     )
@@ -694,16 +888,20 @@ def test_get_api_settings_multiple_cases():
     nav, fmt, poll = p._get_api_settings()
     assert poll == 120
 
-    # invalid poll value
     p._settings = DummySettings({"poll_interval_seconds": "bad"})
     nav, fmt, poll = p._get_api_settings()
     assert poll == 5
 
 
 def test_fallback_uptime_response_handles_exceptions(monkeypatch):
+    """
+    Test that the _fallback_uptime_response method correctly handles exceptions raised by
+    _get_uptime_info,
+    returning a response with 'uptime' set to 'unknown' and
+    'uptime_available' set to False.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
-    # make _get_uptime_info raise
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_uptime_info",
@@ -712,14 +910,25 @@ def test_fallback_uptime_response_handles_exceptions(monkeypatch):
     out = p._fallback_uptime_response()
     assert out["uptime"] == plugin._("unknown") and out["uptime_available"] is False
 
-    # nothing else to clean up here
-
 
 def test_safe_update_internal_state_logs_warning(monkeypatch):
+    """
+    Test that _safe_update_internal_state logs a warning when
+    _update_internal_state raises an exception.
+
+    This test replaces the _update_internal_state method with one that
+    always raises an AttributeError.
+    It then checks that a warning is logged by verifying that the logger's
+    calls include a warning entry.
+    """
     p = plugin.OctoprintUptimePlugin()
 
-    # make _update_internal_state raise
     def bad_update():
+        """
+        Raises an AttributeError with the message "bad".
+
+        This function is intended to simulate an error condition for testing purposes.
+        """
         raise AttributeError("bad")
 
     p._update_internal_state = bad_update
@@ -729,10 +938,29 @@ def test_safe_update_internal_state_logs_warning(monkeypatch):
 
 
 def test_log_settings_save_data_handles_logger_errors():
+    """
+    Test that _log_settings_save_data handles exceptions raised by the logger
+    without propagating them.
+    """
     p = plugin.OctoprintUptimePlugin()
 
     class BadLogger:
+        """
+        A logger class that raises a ValueError when the debug method is called.
+        Used for testing error handling in logging scenarios.
+        """
+
         def debug(self, *a, **k):
+            """
+            Raises a ValueError with the message 'boom' for debugging purposes.
+
+            Args:
+                *a: Variable length argument list.
+                **k: Arbitrary keyword arguments.
+
+            Raises:
+                ValueError: Always raised with the message 'boom'.
+            """
             raise ValueError("boom")
 
     p._logger = BadLogger()
@@ -741,21 +969,46 @@ def test_log_settings_save_data_handles_logger_errors():
 
 
 def test_log_debug_inner_exception(monkeypatch):
+    """
+    Test that the _log_debug method handles exceptions raised by the logger's debug method
+    without propagating them, specifically when a TypeError is raised internally.
+    """
     p = plugin.OctoprintUptimePlugin()
 
     class BadLogger:
+        """
+        A logger class that simulates a faulty logger by raising a TypeError
+        whenever the debug method is called. Useful for testing error handling
+        in logging scenarios.
+        """
+
         def debug(self, msg):
+            """
+            Raises a TypeError with the message "bad" when called.
+
+            Args:
+                msg: The debug message (not used).
+
+            Raises:
+                TypeError: Always raised with the message "bad".
+            """
             raise TypeError("bad")
 
     p._logger = BadLogger()
     p._debug_enabled = True
     p._last_debug_time = 0
     p._debug_throttle_seconds = 0
-    # now calling should hit inner except and not raise
     p._log_debug("x")
 
 
 def test_get_uptime_from_psutil_future_boot(monkeypatch):
+    """
+    Test that _get_uptime_from_psutil returns None when psutil.boot_time() is in the future.
+
+    This test uses monkeypatching to simulate a scenario where the system boot time,
+    as reported by psutil.boot_time(), is set to a future timestamp. It verifies that
+    the OctoprintUptimePlugin correctly handles this edge case by returning None.
+    """
     p = plugin.OctoprintUptimePlugin()
     fake_ps = SimpleNamespace(boot_time=lambda: time.time() + 10000)
     monkeypatch.setattr(
@@ -767,12 +1020,24 @@ def test_get_uptime_from_psutil_future_boot(monkeypatch):
 
 
 def test_get_uptime_from_proc_missing(monkeypatch):
+    """
+    Test that _get_uptime_from_proc returns None when the /proc/uptime file is missing.
+
+    This test uses monkeypatch to simulate the absence of the /proc/uptime file by making
+    os.path.exists always return False.
+    """
     p = plugin.OctoprintUptimePlugin()
     monkeypatch.setattr(plugin.os.path, "exists", lambda path: False)
     assert p._get_uptime_from_proc() is None
 
 
 def test_get_uptime_info_exception_path(monkeypatch):
+    """
+    Test that _get_uptime_info handles exceptions raised by get_uptime_seconds gracefully.
+
+    This test simulates an exception in get_uptime_seconds and verifies that
+    _get_uptime_info returns None and the localized "unknown" string as expected.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
     # make get_uptime_seconds raise so _get_uptime_info hits exception handler
@@ -782,6 +1047,14 @@ def test_get_uptime_info_exception_path(monkeypatch):
 
 
 def test_execute_plugin_source_for_coverage():
+    """
+    Test that the plugin source file can be executed directly for coverage purposes,
+    and verify that key functions are available and behave as expected after execution.
+
+    This test runs the plugin module as a script to ensure all lines are covered by coverage tools,
+    then imports the module to check that the 'format_uptime' function exists and returns the
+    correct output for a sample input.
+    """
     import runpy
 
     # execute the plugin source directly to ensure coverage records its lines
@@ -795,6 +1068,18 @@ def test_execute_plugin_source_for_coverage():
 
 
 def test_get_settings_defaults_and_on_settings_save(monkeypatch):
+    """
+    Test the `get_settings_defaults` and `on_settings_save` methods of the OctoprintUptimePlugin.
+
+    This test verifies that:
+    - The default settings returned by `get_settings_defaults` are as expected.
+    - The `on_settings_save` method correctly calls its internal helper methods:
+        - `_validate_and_sanitize_settings`
+        - `_log_settings_save_data`
+        - `_call_base_on_settings_save`
+        - `_update_internal_state`
+    using monkeypatching to track their invocation.
+    """
     p = plugin.OctoprintUptimePlugin()
     defaults = p.get_settings_defaults()
     assert defaults["debug"] is False
@@ -804,12 +1089,35 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
     called = {}
 
     def fake_validate(data):
+        """
+        Simulates a validation function for testing purposes.
+
+        Args:
+            data: The input data to be "validated". This argument is not used in the function body.
+
+        Side Effects:
+            Sets the "validate" key in the 'called' dictionary to True to indicate
+            the function was called.
+        """
         called["validate"] = True
 
     def fake_log(data):
+        """
+        Mock logging function for testing purposes.
+
+        Args:
+            data: The data to be logged. This argument is not used in the function body.
+        """
         called["log"] = True
 
     def fake_call_base(data):
+        """
+        Simulates a call to the base function by setting the 'call_base' key in the
+        'called' dictionary to True.
+
+        Args:
+            data: Unused argument, present to match the expected function signature.
+        """
         called["call_base"] = True
 
     monkeypatch.setattr(p, "_validate_and_sanitize_settings", fake_validate)
@@ -829,7 +1137,14 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
 
 
 def test_reload_plugin_with_gettext_bind_failure(monkeypatch):
-    # simulate gettext.bindtextdomain raising OSError to hit the inner except
+    """
+    Test that reloading the plugin handles a failure in gettext.bindtextdomain gracefully.
+
+    This test simulates an OSError being raised by gettext.bindtextdomain to ensure that
+    the plugin's internationalization fallback logic is triggered correctly. It verifies
+    that the plugin's translation function (`plugin._`) remains callable even when
+    gettext binding fails, and ensures proper cleanup of the monkeypatched module.
+    """
     import types
 
     fake_gettext = types.ModuleType("gettext")
@@ -839,38 +1154,81 @@ def test_reload_plugin_with_gettext_bind_failure(monkeypatch):
 
     fake_gettext.bindtextdomain = bad_bind
     fake_gettext.textdomain = lambda name: None
-    # ensure gettext.gettext is present so outer try doesn't set fallback
     fake_gettext.gettext = lambda s: s
 
     monkeypatch.setitem(sys.modules, "gettext", fake_gettext)
-    # reload plugin to apply changes
     importlib.reload(plugin)
-    # plugin._ should still be callable
     assert callable(plugin._)
-    # cleanup
     monkeypatch.delitem(sys.modules, "gettext", raising=False)
     importlib.reload(plugin)
 
 
 def test_reload_plugin_without_octoprint(monkeypatch):
-    # simulate octoprint.plugin missing to exercise fallback base classes
+    """
+    Test that the plugin module correctly falls back to base classes when
+    OctoPrint is not available.
+
+    This test simulates the absence of the 'octoprint.plugin' and
+    'octoprint.access.permissions' modules
+    by removing them from 'sys.modules'.
+    It then reloads the plugin module to ensure that fallback base
+    classes ('SettingsPluginBase' and
+    'SimpleApiPluginBase') are defined.
+    Finally, it reloads the plugin module again to restore its original state.
+    """
     monkeypatch.delitem(sys.modules, "octoprint.plugin", raising=False)
     monkeypatch.delitem(sys.modules, "octoprint.access.permissions", raising=False)
     importlib.reload(plugin)
-    # fallback base class names should exist
     assert hasattr(plugin, "SettingsPluginBase")
     assert hasattr(plugin, "SimpleApiPluginBase")
-    # reload original state
     importlib.reload(plugin)
 
 
-# --- merged from tests/test_plugin_more.py ---
 def make_plugin():
+    """
+    Creates and returns an instance of OctoprintUptimePlugin with mocked settings and logger.
+
+    The returned plugin instance has:
+    - _settings: a mock Settings object with predefined configuration values and a get method.
+    - _logger: a mock Logger object that records debug, info, warning, and exception messages.
+
+    Returns:
+        OctoprintUptimePlugin: The plugin instance with mocked dependencies for testing.
+    """
     p = plugin.OctoprintUptimePlugin()
 
-    # minimal settings and logger used by helpers
     class Settings:
+        """
+        A simple settings container for test purposes.
+
+        Attributes:
+            _data (dict): Stores configuration values such as debug mode,
+                navbar visibility,
+                display format,
+                throttle seconds,
+                and poll interval.
+
+        Methods:
+            get(path): Retrieves the value for the specified configuration key.
+        """
+
         def __init__(self):
+            """
+            Initializes the instance with default configuration values.
+
+            Attributes:
+                _data (dict): A dictionary containing the following default settings:
+                    - "debug" (bool): Enables or disables debug mode
+                      (default: False).
+                    - "navbar_enabled" (bool): Shows or hides the navbar
+                      (default: True).
+                    - "display_format" (str): Format for display, e.g., "full"
+                      (default: "full").
+                    - "debug_throttle_seconds" (int): Throttle interval for debug mode
+                      in seconds (default: 60).
+                    - "poll_interval_seconds" (int): Interval for polling in seconds
+                      (default: 5).
+            """
             self._data = {
                 "debug": False,
                 "navbar_enabled": True,
@@ -880,22 +1238,83 @@ def make_plugin():
             }
 
         def get(self, path):
+            """
+            Retrieve the value associated with the first element of the given path
+            from the internal data store.
+
+            Args:
+                path (list): A list where the first element is used as the key
+                to look up the value.
+
+            Returns:
+                The value associated with the key, or None if the key does not exist.
+            """
             return self._data.get(path[0])
 
     class Logger:
+        """
+        Logger class for capturing log records during testing.
+
+        Attributes:
+            records (list): Stores tuples of log level and arguments.
+
+        Methods:
+            debug(*a, **k): Records a debug-level log entry.
+            info(*a, **k): Records an info-level log entry.
+            warning(*a, **k): Records a warning-level log entry.
+            exception(*a, **k): Records an exception-level log entry.
+        """
+
         def __init__(self):
+            """
+            Initializes a new instance of the class, setting up an empty list to store records.
+            """
             self.records = []
 
         def debug(self, *a, **k):
+            """
+            Appends a debug record to the records list.
+
+            Args:
+                *a: Positional arguments to include in the debug record.
+                **k: Keyword arguments (unused).
+
+            Note:
+                Only positional arguments are stored; keyword arguments are ignored.
+            """
             self.records.append(("debug", a))
 
         def info(self, *a, **k):
+            """
+            Appends an 'info' record with the provided positional arguments to the records list.
+
+            Args:
+                *a: Variable length positional arguments to be recorded.
+                **k: Variable length keyword arguments (currently unused).
+            """
             self.records.append(("info", a))
 
         def warning(self, *a, **k):
+            """
+            Appends a warning record to the records list.
+
+            Args:
+                *a: Positional arguments to be included in the warning record.
+                **k: Keyword arguments (unused).
+            """
             self.records.append(("warn", a))
 
         def exception(self, *a, **k):
+            """
+            Handle an exception event by appending the exception record to the records list.
+
+            Args:
+                *a: Positional arguments representing exception details.
+                **k: Keyword arguments (unused).
+
+            Note:
+                The keyword arguments are accepted for interface compatibility but are not used.
+            """
             self.records.append(("exc", a))
 
     p._settings = Settings()
@@ -904,8 +1323,14 @@ def make_plugin():
 
 
 def test_get_uptime_seconds_prefers_proc(monkeypatch):
+    """
+    Test that _get_uptime_seconds() prefers reading uptime from /proc/uptime when available.
+
+    This test simulates the presence of /proc/uptime and verifies that the method reads
+    the uptime value from it, returning the correct number of seconds and indicating the
+    source as "proc".
+    """
     p = make_plugin()
-    # simulate /proc/uptime present
     monkeypatch.setattr(os.path, "exists", lambda pth: True)
     mo = mock.mock_open(read_data="123.4 0")
     monkeypatch.setattr(builtins, "open", mo)
@@ -915,11 +1340,33 @@ def test_get_uptime_seconds_prefers_proc(monkeypatch):
 
 
 def test_get_uptime_seconds_uses_psutil_when_no_proc(monkeypatch):
+    """
+    Test that _get_uptime_from_psutil is used to retrieve uptime seconds
+    when _get_uptime_from_proc returns None.
+
+    This test monkeypatches the plugin to simulate the absence of /proc uptime
+    and verifies that psutil's boot_time is used instead.
+    """
     p = make_plugin()
     monkeypatch.setattr(p, "_get_uptime_from_proc", lambda: None)
 
     class FakePs:
+        """
+        A fake class to simulate a process statistics object for testing purposes.
+
+        Methods
+        -------
+        boot_time() : float
+            Returns a simulated system boot time, 500 seconds before the current time.
+        """
+
         def boot_time(self):
+            """
+            Returns the simulated system boot time as a timestamp.
+
+            Returns:
+                float: The current time minus 500 seconds, representing the boot time.
+            """
             return time.time() - 500
 
     monkeypatch.setattr(importlib, "import_module", lambda name: FakePs())
@@ -928,15 +1375,23 @@ def test_get_uptime_seconds_uses_psutil_when_no_proc(monkeypatch):
 
 
 def test_validate_and_sanitize_settings_handles_bad_shapes():
+    """
+    Test that the _validate_and_sanitize_settings method correctly handles invalid or
+    unexpected shapes of the settings input, such as None, empty lists, or improperly
+    structured dictionaries.
+    """
     p = make_plugin()
-    # not a dict for plugins
     p._validate_and_sanitize_settings(None)
     p._validate_and_sanitize_settings({"plugins": []})
-    # not a dict for uptime cfg
     p._validate_and_sanitize_settings({"plugins": {"octoprint_uptime": []}})
 
 
 def test_validate_and_sanitize_settings_sanitizes_values():
+    """
+    Test that _validate_and_sanitize_settings correctly sanitizes invalid or None values
+    in the plugin settings, setting 'debug_throttle_seconds' to 60 when None and
+    'poll_interval_seconds' to 5 when given an invalid value.
+    """
     p = make_plugin()
     data = {
         "plugins": {
@@ -953,21 +1408,38 @@ def test_validate_and_sanitize_settings_sanitizes_values():
 
 
 def test_log_settings_after_save_logs_change():
+    """
+    Test that changing the 'navbar_enabled' setting and saving logs an info message.
+
+    This test verifies that after toggling the 'navbar_enabled' setting in the plugin's settings,
+    the internal state is updated and the '_log_settings_after_save' method logs an info-level message.
+    """
     p = make_plugin()
-    # set internal state then modify navbar to trigger change log
     p._update_internal_state()
     prev = p._navbar_enabled
     p._settings._data["navbar_enabled"] = not prev
     p._update_internal_state()
     p._log_settings_after_save(prev)
-    # info records should exist
     assert any(r[0] == "info" for r in p._logger.records)
 
 
 def test_safe_update_internal_state_logs_warning_on_failure():
+    """
+    Test that _safe_update_internal_state logs a warning when
+    _update_internal_state raises an exception.
+
+    This test replaces the plugin's _update_internal_state method with a helper
+    function that raises a ValueError.
+    It then calls _safe_update_internal_state and asserts that a warning was
+    logged, indicating proper error handling.
+    """
     p = make_plugin()
 
     def bad_update():
+        """
+        A test helper function that raises a ValueError with the message "boom".
+        Intended to simulate a failing update operation for testing error handling.
+        """
         raise ValueError("boom")
 
     p._update_internal_state = bad_update
@@ -976,8 +1448,14 @@ def test_safe_update_internal_state_logs_warning_on_failure():
 
 
 def test_get_uptime_info_handles_custom_getter():
+    """
+    Test that _get_uptime_info uses a custom uptime getter if provided.
+
+    This test replaces the plugin's get_uptime_seconds method with a lambda that returns 42,
+    then verifies that _get_uptime_info returns the correct uptime value and updates the
+    _last_uptime_source attribute to "custom".
+    """
     p = make_plugin()
-    # custom single-value return (not tuple) should mark source custom
     p.get_uptime_seconds = lambda: 42
     seconds, full, dhm, dh, d = p._get_uptime_info()
     assert seconds == 42
@@ -985,6 +1463,14 @@ def test_get_uptime_info_handles_custom_getter():
 
 
 def test_get_uptime_info_none_returns_unknown():
+    """
+    Test that _get_uptime_info returns 'unknown' and None values when
+    get_uptime_seconds returns None.
+
+    This test verifies that when the plugin's get_uptime_seconds method returns None,
+    the _get_uptime_info method correctly returns None for seconds and the localized
+    string 'unknown' for the full uptime description.
+    """
     p = make_plugin()
     p.get_uptime_seconds = lambda: None
     seconds, full, dhm, dh, d = p._get_uptime_info()
@@ -993,10 +1479,20 @@ def test_get_uptime_info_none_returns_unknown():
 
 
 def test_handle_permission_check_aborts_and_handles_abort_exception(monkeypatch):
+    """
+    Test that _handle_permission_check returns an error dictionary with a "Forbidden" message
+    when permission check fails and _abort_forbidden raises an exception.
+    """
     p = make_plugin()
     p._check_permissions = lambda: False
 
     def bad_abort():
+        """
+        Raises a RuntimeError with the message "nope".
+
+        This function is intended to simulate an abort or failure scenario
+        by unconditionally raising a RuntimeError when called.
+        """
         raise RuntimeError("nope")
 
     p._abort_forbidden = bad_abort
@@ -1005,9 +1501,17 @@ def test_handle_permission_check_aborts_and_handles_abort_exception(monkeypatch)
 
 
 def test_handle_permission_check_check_raises_and_abort_fallback(monkeypatch):
+    """
+    Test that _handle_permission_check correctly handles exceptions raised by _check_permissions
+    by calling _abort_forbidden as a fallback and returning its result.
+    """
     p = make_plugin()
 
     def bad_check():
+        """
+        Raises:
+            AttributeError: Always raised with the message "boom" to indicate an error condition.
+        """
         raise AttributeError("boom")
 
     p._check_permissions = bad_check
@@ -1018,27 +1522,33 @@ def test_handle_permission_check_check_raises_and_abort_fallback(monkeypatch):
 
 
 def test_abort_forbidden_returns_dict_when_no_flask():
+    """
+    Test that the _abort_forbidden method returns a dictionary with an error message
+    when Flask is not available,
+    and raises a Forbidden exception with code 403
+    when Flask is present.
+    """
     p = make_plugin()
-    # global _flask is likely None in test environment
     try:
         res = p._abort_forbidden()
     except Exception as e:
-        # if flask/werkzeug is present, abort may raise a HTTP exception
         try:
             from werkzeug.exceptions import Forbidden
 
             assert isinstance(e, Forbidden)
             assert getattr(e, "code", None) == 403
         except Exception:
-            # if werkzeug not importable, fallback to checking exception type only
             assert hasattr(e, "args")
     else:
         assert isinstance(res, dict) and res.get("error") == plugin._("Forbidden")
 
 
 def test__get_uptime_seconds_prefers_psutil_branch():
+    """
+    Test that _get_uptime_seconds() prefers the psutil-based method for retrieving uptime
+    when both psutil and proc-based methods are available, and returns the correct source and value.
+    """
     p = plugin.OctoprintUptimePlugin()
-    # force proc to return None and psutil to return a value
     p._get_uptime_from_proc = lambda: None
     p._get_uptime_from_psutil = lambda: 123.0
     sec, src = p._get_uptime_seconds()
@@ -1047,35 +1557,73 @@ def test__get_uptime_seconds_prefers_psutil_branch():
 
 
 def test__log_settings_after_save_handles_info_exceptions():
+    """
+    Test that the _log_settings_after_save method handles exceptions raised by the logger's
+    info method.
+
+    This test replaces the plugin's logger with a custom BadLogger that raises a TypeError
+    when its info method is called.
+    It then sets various plugin attributes and calls _log_settings_after_save to verify
+    that the method does not crash when the logger fails, ensuring robust exception
+    handling during logging.
+
+    TypeError: If the exception is not properly handled within _log_settings_after_save.
+    """
     p = plugin.OctoprintUptimePlugin()
 
     class BadLogger:
+        """
+        A logger class that raises a TypeError when the info method is called.
+
+        Methods
+        -------
+        info(*a, **k)
+            Raises a TypeError with the message "bad" when called.
+        """
+
         def info(self, *a, **k):
+            """
+            Raises a TypeError with the message "bad" when called.
+
+            Args:
+                *a: Variable length argument list.
+                **k: Arbitrary keyword arguments.
+
+            Raises:
+                TypeError: Always raised with the message "bad".
+            """
             raise TypeError("bad")
 
     p._logger = BadLogger()
-    # set attributes used in message formatting
     p._debug_enabled = True
     p._navbar_enabled = True
     p._display_format = "f"
     p._debug_throttle_seconds = 1
-    # should not raise even if logger.info raises
     p._log_settings_after_save(prev_navbar=False)
 
 
 def test__log_debug_outer_exception_handled(monkeypatch):
+    """
+    Test that the _log_debug method handles exceptions raised due to invalid
+    _debug_throttle_seconds values gracefully,
+    without propagating the exception, when debug logging is enabled.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
     p._debug_enabled = True
     p._last_debug_time = 0
-    # set throttle to a non-comparable type to raise in comparison
     p._debug_throttle_seconds = "bad"
     monkeypatch.setattr(time, "time", lambda: 1000)
-    # should not raise
     p._log_debug("x")
 
 
 def test_on_api_get_returns_early_when_permission_denied():
+    """
+    Test that on_api_get returns early with an error response when permission is denied.
+
+    This test mocks the _handle_permission_check method to simulate a permission denial,
+    and asserts that on_api_get returns the expected error dictionary.
+    """
     p = plugin.OctoprintUptimePlugin()
     p._handle_permission_check = lambda: {"error": "nope"}
     res = p.on_api_get()
@@ -1083,17 +1631,37 @@ def test_on_api_get_returns_early_when_permission_denied():
 
 
 def test__check_permissions_default_true():
+    """
+    Test that the _check_permissions method of OctoprintUptimePlugin returns True by default.
+    """
     p = plugin.OctoprintUptimePlugin()
     assert p._check_permissions() is True
 
 
 def test__get_uptime_info_uses_internal_getter():
+    """
+    Test that _get_uptime_info uses the internal _get_uptime_seconds method
+    when the public get_uptime_seconds method is not present.
+
+    This test ensures that:
+    - The plugin falls back to its internal uptime getter if the external one is missing.
+    - The internal getter correctly sets the last uptime source.
+    - The returned uptime value and source are as expected.
+    """
     p = plugin.OctoprintUptimePlugin()
-    # ensure get_uptime_seconds is not present so it uses internal _get_uptime_seconds
     if hasattr(p, "get_uptime_seconds"):
         delattr(p, "get_uptime_seconds")
 
     def internal_get():
+        """
+        Simulates retrieving the system uptime from the "proc" source.
+
+        Sets the plugin's last uptime source to "proc" and returns a tuple containing
+        a fixed uptime value (321) and the source string "proc".
+
+        Returns:
+            tuple: A tuple containing the uptime value (int) and the source (str).
+        """
         p._last_uptime_source = "proc"
         return 321, "proc"
 
@@ -1104,12 +1672,31 @@ def test__get_uptime_info_uses_internal_getter():
 
 
 def test__get_uptime_info_handles_logger_exception(monkeypatch):
+    """
+    Test that _get_uptime_info handles exceptions raised both by get_uptime_seconds
+    and by the logger,
+    returning None and the localized 'unknown' string when both fail.
+    """
     p = plugin.OctoprintUptimePlugin()
-    # make get_uptime_seconds raise to hit outer except
     p.get_uptime_seconds = lambda: (_ for _ in ()).throw(TypeError("boom"))
 
     class BadLogger:
+        """
+        A logger class that raises a TypeError when the exception method is called.
+        Intended for testing error handling when logging fails.
+        """
+
         def exception(self, *a, **k):
+            """
+            Raises a TypeError with the message 'badlog'.
+
+            Args:
+                *a: Variable length argument list.
+                **k: Arbitrary keyword arguments.
+
+            Raises:
+                TypeError: Always raised with the message 'badlog'.
+            """
             raise TypeError("badlog")
 
     p._logger = BadLogger()
