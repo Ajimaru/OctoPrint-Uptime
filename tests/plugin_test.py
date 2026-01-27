@@ -186,7 +186,7 @@ def test_validate_and_sanitize_settings_clamping():
     assert cfg["poll_interval_seconds"] == 1
 
 
-def test_log_settings_save_data_and_call_base_on_settings_save(monkeypatch):
+def test_log_settings_save_data_and_call_base_on_settings_save():
     """
     Test that OctoprintUptimePlugin correctly logs settings save data and safely calls the base
     on_settings_save method, ensuring exceptions from the base method are swallowed and do not
@@ -197,6 +197,7 @@ def test_log_settings_save_data_and_call_base_on_settings_save(monkeypatch):
     data = {"x": 1}
     p._log_settings_save_data(data)
 
+    monkeypatch = pytest.MonkeyPatch()
     monkeypatch.setattr(
         plugin.SettingsPluginBase,
         "on_settings_save",
@@ -204,9 +205,10 @@ def test_log_settings_save_data_and_call_base_on_settings_save(monkeypatch):
         raising=False,
     )
     p._call_base_on_settings_save({})
+    monkeypatch.undo()
 
 
-def test_update_internal_state_and_get_api_settings_and_logging(monkeypatch):
+def test_update_internal_state_and_get_api_settings_and_logging():
     """
     Test that OctoprintUptimePlugin correctly updates its internal state from settings,
     retrieves API settings, and clamps the poll interval to the allowed maximum.
@@ -422,7 +424,7 @@ def test_hook_inspection_and_safe_invoke(monkeypatch):
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
 
-    def foo():
+    def no_arg_func():
         """
         Returns the integer 1.
 
@@ -431,7 +433,7 @@ def test_hook_inspection_and_safe_invoke(monkeypatch):
         """
         return 1
 
-    def bar(x):
+    def identity(x):
         """
         Returns the input value unchanged.
 
@@ -456,8 +458,8 @@ def test_hook_inspection_and_safe_invoke(monkeypatch):
         """
         return a + b
 
-    assert p._get_hook_positional_param_count(foo) == 0
-    assert p._get_hook_positional_param_count(bar) == 1
+    assert p._get_hook_positional_param_count(no_arg_func) == 0
+    assert p._get_hook_positional_param_count(identity) == 1
     assert p._get_hook_positional_param_count(two) == 2
 
     monkeypatch.setattr(
@@ -465,7 +467,7 @@ def test_hook_inspection_and_safe_invoke(monkeypatch):
     )
     p._logger = FakeLogger()
 
-    assert p._get_hook_positional_param_count(foo) is None
+    assert p._get_hook_positional_param_count(no_arg_func) is None
 
     def bad(one):
         """
@@ -738,7 +740,7 @@ def test_handle_permission_check_abort_raises(monkeypatch):
     assert res and isinstance(res, dict)
 
 
-def test_get_api_settings_exceptions(monkeypatch):
+def test_get_api_settings_exceptions():
     """
     Test that _get_api_settings handles exceptions when accessing settings,
     returning default values when a ValueError is raised by the settings object.
@@ -911,7 +913,7 @@ def test_fallback_uptime_response_handles_exceptions(monkeypatch):
     assert out["uptime"] == plugin._("unknown") and out["uptime_available"] is False
 
 
-def test_safe_update_internal_state_logs_warning(monkeypatch):
+def test_safe_update_internal_state_logs_warning():
     """
     Test that _safe_update_internal_state logs a warning when
     _update_internal_state raises an exception.
@@ -964,11 +966,10 @@ def test_log_settings_save_data_handles_logger_errors():
             raise ValueError("boom")
 
     p._logger = BadLogger()
-    # should not raise
     p._log_settings_save_data({"x": 1})
 
 
-def test_log_debug_inner_exception(monkeypatch):
+def test_log_debug_inner_exception():
     """
     Test that the _log_debug method handles exceptions raised by the logger's debug method
     without propagating them, specifically when a TypeError is raised internally.
@@ -1040,7 +1041,6 @@ def test_get_uptime_info_exception_path(monkeypatch):
     """
     p = plugin.OctoprintUptimePlugin()
     p._logger = FakeLogger()
-    # make get_uptime_seconds raise so _get_uptime_info hits exception handler
     p.get_uptime_seconds = lambda: (_ for _ in ()).throw(TypeError("boom"))
     s, full, dhm, dh, d = p._get_uptime_info()
     assert s is None and full == plugin._("unknown")
@@ -1057,9 +1057,8 @@ def test_execute_plugin_source_for_coverage():
     """
     import runpy
 
-    # execute the plugin source directly to ensure coverage records its lines
     runpy.run_path(plugin.__file__, run_name="__main__")
-    # after exec, ensure functions are callable
+
     import importlib
 
     mod = importlib.import_module("octoprint_uptime.plugin")
@@ -1085,7 +1084,6 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
     assert defaults["debug"] is False
     assert defaults["navbar_enabled"] is True
 
-    # ensure on_settings_save calls internal helpers
     called = {}
 
     def fake_validate(data):
@@ -1478,7 +1476,7 @@ def test_get_uptime_info_none_returns_unknown():
     assert full == plugin._("unknown")
 
 
-def test_handle_permission_check_aborts_and_handles_abort_exception(monkeypatch):
+def test_handle_permission_check_aborts_and_handles_abort_exception():
     """
     Test that _handle_permission_check returns an error dictionary with a "Forbidden" message
     when permission check fails and _abort_forbidden raises an exception.
@@ -1500,7 +1498,7 @@ def test_handle_permission_check_aborts_and_handles_abort_exception(monkeypatch)
     assert isinstance(res, dict) and res.get("error") == plugin._("Forbidden")
 
 
-def test_handle_permission_check_check_raises_and_abort_fallback(monkeypatch):
+def test_handle_permission_check_check_raises_and_abort_fallback():
     """
     Test that _handle_permission_check correctly handles exceptions raised by _check_permissions
     by calling _abort_forbidden as a fallback and returning its result.
@@ -1515,7 +1513,6 @@ def test_handle_permission_check_check_raises_and_abort_fallback(monkeypatch):
         raise AttributeError("boom")
 
     p._check_permissions = bad_check
-    # abort returns dict normally
     p._abort_forbidden = lambda: {"error": "ok"}
     res = p._handle_permission_check()
     assert res == {"error": "ok"}
@@ -1671,7 +1668,7 @@ def test__get_uptime_info_uses_internal_getter():
     assert p._last_uptime_source == "proc"
 
 
-def test__get_uptime_info_handles_logger_exception(monkeypatch):
+def test__get_uptime_info_handles_logger_exception():
     """
     Test that _get_uptime_info handles exceptions raised both by get_uptime_seconds
     and by the logger,
