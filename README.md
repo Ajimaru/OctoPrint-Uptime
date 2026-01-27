@@ -10,14 +10,11 @@
 [![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
 [![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
 ![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)
-![Maintenance](https://img.shields.io/maintenance/yes/2026)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls)
+![Made with Love](https://img.shields.io/badge/made_with-❤️-ff69b4)
 
 ![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime?style=social)
 ![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime?style=social)
 ![Watchers](https://img.shields.io/github/watchers/Ajimaru/OctoPrint-Uptime?style=social)
-
----
 
 ### Effortlessly track your OctoPrint server's uptime, right from your navbar
 
@@ -43,15 +40,19 @@
 2. Navigate to **Settings** → **Plugin Manager**
 3. Click **Get More...**
 4. Click **Install from URL** and enter:
-   `github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip`
-5. Click **Install**
-6. Restart OctoPrint
+
+```url
+github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip
+```
+
+6. Click **Install**
+7. Restart OctoPrint
 
 ### Manual Installation
 
 <!-- markdownlint-disable MD033 -->
 <details>
-<summary>Manual pip install (advanced users)</summary>
+<summary>Manual pip install</summary>
 
 ```bash
 pip install https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip
@@ -60,22 +61,6 @@ pip install https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download
 The `releases/latest` URL always points to the newest stable release.
 
 </details>
-
-<details>
-<summary>Dependencies</summary>
-
-Uptime is retrieved from `/proc/uptime` on Linux or via the Python package `psutil` when available. On systems without `/proc` (non-Linux) or when OctoPrint runs in a virtualenv that does not include `psutil`, uptime may not be available.
-
-To add `psutil` to an OctoPrint virtualenv, activate the environment and install:
-
-```bash
-venv/bin/pip install psutil
-```
-
-If OctoPrint is managed by a system package or Docker image, follow your environment's package management or image update process to ensure `psutil` is installed in the runtime environment.
-
-</details>
-
 <!-- markdownlint-enable MD033 -->
 
 ## How It Works
@@ -84,23 +69,15 @@ The navbar widget polls the plugin API and shows a formatted uptime string. The 
 
 ### Note about uptime retrieval
 
-As of this release the plugin determines uptime using either `/proc/uptime` (on Linux) or the Python package `psutil` when available.
-If uptime cannot be determined the plugin API returns `uptime_available: false` and a human‑readable `uptime_note` (for example, suggesting `pip install psutil` in the OctoPrint virtualenv).
+The plugin determines system uptime using either `/proc/uptime` on Linux systems or the Python library `psutil` when available. If neither method can provide uptime, the plugin API returns `uptime_available: false` along with a human‑readable `uptime_note` (suggesting installing `psutil` in the OctoPrint virtual environment).
 
-1. **API endpoint (server)**: `/api/plugin/octoprint_uptime` (requires OctoPrint API key / auth)
-
-Note for frontend code: when calling the plugin from JavaScript use the OctoPrint API helper and pass the plugin identifier only — for example `OctoPrint.simpleApiGet('octoprint_uptime')`. Do not prefix the plugin id with `plugin/` when using the `OctoPrint.simpleApiGet` helper, as the helper already scopes requests to `/api/plugin/`.
-
-<!-- markdownlint-disable MD029 -->
-
-2. **Settings**: `Polling interval`, `Display format`, `Show in navbar` (off by default)
-<!-- markdownlint-enable MD029 -->
-
-Quick curl example:
+To add psutil to an OctoPrint virtualenv, activate the environment and run:
 
 ```bash
-curl -s -H "X-Api-Key: $API_KEY" http://localhost:5000/api/plugin/octoprint_uptime | jq
+pip install psutil
 ```
+
+For system‑wide OctoPrint installations or Docker images, ensure that psutil is installed through the appropriate package manager or image update process.
 
 ## Configuration
 
@@ -114,9 +91,9 @@ Configure the plugin in **Settings** → **OctoPrint Uptime**:
 
 - `navbar_enabled`: `true` – Show uptime in the OctoPrint navbar
 - `display_format`: `full` – Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`)
-- `poll_interval_seconds`: `5` – Polling interval in seconds (validated and clamped between 1–120)
+- `poll_interval_seconds`: `5` – Polling interval in seconds (validated and clamped between 1–120s)
 - `debug_logging`: `false` – Enable debug logging for troubleshooting
-- `debug_throttle`: `60` – Throttle debug logs to reduce log spam
+- `debug_throttle`: `60` – Throttle debug logs to reduce log spam (validated and clamped between 1–120s)
 
 </details>
 <!-- markdownlint-enable MD033 -->
@@ -132,9 +109,14 @@ A: You can change the display format in the plugin settings under `Display forma
 
 **Q: How do I access the uptime API?**
 A: The uptime API is available at `/api/plugin/octoprint_uptime`. You need to include your OctoPrint API key in the request headers for authentication.
+   Quick curl example:
+
+```bash
+curl -s -H "X-Api-Key: $API_KEY" http://localhost:5000/api/plugin/octoprint_uptime | jq
+```
 
 **Q: Witch OSes are supported?**
-A: Linux is tested and supported. Other OSes may work but are not officially supported.
+A: Linux is tested and supported. Other OSes may work but are not officially supported. See details in #how-it-works.
 
 ## Contributing
 
@@ -149,32 +131,6 @@ Contributions welcome! Please:
 7. Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 Note: `main` is protected on GitHub, so changes go through PRs.
-
-[![Open Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aopen)
-[![Closed Issues](https://img.shields.io/github/issues-closed-raw/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aclosed)
-[![Open PRs](https://img.shields.io/github/issues-pr/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aopen)
-[![Closed PRs](https://img.shields.io/github/issues-pr-closed/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aclosed)
-
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Ajimaru/OctoPrint-Uptime/main.svg)](https://results.pre-commit.ci/latest/github/Ajimaru/OctoPrint-Uptime/main)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
-[![Code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-
-![Commit Activity (year)](https://img.shields.io/github/commit-activity/y/Ajimaru/OctoPrint-Uptime)
-![Last Commit](https://img.shields.io/github/last-commit/Ajimaru/OctoPrint-Uptime)
-
-![Build Status](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/ci.yml)
-[![Coverage](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/graph/badge.svg?branch=main)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
-[![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![CI](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
-[![i18n](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
-[![Docs workflow](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml/badge.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml)
-![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime)
-
-![Languages Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)
-![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
 
 ## License
 
@@ -192,6 +148,59 @@ Note: For logs and troubleshooting, enable "debug logging" in the plugin setting
 - **Original Request**: [Issue 4355](https://github.com/OctoPrint/OctoPrint/issues/4355) by [@Oxize](https://github.com/Oxize) (2021)
 - **Development**: Built following [OctoPrint Plugin Guidelines](https://docs.octoprint.org/en/main/plugins/index.html)
 - **Contributors**: See [AUTHORS.md](AUTHORS.md)
+
+## 100% Badge Coverage
+
+### 🏗️ 1. Build & Test Status
+
+[![CI](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
+[![i18n](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
+![Lint](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/lint.yml/badge.svg)
+[![Docs workflow](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml/badge.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml)
+
+### 🧪 2. Code Quality & Formatting
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Ajimaru/OctoPrint-Uptime/main.svg)](https://results.pre-commit.ci/latest/github/Ajimaru/OctoPrint-Uptime/main)
+![Security](https://img.shields.io/badge/security-policy-blue)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime)
+[![Coverage](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/graph/badge.svg?branch=main)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
+![Coverage Diff](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/branch/main/graph/badge.svg?flag=patch)
+
+### 🔄 3. CI/CD & Release
+
+![SemVer](https://img.shields.io/badge/semver-2.0.0-blue)
+![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime)
+[![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
+![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)
+![Pre‑Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?include_prereleases&label=pre-release)
+[![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://python.org)
+[![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
+![Maintenance](https://img.shields.io/maintenance/yes/2026)
+
+### 📊 4. Repository Activity
+
+[![Open Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aopen)
+[![Closed Issues](https://img.shields.io/github/issues-closed-raw/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aclosed)
+[![Open PRs](https://img.shields.io/github/issues-pr/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aopen)
+[![Closed PRs](https://img.shields.io/github/issues-pr-closed/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aclosed)
+![Last Commit](https://img.shields.io/github/last-commit/Ajimaru/OctoPrint-Uptime)
+![Commit Activity (year)](https://img.shields.io/github/commit-activity/y/Ajimaru/OctoPrint-Uptime)
+![Contributors](https://img.shields.io/github/contributors/Ajimaru/OctoPrint-Uptime)
+
+### 🧾 5. Metadata
+
+![Code Size](https://img.shields.io/github/languages/code-size/Ajimaru/OctoPrint-Uptime)
+![Security](https://img.shields.io/badge/security-policy-blue)
+![Snyk](https://img.shields.io/badge/security-snyk-blueviolet)
+![Languages Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)
+![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
+[![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/ajitroids#-license)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls)
 
 ---
 
