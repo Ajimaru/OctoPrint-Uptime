@@ -157,6 +157,7 @@ Note: For logs and troubleshooting, enable "debug logging" in the plugin setting
 [![i18n](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
 ![Lint](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/lint.yml/badge.svg)
 [![Docs workflow](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml/badge.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml)
+[![Bandit SARIF](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/bandit-sarif.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/bandit-sarif.yml)
 
 ### 🧪 2. Code Quality & Formatting
 
