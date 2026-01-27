@@ -84,8 +84,6 @@ jobs:
           CODACY_PROJECT_NAME: ${{ vars.CODACY_PROJECT_NAME }}
         continue-on-error: true
         run: |
-          # Download and run the Codacy installer to report coverage in one step
-          # Pass the CODACY_API_TOKEN so the installer can upload coverage.xml
           bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml -t "$CODACY_API_TOKEN"
 
       - name: Run pre-commit
@@ -115,8 +113,6 @@ jobs:
       - name: Install OctoPrint
         run: |
           python -m pip install --upgrade pip
-          # Note: OctoPrint 1.12.x might not be available on PyPI yet.
-          # For install-smoke testing, use the latest available stable series.
           python -m pip install "OctoPrint>=1.11.0,<2"
 
       - name: Install plugin
