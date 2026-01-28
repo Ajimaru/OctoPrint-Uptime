@@ -111,3 +111,4 @@ for f in "${patterns[@]}"; do
     echo "removed $f"
   fi
 done
+

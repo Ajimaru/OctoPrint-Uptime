@@ -54,10 +54,21 @@ else
     echo "Virtual environment already exists: $VENV_DIR"
 fi
 
-# Activate virtual environment
+
+# Activate virtual environment (cross-platform)
 echo "Activating virtual environment..."
-# shellcheck disable=SC1091
-source "$VENV_DIR/bin/activate"
+if [ -f "$VENV_DIR/bin/activate" ]; then
+    # Unix/Linux/WSL
+    # shellcheck disable=SC1091
+    source "$VENV_DIR/bin/activate"
+elif [ -f "$VENV_DIR/Scripts/activate" ]; then
+    # Windows (Git Bash, CMD, PowerShell)
+    # shellcheck disable=SC1091
+    source "$VENV_DIR/Scripts/activate"
+else
+    echo "ERROR: Could not find virtualenv activation script."
+    exit 1
+fi
 
 # Upgrade pip
 echo "Upgrading pip..."
@@ -276,3 +287,4 @@ echo "  2. Run tests: pytest"
 echo "  3. Run checks (if installed): pre-commit run --all-files"
 echo ""
 echo "See CONTRIBUTING.md for more information."
+

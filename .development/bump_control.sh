@@ -546,3 +546,4 @@ if [[ -z "$BUMP_TYPE" ]]; then
         run_post_commit_build
     fi
 fi
+

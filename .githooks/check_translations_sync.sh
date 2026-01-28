@@ -54,3 +54,4 @@ printf '%s\n' "To update the real PO files run:"
 printf '%s\n' "  ./.development/compile_translations.sh update"
 printf '%s\n' "Then review and commit the updated PO (and compiled MO if you keep them)."
 exit 1
+

@@ -38,3 +38,4 @@ else
     # Use npx fallback; --yes to avoid prompts
     exec npx --yes prettier --write "$@"
 fi
+
