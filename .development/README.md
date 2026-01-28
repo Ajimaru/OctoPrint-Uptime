@@ -1,3 +1,54 @@
+# Development helper scripts
+
+This folder contains repository helper scripts used for development tasks
+such as creating a virtual environment, running local checks, generating
+documentation, and building distribution artifacts.
+
+Windows workflow
+----------------
+
+The helper scripts are implemented as POSIX shell scripts and expect a Bash
+compatible environment. To make them convenient on native Windows, the
+repository provides the following support:
+
+- `.development/win-bash-wrapper.sh` — a small launcher that attempts to
+  locate `bash.exe` (Git Bash) and re-execs the target script under that
+  interpreter.
+- `.development/install-git-for-windows.ps1` — a PowerShell helper that opens
+  the Git for Windows download page.
+
+Usage notes for Windows developers:
+
+- Preferred: install Git for Windows (Git Bash) or use WSL, then invoke
+  helper scripts from Git Bash. Example:
+
+```bash
+# run the repository setup helper inside Git Bash
+.development/setup_dev.sh
+```
+
+- If you run a helper script from PowerShell/CMD and Git Bash is available on
+  PATH, the script will automatically re-exec under Bash. If Bash is not
+  available, `setup_dev.sh` will prompt to open the download page.
+
+- If you prefer native PowerShell helpers, consider adding `.ps1` helpers
+  alongside the canonical shell scripts; the repository maintains the shell
+  scripts as the authoritative implementation.
+
+Troubleshooting
+---------------
+
+- If a script reports a missing command (e.g. `sed`, `awk`, `ss`), run it
+  from Git Bash or install the required utilities in WSL.
+- If hooks fail on commit from Windows, run the hook command manually inside
+  Git Bash to inspect the output, e.g. `pre-commit run --all-files`.
+
+Contact
+-------
+
+If you run into issues with the Windows workflow, open an issue describing
+the environment and the failing command.
+
 # Development scripts
 
 This folder contains helper scripts for local development.

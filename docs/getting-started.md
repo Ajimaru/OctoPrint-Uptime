@@ -25,6 +25,15 @@ mkdocs serve
 
 ## Developer utilities
 
+### Windows
+
+The repository helper scripts are POSIX shell scripts and expect a Bash
+environment. On Windows prefer running the helper scripts from Git Bash or
+WSL. If Git Bash is not installed, `.development/setup_dev.sh` will offer to
+open the Git for Windows download page. See `.development/README.md` for
+details.
+
+
 When working on translations during development, use the repository helper which wraps `pybabel` and copies compiled catalogs into the package for runtime testing.
 
 From the repository root:

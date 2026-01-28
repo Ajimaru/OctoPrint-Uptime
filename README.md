@@ -12,10 +12,6 @@
 ![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)
 ![Made with Love](https://img.shields.io/badge/made_with-❤️-ff69b4)
 
-![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime?style=social)
-![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime?style=social)
-![Watchers](https://img.shields.io/github/watchers/Ajimaru/OctoPrint-Uptime?style=social)
-
 ### Effortlessly track your OctoPrint server's uptime, right from your navbar
 
 <!-- markdownlint-disable MD033-->
@@ -120,17 +116,31 @@ A: Linux is tested and supported. Other OSes may work but are not officially sup
 
 ## Contributing
 
-Contributions welcome! Please:
+<!-- markdownlint-disable MD033 -->
+<details>
+<summary>Contributions welcome! Please:</summary>
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b wip/my-feature`
 3. Write tests for new features
 4. Submit a pull request
 5. For local development scripts (setup, restart helper, post-commit build hook, performance monitor), see [.development/README.md](.development/README.md).
+
+Windows notes: The repository's helper scripts and git hooks are POSIX shell
+scripts and are intended to run under Bash. On native Windows systems the
+repository provides an automatic re-exec wrapper that will attempt to locate
+Git Bash and run the invoked script under that interpreter. If Git Bash is
+not available, the setup helper will offer to open the Git for Windows
+download page. For native PowerShell workflows consider using WSL or Git
+Bash when running repository helper scripts.
+
 6. See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 7. Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 Note: `main` is protected on GitHub, so changes go through PRs.
+
+</details>
+<!-- markdownlint-enable MD033 -->
 
 ## License
 
@@ -204,5 +214,7 @@ Note: For logs and troubleshooting, enable "debug logging" in the plugin setting
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls)
 
 ---
+
+![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime?style=social)![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime?style=social)![Watchers](https://img.shields.io/github/watchers/Ajimaru/OctoPrint-Uptime?style=social)
 
 **Like this plugin?** ⭐ Star the repo and share it with the OctoPrint community!

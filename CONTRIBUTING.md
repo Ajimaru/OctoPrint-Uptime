@@ -86,6 +86,29 @@ Use `-h` or `--help` to see usage:
 
 If you use the helper scripts, see `.development/README.md`.
 
+## Windows development
+
+This repository's helper scripts and git hooks are authored as POSIX shell
+scripts and are expected to run under Bash. On native Windows systems the
+repository provides an automatic re-exec wrapper that will attempt to locate
+Git Bash (`bash.exe`) and re-run the invoked script under that interpreter.
+
+Guidance for Windows users:
+
+- Preferred: use Git Bash (installed via Git for Windows) or WSL to run the
+  repository helper scripts and hooks.
+- If `bash` is not available, `.development/setup_dev.sh` will offer to open
+  the Git for Windows download page (interactive). A PowerShell helper exists
+  at `.development/install-git-for-windows.ps1` to assist.
+- Hooks and scripts are modified to re-exec under Git Bash when available; if
+  you must run scripts from PowerShell or CMD, explicitly invoke them via
+  `bash .development/setup_dev.sh`.
+
+If you are contributing from Windows and prefer native PowerShell scripts,
+consider adding Windows-specific `.ps1` helpers rather than editing the
+POSIX scripts directly; the repository keeps the shell scripts as the
+canonical implementation.
+
 ## Notes
 
 - The helper scripts target a Python 3.10+ development environment. The plugin runtime supports Python 3.10+.
