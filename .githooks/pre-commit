@@ -126,9 +126,16 @@ maybe_run_autoupdate() {
 # Try running autoupdate (no-op unless PRECOMMIT_AUTOUPDATE=1)
 maybe_run_autoupdate
 
-if run_pre_commit_from_venv "./venv"; then
+run_pre_commit_from_venv "./venv"
+rc=$?
+if [[ $rc -eq 0 ]]; then
     exit 0
 else
-    echo "ERROR: pre-commit not available in ./venv. Run: .development/setup_dev.sh" >&2
-    exit 1
+    if [[ -x "./venv/bin/pre-commit" ]]; then
+        echo "ERROR: pre-commit ran but exited with code $rc. See log: $LOGFILE" >&2
+        exit $rc
+    else
+        echo "ERROR: pre-commit not available in ./venv. Run: .development/setup_dev.sh" >&2
+        exit 1
+    fi
 fi

@@ -9,7 +9,11 @@
 # behave as a launcher: first argument should be the target script path.
 if [ -n "${BASH_VERSION-}" ]; then
     # Running under bash already — return when sourced, or exit when executed.
-    return 0 2>/dev/null || exit 0
+    if [ "${BASH_SOURCE[0]}" != "$0" ]; then
+        return 0
+    else
+        exit 0
+    fi
 fi
 
 # Determine target script (first argument) and remaining args

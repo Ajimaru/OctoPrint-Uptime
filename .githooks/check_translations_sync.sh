@@ -42,8 +42,7 @@ fi
 echo "Checking translations against POT (no changes will be made to working tree)..."
 
 tmpdir=$(mktemp -d)
-cleanup() { rm -rf "$tmpdir"; }
-trap cleanup EXIT
+trap 'rm -rf "$tmpdir"' EXIT
 
 # copy translations to temporary location
 cp -a translations "$tmpdir"/translations
@@ -67,4 +66,3 @@ printf '%s\n' "To update the real PO files run:"
 printf '%s\n' "  ./.development/compile_translations.sh update"
 printf '%s\n' "Then review and commit the updated PO (and compiled MO if you keep them)."
 exit 1
-
