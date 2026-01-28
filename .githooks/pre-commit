@@ -4,6 +4,17 @@
 # This is idempotent: if already running under Bash it does nothing.
 _SCRIPT_DIR_HINT="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd || dirname "$0")"
 REPO_ROOT="$(cd "$_SCRIPT_DIR_HINT/.." >/dev/null 2>&1 && pwd || echo "$_SCRIPT_DIR_HINT")"
+if cd "$(dirname "$0")" >/dev/null 2>&1; then
+    _SCRIPT_DIR_HINT="$(pwd)"
+else
+    _SCRIPT_DIR_HINT="$(dirname "$0")"
+fi
+
+if cd "$_SCRIPT_DIR_HINT/.." >/dev/null 2>&1; then
+    REPO_ROOT="$(pwd)"
+else
+    REPO_ROOT="$_SCRIPT_DIR_HINT"
+fi
 WRAPPER="$REPO_ROOT/.development/win-bash-wrapper.sh"
 if [ -z "${BASH_VERSION-}" ]; then
     if [ -x "$WRAPPER" ]; then
