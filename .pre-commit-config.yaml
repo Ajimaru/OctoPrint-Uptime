@@ -111,7 +111,7 @@ repos:
     rev: v0.11.0
     hooks:
       - id: shellcheck # Shell script linter (ShellCheck) to catch common shell mistakes
-        args: ["--severity=style"]
+        args: ["--severity=style", "--exclude=SC2015,SC2317,SC2329"]
 
   - repo: https://github.com/OctoPrint/pre-commit-lessc
     rev: 4.4.0

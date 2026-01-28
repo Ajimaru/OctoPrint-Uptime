@@ -26,6 +26,24 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$REPO_ROOT"
 
+# --- Logging setup -------------------------------------------------
+# Create per-attempt log files in .logs and tee all output there
+LOG_DIR="$REPO_ROOT/.logs"
+mkdir -p "$LOG_DIR"
+LOG_PREFIX="pre-commit"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+PID=$$
+LOGFILE="$LOG_DIR/${LOG_PREFIX}-${TIMESTAMP}-${PID}.log"
+touch "$LOGFILE" || true
+# Keep a symlink to the latest run for convenience
+ln -f -s "$(basename "$LOGFILE")" "$LOG_DIR/${LOG_PREFIX}-latest.log" 2>/dev/null || true
+
+# Redirect all stdout/stderr for this hook to both the logfile and the hook's stdout/stderr
+exec > >(tee >(perl -pe 's/\e\[[0-9;]*[mK]//g' >>"$LOGFILE")) 2> >(tee >(perl -pe 's/\e\[[0-9;]*[mK]//g' >>"$LOGFILE") >&2)
+# Log header
+echo "===== $LOG_PREFIX START: $(date --iso-8601=seconds) (pid=$PID) ====="
+# -------------------------------------------------------------------
+
 python_is_at_least_310() {
     local python_bin="$1"
     "$python_bin" -c 'import sys; sys.exit(0 if sys.version_info[:2] >= (3, 10) else 1)' >/dev/null 2>&1
@@ -45,13 +63,28 @@ run_pre_commit_from_venv() {
         return 2
     fi
 
-    exec "$pre_commit_bin" run --hook-stage pre-commit --show-diff-on-failure --color=always
+    # Run pre-commit and capture exit code so we can produce a concise summary
+    "$pre_commit_bin" run --hook-stage pre-commit --show-diff-on-failure --color=always
+    local rc=$?
+
+    # produce short summary to stderr (counts of Passed/Failed in the stripped logfile)
+    if [[ -f "$LOGFILE" ]]; then
+        local passed
+        local failed
+        passed=$(grep -o "Passed" "$LOGFILE" | wc -l || true)
+        failed=$(grep -o "Failed" "$LOGFILE" | wc -l || true)
+        echo "PRE-COMMIT SUMMARY: Passed=$passed Failed=$failed (log: $LOGFILE)" >&2
+    fi
+
+    return "$rc"
 }
 
-run_pre_commit_from_venv "./venv"
-
-echo "ERROR: pre-commit not available in ./venv. Run: .development/setup_dev.sh" >&2
-exit 1
+if run_pre_commit_from_venv "./venv"; then
+    exit 0
+else
+    echo "ERROR: pre-commit not available in ./venv. Run: .development/setup_dev.sh" >&2
+    exit 1
+fi
 
 maybe_run_autoupdate() {
     # If PRECOMMIT_AUTOUPDATE=1 is set in the environment, run autoupdate
@@ -85,4 +118,3 @@ maybe_run_autoupdate() {
 
 # Try running autoupdate (no-op unless PRECOMMIT_AUTOUPDATE=1)
 maybe_run_autoupdate
-

@@ -36,6 +36,47 @@ fi
 
 cd "$repo_root"
 
-# No post-commit actions configured; exit silently.
-exit 0
+# --- Logging setup -------------------------------------------------
+# Create per-commit log files in .logs and tee all output there
+LOG_DIR="$repo_root/.logs"
+mkdir -p "$LOG_DIR"
+LOG_PREFIX="post-commit"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+PID=$$
+LOGFILE="$LOG_DIR/${LOG_PREFIX}-${TIMESTAMP}-${PID}.log"
+touch "$LOGFILE" || true
+ln -f -s "$(basename "$LOGFILE")" "$LOG_DIR/${LOG_PREFIX}-latest.log" 2>/dev/null || true
 
+# Redirect all stdout/stderr for this hook to both the logfile and the hook's stdout/stderr
+# Terminal receives original (colored) output; logfile gets ANSI-stripped copy.
+exec > >(tee >(perl -pe 's/\e\[[0-9;]*[mK]//g' >>"$LOGFILE")) 2> >(tee >(perl -pe 's/\e\[[0-9;]*[mK]//g' >>"$LOGFILE") >&2)
+echo "===== $LOG_PREFIX START: $(date --iso-8601=seconds) (pid=$PID) ====="
+# -------------------------------------------------------------------
+
+# Execute any drop-in scripts in .githooks/post-commit.d if present
+POST_D_DIR="$repo_root/.githooks/post-commit.d"
+if [[ -d "$POST_D_DIR" ]]; then
+  echo "Running post-commit.d scripts from $POST_D_DIR"
+  for f in "$POST_D_DIR"/*.sh; do
+    if [[ -f "$f" && -x "$f" ]]; then
+      echo "--- Running: $f ---"
+      "$f" || echo "Script failed: $f (exit $?)"
+    elif [[ -f "$f" ]]; then
+      echo "--- Running (sh): $f ---"
+      sh "$f" || echo "Script failed: $f (exit $?)"
+    fi
+  done
+else
+  echo "No post-commit.d scripts to run"
+fi
+
+echo "===== $LOG_PREFIX END: $(date --iso-8601=seconds) (pid=$PID) ====="
+
+# Produce concise summary for editors/CI on stderr
+if [[ -f "$LOGFILE" ]]; then
+  passed=$(grep -o "Passed" "$LOGFILE" | wc -l || true)
+  failed=$(grep -o "Failed" "$LOGFILE" | wc -l || true)
+  echo "POST-COMMIT SUMMARY: Passed=$passed Failed=$failed (log: $LOGFILE)" >&2
+fi
+
+exit 0
