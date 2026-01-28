@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
 
+# If running on native Windows, re-exec this script under Git Bash if available.
+# This is idempotent: if already running under Bash it does nothing.
+_SCRIPT_DIR_HINT="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd || dirname "$0")"
+REPO_ROOT="$(cd "$_SCRIPT_DIR_HINT/.." >/dev/null 2>&1 && pwd || echo "$_SCRIPT_DIR_HINT")"
+WRAPPER="$REPO_ROOT/.development/win-bash-wrapper.sh"
+if [ -z "${BASH_VERSION-}" ]; then
+  if [ -x "$WRAPPER" ]; then
+    exec "$WRAPPER" "$0" "$@"
+  elif command -v bash >/dev/null 2>&1; then
+    exec bash "$0" "$@"
+  fi
+fi
+
 # Description: Manage translation workflow for the repository: extract, init, update, and compile PO/MO using pybabel.
 # Behavior / subcommands:
 #  extract             - run `pybabel extract` to refresh `translations/messages.pot`

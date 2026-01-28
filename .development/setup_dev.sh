@@ -1,5 +1,42 @@
 #!/usr/bin/env bash
 
+# When running on native Windows, prefer to re-exec this script under
+# Git Bash if available. This attempts to locate a Git Bash `bash.exe`
+# and exec the original script under it. Comments are English-only.
+_SCRIPT_DIR_HINT="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd || dirname "$0")"
+WRAPPER="$_SCRIPT_DIR_HINT/win-bash-wrapper.sh"
+if [ -z "${BASH_VERSION-}" ]; then
+    if [ -x "$WRAPPER" ]; then
+        exec "$WRAPPER" "$0" "$@"
+        else
+        # If wrapper is not present but bash is available, try to re-exec directly
+        if command -v bash >/dev/null 2>&1; then
+            exec bash "$0" "$@"
+        fi
+
+        # If we reached here, no bash found. If we're on Windows (where.exe present),
+        # offer to open the Git for Windows download page via PowerShell helper.
+        if command -v where.exe >/dev/null 2>&1; then
+                echo "Git Bash not found on PATH."
+                read -r -p "Install Git for Windows (open download page)? [Y/n] " _ans
+                _ans=${_ans:-Y}
+                if [[ "$_ans" =~ ^[Yy] ]]; then
+                        # Try to invoke the PowerShell helper to open the download page
+                        if command -v powershell.exe >/dev/null 2>&1; then
+                                powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$_SCRIPT_DIR_HINT/install-git-for-windows.ps1" -OpenOnly
+                        else
+                                echo "Could not find powershell.exe to open download page. Please visit: https://git-scm.com/download/win"
+                        fi
+                        echo "Please install Git for Windows and re-run this script inside Git Bash or ensure 'bash' is on PATH." >&2
+                        exit 1
+                else
+                        echo "Git Bash is required on Windows to run this script. Exiting." >&2
+                        exit 1
+                fi
+        fi
+    fi
+fi
+
 # Description: Create and prepare a development virtual environment and install tooling.
 # Behavior:
 #  - Creates a `venv/` virtualenv (if missing), activates it, and installs packaging/dev tools.
