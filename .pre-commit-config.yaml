@@ -33,6 +33,7 @@ repos:
       - id: requirements-txt-fixer # Normalize requirements.txt formatting
       - id: no-commit-to-branch # Prevent committing directly to protected branches
 
+  # Formatting and code-mod tools
   - repo: https://github.com/psf/black
     rev: 26.1.0
     hooks:
@@ -45,42 +46,12 @@ repos:
       - id: isort # Sorts and groups Python imports to a consistent order
         args: ["--profile", "black"]
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.14
     hooks:
-      - id: flake8 # Linting: static checks for Python style and common errors (flake8)
-        exclude: '\\.md$|\\.yaml$|\\.yml$|\\.json$|\\.txt$|\\.po$|\\.pot$|\\.mo$'
-        args: ["--max-line-length=100", "--extend-ignore=E203,W503"]
-
-  - repo: local
-    hooks:
-      - id: prettier-write
-        name: Prettier (write)
-        entry: bash .development/prettier-hook.sh
-        language: system
-        types_or: [javascript, css, markdown, json, yaml]
-        pass_filenames: true
-        exclude: '^docs/api/python\\.md$'
-
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.11.0
-    hooks:
-      - id: shellcheck # Shell script linter (ShellCheck) to catch common shell mistakes
-        args: ["--severity=style"]
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.9.3
-    hooks:
-      - id: bandit # Security-focused static analyzer for Python (Bandit)
-        args: ["-x", "tests,.venv,venv,.git", "-ll"]
-
-  - repo: local
-    hooks:
-      - id: check-translations
-        name: Check translations are in sync with POT
-        entry: bash .githooks/check_translations_sync.sh
-        language: system
-        pass_filenames: false
+      - id: ruff-format # Code formatting using ruff
+      - id: ruff-check # Linting and optional automatic fixes via ruff
+        args: ["--fix"]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.21.2
@@ -89,12 +60,19 @@ repos:
         args: ["--py37-plus"]
         exclude: "setup.py"
 
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.14
+  # Linters and security
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
     hooks:
-      - id: ruff-check # Linting and optional automatic fixes via ruff
-        args: ["--fix"]
-      - id: ruff-format # Code formatting using ruff
+      - id: flake8 # Linting: static checks for Python style and common errors (flake8)
+        exclude: '\\.md$|\\.yaml$|\\.yml$|\\.json$|\\.txt$|\\.po$|\\.pot$|\\.mo$'
+        args: ["--max-line-length=100", "--extend-ignore=E203,W503"]
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.9.3
+    hooks:
+      - id: bandit # Security-focused static analyzer for Python (Bandit)
+        args: ["-x", "tests,.venv,venv,.git", "-ll"]
 
   - repo: https://github.com/djlint/djlint
     rev: v1.36.4
@@ -110,6 +88,17 @@ repos:
       - id: djlint-reformat-jinja # Reformat Jinja templates
         files: "\\.(html|jinja2|j2)$"
 
+  # Frontend / formatting tools
+  - repo: local
+    hooks:
+      - id: prettier-write
+        name: Prettier (write)
+        entry: bash .development/prettier-hook.sh
+        language: system
+        types_or: [javascript, css, markdown, json, yaml]
+        pass_filenames: true
+        exclude: '^docs/api/python\\.md$'
+
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v10.0.0-rc.2
     hooks:
@@ -118,11 +107,11 @@ repos:
         exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|docs/|scripts/|translations/)
         additional_dependencies: ["eslint@9.29.0", "globals@16.2.0"]
 
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.11.0
     hooks:
-      - id: codespell # Spelling checker for source files and docs
-        exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|tests/playwright|scripts/)
+      - id: shellcheck # Shell script linter (ShellCheck) to catch common shell mistakes
+        args: ["--severity=style"]
 
   - repo: https://github.com/OctoPrint/pre-commit-lessc
     rev: 4.4.0
@@ -131,4 +120,18 @@ repos:
         args:
           ["--wrapper-quiet", "--clean-css=--s1 --advanced --compatibility=ie8"]
         additional_dependencies: ["less-plugin-clean-css"]
-        files: ^(src/octoprint/static/less/(octoprint|recovery|login)\.less|src/octoprint/plugins/.*/static/less/.*\.less$)
+        files: ^(src/octoprint/static/less/(octoprint|recovery|login)\\.less|src/octoprint/plugins/.*/static/less/.*\\.less$)
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell # Spelling checker for source files and docs
+        exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|tests/playwright|scripts/)
+
+  - repo: local
+    hooks:
+      - id: check-translations
+        name: Check translations are in sync with POT
+        entry: bash .githooks/check_translations_sync.sh
+        language: system
+        pass_filenames: false
