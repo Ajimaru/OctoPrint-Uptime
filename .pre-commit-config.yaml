@@ -36,19 +36,19 @@ repos:
   - repo: https://github.com/psf/black
     rev: 26.1.0
     hooks:
-      - id: black
+      - id: black # Code formatter: reformats Python files to a canonical style (Black)
         language_version: python3
 
   - repo: https://github.com/pycqa/isort
     rev: 7.0.0
     hooks:
-      - id: isort
+      - id: isort # Sorts and groups Python imports to a consistent order
         args: ["--profile", "black"]
 
   - repo: https://github.com/pycqa/flake8
     rev: 7.3.0
     hooks:
-      - id: flake8
+      - id: flake8 # Linting: static checks for Python style and common errors (flake8)
         exclude: '\\.md$|\\.yaml$|\\.yml$|\\.json$|\\.txt$|\\.po$|\\.pot$|\\.mo$'
         args: ["--max-line-length=100", "--extend-ignore=E203,W503"]
 
@@ -65,13 +65,13 @@ repos:
   - repo: https://github.com/koalaman/shellcheck-precommit
     rev: v0.11.0
     hooks:
-      - id: shellcheck
+      - id: shellcheck # Shell script linter (ShellCheck) to catch common shell mistakes
         args: ["--severity=style"]
 
   - repo: https://github.com/PyCQA/bandit
     rev: 1.9.3
     hooks:
-      - id: bandit
+      - id: bandit # Security-focused static analyzer for Python (Bandit)
         args: ["-x", "tests,.venv,venv,.git", "-ll"]
 
   - repo: local
@@ -85,49 +85,49 @@ repos:
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.21.2
     hooks:
-      - id: pyupgrade
+      - id: pyupgrade # Modernize Python syntax to newer constructs (pyupgrade)
         args: ["--py37-plus"]
         exclude: "setup.py"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.14
     hooks:
-      - id: ruff-check
+      - id: ruff-check # Linting and optional automatic fixes via ruff
         args: ["--fix"]
-      - id: ruff-format
+      - id: ruff-format # Code formatting using ruff
 
   - repo: https://github.com/djlint/djlint
     rev: v1.36.4
     hooks:
-      - id: djlint
+      - id: djlint # Linting for Django/Jinja templates
         files: "\\.(html|jinja2|j2)$"
         types: [html]
-      - id: djlint-reformat
+      - id: djlint-reformat # Autoformat Jinja/Django templates
         files: "\\.(html|jinja2|j2)$"
         types: [html]
-      - id: djlint-jinja
+      - id: djlint-jinja # Additional Jinja-specific linting
         files: "\\.(html|jinja2|j2)$"
-      - id: djlint-reformat-jinja
+      - id: djlint-reformat-jinja # Reformat Jinja templates
         files: "\\.(html|jinja2|j2)$"
 
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v10.0.0-rc.2
     hooks:
-      - id: eslint
-        files: \\.js$
+      - id: eslint # JavaScript/TypeScript linter (ESLint)
+        files: \.js$
         exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|docs/|scripts/|translations/)
         additional_dependencies: ["eslint@9.29.0", "globals@16.2.0"]
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
-      - id: codespell
+      - id: codespell # Spelling checker for source files and docs
         exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|tests/playwright|scripts/)
 
   - repo: https://github.com/OctoPrint/pre-commit-lessc
     rev: 4.4.0
     hooks:
-      - id: lessc
+      - id: lessc # Compile and minify LESS files for frontend styles
         args:
           ["--wrapper-quiet", "--clean-css=--s1 --advanced --compatibility=ie8"]
         additional_dependencies: ["less-plugin-clean-css"]
