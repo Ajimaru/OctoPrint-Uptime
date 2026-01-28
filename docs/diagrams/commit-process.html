@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Commit process (pre/post) — OctoPrint-Uptime</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+</head>
+<body>
+<h1>Detailed flow: commit process (pre-commit & post-commit)</h1>
+<div class="mermaid">
+%%{init: { 'securityLevel': 'loose' }}%%
+sequenceDiagram
+  participant Dev as Developer
+  participant Git as Git
+  participant Pre as .githooks/pre-commit
+  participant Venv as venv/bin/pre-commit
+  participant Hooks as configured hooks (shellcheck, black, etc.)
+  participant Commit as Git commit operation
+  participant Post as .githooks/post-commit
+  participant PostD as .githooks/post-commit.d/*.sh
+  participant PostBuild as .development/post_commit_build_dist.sh
+
+  Dev->>Git: git commit
+  Git->>Pre: run pre-commit hook
+  Pre->>Pre: re-exec under Bash on Windows if needed
+  Pre->>Venv: exec venv/bin/pre-commit run --hook-stage pre-commit
+  Venv->>Hooks: run configured hooks
+  Hooks-->>Venv: success / failure
+  Venv-->>Pre: exit code
+  alt hooks passed
+    Pre-->>Git: allow commit
+    Git->>Commit: create commit
+    Commit->>Post: run post-commit hook
+    Post->>Post: re-exec under Bash on Windows if needed
+    Post->>PostD: run .githooks/post-commit.d/*.sh (if present)
+    PostD-->>Post: return
+    Post->>PostBuild: maybe run post_commit_build_dist.sh
+    PostBuild-->>Post: done
+  else hooks failed
+    Pre-->>Git: block commit
+  end
+
+</div>
+<p><a href="bash-relations.html">Related scripts diagram</a> · <a href="../getting-started.md">Back to docs</a></p>
+</body>
+</html>

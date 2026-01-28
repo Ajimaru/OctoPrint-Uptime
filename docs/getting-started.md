@@ -56,3 +56,13 @@ Note: the repository's translations pre-commit check is non-destructive — it r
 ## Notes
 
 This document is contributor-focused and omits end-user installation guidance such as package dependencies. For user-facing instructions about uptime dependencies (for example how to install `psutil` in your OctoPrint virtualenv), see the `Installation` and `Dependencies` sections in this documentation or the [project website](https://github.com/Ajimaru/OctoPrint-Uptime#readme).
+
+## Diagrams
+
+Visual documentation (Mermaid diagrams rendered as HTML):
+
+- [Bash scripts relationships](diagrams/bash-relations.html)
+- [Detailed: setup_dev.sh flow](diagrams/setup-dev.html)
+- [Detailed: bump_control.sh flow](diagrams/bump-control.html)
+- [Detailed: commit process (pre/post hooks)](diagrams/commit-process.html)
+- [Detailed: .development scripts relationships](diagrams/development-scripts.html)

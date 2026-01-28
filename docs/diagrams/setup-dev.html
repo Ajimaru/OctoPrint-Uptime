@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>setup_dev.sh flow — OctoPrint-Uptime</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+</head>
+<body>
+<h1>Detailed flow: .development/setup_dev.sh</h1>
+<div class="mermaid">
+%%{init: { 'securityLevel': 'loose' }}%%
+flowchart TD
+  Start([Start]) --> Detect["Detect OS & maybe re-exec under Git Bash"]
+  Detect --> CheckBash{Bash available?}
+  CheckBash -- yes --> ReExec["Re-exec under bash (wrapper or system bash)"]
+  CheckBash -- no --> OnWindows{Windows detected?}
+  OnWindows -- yes --> PromptInstall["Prompt to open Git for Windows download (PowerShell helper)"]
+  OnWindows -- no --> FailNoBash["Fail: Bash required on non-Windows? (exit)"]
+  PromptInstall --> ExitIfNotInstalled["Exit with message to install Git Bash"]
+
+  ReExec --> ValidatePython["Validate Python 3.10+ (${PYTHON_BIN})"]
+  ValidatePython --> CreateVenv["Create venv if missing (venv/)"]
+  CreateVenv --> ActivateVenv["Activate venv (source venv/bin/activate)"]
+  ActivateVenv --> UpgradePip["python -m pip install --upgrade pip"]
+  UpgradePip --> EnsureTomli["Ensure tomli in venv"]
+  EnsureTomli --> EnsureBuild["Ensure build package in venv"]
+  EnsureBuild --> InstallReqDev["Install requirements-dev.txt (if present)"]
+  InstallReqDev --> InstallReqDocs["Install requirements-docs.txt (if present)"]
+  InstallReqDocs --> BumpMyVersion["Offer to install bump-my-version into venv"]
+  BumpMyVersion --> CreateBumpToml["Create .development/bumpversion.toml if missing"]
+  CreateBumpToml --> InstallModeDecision{Editable install requested?}
+  InstallModeDecision -- yes --> EditableInstall["python -m pip install -e .[develop]"]
+  InstallModeDecision -- no --> SkipInstall["Skip dist installs (prepare venv only)"]
+
+  SkipInstall --> GitHooksSetup["Enable .githooks (git config core.hooksPath .githooks)"]
+  EditableInstall --> GitHooksSetup
+  GitHooksSetup --> PrecommitInstall["Install pre-commit hooks (venv/bin/pre-commit or pip install)"]
+  PrecommitInstall --> EnsureNodeTools["Ensure JS doc tooling; may run npm install"]
+  EnsureNodeTools --> OptionalPrecommitAll{RUN_PRE_COMMIT_ALL_FILES==1?}
+  OptionalPrecommitAll -- yes --> RunPreCommitAll["pre-commit run --all-files"]
+  OptionalPrecommitAll -- no --> SkipPreCommitAll["Skip initial pre-commit run"]
+  RunPreCommitAll --> Done
+  SkipPreCommitAll --> Done
+
+  Done([Setup complete]) --> NextSteps["Instructions: activate venv, run tests, run pre-commit"]
+
+  classDef warn fill:#fff7ed,stroke:#f59e0b
+  classDef action fill:#ecfeff,stroke:#06b6d4
+  class PromptInstall,FailNoBash warn
+  class ReExec,CreateVenv,ActivateVenv,PrecommitInstall action
+</div>
+<p><a href="bash-relations.html">Related scripts diagram</a> · <a href="../getting-started.md">Back to docs</a></p>
+</body>
+</html>
