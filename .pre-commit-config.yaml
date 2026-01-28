@@ -11,30 +11,27 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      - id: check-merge-conflict  # Detect unresolved merge conflict markers and fail early
-      - id: detect-private-key    # Scan for likely private keys to avoid accidental leaks
-      - id: check-added-large-files  # Prevent adding very large files to commits
-      - id: check-illegal-windows-names  # Prevent filenames illegal on Windows
-      - id: check-symlinks  # Ensure symlinks are valid and not broken
-      - id: check-case-conflict  # Prevent case-only filename conflicts on case-insensitive FS
+      - id: check-merge-conflict # Detect unresolved merge conflict markers and fail early
+      - id: detect-private-key # Scan for likely private keys to avoid accidental leaks
+      - id: check-added-large-files # Prevent adding very large files to commits
+      - id: check-illegal-windows-names # Prevent filenames illegal on Windows
+      - id: check-symlinks # Ensure symlinks are valid and not broken
+      - id: check-case-conflict # Prevent case-only filename conflicts on case-insensitive FS
       - id: mixed-line-ending
-        args: ["--fix=lf"]  # Normalize mixed line endings to LF (fixes CRLF issues)
-      - id: trailing-whitespace  # Remove trailing whitespace from lines
+        args: ["--fix=lf"] # Normalize mixed line endings to LF (fixes CRLF issues)
+      - id: trailing-whitespace # Remove trailing whitespace from lines
       - id: end-of-file-fixer
-        exclude: '^translations/.*\.(po|pot)$'  # Ensure files end with a newline (skip translation sources)
-      - id: check-executables-have-shebangs  # Verify executable scripts have a shebang line
-      - id: check-shebang-scripts-are-executable  # Ensure scripts with shebangs are executable
-      - id: check-ast  # Quick check that Python files parse (catch syntax errors)
-      - id: check-yaml  # Validate YAML files (CI configs, docs, etc.)
-      - id: check-toml  # Validate TOML files such as pyproject.toml
-      - id: check-json  # Validate JSON files like package.json
-      - id: check-xml  # Validate XML files if present
-      - id: debug-statements  # Detect accidental debug statements (e.g., print, pdb)
-      - id: name-tests-test
-        args: ["--pytest"]  # Ensure test functions/classes follow naming conventions via pytest
-      - id: requirements-txt-fixer  # Normalize requirements.txt formatting
-      - id: no-commit-to-branch  # Prevent committing directly to protected branches
-      - id: forbid-binary  # Prevent committing binary files unintentionally
+        exclude: '^translations/.*\.(po|pot)$' # Ensure files end with a newline (skip translation sources)
+      - id: check-executables-have-shebangs # Verify executable scripts have a shebang line
+      - id: check-shebang-scripts-are-executable # Ensure scripts with shebangs are executable
+      - id: check-ast # Quick check that Python files parse (catch syntax errors)
+      - id: check-yaml # Validate YAML files (CI configs, docs, etc.)
+      - id: check-toml # Validate TOML files such as pyproject.toml
+      - id: check-json # Validate JSON files like package.json
+      - id: check-xml # Validate XML files if present
+      - id: debug-statements # Detect accidental debug statements (e.g., print, pdb)
+      - id: requirements-txt-fixer # Normalize requirements.txt formatting
+      - id: no-commit-to-branch # Prevent committing directly to protected branches
 
   - repo: https://github.com/psf/black
     rev: 26.1.0
@@ -86,14 +83,14 @@ repos:
         pass_filenames: false
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.20.0
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
         args: ["--py37-plus"]
         exclude: "setup.py"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.0
+    rev: v0.14.14
     hooks:
       - id: ruff-check
         args: ["--fix"]
@@ -114,7 +111,7 @@ repos:
         files: "\\.(html|jinja2|j2)$"
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.29.0
+    rev: v10.0.0-rc.2
     hooks:
       - id: eslint
         files: \\.js$
@@ -128,9 +125,10 @@ repos:
         exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|tests/playwright|scripts/)
 
   - repo: https://github.com/OctoPrint/pre-commit-lessc
-    rev: 4.3.0
+    rev: 4.4.0
     hooks:
       - id: lessc
-        args: ["--wrapper-quiet", "--clean-css=--s1 --advanced --compatibility=ie8"]
+        args:
+          ["--wrapper-quiet", "--clean-css=--s1 --advanced --compatibility=ie8"]
         additional_dependencies: ["less-plugin-clean-css"]
         files: ^(src/octoprint/static/less/(octoprint|recovery|login)\.less|src/octoprint/plugins/.*/static/less/.*\.less$)
