@@ -38,6 +38,9 @@ touch "$LOGFILE" || true
 # Keep a symlink to the latest run for convenience
 ln -f -s "$(basename "$LOGFILE")" "$LOG_DIR/${LOG_PREFIX}-latest.log" 2>/dev/null || true
 
+# Ensure we always write an END marker to the logfile and terminal on exit
+trap 'echo "===== $LOG_PREFIX END: $(date --iso-8601=seconds) (pid=$PID) ====="' EXIT
+
 # Redirect all stdout/stderr for this hook to both the logfile and the hook's stdout/stderr
 exec > >(tee >(perl -pe 's/\e\[[0-9;]*[mK]//g' >>"$LOGFILE")) 2> >(tee >(perl -pe 's/\e\[[0-9;]*[mK]//g' >>"$LOGFILE") >&2)
 # Log header
