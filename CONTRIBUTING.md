@@ -20,15 +20,6 @@ Thanks for your interest in contributing to the OctoPrint-Uptime plugin!
 - Please keep issues and pull requests focused: **one bug/feature per PR**.
 - If your change affects user-facing behavior, please describe how you tested it.
 
-## GitHub workflow (protected `main`)
-
-This repository uses a protected default branch (`main`). Please:
-
-- Create a feature branch in your fork (or within the repo if you have access)
-- Open a Pull Request into `main` (direct pushes to `main` are blocked)
-- Ensure required CI checks pass before merging
-- Resolve review conversations (if any)
-
 ## Bug reports
 
 When reporting a bug, please include:
