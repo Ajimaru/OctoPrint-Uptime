@@ -1,15 +1,12 @@
-export default {
-  env: {
-    browser: true,
-    node: true,
-    es2021: true,
+module.exports = [
+  {
+    files: ["**/*.js"],
+    languageOptions: {
+      ecmaVersion: 2021,
+      sourceType: "module",
+    },
+    rules: {
+      "no-console": "off",
+    },
   },
-  extends: ["eslint:recommended"],
-  languageOptions: {
-    ecmaVersion: 2021,
-    sourceType: "module",
-  },
-  rules: {
-    "no-console": "off",
-  },
-};
+];
