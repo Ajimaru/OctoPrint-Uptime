@@ -292,4 +292,3 @@ while true; do
 
   sleep "$INTERVAL_S"
 done
-

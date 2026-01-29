@@ -330,4 +330,3 @@ echo "  2. Run tests: pytest"
 echo "  3. Run checks (if installed): pre-commit run --all-files"
 echo ""
 echo "See CONTRIBUTING.md for more information."
-

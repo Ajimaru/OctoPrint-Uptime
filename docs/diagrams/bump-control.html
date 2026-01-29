@@ -1,51 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>bump_control.sh flow — OctoPrint-Uptime</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
-</head>
-<body>
-<h1>Detailed flow: .development/bump_control.sh</h1>
-<div class="mermaid">
-%%{init: { 'securityLevel': 'loose' }}%%
-flowchart TD
-  Start([Start]) --> Detect["Detect OS & maybe re-exec under Git Bash"]
-  Detect --> Args{Arguments provided?}
-  Args -- interactive --> Interactive["Interactive menu: choose bump type (dev, rc, major, minor, patch)"]
-  Args -- non-interactive --> ParseArgs["Parse BUMP_TYPE, NEW_CURRENT, COMMIT, TAG, --execute"]
-
-  Interactive --> DetermineCurrent["Determine current version from _version.py / pyproject.toml / bumpversion.toml"]
-  ParseArgs --> DetermineCurrent
-
-  DetermineCurrent --> SuggestNew["Compute suggested new version (bump-my-version or heuristic)"]
-  SuggestNew --> PromptCommitTag["Prompt: commit after bump? tag after bump? dry-run or execute?"]
-  PromptCommitTag --> CheckExecute{Execute now?}
-  CheckExecute -- no --> Preview["Show dry-run preview of files to be updated and exit"]
-  Preview --> EndDryRun([Dry-run complete])
-
-  CheckExecute -- yes --> UpdateFiles["Update octoprint_uptime/_version.py, pyproject.toml, bumpversion.toml"]
-  UpdateFiles --> GitActions{Commit requested?}
-  GitActions -- yes --> GitCommit["git add ... && git commit -m 'Bump version to X'"]
-  GitActions -- no --> SkipCommit["No commit requested"]
-  GitActions --> TagActions{Tag requested?}
-  TagActions -- yes --> GitTag["git tag X"]
-  TagActions -- no --> SkipTag
-
-  GitCommit --> MaybeAmend["Normalize pyproject.toml to PEP440 and amend commit if needed"]
-  MaybeAmend --> RunPostBuild["run_post_commit_build -> optionally run .development/post_commit_build_dist.sh"]
-  RunPostBuild --> Done([Done])
-
-  %% interactions
-  bumpcmd["bump-my-version (venv/bin or system)"]
-  SuggestNew --> bumpcmd
-  bumpcmd --> UpdateFiles
-
-  style UpdateFiles fill:#ecfeff,stroke:#06b6d4
-  style GitCommit fill:#fef3c7,stroke:#f59e0b
-</div>
-<p><a href="bash-relations.html">Related scripts diagram</a> · <a href="../getting-started.md">Back to docs</a></p>
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <title>bump_control.sh flow — OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+    </head>
+    <body>
+        <h1>Detailed flow: .development/bump_control.sh</h1>
+        <div class="mermaid">
+            %%{init: { 'securityLevel': 'loose' }}%%
+            flowchart TD
+            Start([Start]) --> Detect["Detect OS & maybe re-exec under Git Bash"]
+            Detect --> Args{Arguments provided?}
+            Args -- interactive --> Interactive["Interactive menu: choose bump type (dev, rc, major, minor, patch)"]
+            Args -- non-interactive --> ParseArgs["Parse BUMP_TYPE, NEW_CURRENT, COMMIT, TAG, --execute"]
+            Interactive --> DetermineCurrent["Determine current version from _version.py / pyproject.toml / bumpversion.toml"]
+            ParseArgs --> DetermineCurrent
+            DetermineCurrent --> SuggestNew["Compute suggested new version (bump-my-version or heuristic)"]
+            SuggestNew --> PromptCommitTag["Prompt: commit after bump? tag after bump? dry-run or execute?"]
+            PromptCommitTag --> CheckExecute{Execute now?}
+            CheckExecute -- no --> Preview["Show dry-run preview of files to be updated and exit"]
+            Preview --> EndDryRun([Dry-run complete])
+            CheckExecute -- yes --> UpdateFiles["Update octoprint_uptime/_version.py, pyproject.toml, bumpversion.toml"]
+            UpdateFiles --> GitActions{Commit requested?}
+            GitActions -- yes --> GitCommit["git add ... && git commit -m 'Bump version to X'"]
+            GitActions -- no --> SkipCommit["No commit requested"]
+            GitActions --> TagActions{Tag requested?}
+            TagActions -- yes --> GitTag["git tag X"]
+            TagActions -- no --> SkipTag
+            GitCommit --> MaybeAmend["Normalize pyproject.toml to PEP440 and amend commit if needed"]
+            MaybeAmend --> RunPostBuild["run_post_commit_build -> optionally run .development/post_commit_build_dist.sh"]
+            RunPostBuild --> Done([Done])
+            %% interactions
+            bumpcmd["bump-my-version (venv/bin or system)"]
+            SuggestNew --> bumpcmd
+            bumpcmd --> UpdateFiles
+            style UpdateFiles fill:#ecfeff,stroke:#06b6d4
+            style GitCommit fill:#fef3c7,stroke:#f59e0b
+        </div>
+        <p>
+            <a href="bash-relations.html">Related scripts diagram</a> · <a href="../getting-started.md">Back to docs</a>
+        </p>
+    </body>
 </html>

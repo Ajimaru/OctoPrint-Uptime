@@ -4,8 +4,7 @@ This folder contains repository helper scripts used for development tasks
 such as creating a virtual environment, running local checks, generating
 documentation, and building distribution artifacts.
 
-Windows workflow
-----------------
+## Windows workflow
 
 The helper scripts are implemented as POSIX shell scripts and expect a Bash
 compatible environment. To make them convenient on native Windows, the
@@ -35,16 +34,14 @@ Usage notes for Windows developers:
   alongside the canonical shell scripts; the repository maintains the shell
   scripts as the authoritative implementation.
 
-Troubleshooting
----------------
+## Troubleshooting
 
 - If a script reports a missing command (e.g. `sed`, `awk`, `ss`), run it
   from Git Bash or install the required utilities in WSL.
 - If hooks fail on commit from Windows, run the hook command manually inside
   Git Bash to inspect the output, e.g. `pre-commit run --all-files`.
 
-Contact
--------
+## Contact
 
 If you run into issues with the Windows workflow, open an issue describing
 the environment and the failing command.

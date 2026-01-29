@@ -33,7 +33,6 @@ WSL. If Git Bash is not installed, `.development/setup_dev.sh` will offer to
 open the Git for Windows download page. See `.development/README.md` for
 details.
 
-
 When working on translations during development, use the repository helper which wraps `pybabel` and copies compiled catalogs into the package for runtime testing.
 
 From the repository root:

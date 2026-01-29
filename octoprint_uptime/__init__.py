@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """OctoPrint-Uptime plugin module.
 
 Provides a small API endpoint that returns formatted system uptime.

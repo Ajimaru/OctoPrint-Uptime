@@ -1,53 +1,54 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>.development scripts relationships — OctoPrint-Uptime</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
-</head>
-<body>
-<h1>Overview: .development scripts and interactions</h1>
-<p>This diagram shows relationships and typical execution flows among scripts in the <code>.development</code> folder.</p>
-<div class="mermaid">
-%%{init: { 'securityLevel': 'loose' }}%%
-flowchart LR
-  subgraph DevelopmentFolder[.development]
-    wrap["win-bash-wrapper.sh"]
-    setup["setup_dev.sh"]
-    bump["bump_control.sh"]
-    postbuild["post_commit_build_dist.sh"]
-    compile_trans["compile_translations.sh"]
-    prettier["prettier-hook.sh"]
-    run_ci["run_ci_locally.sh"]
-    restart["restart_octoprint_dev.sh"]
-    monitor["monitor_octoprint_performance.sh"]
-    testlist["test_checklist.sh"]
-  end
-
-  %% Execution relationships
-  setup -->|may call / re-exec under| wrap
-  bump -->|may re-exec under| wrap
-  postbuild -->|may be invoked by| bump
-  bump -->|updates files| version["octoprint_uptime/_version.py / pyproject.toml / bumpversion.toml"]
-  compile_trans -->|reads/writes| translations["translations PO/MO files"]
-  prettier -->|used by| precommit[".githooks/pre-commit / pre-commit hook"]
-  run_ci -->|orchestrates| setup
-  run_ci -->|runs tests| testlist
-  restart -->|helper for dev server| monitor
-  monitor -->|collects metrics for| devenv["local OctoPrint dev instance"]
-
-  %% helper binaries & venv
-  setup -->|creates/uses| venv["venv (python, pre-commit, bump-my-version)"]
-  prettier -->|formats JS| jsfiles["static/js/*.js"]
-
-  %% annotations
-  classDef core fill:#fef3c7,stroke:#f59e0b
-  classDef helper fill:#ecfeff,stroke:#06b6d4
-  class setup,bump,postbuild,compile_trans core
-  class wrap,prettier,run_ci,restart,monitor,testlist helper
-</div>
-<p><a href="bash-relations.html">Back to broad scripts diagram</a> · <a href="../getting-started.md">Back to docs</a></p>
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <title>.development scripts relationships — OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+    </head>
+    <body>
+        <h1>Overview: .development scripts and interactions</h1>
+        <p>
+            This diagram shows relationships and typical execution flows among scripts in the <code>.development</code> folder.
+        </p>
+        <div class="mermaid">
+            %%{init: { 'securityLevel': 'loose' }}%%
+            flowchart LR
+            subgraph DevelopmentFolder[.development]
+            wrap["win-bash-wrapper.sh"]
+            setup["setup_dev.sh"]
+            bump["bump_control.sh"]
+            postbuild["post_commit_build_dist.sh"]
+            compile_trans["compile_translations.sh"]
+            prettier["prettier-hook.sh"]
+            run_ci["run_ci_locally.sh"]
+            restart["restart_octoprint_dev.sh"]
+            monitor["monitor_octoprint_performance.sh"]
+            testlist["test_checklist.sh"]
+            end
+            %% Execution relationships
+            setup -->|may call / re-exec under| wrap
+            bump -->|may re-exec under| wrap
+            postbuild -->|may be invoked by| bump
+            bump -->|updates files| version["octoprint_uptime/_version.py / pyproject.toml / bumpversion.toml"]
+            compile_trans -->|reads/writes| translations["translations PO/MO files"]
+            prettier -->|used by| precommit[".githooks/pre-commit / pre-commit hook"]
+            run_ci -->|orchestrates| setup
+            run_ci -->|runs tests| testlist
+            restart -->|helper for dev server| monitor
+            monitor -->|collects metrics for| devenv["local OctoPrint dev instance"]
+            %% helper binaries & venv
+            setup -->|creates/uses| venv["venv (python, pre-commit, bump-my-version)"]
+            prettier -->|formats JS| jsfiles["static/js/*.js"]
+            %% annotations
+            classDef core fill:#fef3c7,stroke:#f59e0b
+            classDef helper fill:#ecfeff,stroke:#06b6d4
+            class setup,bump,postbuild,compile_trans core
+            class wrap,prettier,run_ci,restart,monitor,testlist helper
+        </div>
+        <p>
+            <a href="bash-relations.html">Back to broad scripts diagram</a> · <a href="../getting-started.md">Back to docs</a>
+        </p>
+    </body>
 </html>

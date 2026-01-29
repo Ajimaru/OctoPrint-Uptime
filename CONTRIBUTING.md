@@ -1,4 +1,3 @@
-
 # Contributing
 
 Thanks for your interest in contributing to the OctoPrint-Uptime plugin!

@@ -76,15 +76,10 @@ repos:
   - repo: https://github.com/djlint/djlint
     rev: v1.36.4
     hooks:
-      - id: djlint # Linting for Django/Jinja templates
+      - id: djlint-reformat # Autoformat Jinja/Django templates (reformat only)
         files: "\\.(html|jinja2|j2)$"
         types: [html]
-      - id: djlint-reformat # Autoformat Jinja/Django templates
-        files: "\\.(html|jinja2|j2)$"
-        types: [html]
-      - id: djlint-jinja # Additional Jinja-specific linting
-        files: "\\.(html|jinja2|j2)$"
-      - id: djlint-reformat-jinja # Reformat Jinja templates
+      - id: djlint-reformat-jinja # Reformat Jinja templates (reformat only)
         files: "\\.(html|jinja2|j2)$"
 
   # Frontend / formatting tools
@@ -97,14 +92,6 @@ repos:
         types_or: [javascript, css, markdown, json, yaml]
         pass_filenames: true
         exclude: '^docs/api/python\\.md$'
-
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v10.0.0-rc.2
-    hooks:
-      - id: eslint # JavaScript/TypeScript linter (ESLint)
-        files: \.js$
-        exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|docs/|scripts/|translations/)
-        additional_dependencies: ["eslint@9.29.0", "globals@16.2.0"]
 
   - repo: https://github.com/koalaman/shellcheck-precommit
     rev: v0.11.0
@@ -125,7 +112,7 @@ repos:
     rev: v2.4.1
     hooks:
       - id: codespell # Spelling checker for source files and docs
-        exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|tests/playwright|scripts/)
+        exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|tests/playwright|scripts/|translations/|octoprint_uptime/translations/|\.development/)
 
   - repo: local
     hooks:

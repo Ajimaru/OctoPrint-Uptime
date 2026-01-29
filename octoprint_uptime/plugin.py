@@ -498,9 +498,7 @@ class OctoprintUptimePlugin(
         self._debug_enabled = bool(self._settings.get(["debug"]))
         self._navbar_enabled = bool(self._settings.get(["navbar_enabled"]))
         self._display_format = str(self._settings.get(["display_format"]))
-        self._debug_throttle_seconds = int(
-            self._settings.get(["debug_throttle_seconds"]) or 60
-        )
+        self._debug_throttle_seconds = int(self._settings.get(["debug_throttle_seconds"]) or 60)
 
     def _log_settings_after_save(self, prev_navbar: Any) -> None:
         """
@@ -585,13 +583,9 @@ class OctoprintUptimePlugin(
         """
         logger = getattr(self, "_logger", None)
         try:
-            seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = (
-                self._get_uptime_info()
-            )
+            seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = self._get_uptime_info()
             uptime_available = (
-                isinstance(seconds, (int, float))
-                and seconds >= 0
-                and uptime_full != _("unknown")
+                isinstance(seconds, (int, float)) and seconds >= 0 and uptime_full != _("unknown")
             )
             if _flask is not None:
                 navbar_enabled, display_format, poll_interval = self._get_api_settings()
@@ -607,9 +601,7 @@ class OctoprintUptimePlugin(
                     "uptime_available": uptime_available,
                 }
                 if not uptime_available:
-                    resp["uptime_note"] = _(
-                        "Uptime could not be determined on this system."
-                    )
+                    resp["uptime_note"] = _("Uptime could not be determined on this system.")
                 try:
                     json_resp = _flask.jsonify(**resp)
                 except (TypeError, ValueError, RuntimeError):
@@ -625,9 +617,7 @@ class OctoprintUptimePlugin(
             else:
                 resp = {"uptime": uptime_full, "uptime_available": uptime_available}
                 if not uptime_available:
-                    resp["uptime_note"] = _(
-                        "Uptime could not be determined on this system."
-                    )
+                    resp["uptime_note"] = _("Uptime could not be determined on this system.")
                 return resp
         except (AttributeError, TypeError, ValueError):
             if logger:
@@ -678,9 +668,7 @@ class OctoprintUptimePlugin(
                     return {"error": _("Forbidden"), "uptime_available": False}
         except (AttributeError, TypeError, ValueError):
             if hasattr(self, "_logger") and self._logger is not None:
-                self._logger.exception(
-                    "on_api_get: unexpected error while checking permissions"
-                )
+                self._logger.exception("on_api_get: unexpected error while checking permissions")
             try:
                 return self._abort_forbidden()
             except (AttributeError, TypeError, ValueError, RuntimeError, OSError):
@@ -723,9 +711,7 @@ class OctoprintUptimePlugin(
             Tuple: (seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d)
         """
         try:
-            if hasattr(self, "get_uptime_seconds") and callable(
-                self.get_uptime_seconds
-            ):
+            if hasattr(self, "get_uptime_seconds") and callable(self.get_uptime_seconds):
                 res = self.get_uptime_seconds()
                 if isinstance(res, tuple) and len(res) == 2:
                     seconds, _source = res
@@ -780,9 +766,7 @@ class OctoprintUptimePlugin(
             if raw_nav is None:
                 navbar_enabled = True
                 if logger:
-                    logger.debug(
-                        "_get_api_settings: navbar_enabled missing, defaulting to True"
-                    )
+                    logger.debug("_get_api_settings: navbar_enabled missing, defaulting to True")
             else:
                 navbar_enabled = bool(raw_nav)
         except (AttributeError, TypeError, ValueError) as e:
@@ -798,9 +782,7 @@ class OctoprintUptimePlugin(
             if raw_fmt is None:
                 display_format = _("full")
                 if logger:
-                    logger.debug(
-                        "_get_api_settings: display_format missing, defaulting to 'full'"
-                    )
+                    logger.debug("_get_api_settings: display_format missing, defaulting to 'full'")
             else:
                 display_format = str(raw_fmt)
         except (AttributeError, TypeError, ValueError) as e:
@@ -817,8 +799,7 @@ class OctoprintUptimePlugin(
                 poll_interval = 5
                 if logger:
                     logger.debug(
-                        "_get_api_settings: poll_interval_seconds missing, "
-                        "defaulting to 5"
+                        "_get_api_settings: poll_interval_seconds missing, " "defaulting to 5"
                     )
             else:
                 try:
