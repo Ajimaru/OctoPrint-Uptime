@@ -47,6 +47,7 @@ packages_OctoPrint-Uptime*.dot
 
 # Generated diagram outputs (created by CI)
 docs/reference/diagrams/*.svg
+.venv-docs
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
