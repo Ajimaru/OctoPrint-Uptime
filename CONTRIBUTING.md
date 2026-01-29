@@ -1,6 +1,19 @@
+
 # Contributing
 
-Thanks for your interest in contributing to the OctoPrint-Uptime plugin.
+Thanks for your interest in contributing to the OctoPrint-Uptime plugin!
+
+## Quick Start
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b wip/my-feature`
+3. Write tests for new features
+4. Submit a pull request
+5. For local development scripts (setup, restart helper, post-commit build hook, performance monitor), see [.development/README.md](.development/README.md).
+6. Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+7. Note: `main` is protected on GitHub, so changes go through PRs.
+
+---
 
 ## Before you start
 
@@ -86,28 +99,17 @@ Use `-h` or `--help` to see usage:
 
 If you use the helper scripts, see `.development/README.md`.
 
-## Windows development
+## Windows notes
 
-This repository's helper scripts and git hooks are authored as POSIX shell
-scripts and are expected to run under Bash. On native Windows systems the
-repository provides an automatic re-exec wrapper that will attempt to locate
-Git Bash (`bash.exe`) and re-run the invoked script under that interpreter.
+The repository's helper scripts and git hooks are POSIX shell scripts and are intended to run under Bash. On native Windows systems the repository provides an automatic re-exec wrapper that will attempt to locate Git Bash and run the invoked script under that interpreter. If Git Bash is not available, the setup helper will offer to open the Git for Windows download page. For native PowerShell workflows consider using WSL or Git Bash when running repository helper scripts.
 
 Guidance for Windows users:
 
-- Preferred: use Git Bash (installed via Git for Windows) or WSL to run the
-  repository helper scripts and hooks.
-- If `bash` is not available, `.development/setup_dev.sh` will offer to open
-  the Git for Windows download page (interactive). A PowerShell helper exists
-  at `.development/install-git-for-windows.ps1` to assist.
-- Hooks and scripts are modified to re-exec under Git Bash when available; if
-  you must run scripts from PowerShell or CMD, explicitly invoke them via
-  `bash .development/setup_dev.sh`.
+- Preferred: use Git Bash (installed via Git for Windows) or WSL to run the repository helper scripts and hooks.
+- If `bash` is not available, `.development/setup_dev.sh` will offer to open the Git for Windows download page (interactive). A PowerShell helper exists at `.development/install-git-for-windows.ps1` to assist.
+- Hooks and scripts are modified to re-exec under Git Bash when available; if you must run scripts from PowerShell or CMD, explicitly invoke them via `bash .development/setup_dev.sh`.
 
-If you are contributing from Windows and prefer native PowerShell scripts,
-consider adding Windows-specific `.ps1` helpers rather than editing the
-POSIX scripts directly; the repository keeps the shell scripts as the
-canonical implementation.
+If you are contributing from Windows and prefer native PowerShell scripts, consider adding Windows-specific `.ps1` helpers rather than editing the POSIX scripts directly; the repository keeps the shell scripts as the canonical implementation.
 
 ## Notes
 
@@ -213,5 +215,5 @@ Do not commit generated or environment-specific files such as:
 
 - `dist/`, `build/`, `*.egg-info/`
 - `__pycache__/`, `.pytest_cache/`, `.coverage/`, `htmlcov/`
-- local virtual environments (`venv/`, `.venv/`)
+- local virtual environments (`venv/`)
 - IDE/editor configs (`.idea/`, `.vscode/`)
