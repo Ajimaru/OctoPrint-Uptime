@@ -75,8 +75,14 @@ fi
 import sys
 
 major, minor = sys.version_info[:2]
-if (major, minor) < (3, 10):
-    raise SystemExit(f"ERROR: Python {major}.{minor} found, but 3.10+ is required for development setup")
+if (major, minor) <= (3, 7) or (major, minor) >= (3, 13):
+    print(f"ERROR: Python {major}.{minor} found, but Python >3.7 and <3.13 is required for development setup.")
+    print("\nUpgrade instructions:")
+    print("- Windows: Download and install Python 3.8–3.12 from https://www.python.org/downloads/windows/")
+    print("- macOS: Use Homebrew: brew install python@3.12 (or similar)")
+    print("- Linux: Use your package manager, e.g. sudo apt install python3.12")
+    print("\nAfter upgrading, ensure 'python3' points to the new version, or set PYTHON_BIN to the correct executable.")
+    sys.exit(1)
 
 print(f"Found Python {major}.{minor}")
 PY

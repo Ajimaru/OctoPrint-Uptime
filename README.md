@@ -35,11 +35,7 @@
 1. Open OctoPrint web interface
 2. Navigate to **Settings** → **Plugin Manager**
 3. Click **Get More...**
-4. Click **Install from URL** and enter:
-
-```url
-github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip
-```
+4. Click **Install from URL** and enter: `github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip`
 
 5. Click **Install**
 6. Restart OctoPrint
@@ -50,9 +46,7 @@ github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-la
 <details>
 <summary>Manual pip install</summary>
 
-```bash
-pip install https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip
-```
+`pip install https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip`
 
 The `releases/latest` URL always points to the newest stable release.
 
@@ -65,15 +59,7 @@ The navbar widget polls the plugin API and shows a formatted uptime string. The 
 
 ### Note about uptime retrieval
 
-The plugin determines system uptime using either `/proc/uptime` on Linux systems or the Python library `psutil` when available. If neither method can provide uptime, the plugin API returns `uptime_available: false` along with a human‑readable `uptime_note` (suggesting installing `psutil` in the OctoPrint virtual environment).
-
-To add psutil to an OctoPrint virtualenv, activate the environment and run:
-
-```bash
-pip install psutil
-```
-
-For system‑wide OctoPrint installations or Docker images, ensure that psutil is installed through the appropriate package manager or image update process.
+The plugin determines system uptime using either `/proc/uptime` on Linux systems or the Python library `psutil`. `psutil` is installed automatically as a dependency. If neither method can provide uptime, the plugin API returns `uptime_available: false` along with a human‑readable `uptime_note`.
 
 ## Configuration
 
@@ -116,31 +102,9 @@ A: Linux is tested and supported. Other OSes may work but are not officially sup
 
 ## Contributing
 
-<!-- markdownlint-disable MD033 -->
-<details>
-<summary>Contributions welcome! Please:</summary>
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines and instructions.
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b wip/my-feature`
-3. Write tests for new features
-4. Submit a pull request
-5. For local development scripts (setup, restart helper, post-commit build hook, performance monitor), see [.development/README.md](.development/README.md).
-
-Windows notes: The repository's helper scripts and git hooks are POSIX shell
-scripts and are intended to run under Bash. On native Windows systems the
-repository provides an automatic re-exec wrapper that will attempt to locate
-Git Bash and run the invoked script under that interpreter. If Git Bash is
-not available, the setup helper will offer to open the Git for Windows
-download page. For native PowerShell workflows consider using WSL or Git
-Bash when running repository helper scripts.
-
-6. See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-7. Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
-
-Note: `main` is protected on GitHub, so changes go through PRs.
-
-</details>
-<!-- markdownlint-enable MD033 -->
+Please also follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 

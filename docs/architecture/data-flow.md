@@ -4,7 +4,7 @@ This page describes how uptime is computed and propagated from the server to the
 
 ## Server-side
 
-- The plugin attempts to read system uptime via `psutil` when available. If `psutil` is not present or access is restricted the plugin returns an `uptime_available: false` and an optional `uptime_note` hint in the API response.
+- The plugin attempts to read system uptime via `psutil` (which is always installed as a dependency). If access is restricted the plugin returns an `uptime_available: false` and an optional `uptime_note` hint in the API response.
 - Formatting helpers convert raw seconds into human-friendly strings (full, `dhm`, `dh`, `d`, short forms).
 
 ## API contract
@@ -31,4 +31,4 @@ Example response (partial):
 
 ## Resilience
 
-- When uptime is unavailable the UI should surface the `uptime_note` to guide the operator (for example a suggestion to install `psutil` into the OctoPrint virtualenv).
+- When uptime is unavailable the UI should surface the `uptime_note` to guide the operator.

@@ -4,7 +4,7 @@ This page summarizes the contributor workflow for developers. The authoritative,
 
 ## Quickstart
 
-- Create and activate a virtual environment and install development deps:
+- Create and activate a virtual environment (venv) and install development deps:
 
 ```bash
 python3 -m venv venv
@@ -13,7 +13,7 @@ python -m pip install -U pip
 python -m pip install -e ".[develop]"
 ```
 
-If you prefer helper scripts, run the repository helper to set up a dev environment:
+If you prefer helper scripts, run the repository helper to set up a dev environment (venv):
 
 ```bash
 bash .development/setup_dev.sh
@@ -97,4 +97,4 @@ This avoids unexpected local builds during routine commits.
 
 ## Notes
 
-- Keep changes small and focused. Follow the coding style in `CONTRIBUTING.md` (4-space indentation, English text, use `self._logger` for logging).
+- Keep changes small and focused. Follow the coding style in `CONTRIBUTING.md` (4-space indentation, English text, use `self._logger` for logging). Use the 'venv' directory for the virtual environment.

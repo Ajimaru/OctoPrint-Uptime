@@ -30,13 +30,13 @@ print(format_uptime_dhm(93784))  # -> "1d 2h 3m"
 
 ## API changes: uptime availability
 
-When uptime cannot be determined the plugin API now includes an `uptime_available` boolean and an optional `uptime_note` string that can contain a localized hint (for example how to install `psutil`). Example response:
+When uptime cannot be determined the plugin API now includes an `uptime_available` boolean and an optional `uptime_note` string that can contain a localized hint. Example response:
 
 ```json
 {
   "uptime": "unknown",
   "uptime_available": false,
-  "uptime_note": "Uptime could not be determined. You can install psutil in the OctoPrint virtualenv: pip install psutil"
+  "uptime_note": "Uptime could not be determined."
 }
 ```
 
