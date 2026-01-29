@@ -98,7 +98,7 @@ curl -s -H "X-Api-Key: $API_KEY" http://localhost:5000/api/plugin/octoprint_upti
 ```
 
 **Q: Which OSes are supported?**
-A: Linux is tested and supported. Other OSes may work but are not officially supported. See details in #how-it-works.
+A: Linux is tested and supported. Other OSes may work but are not officially supported. See details in [How It Works](#note-about-uptime-retrieval).
 
 ## Contributing
 
