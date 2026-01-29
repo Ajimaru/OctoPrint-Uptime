@@ -39,6 +39,7 @@ repos:
     hooks:
       - id: black # Code formatter: reformats Python files to a canonical style (Black)
         language_version: python3
+
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v10.0.0-rc.2
     hooks:
