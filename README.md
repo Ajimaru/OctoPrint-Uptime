@@ -65,15 +65,7 @@ The navbar widget polls the plugin API and shows a formatted uptime string. The 
 
 ### Note about uptime retrieval
 
-The plugin determines system uptime using either `/proc/uptime` on Linux systems or the Python library `psutil` when available. If neither method can provide uptime, the plugin API returns `uptime_available: false` along with a human‑readable `uptime_note` (suggesting installing `psutil` in the OctoPrint virtual environment).
-
-To add psutil to an OctoPrint virtualenv, activate the environment and run:
-
-```bash
-pip install psutil
-```
-
-For system‑wide OctoPrint installations or Docker images, ensure that psutil is installed through the appropriate package manager or image update process.
+The plugin determines system uptime using either `/proc/uptime` on Linux systems or the Python library `psutil`. `psutil` is installed automatically as a dependency. If neither method can provide uptime, the plugin API returns `uptime_available: false` along with a human‑readable `uptime_note`.
 
 ## Configuration
 

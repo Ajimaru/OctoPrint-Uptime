@@ -32,12 +32,8 @@ Security fixes are provided for the latest released version.
 
 ## Scope
 
-This policy applies to vulnerabilities in this repository (your OctoPrint plugin), including backend (Python), templates, and frontend assets shipped with the plugin.
+This policy applies to vulnerabilities in this repository, including backend (Python), templates, and frontend assets shipped with the plugin.
 
 ## Safe Harbor
 
 We support good-faith security research. Please avoid privacy violations, data destruction, and service disruption.
-
-## Bug Bounty
-
-This project does not currently offer a paid bug bounty program.
