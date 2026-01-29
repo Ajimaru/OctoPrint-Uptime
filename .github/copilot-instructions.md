@@ -4,7 +4,7 @@
 
 **Issue** <https://github.com/OctoPrint/OctoPrint/issues/4355>
 
-**Target** OctoPrint 1.12.0+, Python 3.7+ | Implements 2021 feature request
+**Target** OctoPrint 1.12.0+, Python >3.7, <3.13 | Implements 2021 feature request
 
 **Docs** <https://docs.octoprint.org/en/main/plugins/index.html>
 
