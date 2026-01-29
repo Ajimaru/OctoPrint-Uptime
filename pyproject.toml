@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OctoPrint-Uptime"
-version = "0.1.0.dev44"
+version = "0.1.0.dev45"
 description = "Adds system uptime to the navbar and exposes a small uptime API."
 authors = [
     {name = "Ajimaru", email = "ajimaru_gdr@pm.me"}
