@@ -54,16 +54,16 @@ try:
 except ModuleNotFoundError:
     PERM = None
 
-    class _SettingsPluginBase(object):  # pragma: no cover - trivial fallback
+    class _SettingsPluginBase:  # pragma: no cover - trivial fallback
         pass
 
-    class _SimpleApiPluginBase(object):  # pragma: no cover - trivial fallback
+    class _SimpleApiPluginBase:  # pragma: no cover - trivial fallback
         pass
 
-    class _AssetPluginBase(object):  # pragma: no cover - trivial fallback
+    class _AssetPluginBase:  # pragma: no cover - trivial fallback
         pass
 
-    class _TemplatePluginBase(object):  # pragma: no cover - trivial fallback
+    class _TemplatePluginBase:  # pragma: no cover - trivial fallback
         pass
 
     SettingsPluginBase = _SettingsPluginBase
@@ -178,7 +178,7 @@ class OctoprintUptimePlugin(
         self._debug_throttle_seconds = 60
         self._last_uptime_source: Optional[str] = None
 
-    def get_update_information(self):
+    def get_update_information(self) -> Dict[str, Any]:
         """Return update information for the OctoPrint-Uptime plugin.
 
         This method provides metadata required for OctoPrint's update mechanism.
@@ -187,7 +187,7 @@ class OctoprintUptimePlugin(
             dict: Update information dictionary.
         """
 
-        return {
+        info: Dict[str, Any] = {
             "octoprint_uptime": {
                 "displayName": "OctoPrint-Uptime",
                 "displayVersion": VERSION,
@@ -198,6 +198,7 @@ class OctoprintUptimePlugin(
                 "pip": "https://github.com/Ajimaru/OctoPrint-Uptime/archive/{target_version}.zip",
             }
         }
+        return info
 
     def is_api_protected(self) -> bool:
         """Indicate whether the plugin's API endpoint requires authentication.
@@ -205,7 +206,8 @@ class OctoprintUptimePlugin(
         Returns:
             bool: True if API is protected, False otherwise.
         """
-        return True
+        result: bool = True
+        return result
 
     def get_assets(self) -> Dict[str, List[str]]:
         """Return plugin asset files for OctoPrint-Uptime.
@@ -241,7 +243,7 @@ class OctoprintUptimePlugin(
             },
         ]
 
-    def is_template_autoescaped(self):
+    def is_template_autoescaped(self) -> bool:
         """
         Determine if template autoescaping is enabled.
 
@@ -273,7 +275,7 @@ class OctoprintUptimePlugin(
         """Get uptime from /proc/uptime if available."""
         try:
             if os.path.exists("/proc/uptime"):
-                with open("/proc/uptime", "r", encoding="utf-8") as f:
+                with open("/proc/uptime", encoding="utf-8") as f:
                     uptime_seconds = float(f.readline().split()[0])
                     return uptime_seconds
         except (ValueError, TypeError, OSError):
@@ -305,7 +307,7 @@ class OctoprintUptimePlugin(
 
         self._safe_update_internal_state()
 
-        hook = getattr(super(OctoprintUptimePlugin, self), "on_settings_initialized", None)
+        hook = getattr(super(), "on_settings_initialized", None)
         if not callable(hook):
             hook = getattr(SettingsPluginBase, "on_settings_initialized", None)
 
@@ -496,7 +498,9 @@ class OctoprintUptimePlugin(
         self._debug_enabled = bool(self._settings.get(["debug"]))
         self._navbar_enabled = bool(self._settings.get(["navbar_enabled"]))
         self._display_format = str(self._settings.get(["display_format"]))
-        self._debug_throttle_seconds = int(self._settings.get(["debug_throttle_seconds"]) or 60)
+        self._debug_throttle_seconds = int(
+            self._settings.get(["debug_throttle_seconds"]) or 60
+        )
 
     def _log_settings_after_save(self, prev_navbar: Any) -> None:
         """
@@ -572,7 +576,7 @@ class OctoprintUptimePlugin(
         except (AttributeError, TypeError, ValueError):
             pass
 
-    def _fallback_uptime_response(self):
+    def _fallback_uptime_response(self) -> Any:
         """
         Return system uptime info as a JSON or dict response.
 
@@ -581,9 +585,13 @@ class OctoprintUptimePlugin(
         """
         logger = getattr(self, "_logger", None)
         try:
-            seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = self._get_uptime_info()
+            seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = (
+                self._get_uptime_info()
+            )
             uptime_available = (
-                isinstance(seconds, (int, float)) and seconds >= 0 and uptime_full != _("unknown")
+                isinstance(seconds, (int, float))
+                and seconds >= 0
+                and uptime_full != _("unknown")
             )
             if _flask is not None:
                 navbar_enabled, display_format, poll_interval = self._get_api_settings()
@@ -599,7 +607,9 @@ class OctoprintUptimePlugin(
                     "uptime_available": uptime_available,
                 }
                 if not uptime_available:
-                    resp["uptime_note"] = _("Uptime could not be determined on this system.")
+                    resp["uptime_note"] = _(
+                        "Uptime could not be determined on this system."
+                    )
                 try:
                     json_resp = _flask.jsonify(**resp)
                 except (TypeError, ValueError, RuntimeError):
@@ -615,7 +625,9 @@ class OctoprintUptimePlugin(
             else:
                 resp = {"uptime": uptime_full, "uptime_available": uptime_available}
                 if not uptime_available:
-                    resp["uptime_note"] = _("Uptime could not be determined on this system.")
+                    resp["uptime_note"] = _(
+                        "Uptime could not be determined on this system."
+                    )
                 return resp
         except (AttributeError, TypeError, ValueError):
             if logger:
@@ -666,7 +678,9 @@ class OctoprintUptimePlugin(
                     return {"error": _("Forbidden"), "uptime_available": False}
         except (AttributeError, TypeError, ValueError):
             if hasattr(self, "_logger") and self._logger is not None:
-                self._logger.exception("on_api_get: unexpected error while checking permissions")
+                self._logger.exception(
+                    "on_api_get: unexpected error while checking permissions"
+                )
             try:
                 return self._abort_forbidden()
             except (AttributeError, TypeError, ValueError, RuntimeError, OSError):
@@ -687,7 +701,7 @@ class OctoprintUptimePlugin(
         # permission enforcement is required.
         return True
 
-    def _abort_forbidden(self):
+    def _abort_forbidden(self) -> Dict[str, str]:
         """
         Handles forbidden access attempts by aborting the request with a 403 status code if
         Flask is available, and returns a JSON error message indicating the action is
@@ -701,7 +715,7 @@ class OctoprintUptimePlugin(
             _flask.abort(403)
         return {"error": _("Forbidden")}
 
-    def _get_uptime_info(self):
+    def _get_uptime_info(self) -> Tuple[Optional[float], str, str, str, str]:
         """
         Retrieve uptime information and formatted strings.
 
@@ -709,7 +723,9 @@ class OctoprintUptimePlugin(
             Tuple: (seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d)
         """
         try:
-            if hasattr(self, "get_uptime_seconds") and callable(self.get_uptime_seconds):
+            if hasattr(self, "get_uptime_seconds") and callable(
+                self.get_uptime_seconds
+            ):
                 res = self.get_uptime_seconds()
                 if isinstance(res, tuple) and len(res) == 2:
                     seconds, _source = res
@@ -721,6 +737,11 @@ class OctoprintUptimePlugin(
                 seconds, _source = self._get_uptime_seconds()
 
             if isinstance(seconds, (int, float)):
+                seconds = float(seconds)
+            else:
+                seconds = None
+
+            if seconds is not None:
                 uptime_full = format_uptime(seconds)
                 uptime_dhm = format_uptime_dhm(seconds)
                 uptime_dh = format_uptime_dh(seconds)
@@ -737,7 +758,7 @@ class OctoprintUptimePlugin(
             seconds = None
             return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
 
-    def _get_api_settings(self):
+    def _get_api_settings(self) -> Tuple[bool, str, int]:
         """
         Retrieves and returns the plugin's API settings with appropriate fallbacks.
 
@@ -759,7 +780,9 @@ class OctoprintUptimePlugin(
             if raw_nav is None:
                 navbar_enabled = True
                 if logger:
-                    logger.debug("_get_api_settings: navbar_enabled missing, defaulting to True")
+                    logger.debug(
+                        "_get_api_settings: navbar_enabled missing, defaulting to True"
+                    )
             else:
                 navbar_enabled = bool(raw_nav)
         except (AttributeError, TypeError, ValueError) as e:
@@ -775,7 +798,9 @@ class OctoprintUptimePlugin(
             if raw_fmt is None:
                 display_format = _("full")
                 if logger:
-                    logger.debug("_get_api_settings: display_format missing, defaulting to 'full'")
+                    logger.debug(
+                        "_get_api_settings: display_format missing, defaulting to 'full'"
+                    )
             else:
                 display_format = str(raw_fmt)
         except (AttributeError, TypeError, ValueError) as e:
@@ -792,7 +817,8 @@ class OctoprintUptimePlugin(
                 poll_interval = 5
                 if logger:
                     logger.debug(
-                        "_get_api_settings: poll_interval_seconds missing, " "defaulting to 5"
+                        "_get_api_settings: poll_interval_seconds missing, "
+                        "defaulting to 5"
                     )
             else:
                 try:
