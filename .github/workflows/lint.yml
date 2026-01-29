@@ -55,6 +55,15 @@ jobs:
             pre-commit-${{ runner.os }}-${{ matrix.python-version }}-
             pre-commit-${{ runner.os }}-
 
+      - name: Set up Node.js for hooks
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+
+      - name: Install Node.js dependencies for hooks
+        run: |
+          if [ -f package-lock.json ] || [ -f package.json ]; then npm ci --no-audit --no-fund; fi
+
       - name: Run pre-commit on all files
         run: |
           pre-commit run --all-files --show-diff-on-failure --color always

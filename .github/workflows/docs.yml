@@ -41,7 +41,7 @@ jobs:
           node-version: "20"
 
       - name: Install Node.js dependencies
-        run: npm install
+        run: npm ci --no-audit --no-fund
 
       - name: Install diagram system deps
         run: |
