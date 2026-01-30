@@ -45,6 +45,13 @@ fi
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
+# Ensure at least one file argument was provided; avoid invoking Prettier with no targets.
+if [ "$#" -eq 0 ]; then
+    echo "ERROR: no files provided to prettier-hook.sh" >&2
+    usage
+    exit 2
+fi
+
 if [[ -x "${REPO_ROOT}/node_modules/.bin/prettier" ]]; then
     exec "${REPO_ROOT}/node_modules/.bin/prettier" --write "$@"
 else
