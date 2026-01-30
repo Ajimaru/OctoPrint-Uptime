@@ -74,7 +74,6 @@ Usage: compile_translations.sh [--command] [args]
 
 Commands:
   --init <lang>             Initialize a new language (e.g. --init de)
-  --update                  Update existing PO files from translations/messages.pot
   --all                     Compile both top-level and plugin translations
   --plugin-only             Compile only plugin translations (octoprint_uptime/translations)
   --clean                   Remove obsolete ("#~") entries from top-level PO files
@@ -185,6 +184,14 @@ compile_top_level() {
     fi
   else
     echo "babel.cfg not found; skipping POT update" >&2
+  fi
+
+  # Update PO files from the POT so the repository's PO files stay in sync
+  if [[ -f translations/messages.pot ]]; then
+    echo "Updating PO files from POT..."
+    if ! "$VENV_PYBABEL" update -i translations/messages.pot -d translations >/dev/null 2>&1; then
+      echo "Warning: pybabel update failed; PO files may not be synchronized." >&2
+    fi
   fi
 
   # Attempt to autofill missing translations using Argos (local) if available.
@@ -304,8 +311,9 @@ case "$cmd" in
     handle_init "$1"
     ;;
   update)
-    handle_update
-    ;;
+     echo "The '--update' command has been removed. Run the script without arguments to update PO files and compile." >&2
+     exit 2
+     ;;
   plugin-only)
     compile_plugin
     ;;
