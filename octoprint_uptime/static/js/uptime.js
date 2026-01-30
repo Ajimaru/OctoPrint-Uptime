@@ -357,7 +357,7 @@ $(function () {
 
           if (errors.length) {
             showValidationErrors(errors);
-            return undefined;
+            return Promise.reject(new Error("validation failed"));
           }
           return origSave();
         };
