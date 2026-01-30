@@ -114,7 +114,7 @@ repos:
         args:
           ["--wrapper-quiet", "--clean-css=--s1 --advanced --compatibility=ie8"]
         additional_dependencies: ["less-plugin-clean-css"]
-        files: ^(src/octoprint/static/less/(octoprint|recovery|login)\\.less|src/octoprint/plugins/.*/static/less/.*\\.less$)
+        files: ^(octoprint_uptime/static/less/.*\\.less|src/octoprint/plugins/.*/static/less/.*\\.less$)
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
