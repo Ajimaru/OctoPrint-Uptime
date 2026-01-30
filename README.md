@@ -35,7 +35,7 @@
 1. Open OctoPrint web interface
 2. Navigate to **Settings** → **Plugin Manager**
 3. Click **Get More...**
-4. Click **Install from URL** and enter: `github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip`
+4. Click **Install from URL** and enter: `https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest/download/OctoPrint-Uptime-latest.zip`
 
 5. Click **Install**
 6. Restart OctoPrint
