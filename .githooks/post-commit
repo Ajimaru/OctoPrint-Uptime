@@ -62,8 +62,8 @@ if [[ -d "$POST_D_DIR" ]]; then
       echo "--- Running: $f ---"
       "$f" || echo "Script failed: $f (exit $?)"
     elif [[ -f "$f" ]]; then
-      echo "--- Running (sh): $f ---"
-      sh "$f" || echo "Script failed: $f (exit $?)"
+      echo "--- Running (bash): $f ---"
+      bash -- "$f" || echo "Script failed: $f (exit $?)"
     fi
   done
 else
