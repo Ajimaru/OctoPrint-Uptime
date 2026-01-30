@@ -44,7 +44,7 @@ codacy-trivy-skip.sarif
 codacy-trivy-args.sarif
 codacy-trivy-ignore.sarif
 .github/copilot-instructions.md
-.development
+.development/
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
