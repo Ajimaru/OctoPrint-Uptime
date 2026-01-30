@@ -13,24 +13,25 @@ if [ -z "${BASH_VERSION-}" ]; then
   fi
 fi
 
-# Description: Manage translation workflow for the repository: extract, init, update, and compile PO/MO using pybabel.
-# Behavior / subcommands:
-#  extract             - run `pybabel extract` to refresh `translations/messages.pot`
-#  init <lang>         - initialize a new language from the POT into `translations/<lang>`
-#  update              - update existing PO files in `translations/` from POT
-#  compile             - compile top-level `translations/` and copy compiled catalogs
-#                        into `octoprint_uptime/translations/` (Single Source: translations/)
-#  compile --plugin-only
-#                      - compile only `octoprint_uptime/translations`
-#  compile --all       - compile both top-level and plugin translations
+# Description: Manage translation workflow for the repository: extract, init, update, and
+# compile PO/MO using pybabel.
 #
-# Usage examples:
-#   ./compile_translations.sh extract
-#   ./compile_translations.sh init de
-#   ./compile_translations.sh update
-#   ./compile_translations.sh compile          # default: compile top-level and copy to package
-#   ./compile_translations.sh compile --all    # compile both top-level and plugin translations
-#   ./compile_translations.sh compile --plugin-only
+# NOTE: this script enforces a leading `--` on subcommands (e.g. `--extract`, `--compile`).
+# The canonical, single source of truth for translations is the top-level `translations/`
+# directory. Compiled `.mo` files are copied into `octoprint_uptime/translations/`.
+# By default the script does NOT copy `.po` files into the package to avoid creating a
+# second source of truth; enable copying of `.po` files only by setting the environment
+# variable `COPY_PO=true` when invoking the script.
+#
+# Behavior / subcommands (all commands require a leading `--`):
+#   --extract            Run `pybabel extract` to refresh `translations/messages.pot`
+#   --init <lang>        Initialize a new language from the POT into `translations/<lang>`
+#   --update             Update existing PO files in `translations/` from POT
+#   --compile            Compile translations; default compiles top-level translations
+#                        and copies compiled catalogs into `octoprint_uptime/translations/`
+#   --compile --plugin-only
+#                        Compile only `octoprint_uptime/translations`
+#   --compile --all      Compile both top-level and plugin translations
 
 set -euo pipefail
 
@@ -49,15 +50,22 @@ BABEL_CFG="${REPO_ROOT}/babel.cfg"
 
 usage() {
   cat <<'USAGE'
-Usage: compile_translations.sh <command> [args]
+Usage: compile_translations.sh [--command] [args]
 
-Commands:
-  extract                 Extract translatable strings into translations/messages.pot
-  init <lang>             Initialize a new language (e.g. init de)
-  update                  Update existing PO files from translations/messages.pot
-  compile [--plugin-only|--all]
-                          Compile translations; default compiles top-level translations
-                          and copies compiled catalogs into octoprint_uptime/translations.
+Commands (leading '--' required):
+  --extract                 Extract translatable strings into translations/messages.pot
+  --init <lang>             Initialize a new language (e.g. --init de)
+  --update                  Update existing PO files from translations/messages.pot
+  --compile [--plugin-only|--all]
+                            Compile translations. Default: compile top-level
+                            translations and copy compiled catalogs into
+                            octoprint_uptime/translations/ (single source: translations/)
+
+Notes:
+  - The script does NOT copy `.po` files into the package by default. To copy
+    `.po` files as well (for reviewer convenience), set `COPY_PO=true` in the
+    environment before running the script.
+  - All subcommands must be invoked with a leading `--`, e.g. `--extract`.
 USAGE
 }
 
@@ -65,15 +73,16 @@ copy_compiled_to_package() {
   echo "Copying compiled catalogs from translations/ to octoprint_uptime/translations/..."
   shopt -s nullglob
   for mo in translations/*/LC_MESSAGES/*.mo; do
-    # mo -> translations/<lang>/LC_MESSAGES/messages.mo
     lang_dir="$(basename "$(dirname "$(dirname "$mo")")")"
     target_dir="octoprint_uptime/translations/${lang_dir}/LC_MESSAGES"
     mkdir -p "$target_dir"
     echo "  -> $lang_dir: copying $(basename "$mo")"
     cp -a "$mo" "$target_dir/"
-    # also copy the .po if present (keeps package in-sync for reviewers)
+    # optionally copy the .po if present (keeps package in-sync for reviewers)
+    # default: do NOT copy .po to avoid creating a second source of truth
+    # enable by setting environment variable: COPY_PO=true
     po="translations/${lang_dir}/LC_MESSAGES/$(basename "${mo%.mo}.po")"
-    if [[ -f "$po" ]]; then
+    if [[ "${COPY_PO:-false}" == "true" && -f "$po" ]]; then
       cp -a "$po" "$target_dir/"
     fi
   done
@@ -129,19 +138,32 @@ handle_update() {
   "$VENV_PYBABEL" update -i translations/messages.pot -d translations || return 1
 }
 
-cmd="${1:-compile}"
+if [[ "$#" -gt 0 ]]; then
+  first="$1"
+  if [[ "$first" == --* ]]; then
+    cmd="${first#--}"
+    shift
+  else
+    echo "Commands must be given with a leading '--', e.g. --extract or --compile" >&2
+    usage
+    exit 2
+  fi
+else
+  cmd="compile"
+fi
+
 case "$cmd" in
   extract)
     handle_extract
     ;;
   init)
-    handle_init "$2"
+    handle_init "$1"
     ;;
   update)
     handle_update
     ;;
   compile)
-    case "${2:-}" in
+    case "${1:-}" in
       --plugin-only)
         compile_plugin
         ;;
@@ -149,12 +171,17 @@ case "$cmd" in
         compile_top_level
         compile_plugin
         ;;
-      *)
+      "" )
         compile_top_level
+        ;;
+      *)
+        echo "Unknown compile option: ${1}" >&2
+        usage
+        exit 2
         ;;
     esac
     ;;
-  -h|--help|help)
+  help)
     usage
     ;;
   *)
