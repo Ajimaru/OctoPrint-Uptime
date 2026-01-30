@@ -8,14 +8,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OctoPrint-Uptime"
-version = "0.1.0.dev47"
+version = "0.1.0.dev48"
 description = "Adds system uptime to the navbar and exposes a small uptime API."
 authors = [
     {name = "Ajimaru", email = "ajimaru_gdr@pm.me"}
 ]
 readme = {file = "README.md", content-type = "text/markdown"}
 
-requires-python = ">3.7, <3.13"
+requires-python = ">=3.8, <3.13"
 
 dynamic = [
     "license"
