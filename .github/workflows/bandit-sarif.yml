@@ -51,9 +51,17 @@ jobs:
           path: reports/bandit.sarif
           if-no-files-found: error
           retention-days: 7
+      - name: Check for SARIF file
+        id: check_sarif
+        run: |
+          if [ -f reports/bandit.sarif ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Upload SARIF to GitHub Code Scanning
-        if: always()
+        if: (success() || failure()) && steps.check_sarif.outputs.exists == 'true'
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: reports/bandit.sarif
