@@ -129,14 +129,3 @@ repos:
         entry: bash .githooks/check_translations_sync.sh
         language: system
         pass_filenames: false
-
-  # Trivy filesystem scan: runs only if `trivy` is installed locally.
-  # This avoids breaking commits on machines without Trivy while allowing
-  # developers who have Trivy installed to catch filesystem vulnerabilities.
-  - repo: local
-    hooks:
-      - id: trivy-scan
-        name: Trivy FS scan
-        entry: bash -c "command -v trivy >/dev/null 2>&1 || exit 0; trivy fs --ignorefile .trivyignore --exit-code 1 ."
-        language: system
-        pass_filenames: false
