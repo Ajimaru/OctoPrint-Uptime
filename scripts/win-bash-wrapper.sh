@@ -43,8 +43,9 @@ find_bash() {
         printf '%s' "${PROGRAMFILES}/Git/bin/bash.exe"
         return 0
     fi
-    if [ -n "${PROGRAMFILES(x86)-}" ] && [ -x "${PROGRAMFILES(x86)}/Git/bin/bash.exe" ]; then
-        printf '%s' "${PROGRAMFILES(x86)}/Git/bin/bash.exe"
+    pf86="$(printenv 'PROGRAMFILES(x86)')"
+    if [ -n "$pf86" ] && [ -x "$pf86/Git/bin/bash.exe" ]; then
+        printf '%s' "$pf86/Git/bin/bash.exe"
         return 0
     fi
 
@@ -115,8 +116,9 @@ find_bash() {
         printf '%s' "${PROGRAMFILES}/Git/bin/bash.exe"
         return 0
     fi
-    if [ -n "${PROGRAMFILES(x86)-}" ] && [ -x "${PROGRAMFILES(x86)}/Git/bin/bash.exe" ]; then
-        printf '%s' "${PROGRAMFILES(x86)}/Git/bin/bash.exe"
+    pf86="$(printenv 'PROGRAMFILES(x86)')"
+    if [ -n "$pf86" ] && [ -x "$pf86/Git/bin/bash.exe" ]; then
+        printf '%s' "$pf86/Git/bin/bash.exe"
         return 0
     fi
 

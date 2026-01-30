@@ -1041,7 +1041,7 @@ def test_fallback_uptime_response_handles_exceptions(monkeypatch):
     if isinstance(data, dict):
         assert data.get("uptime") == plugin._("unknown") and data.get("uptime_available") is False
     else:
-        assert False, "Response is not a dict and cannot check keys"
+        pytest.fail("Response is not a dict and cannot check keys")
 
 
 def test_safe_update_internal_state_logs_warning():

@@ -75,7 +75,7 @@ if [ "$USE_PASSED_FILES" -eq 1 ]; then
         exit 1
     fi
 else
-    if ! find "$JS_SRC_DIR" -type f -name '*.js' -print -quit >/dev/null 2>&1; then
+    if [ -z "$(find "$JS_SRC_DIR" -type f -name '*.js' -print -quit 2>/dev/null)" ]; then
         echo "Warning: No JavaScript files found"
         mkdir -p "$DOCS_API_DIR"
         echo "# JavaScript API" > "$OUTPUT"
@@ -153,15 +153,35 @@ The JavaScript source files exist but don't yet have JSDoc comments. To generate
 
 ```javascript
 /**
- * Calculate ETA for a heater.
- * @param {string} heater - Heater name (e.g., "tool0", "bed")
- * @param {Object} data - Temperature data
- * @param {number} data.current - Current temperature
- * @param {number} data.target - Target temperature
- * @returns {number} ETA in seconds, or null if unavailable
+ * Format system uptime for display.
+ * @param {number} seconds - Uptime in seconds
+ * @param {string} format - Display format: "full", "dhm", "dh", "d", or "short"
+ * @returns {string} Formatted uptime string suitable for UI display
  */
-function calculateETA(heater, data) {
-    // Implementation
+function formatUptime(seconds, format) {
+    if (typeof seconds !== "number" || isNaN(seconds)) {
+        return "unknown";
+    }
+    const secs = Math.max(0, Math.floor(seconds));
+    const days = Math.floor(secs / 86400);
+    const hours = Math.floor((secs % 86400) / 3600);
+    const minutes = Math.floor((secs % 3600) / 60);
+
+    switch (format) {
+        case "dhm":
+            return `${days}d ${hours}h ${minutes}m`;
+        case "dh":
+            return `${days}d ${hours}h`;
+        case "d":
+            return `${days}d`;
+        case "short":
+            if (days > 0) return `${days}d ${hours}h`;
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            return `${minutes}m`;
+        case "full":
+        default:
+            return `${days}d ${hours}h ${minutes}m`;
+    }
 }
 ```
 
