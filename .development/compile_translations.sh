@@ -16,7 +16,6 @@ fi
 # Description: Manage translation workflow for the repository: extract, init, update, and
 # compile PO/MO using pybabel.
 #
-# NOTE: this script enforces a leading `--` on subcommands (e.g. `--extract`, `--compile`).
 # The canonical, single source of truth for translations is the top-level `translations/`
 # directory. Compiled `.mo` files are copied into `octoprint_uptime/translations/`.
 # By default the script does NOT copy `.po` files into the package to avoid creating a
@@ -32,6 +31,8 @@ fi
 #   --compile --plugin-only
 #                        Compile only `octoprint_uptime/translations`
 #   --compile --all      Compile both top-level and plugin translations
+#   --clean              Remove obsolete ("#~") entries from top-level PO files.
+#                        Use `FORCE_CLEAN=true` to skip interactive confirmation.
 
 set -euo pipefail
 
@@ -52,7 +53,7 @@ usage() {
   cat <<'USAGE'
 Usage: compile_translations.sh [--command] [args]
 
-Commands (leading '--' required):
+Commands:
   --extract                 Extract translatable strings into translations/messages.pot
   --init <lang>             Initialize a new language (e.g. --init de)
   --update                  Update existing PO files from translations/messages.pot
@@ -60,18 +61,56 @@ Commands (leading '--' required):
                             Compile translations. Default: compile top-level
                             translations and copy compiled catalogs into
                             octoprint_uptime/translations/ (single source: translations/)
+  --clean                   Remove obsolete ("#~") entries from top-level PO files
+                            (set FORCE_CLEAN=true to skip interactive prompts)
 
 Notes:
   - The script does NOT copy `.po` files into the package by default. To copy
     `.po` files as well (for reviewer convenience), set `COPY_PO=true` in the
     environment before running the script.
-  - All subcommands must be invoked with a leading `--`, e.g. `--extract`.
+
 USAGE
 }
 
 copy_compiled_to_package() {
   echo "Copying compiled catalogs from translations/ to octoprint_uptime/translations/..."
   shopt -s nullglob
+  clean_obsolete() {
+    echo "Cleaning obsolete PO entries (obsolete entries start with '#~')..."
+    if ! command -v msgattrib >/dev/null 2>&1; then
+      echo "msgattrib not found. Please install gettext (msgattrib) to use --clean." >&2
+      return 1
+    fi
+    shopt -s nullglob
+    for po in translations/*/LC_MESSAGES/*.po; do
+      echo "Processing: $po"
+      if [[ "${FORCE_CLEAN:-false}" == "true" ]]; then
+        if msgattrib --no-obsolete "$po" >"${po}.clean"; then
+          mv "${po}.clean" "$po"
+          echo "  -> cleaned $po"
+        else
+          echo "  -> msgattrib failed for $po" >&2
+        fi
+      else
+        read -r -p "  Remove obsolete entries from $po? [y/N] " ans
+        case "$ans" in
+          [Yy]*)
+            if msgattrib --no-obsolete "$po" >"${po}.clean"; then
+              mv "${po}.clean" "$po"
+              echo "  -> cleaned $po"
+            else
+              echo "  -> msgattrib failed for $po" >&2
+            fi
+            ;;
+          *)
+            echo "  -> skipped $po"
+            ;;
+        esac
+      fi
+    done
+    shopt -u nullglob
+  }
+
   for mo in translations/*/LC_MESSAGES/*.mo; do
     lang_dir="$(basename "$(dirname "$(dirname "$mo")")")"
     target_dir="octoprint_uptime/translations/${lang_dir}/LC_MESSAGES"
@@ -136,6 +175,7 @@ handle_update() {
   fi
   echo "Updating PO files from POT..."
   "$VENV_PYBABEL" update -i translations/messages.pot -d translations || return 1
+    clean_obsolete
 }
 
 if [[ "$#" -gt 0 ]]; then
