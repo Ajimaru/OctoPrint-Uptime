@@ -62,7 +62,6 @@ OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {
 
 ## Testing & debugging
 
-- Restart your development OctoPrint instance (for example with `.development/restart_octoprint_dev.sh`) after code or template changes.
 - Open browser DevTools, check the Console for errors and Network tab for the `/api/plugin/octoprint_uptime` request and its JSON response.
 - If the element does not appear, verify the selector used in `OCTOPRINT_VIEWMODELS.push` matches an element present on the page and that `isNavbarEnabled` is true in settings.
 

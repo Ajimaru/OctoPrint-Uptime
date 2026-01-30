@@ -9,11 +9,17 @@ pip install -r requirements-docs.txt
 
 - Generate JS docs (if desired):
 
-```bash
-# recommended: run the repository setup helper which installs Node dev deps
-.development/setup_dev.sh
+````bash
+- Install docs dependencies:
 
-# then generate JS docs
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements-docs.txt
+````
+
+- Generate JS docs (if desired):
+
+```bash
 ./scripts/generate-jsdocs.sh
 ```
 
@@ -28,24 +34,14 @@ mkdocs serve
 ### Windows
 
 The repository helper scripts are POSIX shell scripts and expect a Bash
-environment. On Windows prefer running the helper scripts from Git Bash or
-WSL. If Git Bash is not installed, `.development/setup_dev.sh` will offer to
-open the Git for Windows download page. See `.development/README.md` for
-details.
+environment. On Windows prefer running the helper scripts from Git Bash.
 
 When working on translations during development, use the repository helper which wraps `pybabel` and copies compiled catalogs into the package for runtime testing.
 
 From the repository root:
 
 ```bash
-# refresh POT
-./.development/compile_translations.sh extract
-
-# merge POT into existing PO files
-./.development/compile_translations.sh update
-
-# compile and copy into octoprint_uptime/translations/
-./.development/compile_translations.sh compile
+./scripts/compile_translations.sh
 ```
 
 If a commit fails due to translations being out of sync, run the `update` command above, add the changed PO files, and re-commit.
@@ -55,13 +51,3 @@ Note: the repository's translations pre-commit check is non-destructive — it r
 ## Notes
 
 This document is contributor-focused and omits end-user installation guidance such as package dependencies. For user-facing instructions about uptime dependencies (for example how to install `psutil` in your OctoPrint virtualenv), see the `Installation` and `Dependencies` sections in this documentation or the [project website](https://github.com/Ajimaru/OctoPrint-Uptime#readme).
-
-## Diagrams
-
-Visual documentation (Mermaid diagrams rendered as HTML):
-
-- [Bash scripts relationships](diagrams/bash-relations.html)
-- [Detailed: setup_dev.sh flow](diagrams/setup-dev.html)
-- [Detailed: bump_control.sh flow](diagrams/bump-control.html)
-- [Detailed: commit process (pre/post hooks)](diagrams/commit-process.html)
-- [Detailed: .development scripts relationships](diagrams/development-scripts.html)

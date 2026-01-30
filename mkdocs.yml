@@ -72,9 +72,3 @@ nav:
           - Packages: reference/diagrams/packages.md
           - Overview (Mermaid): reference/diagrams/overview.md
           - Regenerate: reference/diagrams/REGENERATE.md
-  - "Diagrams (HTML)":
-      - "Bash Relations": diagrams/bash-relations.html
-      - "Bump Control Flow": diagrams/bump-control.html
-      - "Commit Process": diagrams/commit-process.html
-      - "Development Scripts": diagrams/development-scripts.html
-      - "Setup Dev Flow": diagrams/setup-dev.html

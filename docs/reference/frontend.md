@@ -52,8 +52,7 @@ Check / test poll interval:
 When you need to test localized frontend strings, compile the translations and copy compiled catalogs into the package with the repository helper, then restart OctoPrint:
 
 ```bash
-./.development/compile_translations.sh update
-./.development/compile_translations.sh compile
+./scripts/compile_translations.sh
 # restart OctoPrint or reload plugin
 ```
 

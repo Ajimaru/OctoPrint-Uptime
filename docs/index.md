@@ -159,7 +159,7 @@ Workflow: `.github/workflows/docs.yml`
 
 ### Developer guides
 
-The developer-facing pages under `docs/development/` have been synchronized with the repository `CONTRIBUTING.md` and `tests/README.md` and include details on the `.development` helper scripts (setup, bumping, packaging, restart helpers). See the `development` section in the docs for contributor, testing and release guidance.
+The developer-facing pages under `docs/development/` have been synchronized with the repository `CONTRIBUTING.md` and `tests/README.md` and include details on the `scripts/` helper scripts. See the `development` section in the docs for contributor, testing and release guidance.
 
 ## Configuration
 

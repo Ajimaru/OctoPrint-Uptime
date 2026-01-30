@@ -30,12 +30,12 @@ cd "$REPO_ROOT"
 
 VENV_PYBABEL="./venv/bin/pybabel"
 if [[ ! -x "$VENV_PYBABEL" ]]; then
-  echo "pybabel not found in ./venv. Install dev requirements: ./.development/setup_dev.sh" >&2
+  echo "pybabel not found in ./venv. Install dev requirements: <TODO> describe how to manually install pybabel in the virtual environment <TODO>" >&2
   exit 1
 fi
 
 if [[ ! -f translations/messages.pot ]]; then
-  echo "POT file not found at translations/messages.pot. Run './.development/compile_translations.sh extract' first." >&2
+  echo "POT file not found at translations/messages.pot. Update .pot files first." >&2
   exit 1
 fi
 
@@ -62,7 +62,6 @@ fi
 printf '%s\n' "ERROR: Translations are out of sync with translations/messages.pot. The following differences were detected:"
 diff -r -q translations "$tmpdir"/translations || true
 
-printf '%s\n' "To update the real PO files run:"
-printf '%s\n' "  ./.development/compile_translations.sh"
+printf '%s\n' "Update the real PO files."
 printf '%s\n' "Then review and commit the updated PO (and compiled MO if you keep them)."
 exit 1
