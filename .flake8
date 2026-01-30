@@ -10,4 +10,3 @@ exclude = .git,__pycache__,build,dist,venv,.venv,.tox,*.egg-info
 
 # Per-file ignores can be added here if necessary, e.g.:
 per-file-ignores =
-    setup.py: E265,E266,E501,E402,E722

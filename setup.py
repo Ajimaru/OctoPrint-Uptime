@@ -72,10 +72,10 @@ PLUGIN_AUTHOR_EMAIL = "ajimaru_gdr@pm.me"
 PLUGIN_URL = "https://github.com/Ajimaru/OctoPrint-Uptime"
 
 
-### --------------------------------------------------------------------
-### More advanced options that you usually shouldn't have to touch follow
-### after this point
-### --------------------------------------------------------------------
+# --------------------------------------------------------------------
+# More advanced options that you usually shouldn't have to touch follow
+# after this point
+# --------------------------------------------------------------------
 
 # Additional package data to install for this plugin. The subfolders
 # "templates", "static" and "translations" will already be installed
