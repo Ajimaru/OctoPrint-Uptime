@@ -23,7 +23,7 @@ pytest --cov=octoprint_uptime --cov-report=html
 Run a single test file or test:
 
 ```bash
-pytest tests/test_uptime.py::test_some_case -q
+pytest tests/plugin_test.py::test_some_case -q
 ```
 
 ## Writing tests

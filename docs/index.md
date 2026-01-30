@@ -10,7 +10,7 @@ OctoPrint-Uptime is a plugin for OctoPrint that displays the system uptime in th
 
 ### Prerequisites
 
-- OctoPrint 1.12.0+ (Python 3.10+)
+- OctoPrint 1.12.0+ (Python 3.8+)
 - Node.js 20+ (for frontend development)
 - mkdocs (for documentation)
 
@@ -73,14 +73,14 @@ mkdocs build
 
 ```files
 docs/
-├── README.md                         # This overview
-├── index.md                          # Overview page
+├── README.md                         # Documentation README
+├── index.md                          # Overview page (this file)
 ├── getting-started.md                # Development setup
 ├── jsdoc.json                        # jsdoc-to-markdown config used by scripts/generate-jsdocs.sh
 ├── architecture/                     # System design
 │   ├── overview.md                   # Architecture overview
 │   ├── data-flow.md                  # Data flow diagrams
-│   ├── algorithms.md                 # ETA algorithms
+│   ├── algorithms.md                 # Uptime algorithms
 │   ├── settings.md                   # Settings reference
 │   └── octoprint-integration.md      # Plugin integration
 ├── api/                              # API reference
@@ -141,13 +141,35 @@ Example JSDoc comment:
 
 ```javascript
 /**
- * Calculate ETA for a heater.
- * @param {string} heater - Heater name
- * @param {Object} data - Temperature data
- * @returns {number} ETA in seconds
+ * Fetch uptime information from the OctoPrint-Uptime plugin API.
+ *
+ * @async
+ * @function fetchUptime
+ * @param {string} [baseUrl='/'] - OctoPrint base URL (must include protocol when remote)
+ * @returns {Promise<{
+ *   seconds: number,
+ *   uptime: string,
+ *   uptime_dhm: string,
+ *   navbar_enabled: boolean,
+ *   display_format: string,
+ *   poll_interval_seconds: number,
+ *   uptime_available: boolean,
+ *   uptime_note: string|null
+ * }|null>} Parsed uptime object or null on error
  */
-function calculateETA(heater, data) {
-  // Implementation
+async function fetchUptime(baseUrl = "/") {
+  try {
+    const url = new URL("/api/plugin/octoprint_uptime", baseUrl).toString();
+    const res = await fetch(url, {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.error("OctoPrint-Uptime: fetchUptime failed", err);
+    return null;
+  }
 }
 ```
 

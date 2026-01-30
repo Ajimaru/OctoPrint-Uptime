@@ -1,6 +1,6 @@
 # Release process
 
-This document summarizes the release workflow and the helper scripts in `.development` used by maintainers.
+This document summarizes the release workflow and the helper scripts used by maintainers.
 
 ## Build artifacts
 

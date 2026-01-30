@@ -125,6 +125,12 @@ Note: For logs and troubleshooting, enable "debug logging" in the plugin setting
 
 ## 100% Badge Coverage
 
+Summary: this project exposes many status and quality badges (CI, linting, coverage, releases, maintenance, etc.). The full badge set is available below; click to expand for details.
+
+<!-- markdownlint-disable MD033 -->
+<details>
+<summary>Show all badges</summary>
+
 ### 🏗️ 1. Build & Test Status
 
 [![CI](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
@@ -140,7 +146,6 @@ Note: For logs and troubleshooting, enable "debug logging" in the plugin setting
 [![Code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Ajimaru/OctoPrint-Uptime/main.svg)](https://results.pre-commit.ci/latest/github/Ajimaru/OctoPrint-Uptime/main)
-![Security](https://img.shields.io/badge/security-policy-blue)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime)
 [![Coverage](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/graph/badge.svg?branch=main)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
@@ -176,6 +181,9 @@ Note: For logs and troubleshooting, enable "debug logging" in the plugin setting
 ![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
 [![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/ajitroids#-license)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls)
+
+</details>
+<!-- markdownlint-enable MD033 -->
 
 ---
 

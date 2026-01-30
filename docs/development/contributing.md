@@ -36,6 +36,17 @@ pre-commit run --hook-stage manual --all-files
 
 - After compiling, restart OctoPrint or reload the plugin so the runtime picks up the new `.mo` files (they are copied into `octoprint_uptime/translations/`).
 
+To compile translation messages use Babel's `pybabel` tool. From the repository root run:
+
+```bash
+# compile all available translations from PO -> MO
+pybabel compile -d octoprint_uptime/translations -D messages
+```
+
+This will write the compiled `.mo` files into `octoprint_uptime/translations/<lang>/LC_MESSAGES/messages.mo` (the plugin runtime loads `.mo` files from `octoprint_uptime/translations/`). See the Babel docs for more details: [Babel docs](https://python-babel.github.io/).
+
+If you prefer a short helper, this repository includes a convenience script `.development/compile_translations.sh` that wraps the `pybabel` invocation.
+
 Notes
 
 - Keep changes small and focused. Follow the coding style in `CONTRIBUTING.md` (4-space indentation, English text, use `self._logger` for logging). Use the 'venv' directory for the virtual environment.

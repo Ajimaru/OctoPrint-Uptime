@@ -9,16 +9,6 @@ pip install -r requirements-docs.txt
 
 - Generate JS docs (if desired):
 
-````bash
-- Install docs dependencies:
-
-```bash
-python -m pip install --upgrade pip
-pip install -r requirements-docs.txt
-````
-
-- Generate JS docs (if desired):
-
 ```bash
 ./scripts/generate-jsdocs.sh
 ```
