@@ -5,12 +5,12 @@
 *~
 .DS_Store
 *.egg-info
-dist
-build
-venv
-.venv
-.venv-docs
-venv-docs
+dist/
+build/
+venv/
+.venv/
+.venv-docs/
+venv-docs/
 __pycache__
 .pytest_cache
 .coverage
@@ -30,21 +30,20 @@ node_modules/
 .local/
 .notes/
 .ideas/
-.logs
+.logs/
 .qodo
-.codacy
+.codacy/
 gh_logs
-.codacyignore
 codacy_trivy_results.json
-OctoPrint-Uptime/.github/instructions
+.github/instructions/
 .ruff_cache/
-.codacyignore
 codacy-trivy.sarif
 codacy-trivy-skip.sarif
 codacy-trivy-args.sarif
 codacy-trivy-ignore.sarif
 .github/copilot-instructions.md
 .development/
+.codacyignore
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
