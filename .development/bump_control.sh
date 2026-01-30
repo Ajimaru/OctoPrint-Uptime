@@ -4,7 +4,7 @@
 # This is idempotent: if already running under Bash it does nothing.
 _SCRIPT_DIR_HINT="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd || dirname "$0")"
 REPO_ROOT="$(cd "$_SCRIPT_DIR_HINT/.." >/dev/null 2>&1 && pwd || echo "$_SCRIPT_DIR_HINT")"
-WRAPPER="$REPO_ROOT/.development/win-bash-wrapper.sh"
+WRAPPER="$REPO_ROOT/scripts/win-bash-wrapper.sh"
 if [ -z "${BASH_VERSION-}" ]; then
     if [ -x "$WRAPPER" ]; then
         exec "$WRAPPER" "$0" "$@"

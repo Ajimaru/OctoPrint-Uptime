@@ -10,7 +10,7 @@ The helper scripts are implemented as POSIX shell scripts and expect a Bash
 compatible environment. To make them convenient on native Windows, the
 repository provides the following support:
 
-- `.development/win-bash-wrapper.sh` — a small launcher that attempts to
+- `scripts/win-bash-wrapper.sh` — a small launcher that attempts to
   locate `bash.exe` (Git Bash) and re-execs the target script under that
   interpreter.
 - `.development/install-git-for-windows.ps1` — a PowerShell helper that opens

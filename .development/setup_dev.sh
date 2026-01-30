@@ -4,7 +4,8 @@
 # Git Bash if available. This attempts to locate a Git Bash `bash.exe`
 # and exec the original script under it. Comments are English-only.
 _SCRIPT_DIR_HINT="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd || dirname "$0")"
-WRAPPER="$_SCRIPT_DIR_HINT/win-bash-wrapper.sh"
+# Wrapper moved to project-level `scripts/` directory
+WRAPPER="$_SCRIPT_DIR_HINT/../scripts/win-bash-wrapper.sh"
 if [ -z "${BASH_VERSION-}" ]; then
     if [ -x "$WRAPPER" ]; then
         exec "$WRAPPER" "$0" "$@"
