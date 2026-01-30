@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-30 14:19+0100\n"
+"POT-Creation-Date: 2026-01-30 22:18+0100\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -35,7 +35,7 @@ msgstr "unbekannt"
 #: octoprint_uptime/templates/settings.jinja2:6
 #, fuzzy
 msgid "Uptime could not be determined on this system."
-msgstr "Auf diesem System konnte keine Zeit ermittelt werden."
+msgstr "Die Uptime konnte auf diesem System nicht ermittelt werden."
 
 #: octoprint_uptime/plugin.py:638
 #, python-format
@@ -84,7 +84,6 @@ msgid "Toggle whether the uptime is visible in the top navigation bar."
 msgstr "Umschalten, ob die Uptime in der oberen Navigationsleiste sichtbar ist."
 
 #: octoprint_uptime/templates/settings.jinja2:92
-#, fuzzy
 msgid "Display format"
 msgstr "Anzeigeformat"
 
