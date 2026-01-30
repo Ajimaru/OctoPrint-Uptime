@@ -36,7 +36,6 @@ jobs:
       - name: Install tools
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          # Bandit mit festem Pin empfohlen; Version bei Bedarf anpassen
           pip install "bandit==1.9.3"
 
       - name: Run Bandit with SARIF output

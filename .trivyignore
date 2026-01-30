@@ -1,0 +1,22 @@
+# Ignore virtual environments and site-packages (not part of the project source)
+venv/
+.venv/
+env/
+**/venv/**
+**/.venv/**
+**/env/**
+**/site-packages/**
+
+# Ignore compiled/binary artifacts and large native sources
+**/*.so
+**/*.dll
+**/*.dylib
+**/*.pyc
+**/cuda/**
+**/nv*_*/**
+
+# Ignore caches and editor directories
+__pycache__/
+.vscode/
+.idea/
+node_modules/

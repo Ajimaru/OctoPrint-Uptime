@@ -23,14 +23,10 @@ fi
 # variable `COPY_PO=true` when invoking the script.
 #
 # Behavior / subcommands (all commands require a leading `--`):
-#   --extract            Run `pybabel extract` to refresh `translations/messages.pot`
 #   --init <lang>        Initialize a new language from the POT into `translations/<lang>`
 #   --update             Update existing PO files in `translations/` from POT
-#   --compile            Compile translations; default compiles top-level translations
-#                        and copies compiled catalogs into `octoprint_uptime/translations/`
-#   --compile --plugin-only
-#                        Compile only `octoprint_uptime/translations`
-#   --compile --all      Compile both top-level and plugin translations
+#   --compile            Compile translations; default compiles top-level
+#                        translations and copies compiled catalogs into
 #   --clean              Remove obsolete ("#~") entries from top-level PO files.
 #                        Use `FORCE_CLEAN=true` to skip interactive confirmation.
 
@@ -46,6 +42,29 @@ if [[ ! -x "$VENV_PYBABEL" ]]; then
   exit 1
 fi
 
+# Prefer the venv's python3 when available for running helper scripts (autofill, cleaners)
+VENV_PYTHON="./venv/bin/python3"
+
+# Global flag: if set, remove fuzzy entries before compiling
+REMOVE_FUZZY=false
+# Consume a global --remove-fuzzy from the argument list (if present)
+if [[ "$#" -gt 0 ]]; then
+  new_args=()
+  for _a in "$@"; do
+    if [[ "$_a" == "--remove-fuzzy" ]]; then
+      REMOVE_FUZZY=true
+    else
+      new_args+=("$_a")
+    fi
+  done
+  # reset positional parameters to remaining args (commands)
+  if (( ${#new_args[@]} )); then
+    set -- "${new_args[@]}"
+  else
+    set --
+  fi
+fi
+
 # path to babel.cfg used for extraction
 BABEL_CFG="${REPO_ROOT}/babel.cfg"
 
@@ -54,13 +73,10 @@ usage() {
 Usage: compile_translations.sh [--command] [args]
 
 Commands:
-  --extract                 Extract translatable strings into translations/messages.pot
   --init <lang>             Initialize a new language (e.g. --init de)
   --update                  Update existing PO files from translations/messages.pot
-  --compile [--plugin-only|--all]
-                            Compile translations. Default: compile top-level
-                            translations and copy compiled catalogs into
-                            octoprint_uptime/translations/ (single source: translations/)
+  --all                     Compile both top-level and plugin translations
+  --plugin-only             Compile only plugin translations (octoprint_uptime/translations)
   --clean                   Remove obsolete ("#~") entries from top-level PO files
                             (set FORCE_CLEAN=true to skip interactive prompts)
 
@@ -75,42 +91,6 @@ USAGE
 copy_compiled_to_package() {
   echo "Copying compiled catalogs from translations/ to octoprint_uptime/translations/..."
   shopt -s nullglob
-  clean_obsolete() {
-    echo "Cleaning obsolete PO entries (obsolete entries start with '#~')..."
-    if ! command -v msgattrib >/dev/null 2>&1; then
-      echo "msgattrib not found. Please install gettext (msgattrib) to use --clean." >&2
-      return 1
-    fi
-    shopt -s nullglob
-    for po in translations/*/LC_MESSAGES/*.po; do
-      echo "Processing: $po"
-      if [[ "${FORCE_CLEAN:-false}" == "true" ]]; then
-        if msgattrib --no-obsolete "$po" >"${po}.clean"; then
-          mv "${po}.clean" "$po"
-          echo "  -> cleaned $po"
-        else
-          echo "  -> msgattrib failed for $po" >&2
-        fi
-      else
-        read -r -p "  Remove obsolete entries from $po? [y/N] " ans
-        case "$ans" in
-          [Yy]*)
-            if msgattrib --no-obsolete "$po" >"${po}.clean"; then
-              mv "${po}.clean" "$po"
-              echo "  -> cleaned $po"
-            else
-              echo "  -> msgattrib failed for $po" >&2
-            fi
-            ;;
-          *)
-            echo "  -> skipped $po"
-            ;;
-        esac
-      fi
-    done
-    shopt -u nullglob
-  }
-
   for mo in translations/*/LC_MESSAGES/*.mo; do
     lang_dir="$(basename "$(dirname "$(dirname "$mo")")")"
     target_dir="octoprint_uptime/translations/${lang_dir}/LC_MESSAGES"
@@ -118,7 +98,6 @@ copy_compiled_to_package() {
     echo "  -> $lang_dir: copying $(basename "$mo")"
     cp -a "$mo" "$target_dir/"
     # optionally copy the .po if present (keeps package in-sync for reviewers)
-    # default: do NOT copy .po to avoid creating a second source of truth
     # enable by setting environment variable: COPY_PO=true
     po="translations/${lang_dir}/LC_MESSAGES/$(basename "${mo%.mo}.po")"
     if [[ "${COPY_PO:-false}" == "true" && -f "$po" ]]; then
@@ -128,30 +107,132 @@ copy_compiled_to_package() {
   shopt -u nullglob
 }
 
+clean_obsolete() {
+  echo "Cleaning obsolete PO entries (obsolete entries start with '#~')..."
+  if [[ -x "$VENV_PYTHON" ]] && [[ -f "$REPO_ROOT/.development/clean_obsolete.py" ]]; then
+    if FORCE_CLEAN=true "$VENV_PYTHON" "$REPO_ROOT/.development/clean_obsolete.py"; then
+      return 0
+    else
+      echo "Python clean_obsolete failed; falling back to msgattrib if available." >&2
+    fi
+  fi
+  if ! command -v msgattrib >/dev/null 2>&1; then
+    echo "msgattrib not found. Please install gettext (msgattrib) to use --clean." >&2
+    return 1
+  fi
+  shopt -s nullglob
+  for po in translations/*/LC_MESSAGES/*.po; do
+    echo "Processing: $po"
+    if [[ "${FORCE_CLEAN:-false}" == "true" ]]; then
+      if msgattrib --no-obsolete "$po" >"${po}.clean"; then
+        mv "${po}.clean" "$po"
+        echo "  -> cleaned $po"
+      else
+        echo "  -> msgattrib failed for $po" >&2
+      fi
+    else
+      read -r -p "  Remove obsolete entries from $po? [y/N] " ans
+      case "$ans" in
+        [Yy]*)
+          if msgattrib --no-obsolete "$po" >"${po}.clean"; then
+            mv "${po}.clean" "$po"
+            echo "  -> cleaned $po"
+          else
+            echo "  -> msgattrib failed for $po" >&2
+          fi
+          ;;
+        *)
+          echo "  -> skipped $po"
+          ;;
+      esac
+    fi
+  done
+  shopt -u nullglob
+}
+
 compile_plugin() {
   echo "Compiling plugin translations (octoprint_uptime/translations)..."
-  "$VENV_PYBABEL" compile -d octoprint_uptime/translations || {
-    echo "pybabel compile failed for plugin translations" >&2
-    return 1
-  }
+  # Prefer msgfmt (gettext) so we can include fuzzy entries by default.
+  if command -v msgfmt >/dev/null 2>&1; then
+    shopt -s nullglob
+    for po in octoprint_uptime/translations/*/LC_MESSAGES/*.po; do
+      mo="${po%.po}.mo"
+      if [[ "$REMOVE_FUZZY" == "true" ]]; then
+        # remove fuzzy entries and compile
+        if command -v msgattrib >/dev/null 2>&1; then
+          msgattrib --no-fuzzy "$po" >"${po}.nofuzzy" && mv "${po}.nofuzzy" "$po" || echo "msgattrib failed for $po" >&2
+        fi
+        msgfmt -o "$mo" "$po" || echo "msgfmt failed for $po" >&2
+      else
+        msgfmt --use-fuzzy -o "$mo" "$po" || echo "msgfmt failed for $po" >&2
+      fi
+    done
+    shopt -u nullglob
+  else
+    "$VENV_PYBABEL" compile -d octoprint_uptime/translations || {
+      echo "pybabel compile failed for plugin translations" >&2
+      return 1
+    }
+  fi
 }
 
 compile_top_level() {
-  echo "Compiling top-level translations (translations)..."
-  "$VENV_PYBABEL" compile -d translations || {
-    echo "pybabel compile failed for top-level translations" >&2
-    return 1
-  }
-  copy_compiled_to_package
-}
-handle_extract() {
-  echo "Extracting translatable strings to translations/messages.pot..."
+  echo "Updating POT (translations/messages.pot) from sources..."
   if [[ -f "$BABEL_CFG" ]]; then
-    "$VENV_PYBABEL" extract -F "$BABEL_CFG" -o translations/messages.pot . || return 1
+    echo "Extracting translatable strings to translations/messages.pot..."
+    if ! "$VENV_PYBABEL" extract -F "$BABEL_CFG" -o translations/messages.pot .; then
+      echo "Warning: updating POT failed — continuing with existing POT" >&2
+    fi
   else
-    echo "babel.cfg not found at $BABEL_CFG; cannot run extract" >&2
-    return 1
+    echo "babel.cfg not found; skipping POT update" >&2
   fi
+
+  # Attempt to autofill missing translations using Argos (local) if available.
+  if [[ -x "$VENV_PYTHON" ]] && [[ -f "$REPO_ROOT/.development/autofill_translations.py" ]]; then
+    echo "Running autofill (.development/autofill_translations.py)..."
+    if ! "$VENV_PYTHON" "$REPO_ROOT/.development/autofill_translations.py"; then
+      echo "Autofill script failed or skipped; continuing." >&2
+    fi
+  fi
+
+  echo "Compiling top-level translations (translations)..."
+  # If requested, remove fuzzy entries before compiling.
+  if [[ "$REMOVE_FUZZY" == "true" ]]; then
+    if ! command -v msgattrib >/dev/null 2>&1; then
+      echo "msgattrib not found; cannot remove fuzzy entries. Proceeding without removal." >&2
+    else
+      shopt -s nullglob
+      for po in translations/*/LC_MESSAGES/*.po; do
+        echo "Removing fuzzy entries from: $po"
+        msgattrib --no-fuzzy "$po" >"${po}.nofuzzy" && mv "${po}.nofuzzy" "$po" || echo "msgattrib failed for $po" >&2
+      done
+      shopt -u nullglob
+    fi
+  fi
+
+  # Prefer msgfmt to allow including fuzzy translations by default.
+  if command -v msgfmt >/dev/null 2>&1; then
+    shopt -s nullglob
+    for po in translations/*/LC_MESSAGES/*.po; do
+      mo="${po%.po}.mo"
+      if [[ "$REMOVE_FUZZY" == "true" ]]; then
+        msgfmt -o "$mo" "$po" || echo "msgfmt failed for $po" >&2
+      else
+        msgfmt --use-fuzzy -o "$mo" "$po" || echo "msgfmt failed for $po" >&2
+      fi
+    done
+    shopt -u nullglob
+  else
+    "$VENV_PYBABEL" compile -d translations || {
+      echo "pybabel compile failed for top-level translations" >&2
+      return 1
+    }
+  fi
+  copy_compiled_to_package
+  # After copying compiled catalogs into the package, offer to remove obsolete
+  # entries from the top-level PO files. This keeps PO files in sync with the POT
+  # and avoids leaving obsolete `#~` entries around.
+  clean_obsolete
 }
 
 handle_init() {
@@ -163,6 +244,32 @@ handle_init() {
   if [[ ! -f translations/messages.pot ]]; then
     echo "POT file not found. Run 'extract' first." >&2
     return 1
+  fi
+  # Attempt to install an Argos English-><lang> package into the venv
+  if [[ -x "$VENV_PYTHON" ]]; then
+    echo "Attempting to install Argos en->$lang model into venv (if available)..."
+    if ! "$VENV_PYTHON" - <<PY
+from __future__ import print_function
+try:
+    from argostranslate import package
+    pkgs = package.get_available_packages()
+    for p in pkgs:
+        if getattr(p, 'from_code', '') == 'en' and getattr(p, 'to_code', '') == '${lang}':
+            try:
+                print('Installing', p)
+                p.install()
+                print('Installed en->${lang} Argos package')
+            except Exception as e:
+                print('Failed to install Argos package:', e)
+            break
+    else:
+        print('No en->${lang} Argos package found')
+except Exception as e:
+    print('argostranslate not available or install failed:', e)
+PY
+    then
+      echo "Argos model install attempt failed; continuing." >&2
+    fi
   fi
   echo "Initializing language: $lang"
   "$VENV_PYBABEL" init -i translations/messages.pot -d translations -l "$lang" || return 1
@@ -189,37 +296,26 @@ if [[ "$#" -gt 0 ]]; then
     exit 2
   fi
 else
-  cmd="compile"
+  cmd="__default__"
 fi
 
 case "$cmd" in
-  extract)
-    handle_extract
-    ;;
   init)
     handle_init "$1"
     ;;
   update)
     handle_update
     ;;
-  compile)
-    case "${1:-}" in
-      --plugin-only)
-        compile_plugin
-        ;;
-      --all)
-        compile_top_level
-        compile_plugin
-        ;;
-      "" )
-        compile_top_level
-        ;;
-      *)
-        echo "Unknown compile option: ${1}" >&2
-        usage
-        exit 2
-        ;;
-    esac
+  plugin-only)
+    compile_plugin
+    ;;
+  all)
+    compile_top_level
+    compile_plugin
+    ;;
+  __default__)
+    export FORCE_CLEAN=true
+    compile_top_level
     ;;
   help)
     usage

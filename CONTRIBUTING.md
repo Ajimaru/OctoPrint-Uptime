@@ -147,8 +147,8 @@ This hook helps prevent missing or stale translations being merged. The helper s
 ### Prettier and formatting
 
 We use a project-local Prettier for JS/HTML/Markdown formatting. The `pre-commit`
-hook runs a helper script located at `.development/prettier-hook.sh` which will
-prefer the repository `node_modules/.bin/prettier` if present, otherwise it will
+hook runs a helper script located at `.githooks/prettier-hook.sh`.
+The hook will prefer the repository `node_modules/.bin/prettier` if present, otherwise it will
 fall back to `npx --yes prettier --write`.
 
 Note: the generated API document `docs/api/python.md` is intentionally excluded

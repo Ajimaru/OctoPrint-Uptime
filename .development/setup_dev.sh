@@ -55,6 +55,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
+# Create logs directory and redirect all output to a timestamped logfile (also tee to console)
+LOG_DIR="${LOG_DIR:-$REPO_ROOT/.logs}"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/setup_dev-$(date +'%Y%m%d-%H%M%S').log"
+# Redirect stdout/stderr to logfile while preserving console output
+exec > >(tee -a "$LOG_FILE") 2>&1
+echo "Logging to $LOG_FILE"
+
 echo "Setting up development environment..."
 
 # GitHub "Download ZIP" and some extractors may drop executable bits.
@@ -140,28 +148,127 @@ if [[ -f "${REQ_DEV}" ]]; then
     # Try to install; don't fail the script if some optional packages fail
     python -m pip install -r "${REQ_DEV}" || echo "WARNING: Some dev requirements failed to install. You can retry manually: python -m pip install -r ${REQ_DEV}"
 else
-    echo "No requirements-dev.txt found at ${REQ_DEV}; skipping full dev install"
+    echo "WARNING: No requirements-dev.txt found at ${REQ_DEV}; skipping full dev install"
+fi
+
+# If argostranslate is present in dev requirements, attempt to install an
+# English->German Argos model into the venv for offline autofill support.
+echo "Ensuring Argos (argostranslate) and models are installed into the venv..."
+# Use the venv python explicitly to avoid ambiguity when executing model install
+VENV_PYTHON="${VENV_DIR}/bin/python"
+echo "Using venv python: ${VENV_PYTHON}"
+
+# Configure Argos environment to install packages inside the venv
+export ARGOS_PACKAGES_DIR="${VENV_DIR}/.local/share/argos-translate/packages"
+export XDG_DATA_HOME="${VENV_DIR}/.local/share"
+export XDG_CACHE_HOME="${VENV_DIR}/.local/cache"
+export XDG_CONFIG_HOME="${VENV_DIR}/.config"
+mkdir -p "${ARGOS_PACKAGES_DIR}" "${XDG_CACHE_HOME}" "${XDG_CONFIG_HOME}"
+echo "Configured Argos data dirs inside venv: ${ARGOS_PACKAGES_DIR}"
+
+# If argostranslate is not present in the venv, try to install it there.
+# Use a compact one-liner for the python -c invocation to avoid multiline
+# quoting/here-doc parsing issues in shells.
+if ! "${VENV_PYTHON}" -c "import importlib.util as util, sys; sys.exit(0 if util and util.find_spec('argostranslate') else 1)" >/dev/null 2>&1; then
+    echo "argostranslate not detected in venv; attempting to install via ${VENV_PYTHON} -m pip install argostranslate"
+    if "${VENV_PYTHON}" -m pip install --upgrade pip setuptools wheel >/dev/null 2>&1 && "${VENV_PYTHON}" -m pip install argostranslate; then
+        echo "argostranslate installed into venv"
+    else
+        echo "WARNING: Failed to install argostranslate into venv; skipping Argos model install"
+    fi
+else
+    echo "argostranslate already present in venv"
+fi
+
+# Run the model installation using the venv python; make this step robust and non-fatal.
+"${VENV_PYTHON}" - <<'PY' || true
+import traceback
+try:
+    import importlib.util as util
+except Exception:
+    util = None
+try:
+    if util is None:
+        print('importlib.util is not available in this interpreter; cannot proceed with Argos model install')
+    else:
+        if util.find_spec('argostranslate') is None:
+            print('argostranslate not available in venv; skipping Argos model install')
+        else:
+            try:
+                from argostranslate import package
+                installed = package.get_installed_packages()
+                already = False
+                for ip in installed:
+                    if getattr(ip, 'from_code', '') == 'en' and getattr(ip, 'to_code', '') == 'de':
+                        print('Argos en->de model already installed in venv')
+                        already = True
+                        break
+                if not already:
+                    pkgs = package.get_available_packages()
+                    for p in pkgs:
+                        if getattr(p, 'from_code', '') == 'en' and getattr(p, 'to_code', '') == 'de':
+                            print('Installing Argos en->de package into venv...')
+                            try:
+                                p.install()
+                                print('Argos en->de package installed')
+                            except Exception:
+                                print('Failed to install Argos en->de package:')
+                                traceback.print_exc()
+                            break
+                    else:
+                        print('No en->de Argos package available from remote index')
+                print('Installed Argos packages (venv):', [f"{getattr(x,'from_code','')}->{getattr(x,'to_code','')}" for x in package.get_installed_packages()])
+            except Exception:
+                print('Argos model installation skipped or failed during package handling:')
+                traceback.print_exc()
+except Exception:
+    print('Argos model installation skipped due to unexpected error:')
+    traceback.print_exc()
+PY
+
+# Ensure venv activation exports Argos/XDG env vars so subsequent shells see venv-local packages
+ACTIVATE_FILE="$VENV_DIR/bin/activate"
+if [[ -f "$ACTIVATE_FILE" ]]; then
+    if ! grep -q "ARGOS_PACKAGES_DIR" "$ACTIVATE_FILE" 2>/dev/null; then
+        cat >> "$ACTIVATE_FILE" <<'EOF'
+    # Argos Translate venv-local data directories (added by setup_dev.sh)
+    # Use VIRTUAL_ENV so these paths are correct when the venv is activated.
+    export ARGOS_PACKAGES_DIR="${VIRTUAL_ENV}/.local/share/argos-translate/packages"
+    export XDG_DATA_HOME="${VIRTUAL_ENV}/.local/share"
+    export XDG_CACHE_HOME="${VIRTUAL_ENV}/.local/cache"
+    export XDG_CONFIG_HOME="${VIRTUAL_ENV}/.config"
+EOF
+        echo "Added Argos env exports to $ACTIVATE_FILE"
+    else
+        echo "Argos env exports already present in $ACTIVATE_FILE"
+    fi
+fi
+
+# Install runtime requirements (requirements.txt) into the virtualenv if present
+REQ_RUNTIME="$REPO_ROOT/requirements.txt"
+if [[ -f "${REQ_RUNTIME}" ]]; then
+    echo "Installing runtime requirements from: ${REQ_RUNTIME}"
+    python -m pip install -r "${REQ_RUNTIME}" || echo "WARNING: Some runtime requirements failed to install. You can retry manually: python -m pip install -r ${REQ_RUNTIME}"
+else
+    echo "WARNING: No requirements.txt found at ${REQ_RUNTIME}; skipping runtime requirements install"
 fi
 
 # Full dev requirements install: ensure all documentation dependencies are available
 REQ_DOCS="$REPO_ROOT/requirements-docs.txt"
 if [[ -f "${REQ_DOCS}" ]]; then
-    echo "Installing documentation requirements from: ${REQ_DOCS}"
-    python -m pip install -r "${REQ_DOCS}" || echo "WARNING: Some docs requirements failed to install. You can retry manually: python -m pip install -r ${REQ_DOCS}"
+    echo "INFO: requirements-docs.txt is present at ${REQ_DOCS}, but this script intentionally does NOT install docs requirements into the main venv."
+    echo "If you want a separate docs virtualenv, create .venv-docs and install the file there:"
+    echo "  python -m venv .venv-docs && .venv-docs/bin/pip install -r ${REQ_DOCS}"
 else
-    echo "No requirements-docs.txt found at ${REQ_DOCS}; skipping docs requirements install"
+    echo "INFO: No requirements-docs.txt found at ${REQ_DOCS}; nothing to install for docs (intentional)."
 fi
 
-# Check for bump-my-version and offer to install into the venv
 if ! command -v bump-my-version >/dev/null 2>&1; then
-    echo "bump-my-version not found in the virtual environment."
-    read -r -p "Install bump-my-version into the virtualenv now? [Y/n] " _ans
-    _ans=${_ans:-Y}
-    if [[ "$_ans" =~ ^[Yy] ]]; then
-        echo "Installing bump-my-version into virtualenv..."
-        python -m pip install bump-my-version
+    echo "bump-my-version not found in the virtual environment; installing..."
+    if python -m pip install bump-my-version; then
+        echo "bump-my-version installed into the virtualenv"
     else
-        echo "Skipping bump-my-version installation. You can install later with: python -m pip install bump-my-version"
+        echo "WARNING: Failed to install bump-my-version. You can install manually with: python -m pip install bump-my-version" >&2
     fi
 else
     echo "bump-my-version is already available in the virtual environment."

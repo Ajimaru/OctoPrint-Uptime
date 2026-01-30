@@ -264,9 +264,9 @@ The `post-commit` hook triggers `post_commit_build_dist.sh` after version bumps.
 ## Prettier helper
 
 The repository uses a project-local Prettier installation for frontend/JS
-formatting. A small helper script lives at `.development/prettier-hook.sh` and
-is invoked by the `pre-commit` hook to run the project `node_modules/.bin/prettier`
-when available, or fall back to `npx --yes prettier`.
+formatting. A small helper script lives at `.githooks/prettier-hook.sh` and is invoked
+by the `pre-commit` hook to run the project `node_modules/.bin/prettier` when
+available, or fall back to `npx --yes prettier`.
 
 If you run `npm install` in the repository root the hook will prefer the
 locally-installed binary which avoids `npx` network calls during commits.
