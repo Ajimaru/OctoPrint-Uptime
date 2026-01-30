@@ -9,6 +9,8 @@ dist
 build
 venv
 .venv
+.venv-docs
+venv-docs
 __pycache__
 .pytest_cache
 .coverage
@@ -35,6 +37,12 @@ gh_logs
 .codacyignore
 codacy_trivy_results.json
 OctoPrint-Uptime/.github/instructions
+.ruff_cache/
+.codacyignore
+codacy-trivy.sarif
+codacy-trivy-skip.sarif
+codacy-trivy-args.sarif
+codacy-trivy-ignore.sarif
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
@@ -47,7 +55,6 @@ packages_OctoPrint-Uptime*.dot
 
 # Generated diagram outputs (created by CI)
 docs/reference/diagrams/*.svg
-.venv-docs
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md

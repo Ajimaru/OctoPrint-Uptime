@@ -95,7 +95,7 @@ repos:
     hooks:
       - id: prettier-write
         name: Prettier (write)
-        entry: bash .development/prettier-hook.sh
+        entry: bash .githooks/prettier-hook.sh
         language: system
         types_or: [javascript, css, markdown, json, yaml]
         pass_filenames: true
