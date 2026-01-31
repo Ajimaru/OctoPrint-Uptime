@@ -46,6 +46,11 @@ jobs:
             run-precommit: true
             run-coverage: true
             run-build: true
+          - python-version: "3.13"
+            os: ubuntu-latest
+            run-precommit: false
+            run-coverage: false
+            run-build: false
 
     steps:
       - # Checkout repository code
