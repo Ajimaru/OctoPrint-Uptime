@@ -33,7 +33,6 @@ jobs:
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip
-          # Install only Babel and polib required for extraction/compilation
           python -m pip install Babel polib
 
       - name: Verify messages.pot is up to date
