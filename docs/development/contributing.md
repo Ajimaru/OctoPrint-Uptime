@@ -48,7 +48,7 @@ npm install -g jsdoc-to-markdown
 ./scripts/generate-jsdocs.sh <changed-file.js>
 ```
 
-If you prefer to track this work and postpone changing contributors' setup, see issue #XX for adding repository guidance and an npm workflow (replace `#XX` with the issue number once created).
+If you prefer to track this work and postpone changing contributors' setup, see issue `#123` for adding repository guidance and an npm workflow.
 
 ## Internationalization
 
