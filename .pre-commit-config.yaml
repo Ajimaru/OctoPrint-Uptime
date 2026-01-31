@@ -64,7 +64,7 @@ repos:
     rev: v3.21.2
     hooks:
       - id: pyupgrade # Modernize Python syntax to newer constructs (pyupgrade)
-        args: ["--py37-plus"]
+        args: ["--py38-plus"]
         exclude: "setup.py"
 
   # Linters and security
@@ -99,23 +99,13 @@ repos:
         language: system
         types_or: [javascript, css, markdown, json, yaml]
         pass_filenames: true
-        exclude: '^docs/api/python\\.md$'
+        exclude: '^docs/api/python\.md$'
 
   - repo: https://github.com/koalaman/shellcheck-precommit
     rev: v0.11.0
     hooks:
       - id: shellcheck # Shell script linter (ShellCheck) to catch common shell mistakes
         args: ["--severity=warning"]
-
-  - repo: https://github.com/OctoPrint/pre-commit-lessc
-    rev: 4.4.0
-    hooks:
-      - id: lessc # Compile and minify LESS files for frontend styles
-        args:
-          ["--wrapper-quiet", "--clean-css=--s1 --advanced --compatibility=ie8"]
-        additional_dependencies: ["less-plugin-clean-css"]
-        files: ^(octoprint_uptime/static/less/.*\\.less|src/octoprint/plugins/.*/static/less/.*\\.less$)
-
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
