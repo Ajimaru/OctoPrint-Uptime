@@ -12,6 +12,9 @@ if [ -z "${BASH_VERSION-}" ]; then
         exec "$WRAPPER" "$0" "$@"
     elif command -v bash >/dev/null 2>&1; then
         exec bash "$0" "$@"
+    else
+        echo "ERROR: bash is required to run prettier-hook.sh" >&2
+        exit 127
     fi
 fi
 
