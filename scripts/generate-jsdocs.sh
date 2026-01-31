@@ -142,7 +142,7 @@ if command -v sed >/dev/null 2>&1; then
         SED_INPLACE_ARGS=("-i")
     fi
 
-    if ! sed -E "${SED_INPLACE_ARGS[@]}" 's/[[:space:]]\+$//' "$OUTPUT"; then
+    if ! sed -E "${SED_INPLACE_ARGS[@]}" 's/[[:space:]]+$//' "$OUTPUT"; then
         echo "sed in-place failed; continuing with perl/awk fallback" >&2
     fi
 fi
