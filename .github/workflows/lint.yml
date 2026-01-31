@@ -70,6 +70,13 @@ jobs:
             npm ci --no-audit --no-fund || npm install --no-audit --no-fund
           fi
 
+      - name: Create ./venv for translation check
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install Babel
+
       - name: Run pre-commit on all files
         run: |
           pre-commit run --all-files --show-diff-on-failure --color always
