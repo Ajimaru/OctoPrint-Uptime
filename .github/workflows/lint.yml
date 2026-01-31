@@ -82,7 +82,7 @@ jobs:
           pre-commit run --all-files --show-diff-on-failure --color always
 
       - name: Bandit (security)
-        if: always()
+        if: success() || failure()
         run: |
           pip install bandit==1.9.3
           bandit -r octoprint_uptime -x .venv,venv,.git -ll

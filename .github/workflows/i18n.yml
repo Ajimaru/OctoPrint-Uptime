@@ -73,8 +73,10 @@ jobs:
       - name: Compile catalogs
         run: |
           . .venv/bin/activate
-          # Compile from the top-level `translations/` directory (where PO files live)
           pybabel compile -d translations
-          # Ensure compiled catalogs are present in the package dir for downstream checks
           mkdir -p octoprint_uptime/translations
-          cp -a translations/* octoprint_uptime/translations/ || true
+          if [ -n "$(find translations -maxdepth 2 -type f -print -quit 2>/dev/null)" ]; then
+            cp -a translations/* octoprint_uptime/translations/
+          else
+            echo "Warning: translations/ is empty or missing; skipping copy"
+          fi

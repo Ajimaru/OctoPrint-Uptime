@@ -38,16 +38,13 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install "bandit==1.9.3"
 
-      - name: Run Bandit with JSON output
+      - name: Run Bandit (SARIF)
         run: |
           mkdir -p reports
           bandit -r octoprint_uptime -x .venv,venv,.git -ll \
-            --format json --output reports/bandit.json || true
+            --format sarif --output reports/bandit.sarif
 
-      - name: Upload Bandit JSON artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload Bandit SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
         with:
-          name: bandit-json
-          path: reports/bandit.json
-          if-no-files-found: error
-          retention-days: 7
+          sarif_file: reports/bandit.sarif

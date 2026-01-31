@@ -1,5 +1,6 @@
 module.exports = [
   {
+    extends: ["@eslint/js/recommended"],
     files: ["**/*.js"],
     languageOptions: {
       ecmaVersion: 2021,

@@ -90,11 +90,17 @@ jobs:
           python -m pip install Babel
           python -m pip install -e ".[develop]" build
 
-      - name: Create ./venv for translation check
+      - name: Use existing .venv for translation check
         if: ${{ matrix.run-precommit }}
         run: |
-          python -m venv venv
-          . venv/bin/activate
+          # Reuse the repository .venv created earlier for consistency and to avoid
+          # creating duplicate virtual environments in the same job.
+          if [ -d .venv ]; then
+            . .venv/bin/activate
+          else
+            python -m venv .venv
+            . .venv/bin/activate
+          fi
           python -m pip install --upgrade pip
           python -m pip install Babel
 
