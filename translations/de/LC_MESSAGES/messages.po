@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-30 22:18+0100\n"
+"POT-Creation-Date: 2026-01-31 13:31+0100\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -26,8 +26,8 @@ msgstr "Navbar‑Uptime"
 msgid "OctoPrint Uptime"
 msgstr "OctoPrint Uptime"
 
-#: octoprint_uptime/plugin.py:588 octoprint_uptime/plugin.py:627
-#: octoprint_uptime/plugin.py:736 octoprint_uptime/plugin.py:743
+#: octoprint_uptime/plugin.py:588 octoprint_uptime/plugin.py:630
+#: octoprint_uptime/plugin.py:739 octoprint_uptime/plugin.py:746
 msgid "unknown"
 msgstr "unbekannt"
 
@@ -37,21 +37,21 @@ msgstr "unbekannt"
 msgid "Uptime could not be determined on this system."
 msgstr "Die Uptime konnte auf diesem System nicht ermittelt werden."
 
-#: octoprint_uptime/plugin.py:638
+#: octoprint_uptime/plugin.py:641
 #, python-format
 msgid "Uptime API requested, result=%s"
 msgstr "Uptime-API angefragt, Ergebnis=%s"
 
-#: octoprint_uptime/plugin.py:668 octoprint_uptime/plugin.py:675
-#: octoprint_uptime/plugin.py:704
+#: octoprint_uptime/plugin.py:671 octoprint_uptime/plugin.py:678
+#: octoprint_uptime/plugin.py:707
 msgid "Forbidden"
 msgstr "Zugriff verweigert"
 
-#: octoprint_uptime/plugin.py:740
+#: octoprint_uptime/plugin.py:743
 msgid "Error computing uptime"
 msgstr "Fehler bei der Ermittlung der Uptime"
 
-#: octoprint_uptime/plugin.py:783 octoprint_uptime/plugin.py:789
+#: octoprint_uptime/plugin.py:786 octoprint_uptime/plugin.py:792
 msgid "full"
 msgstr "voll"
 
