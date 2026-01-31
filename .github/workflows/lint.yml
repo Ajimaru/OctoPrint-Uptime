@@ -45,7 +45,7 @@ jobs:
 
       - name: Install minimal dev dependencies for CI
         run: |
-          python -m pip install pre-commit
+          python -m pip install pre-commit Babel
 
       - name: Cache pre-commit
         id: cache-precommit
