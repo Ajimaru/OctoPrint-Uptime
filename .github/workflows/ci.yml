@@ -48,26 +48,33 @@ jobs:
             run-build: true
 
     steps:
-      - name: Checkout
+      - # Checkout repository code
+        name: Checkout
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - # Setup Python version and pip cache
+        name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - name: Preinstall setuptools for Python 3.8
+      - # Ensure setuptools/wheel on Python 3.8
+        name: Preinstall setuptools for Python 3.8
         if: ${{ matrix['python-version'] == '3.8' }}
         run: |
           python -m pip install --upgrade pip setuptools wheel
 
-      - name: Install dependencies
+      - # Create a dedicated .venv and install development dependencies
+        name: Create venv and install dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip setuptools wheel
           python -m pip install -e ".[develop]" build
 
-      - name: Create ./venv for translation check
+      - # Create small venv for translation (Babel) checks
+        name: Create ./venv for translation check
         if: ${{ matrix.run-precommit }}
         run: |
           python -m venv venv
@@ -75,17 +82,22 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install Babel
 
-      - name: Run tests
+      - # Run unit tests (no coverage)
+        name: Run tests
         if: ${{ !matrix.run-coverage }}
         run: |
+          if [ -d .venv ]; then . .venv/bin/activate; fi
           pytest -q
 
-      - name: Run tests (with coverage)
+      - # Run unit tests with coverage reporting
+        name: Run tests (with coverage)
         if: ${{ matrix.run-coverage }}
         run: |
+          if [ -d .venv ]; then . .venv/bin/activate; fi
           pytest -q --cov=octoprint_uptime --cov-branch --cov-report=xml:coverage.xml
 
-      - name: Upload coverage to Codecov
+      - # Upload coverage.xml to Codecov
+        name: Upload coverage to Codecov
         if: ${{ matrix.run-coverage && github.repository == 'Ajimaru/OctoPrint-Uptime' }}
         uses: codecov/codecov-action@v5
         with:
@@ -93,7 +105,8 @@ jobs:
           flags: unittests
           fail_ci_if_error: false
 
-      - name: Upload coverage to Codacy
+      - # Upload coverage report to Codacy (optional)
+        name: Upload coverage to Codacy
         if: ${{ matrix.run-coverage && github.repository == 'Ajimaru/OctoPrint-Uptime' }}
         env:
           CODACY_API_TOKEN: ${{ secrets.CODACY_API_TOKEN }}
@@ -104,25 +117,31 @@ jobs:
         run: |
           bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml -t "$CODACY_API_TOKEN"
 
-      - name: Run pre-commit
-        if: ${{ matrix.run-precommit }}
-        run: |
-          pre-commit run --all-files
-
-      - name: Set up Node.js for hooks
+      - # Setup Node.js for pre-commit hooks (ESLint/Prettier)
+        name: Set up Node.js for hooks
         if: ${{ matrix.run-precommit }}
         uses: actions/setup-node@v6
         with:
           node-version: "20"
 
-      - name: Install Node.js dependencies for hooks
+      - # Install npm dependencies required by hooks
+        name: Install Node.js dependencies for hooks
         if: ${{ matrix.run-precommit }}
         run: |
           if [ -f package-lock.json ] || [ -f package.json ]; then npm ci --no-audit --no-fund; fi
 
-      - name: Build package
+      - # Execute pre-commit hooks across repository
+        name: Run pre-commit
+        if: ${{ matrix.run-precommit }}
+        run: |
+          if [ -d .venv ]; then . .venv/bin/activate; fi
+          pre-commit run --all-files
+
+      - # Build source and wheel distributions
+        name: Build package
         if: ${{ matrix.run-build }}
         run: |
+          if [ -d .venv ]; then . .venv/bin/activate; fi
           python -m build
 
   octoprint-smoke:
