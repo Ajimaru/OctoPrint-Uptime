@@ -59,6 +59,31 @@ fi
 if [[ -x "${REPO_ROOT}/node_modules/.bin/prettier" ]]; then
     exec "${REPO_ROOT}/node_modules/.bin/prettier" --write "$@"
 else
-    # Use npx fallback; --yes to avoid prompts
+    # Try to install local node dependencies if we have a package.json (helps pre-commit.ci)
+    if command -v node >/dev/null 2>&1 && [ -f package.json ]; then
+        echo "Installing npm dependencies (prettier) if missing..."
+        # try npm ci with a few retries to mitigate transient network errors
+        attempt=0
+        until [ "$attempt" -ge 3 ]; do
+            npm ci --no-audit --no-fund && break
+            attempt=$((attempt + 1))
+            sleep $((2 ** attempt))
+        done
+        if [ -x "${REPO_ROOT}/node_modules/.bin/prettier" ]; then
+            exec "${REPO_ROOT}/node_modules/.bin/prettier" --write "$@"
+        fi
+    fi
+
+    # Use npx fallback with retries; --yes to avoid prompts
+    attempt=0
+    until [ "$attempt" -ge 3 ]; do
+        if npx --yes prettier --write "$@"; then
+            exit 0
+        fi
+        attempt=$((attempt + 1))
+        echo "npx/prettier attempt $attempt failed, retrying..."
+        sleep $((2 ** attempt))
+    done
+    # final attempt to show the error
     exec npx --yes prettier --write "$@"
 fi
