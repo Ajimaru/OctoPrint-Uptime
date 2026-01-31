@@ -929,8 +929,8 @@ def test_invoke_settings_hook_unexpected_param_count():
     mp = pytest.MonkeyPatch()
     mp.setattr(p, "_get_hook_positional_param_count", lambda hook: 3)
     p._invoke_settings_hook(lambda: None)
-    if not any(c[0] == "warning" for c in p._logger.calls):
-        raise AssertionError("Expected at least one 'warning' log call")
+    if not any(c[0] == "warn" for c in p._logger.calls):
+        raise AssertionError("Expected at least one 'warn' log call")
     mp.undo()
 
 
@@ -1321,8 +1321,8 @@ def test_safe_update_internal_state_logs_warning():
     else:
         setattr(p, "_logger", FakeLogger())
     p._safe_update_internal_state()
-    if not any(c[0] == "warning" for c in p._logger.calls):
-        raise AssertionError("Expected at least one 'warning' log call")
+    if not any(c[0] == "warn" for c in p._logger.calls):
+        raise AssertionError("Expected at least one 'warn' log call")
 
 
 def test_log_settings_save_data_handles_logger_errors():
