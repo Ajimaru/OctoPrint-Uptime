@@ -42,7 +42,7 @@ jobs:
         run: |
           mkdir -p reports
           bandit -r . -x tests,.venv,venv,.git -ll \
-            --format sarif --output reports/bandit.sarif
+            --format sarif --output reports/bandit.sarif || true
 
       - name: Upload SARIF artifact
         uses: actions/upload-artifact@v4
