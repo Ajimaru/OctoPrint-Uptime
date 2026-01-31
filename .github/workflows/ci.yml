@@ -150,7 +150,11 @@ jobs:
         name: Install Node.js dependencies for hooks
         if: ${{ matrix.run-precommit }}
         run: |
-          if [ -f package-lock.json ] || [ -f package.json ]; then npm ci --no-audit --no-fund; fi
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund
+          elif [ -f package.json ]; then
+            npm install --no-audit --no-fund
+          fi
 
       - # Execute pre-commit hooks across repository
         name: Run pre-commit
