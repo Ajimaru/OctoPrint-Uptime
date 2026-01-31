@@ -93,7 +93,7 @@ class FakeLogger:
             msg (str): The warning message to log.
             *args: Additional arguments associated with the warning.
         """
-        self.calls.append(("warning", msg, args))
+        self.calls.append(("warn", msg, args))
 
     def exception(self, msg, *args):
         """
@@ -277,7 +277,7 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
         pytest.fail("poll_interval_seconds should be 5")
 
 
-def test_log_settings_save_data_and_call_base_on_settings_save():
+def test_log_settings_save_data_and_call_base_on_settings_save(monkeypatch):
     """
     Test that OctoprintUptimePlugin correctly logs settings save data and safely calls the base
     on_settings_save method, ensuring exceptions from the base method are swallowed and do not
@@ -291,7 +291,6 @@ def test_log_settings_save_data_and_call_base_on_settings_save():
     data = {"x": 1}
     p._log_settings_save_data(data)
 
-    monkeypatch = pytest.MonkeyPatch()
     monkeypatch.setattr(
         plugin.SettingsPluginBase,
         "on_settings_save",
@@ -299,7 +298,6 @@ def test_log_settings_save_data_and_call_base_on_settings_save():
         raising=False,
     )
     p._call_base_on_settings_save({})
-    monkeypatch.undo()
 
 
 def test_update_internal_state_and_get_api_settings_and_logging():
@@ -620,14 +618,14 @@ def test_on_api_get_permission_and_response(monkeypatch):
         "_get_uptime_info",
         lambda self: (42, "42s", "42s", "0h", "0d"),
     )
-    plugin._flask = None
+    monkeypatch.setattr(plugin, "_flask", None, raising=False)
     out = p.on_api_get()
     if out != {"uptime": "42s"}:
         pytest.fail(f"Expected out == {{'uptime': '42s'}}, got {out!r}")
 
     monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_check_permissions", lambda _: False)
     p2 = plugin.OctoprintUptimePlugin()
-    plugin._flask = None
+    monkeypatch.setattr(plugin, "_flask", None, raising=False)
     got = p2._handle_permission_check()
     if not (got and isinstance(got, dict)):
         pytest.fail(f"Expected got to be a dict and truthy, got {got!r}")
@@ -849,7 +847,10 @@ def test_get_uptime_from_proc_bad_content(monkeypatch):
     mo = mock.mock_open(read_data="not-a-number\n")
     monkeypatch.setattr(builtins, "open", mo)
     if p._get_uptime_from_proc() is not None:
-        pytest.fail("_get_uptime_from_proc() should return None when /proc/uptime is missing")
+        pytest.fail(
+            "_get_uptime_from_proc() should return None when "
+            "/proc/uptime contains invalid content"
+        )
 
 
 def test_get_uptime_from_psutil_import_error_and_bad_boot(monkeypatch):
@@ -1443,7 +1444,7 @@ def test_get_uptime_from_psutil_future_boot(monkeypatch):
 
     if p._get_uptime_from_psutil() is not None:
         pytest.fail(
-            "_get_uptime_from_psutil() should return None when import_module raises ImportError"
+            "_get_uptime_from_psutil() should return None when boot_time() is in the future"
         )
 
 
