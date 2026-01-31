@@ -45,15 +45,10 @@ Check / test poll interval:
 
 ## Further additions
 
-- If you want, I can add a short example on how to change plugin settings via API (requires authentication and knowledge of the OctoPrint Settings API).
+- See the OctoPrint Settings API documentation for examples on how to change plugin settings via API (requires authentication).
 
 ## Translations / testing localized strings
 
-When you need to test localized frontend strings, compile the translations and copy compiled catalogs into the package with the repository helper, then restart OctoPrint:
-
-```bash
-./scripts/compile_translations.sh
-# restart OctoPrint or reload plugin
-```
+When you need to test localized frontend strings, compile the translations and copy compiled catalogs into the package for runtime use.
 
 This ensures localized strings (e.g. `uptime_note`) are available at runtime.

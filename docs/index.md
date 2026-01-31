@@ -49,8 +49,31 @@ OctoPrint-Uptime is a plugin for OctoPrint that displays the system uptime in th
 
 ### Setup
 
+Install the appropriate requirements for your purpose:
+
+- For development (tests, linters, build tools):
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+- For building the documentation (mkdocs + docs tooling):
+
+```bash
+pip install -r requirements-docs.txt
+```
+
+- For runtime/production installs (OctoPrint runtime dependencies), use the top-level `requirements.txt`:
+
 ```bash
 pip install -r requirements.txt
+```
+
+If you need both development and docs tooling locally, install both `requirements-dev.txt` and `requirements-docs.txt`.
+
+Install Node.js dependencies for frontend tooling when needed:
+
+```bash
 npm install
 ```
 
@@ -71,7 +94,7 @@ mkdocs build
 
 ## Documentation Structure
 
-```files
+```text
 docs/
 ├── README.md                         # Documentation README
 ├── index.md                          # Overview page (this file)

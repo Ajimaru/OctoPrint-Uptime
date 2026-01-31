@@ -34,6 +34,17 @@ Security fixes are provided for the latest released version.
 
 This policy applies to vulnerabilities in this repository, including backend (Python), templates, and frontend assets shipped with the plugin.
 
+## Out of scope
+
+The following are not covered by this policy and should not be reported here:
+
+- Third‑party services and integrations (hosted by others).
+- External hosted environments or infrastructure (cloud providers, CI runners).
+- Upstream dependencies not shipped in this repository (report to their maintainers).
+- Customer data or secrets stored outside the repository.
+
+If you discover issues in any of the above, please report them to the appropriate service provider or upstream project instead of filing them here.
+
 ## Safe Harbor
 
 We support good-faith security research. Please avoid privacy violations, data destruction, and service disruption.

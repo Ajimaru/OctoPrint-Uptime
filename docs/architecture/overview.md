@@ -11,17 +11,10 @@ This page gives a concise overview of the main components of the OctoPrint-Uptim
 
 ## Quick links
 
-- Data flow: see `data-flow.md`
-- Algorithms & formatting: see `algorithms.md`
-- Settings reference: see `settings.md`
-- OctoPrint integration: see `octoprint-integration.md`
-
 - [Data flow](data-flow.md)
 - [Algorithms & formatting](algorithms.md)
 - [Settings reference](settings.md)
 - [OctoPrint integration](octoprint-integration.md)
-
-## Class diagram
 
 The class/interaction diagrams used in the docs are available below — open the detailed or packages views for more context.
 

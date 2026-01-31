@@ -8,7 +8,27 @@ Thanks for your interest in contributing to the OctoPrint-Uptime plugin!
 2. Create a feature branch: `git checkout -b wip/my-feature`
 3. Write tests for new features
 4. Submit a pull request
-5. **_TODO_** describe manual installation of requirements-dev.txt
+5. Install development dependencies (prerequisites & commands):
+   - Prerequisites: Python 3.10+ and `python3-venv` (or equivalent) installed.
+
+   - Create and activate a virtual environment, then install dev deps:
+
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     python -m pip install --upgrade pip
+     python -m pip install -r requirements-dev.txt
+     ```
+
+   - Optional: install the package in editable mode with extras for development:
+
+     ```bash
+     python -m pip install -e ".[develop]"
+     ```
+
+   These commands ensure tooling (pytest, pre-commit, linters, Sphinx, Babel) is
+   available locally for testing and documentation builds.
+
 6. Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 7. Note: `main` is protected on GitHub, so changes go through PRs.
 

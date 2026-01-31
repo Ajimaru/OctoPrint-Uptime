@@ -28,9 +28,27 @@ pre-commit run --hook-stage manual --all-files
 
 ### Notes on JS docs & pre-commit
 
-- The repository includes a `jsdoc-gen` pre-commit hook that runs `./scripts/generate-jsdocs.sh` when JS files under `octoprint_uptime/static/js` are modified. The hook now uses `pass_filenames: true` so it only passes changed files to the script (faster local commits).
+- The repository includes a `jsdoc-gen` pre-commit hook that runs `./scripts/generate-jsdocs.sh` when JS files under `octoprint_uptime/static/js` are modified. The hook uses `pass_filenames: true` so it only passes changed files to the script (faster local commits).
 
-**TODO** Describe how to populate `node_modules` by running `npm install` when `npm` is available, installing `jsdoc-to-markdown` so the generator can run without a separate `npm install` step.
+- Populate `node_modules` and install the doc generator:
+
+```bash
+# From the repository root, install JS deps (use `npm ci` if you have a lockfile):
+npm install
+# Install the generator so the script can run without an extra install step
+# as a devDependency (preferred):
+npm install --save-dev jsdoc-to-markdown
+# or install it globally if you prefer:
+npm install -g jsdoc-to-markdown
+```
+
+- Regenerate the JS docs (the pre-commit hook runs this automatically for changed files):
+
+```bash
+./scripts/generate-jsdocs.sh <changed-file.js>
+```
+
+If you prefer to track this work and postpone changing contributors' setup, see issue #XX for adding repository guidance and an npm workflow (replace `#XX` with the issue number once created).
 
 ## Internationalization
 

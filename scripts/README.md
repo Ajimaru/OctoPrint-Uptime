@@ -26,7 +26,21 @@ From the repository root:
 
 This repository generates JavaScript API docs from JSDoc comments using `jsdoc-to-markdown` (`jsdoc2md`). The helper script `./scripts/generate-jsdocs.sh` writes Markdown to `docs/api/javascript.md`.
 
-**_TODO_** Describe how to manually install Node dev dependencies (`npm install`) when `npm` is available so `jsdoc-to-markdown` is available locally. If you prefer manual control, run `npm install --save-dev jsdoc jsdoc-to-markdown` yourself.
+To install the JavaScript doc tooling locally, run from the repository root:
+
+```bash
+npm install
+```
+
+This will install the project's Node devDependencies (if present), including `jsdoc-to-markdown`.
+
+If you prefer to install only the tools without relying on package.json, run:
+
+```bash
+npm install --save-dev jsdoc jsdoc-to-markdown
+```
+
+Or run `npx jsdoc-to-markdown` to execute the tool without installing it permanently.
 
 - The pre-commit hook runs `./scripts/generate-jsdocs.sh` but now passes only changed filenames to the script for performance. `generate-jsdocs.sh` documents only the passed files when invoked by pre-commit; when run without arguments it documents the whole package.
 
