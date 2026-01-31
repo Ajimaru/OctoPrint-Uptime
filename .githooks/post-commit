@@ -60,11 +60,12 @@ if [[ -d "$POST_D_DIR" ]]; then
   for f in "$POST_D_DIR"/*.sh; do
     if [[ -f "$f" && -x "$f" ]]; then
       echo "--- Running: $f ---"
-      "$f" || echo "Script failed: $f (exit $?)"
+      "$f" || { rc=$?; echo "Script failed: $f (exit $rc)"; }
     elif [[ -f "$f" ]]; then
       echo "--- Running (bash): $f ---"
-      bash -- "$f" || echo "Script failed: $f (exit $?)"
+      bash -- "$f" || { rc=$?; echo "Script failed: $f (exit $rc)"; }
     fi
+  done
   done
 else
   echo "No post-commit.d scripts to run"
