@@ -64,11 +64,18 @@ else
         echo "Installing npm dependencies (prettier) if missing..."
         # try npm ci with a few retries to mitigate transient network errors
         attempt=0
+        npm_ci_succeeded=false
         until [ "$attempt" -ge 3 ]; do
-            npm ci --no-audit --no-fund && break
+            if npm ci --no-audit --no-fund; then
+                npm_ci_succeeded=true
+                break
+            fi
             attempt=$((attempt + 1))
             sleep $((2 ** attempt))
         done
+        if [ "$npm_ci_succeeded" != "true" ]; then
+            echo "Warning: 'npm ci' failed after $attempt attempts; dependencies may not be installed. Falling back to 'npx' for Prettier." >&2
+        fi
         if [ -x "${REPO_ROOT}/node_modules/.bin/prettier" ]; then
             exec "${REPO_ROOT}/node_modules/.bin/prettier" --write "$@"
         fi

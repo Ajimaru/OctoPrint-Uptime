@@ -51,7 +51,25 @@ ln -f -s "$(basename "$LOGFILE")" "$LOG_DIR/${LOG_PREFIX}-latest.log" 2>/dev/nul
 trap 'echo "===== $LOG_PREFIX END: $(date -u +"%Y-%m-%dT%H:%M:%SZ") (pid=$PID) ====="' EXIT
 
 # Redirect all stdout/stderr for this hook to both the logfile and the hook's stdout/stderr
-exec > >(tee >(perl -pe 's/\e\[[0-9;]*[mK]//g' >>"$LOGFILE")) 2> >(tee >(perl -pe 's/\e\[[0-9;]*[mK]//g' >>"$LOGFILE") >&2)
+# Determine command to strip ANSI escape sequences when writing logs.
+# Prefer perl, fall back to sed with an escape byte pattern, otherwise use cat.
+if command -v perl >/dev/null 2>&1; then
+    # shellcheck disable=SC2329
+    strip_to_log_perl() { perl -pe 's/\e\[[0-9;]*[mK]//g' >>"$LOGFILE"; }
+    STRIP_FUNC=strip_to_log_perl
+elif command -v sed >/dev/null 2>&1; then
+    # Use $'..' to allow \x1b escape expansion for portability.
+    # shellcheck disable=SC2329
+    strip_to_log_sed() { sed -E -e $'s/\x1b\[[0-9;]*[mK]//g' >>"$LOGFILE"; }
+    STRIP_FUNC=strip_to_log_sed
+else
+    # shellcheck disable=SC2329
+    strip_to_log_cat() { cat >>"$LOGFILE"; }
+    STRIP_FUNC=strip_to_log_cat
+fi
+
+# Redirect all stdout/stderr for this hook to both the logfile and the hook's stdout/stderr
+exec > >(tee >($STRIP_FUNC)) 2> >(tee >($STRIP_FUNC) >&2)
 # Log header
 echo "===== $LOG_PREFIX START: $(date -u +"%Y-%m-%dT%H:%M:%SZ") (pid=$PID) ====="
 # -------------------------------------------------------------------
@@ -132,8 +150,31 @@ else
     if [[ -x "./venv/bin/pre-commit" ]]; then
         echo "ERROR: pre-commit ran but exited with code $rc. See log: $LOGFILE" >&2
         exit $rc
-    else
-        echo "ERROR: pre-commit not available in ./venv. TODO describe how to manually install pre-commit in the virtual environment" >&2
-        exit 1
-    fi
+        else
+                cat <<'MSG' >&2
+ERROR: pre-commit not available in ./venv.
+
+To install pre-commit into the project's virtual environment, activate the venv and install:
+
+    Unix / macOS (bash/zsh):
+        source ./venv/bin/activate
+        python -m pip install --upgrade pip
+        python -m pip install pre-commit
+        pre-commit install
+
+    Windows (PowerShell):
+        .\venv\Scripts\Activate.ps1
+        python -m pip install --upgrade pip
+        python -m pip install pre-commit
+        pre-commit install
+
+If you prefer a user-scoped install, you can run:
+    python -m pip install --user pre-commit
+or use pipx:
+    pipx install pre-commit
+
+After installing, re-run this command or retry your commit. If permissions are restricted, consider using the `--user` flag or `pipx` as shown above.
+MSG
+                exit 1
+        fi
 fi

@@ -33,9 +33,16 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
 VENV_PYBABEL="./venv/bin/pybabel"
-if [[ ! -x "$VENV_PYBABEL" ]]; then
-  echo "pybabel not found in ./venv. Install dev requirements: pip install babel" >&2
-  exit 1
+PYBABEL=""
+if [[ -x "$VENV_PYBABEL" ]]; then
+  PYBABEL="$VENV_PYBABEL"
+else
+  if command -v pybabel >/dev/null 2>&1; then
+    PYBABEL="$(command -v pybabel)"
+  else
+    echo "pybabel not found in ./venv or system PATH. Install dev requirements: pip install Babel" >&2
+    exit 1
+  fi
 fi
 
 if [[ ! -f translations/messages.pot ]]; then
@@ -51,9 +58,10 @@ trap 'rm -rf "$tmpdir"' EXIT
 # copy translations to temporary location
 cp -a translations "$tmpdir"/translations
 
-# run pybabel update on the temporary copy
-if ! "$VENV_PYBABEL" update -i translations/messages.pot -d "$tmpdir"/translations >/dev/null 2>&1; then
-  echo "pybabel failed while updating temporary translations. Ensure the venv is healthy." >&2
+# run pybabel update on the temporary copy (capture output for diagnostics)
+if ! output="$($PYBABEL update -i translations/messages.pot -d "$tmpdir"/translations 2>&1)"; then
+    echo "pybabel failed while updating temporary translations. Output follows:" >&2
+    printf '%s\n' "$output" >&2
   exit 1
 fi
 
