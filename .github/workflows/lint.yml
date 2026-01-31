@@ -85,7 +85,7 @@ jobs:
         if: always()
         run: |
           pip install bandit==1.9.3
-          bandit -r . -x tests,.venv,venv,.git -ll
+          bandit -r octoprint_uptime -x .venv,venv,.git -ll
       - name: Summary
         if: always()
         run: |
