@@ -66,7 +66,17 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
 
       - # Create a dedicated .venv and install development dependencies
-        name: Create venv and install dependencies
+        name: Create venv and install dependencies (Python 3.8)
+        if: ${{ matrix['python-version'] == '3.8' }}
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip setuptools wheel
+          # Use --no-build-isolation on 3.8 to avoid trying to install
+          # setuptools>=77 as a build dependency (may be unavailable).
+          python -m pip install --no-build-isolation -e ".[develop]" build
+      - name: Create venv and install dependencies (other Pythons)
+        if: ${{ matrix['python-version'] != '3.8' }}
         run: |
           python -m venv .venv
           . .venv/bin/activate
