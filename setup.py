@@ -58,9 +58,7 @@ PLUGIN_VERSION = _read_version()
 
 # The plugin's description. Can be overridden within OctoPrint's internal
 # data via __plugin_description__ in the plugin module.
-PLUGIN_DESCRIPTION = (
-    "OctoPrint plugin that exposes system uptime to the About → System dialog."
-)
+PLUGIN_DESCRIPTION = "Adds system uptime to the navbar and exposes a small uptime API."
 
 # The plugin's author. Can be overridden within OctoPrint's internal data
 # via __plugin_author__ in the plugin module.
@@ -74,10 +72,10 @@ PLUGIN_AUTHOR_EMAIL = "ajimaru_gdr@pm.me"
 PLUGIN_URL = "https://github.com/Ajimaru/OctoPrint-Uptime"
 
 
-### --------------------------------------------------------------------
-### More advanced options that you usually shouldn't have to touch follow
-### after this point
-### --------------------------------------------------------------------
+# --------------------------------------------------------------------
+# More advanced options that you usually shouldn't have to touch follow
+# after this point
+# --------------------------------------------------------------------
 
 # Additional package data to install for this plugin. The subfolders
 # "templates", "static" and "translations" will already be installed
@@ -115,7 +113,7 @@ PLUGIN_IGNORED_PACKAGES: List[str] = []
 # to prevent confused users and provide a helpful error.
 # Remove it if you would like to support Python 2 as well as 3
 # (not recommended).
-additional_setup_parameters = {"python_requires": ">=3,<4"}
+additional_setup_parameters = {"python_requires": ">=3.8,<3.14"}
 
 ####################################################################
 
@@ -149,25 +147,19 @@ if len(additional_setup_parameters):
     import types
 
     try:
-        OCTOPRINT_UTIL: Optional[types.ModuleType] = importlib.import_module(
-            "octoprint.util"
-        )
+        OCTOPRINT_UTIL: Optional[types.ModuleType] = importlib.import_module("octoprint.util")
     except ImportError:
         OCTOPRINT_UTIL = None
 
     if OCTOPRINT_UTIL and hasattr(OCTOPRINT_UTIL, "dict_merge"):
         dict_merge = getattr(OCTOPRINT_UTIL, "dict_merge")
     else:
-        # Fallback dict_merge implementation (recursive, does not mutate inputs)
+
         def dict_merge(a, b):
             """Recursively merge two dicts without mutating inputs."""
             result = copy.deepcopy(a)
             for key, value in b.items():
-                if (
-                    key in result
-                    and isinstance(result[key], dict)
-                    and isinstance(value, dict)
-                ):
+                if key in result and isinstance(result[key], dict) and isinstance(value, dict):
                     result[key] = dict_merge(result[key], value)
                 else:
                     result[key] = copy.deepcopy(value)

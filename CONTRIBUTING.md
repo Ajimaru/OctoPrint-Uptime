@@ -1,20 +1,43 @@
 # Contributing
 
-Thanks for your interest in contributing to the OctoPrint-Uptime plugin.
+Thanks for your interest in contributing to the OctoPrint-Uptime plugin!
+
+## Quick Start
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b wip/my-feature`
+3. Write tests for new features
+4. Submit a pull request
+5. Install development dependencies (prerequisites & commands):
+   - Prerequisites: Python 3.10+ and `python3-venv` (or equivalent) installed.
+
+   - Create and activate a virtual environment, then install dev deps:
+
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     python -m pip install --upgrade pip
+     python -m pip install -r requirements-dev.txt
+     ```
+
+   - Optional: install the package in editable mode with extras for development:
+
+     ```bash
+     python -m pip install -e ".[develop]"
+     ```
+
+   These commands ensure tooling (pytest, pre-commit, linters, Sphinx, Babel) is
+   available locally for testing and documentation builds.
+
+6. Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+7. Note: `main` is protected on GitHub, so changes go through PRs.
+
+---
 
 ## Before you start
 
 - Please keep issues and pull requests focused: **one bug/feature per PR**.
 - If your change affects user-facing behavior, please describe how you tested it.
-
-## GitHub workflow (protected `main`)
-
-This repository uses a protected default branch (`main`). Please:
-
-- Create a feature branch in your fork (or within the repo if you have access)
-- Open a Pull Request into `main` (direct pushes to `main` are blocked)
-- Ensure required CI checks pass before merging
-- Resolve review conversations (if any)
 
 ## Bug reports
 
@@ -40,12 +63,21 @@ python -m pip install -U pip
 python -m pip install -e ".[develop]"
 ```
 
-If you use the helper scripts, see `.development/README.md`.
+## Automatic pre-commit autoupdate
 
-Notes:
+If you want your local hooks to attempt to keep themselves updated before running,
+set the environment variable `PRECOMMIT_AUTOUPDATE=1`. The repo-local wrapper will
+run `pre-commit autoupdate` at most once per 24 hours. This is opt-in — running
+autoupdate on every commit by default is not recommended because it may change
+`.pre-commit-config.yaml` unexpectedly.
 
-- The helper scripts target a Python 3.10+ development environment. The plugin runtime supports Python 3.10+.
-- If you downloaded the repo as a ZIP, executable bits may be missing. In that case run `bash .development/setup_dev.sh` (or `chmod +x .development/setup_dev.sh`).
+To enable:
+
+```bash
+export PRECOMMIT_AUTOUPDATE=1
+```
+
+Review any changes created by `autoupdate` before committing them.
 
 ## Running tests
 
@@ -61,7 +93,23 @@ We use `pre-commit` to enforce consistent formatting and basic quality checks.
 pre-commit run --hook-stage manual --all-files
 ```
 
-If you use `.development/setup_dev.sh`, it enables repo-local git hooks via `core.hooksPath=.githooks`.
+**_TODO_** describe how to manually enables repo-local git hooks via `core.hooksPath=.githooks`.
+
+### Translations sync check
+
+We added a repository-local pre-commit hook `check-translations` that ensures PO files in `translations/` are kept in sync with `translations/messages.pot`.
+
+If a commit is rejected due to the translations check, update the PO files and re-commit.
+
+### Prettier and formatting
+
+We use a project-local Prettier for JS/HTML/Markdown formatting. The `pre-commit`
+hook runs a helper script located at `.githooks/prettier-hook.sh`.
+The hook will prefer the repository `node_modules/.bin/prettier` if present, otherwise it will
+fall back to `npx --yes prettier --write`.
+
+Note: the generated API document `docs/api/python.md` is intentionally excluded
+from automatic formatting to avoid changes from generated artifacts.
 
 ## Coding style
 
@@ -82,19 +130,11 @@ If you use `.development/setup_dev.sh`, it enables repo-local git hooks via `cor
 - In templates use `{{ _('...') }}`.
 - In JavaScript use OctoPrint's `gettext`.
 
-If you add or change strings, update and compile catalogs:
-
-```bash
-pybabel extract -F babel.cfg -o translations/messages.pot .
-pybabel update -i translations/messages.pot -d translations
-pybabel compile -d translations
-```
-
 ## What not to commit
 
 Do not commit generated or environment-specific files such as:
 
 - `dist/`, `build/`, `*.egg-info/`
 - `__pycache__/`, `.pytest_cache/`, `.coverage/`, `htmlcov/`
-- local virtual environments (`venv/`, `.venv/`)
+- local virtual environments (`venv/`)
 - IDE/editor configs (`.idea/`, `.vscode/`)

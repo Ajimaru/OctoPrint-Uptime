@@ -1,0 +1,12 @@
+# Enforce LF line endings for shell scripts and git hooks
+# This helps avoid CRLF-related issues on CI and Unix environments.
+*.sh text eol=lf
+.githooks/* text eol=lf
+.development/*.sh text eol=lf
+
+# Ensure common text files also use LF
+*.py text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf

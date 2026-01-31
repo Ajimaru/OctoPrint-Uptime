@@ -25,13 +25,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.10"
           cache: pip
 
-      - name: Install dependencies
+      - name: Create venv and install minimal i18n deps
         run: |
+          python -m venv .venv
+          . .venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install -e ".[develop]" "Babel==2.16.0" "Jinja2==3.1.4"
+          python -m pip install Babel polib
 
       - name: Verify messages.pot is up to date
         run: |
@@ -70,4 +72,11 @@ jobs:
 
       - name: Compile catalogs
         run: |
-          pybabel compile -d octoprint_uptime/translations
+          . .venv/bin/activate
+          pybabel compile -d translations
+          mkdir -p octoprint_uptime/translations
+          if [ -n "$(find translations -maxdepth 2 -type f -print -quit 2>/dev/null)" ]; then
+            cp -a translations/* octoprint_uptime/translations/
+          else
+            echo "Warning: translations/ is empty or missing; skipping copy"
+          fi

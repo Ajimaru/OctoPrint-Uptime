@@ -1,0 +1,92 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Show tool versions
+        run: |
+          python --version
+          pip --version
+
+      - name: Upgrade pip/setuptools/wheel
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+
+      - name: Install minimal dev dependencies for CI
+        run: |
+          python -m pip install pre-commit Babel
+
+      - name: Cache pre-commit
+        id: cache-precommit
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-${{ matrix.python-version }}-
+            pre-commit-${{ runner.os }}-
+
+      - name: Set up Node.js for hooks
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
+
+      - name: Install Node.js dependencies for hooks
+        run: |
+          if [ -f package-lock.json ] || [ -f package.json ]; then
+            npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+          fi
+
+      - name: Create ./venv for translation check
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install Babel
+
+      - name: Run pre-commit on all files
+        run: |
+          pre-commit run --all-files --show-diff-on-failure --color always
+
+      - name: Bandit (security)
+        if: success() || failure()
+        run: |
+          pip install bandit==1.9.3
+          bandit -r octoprint_uptime -x .venv,venv,.git -ll
+      - name: Summary
+        if: always()
+        run: |
+          echo "✅ Linting finished for Python ${{ matrix.python-version }}"

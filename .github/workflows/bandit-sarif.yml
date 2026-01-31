@@ -1,0 +1,50 @@
+name: Bandit SARIF
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "27 01 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+concurrency:
+  group: bandit-sarif-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bandit-security-scan:
+    name: Bandit Security Scan (SARIF)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install tools
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install "bandit==1.9.3" bandit-sarif-formatter
+
+      - name: Run Bandit (SARIF)
+        run: |
+          mkdir -p reports
+          bandit -r octoprint_uptime -x .venv,venv,.git -ll \
+            --format sarif --output reports/bandit.sarif
+
+      - name: Upload Bandit SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: reports/bandit.sarif

@@ -13,6 +13,5 @@
 /requirements.txt @Ajimaru
 
 # Dev tooling / hooks
-/.development/ @Ajimaru
 /.githooks/ @Ajimaru
 /.pre-commit-config.yaml @Ajimaru

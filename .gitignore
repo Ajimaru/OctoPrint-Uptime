@@ -5,10 +5,12 @@
 *~
 .DS_Store
 *.egg-info
-dist
-build
-venv
-.venv
+dist/
+build/
+venv/
+.venv/
+.venv-docs/
+venv-docs/
 __pycache__
 .pytest_cache
 .coverage
@@ -23,19 +25,40 @@ GITHUB_UPLOAD.md
 # pre-commit/prettier temporary install artifacts
 node_modules/
 
-# Development-only folders (not for GitHub)
+# Development-only folders and files (not for GitHub)
 .drafts/
 .local/
 .notes/
 .ideas/
-.logs
+.logs/
 .qodo
-.codacy
+.codacy/
 gh_logs
+codacy_trivy_results.json
+.github/instructions/
+.ruff_cache/
+codacy-trivy.sarif
+codacy-trivy-skip.sarif
+codacy-trivy-args.sarif
+codacy-trivy-ignore.sarif
+.github/copilot-instructions.md
+.development/
+.codacyignore
+.trivyignore
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
 
+# Generated diagram intermediates
+# pyreverse/graphviz intermediate files
+classes_OctoPrint-Uptime*.dot
+packages_OctoPrint-Uptime*.dot
+*.pnm
+
+# Generated diagram outputs (created by CI)
+docs/reference/diagrams/*.svg
 
 #Ignore vscode AI rules
-.github/instructions/codacy.instructions.md
+
+# Local MkDocs build output
+site/

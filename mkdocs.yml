@@ -41,7 +41,7 @@ plugins:
             merge_init_into_class: true
             separate_signature: true
             filters:
-              - "!^_"
+              - "!^__"
 
 nav:
   - Overview: index.md
@@ -58,6 +58,7 @@ nav:
   - Frontend:
       - UI placements: frontend/ui-placements.md
       - Internationalization: frontend/i18n.md
+      - Reference: reference/frontend.md
   - Development:
       - Contributing: development/contributing.md
       - Testing: development/testing.md
@@ -65,4 +66,9 @@ nav:
   - Reference:
       - Configuration: reference/configuration.md
       - Dev scripts: reference/cli-dev-scripts.md
-      - Diagrams: reference/diagrams/classes.svg
+      - Diagrams:
+          - Classes (auto): reference/diagrams/classes.md
+          - Classes (detailed): reference/diagrams/classes_detailed.md
+          - Packages: reference/diagrams/packages.md
+          - Overview (Mermaid): reference/diagrams/overview.md
+          - Regenerate: reference/diagrams/REGENERATE.md

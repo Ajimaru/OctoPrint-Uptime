@@ -27,7 +27,7 @@ $(function () {
     self.uptimeDisplay = ko.observable("Loading...");
 
     var navbarEl = $("#navbar_plugin_navbar_uptime");
-
+    var DEFAULT_POLL = 5;
     var isNavbarEnabled = function () {
       try {
         return settings.plugins.octoprint_uptime.navbar_enabled();
@@ -58,6 +58,24 @@ $(function () {
      * @returns {string} one of "full", "dhm", "dh", "d", or "short"
      */
 
+    var pollTimer = null;
+
+    /**
+     * Schedule the next polling cycle.
+     * @function scheduleNext
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @param {number} intervalSeconds - seconds until next poll (clamped by caller)
+     * @returns {void}
+     */
+    function scheduleNext(intervalSeconds) {
+      try {
+        if (pollTimer) {
+          clearTimeout(pollTimer);
+        }
+      } catch (e) {}
+      pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
+    }
+
     /**
      * Fetch uptime from the plugin API and update the navbar display and tooltip.
      * Silently updates polling interval based on server or local settings.
@@ -83,11 +101,9 @@ $(function () {
         return;
       }
 
-      var url = "/api/plugin/octoprint_uptime";
-      $.get(url)
+      OctoPrint.simpleApiGet("octoprint_uptime")
         .done(function (data) {
           // Prefer server-side settings
-          // (reflect saved values immediately)
           var navbarEnabled =
             data && typeof data.navbar_enabled !== "undefined"
               ? data.navbar_enabled
@@ -117,6 +133,29 @@ $(function () {
             displayValue = data.uptime || "unknown";
           }
 
+          // If server explicitly reports uptime unavailable, show localized "Unavailable"
+          try {
+            if (data && data.uptime_available === false) {
+              if (typeof gettext === "function") {
+                displayValue = gettext("Unavailable");
+              } else {
+                displayValue = "Unavailable";
+              }
+            }
+          } catch (e) {
+            if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
+              console.error(
+                "octoprint_uptime: error processing uptime_available flag",
+                e,
+                data,
+              );
+            } else {
+              console.warn(
+                "octoprint_uptime: error processing uptime_available flag",
+              );
+            }
+          }
+
           // update visible text
           self.uptimeDisplay(displayValue);
 
@@ -144,13 +183,35 @@ $(function () {
                 if (anchor.data("bs.tooltip")) {
                   anchor.tooltip("dispose");
                 }
-              } catch (e) {}
+              } catch (disposeErr) {
+                if (
+                  typeof globalThis !== "undefined" &&
+                  globalThis.UptimeDebug
+                ) {
+                  console.error(
+                    "octoprint_uptime: failed to dispose existing tooltip",
+                    disposeErr,
+                  );
+                } else {
+                  console.warn(
+                    "octoprint_uptime: failed to dispose existing tooltip",
+                  );
+                }
+              }
               // Restore native browser tooltip by setting `title` and
               // removing any Bootstrap-specific attributes.
               anchor.attr("title", startedText);
               anchor.removeAttr("data-original-title");
             }
-          } catch (e) {}
+          } catch (e) {
+            if (typeof globalThis !== "undefined" && globalThis.UptimeDebug) {
+              console.error(
+                "octoprint_uptime: tooltip calculation error",
+                e,
+                data,
+              );
+            }
+          }
           // Determine poll interval from server or local settings
           try {
             var pollInterval = DEFAULT_POLL;
@@ -164,40 +225,31 @@ $(function () {
               } catch (e) {}
             }
             scheduleNext(pollInterval);
-          } catch (e) {}
+          } catch (e) {
+            if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
+              console.error(
+                "octoprint_uptime: poll interval calculation error",
+                e,
+                data,
+              );
+            }
+            // Ensure polling continues even if interval calculation fails
+            scheduleNext(DEFAULT_POLL);
+          }
         })
         .fail(function () {
           self.uptimeDisplay("Error");
-          // If request fails, respect local setting
           if (!isNavbarEnabled()) {
             navbarEl.hide();
           }
+          // Continue polling even after failure (with default interval)
+          scheduleNext(DEFAULT_POLL);
         });
     };
 
-    var pollTimer = null;
-    var DEFAULT_POLL = 5;
-
-    /**
-     * Schedule the next polling cycle.
-     * @function scheduleNext
-     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
-     * @param {number} intervalSeconds - seconds until next poll (clamped by caller)
-     * @returns {void}
-     */
-    function scheduleNext(intervalSeconds) {
-      try {
-        if (pollTimer) {
-          clearTimeout(pollTimer);
-        }
-      } catch (e) {}
-      pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
-    }
-
-    // Start the polling loop; each fetch will reschedule itself based on
+    // Start the polling loop; the initial fetch will reschedule itself based on
     // the server-provided `poll_interval_seconds` or local setting.
     fetchUptime();
-    scheduleNext(DEFAULT_POLL);
 
     // Validate numeric settings on save: enforce integers in [1,120].
     try {
@@ -214,65 +266,93 @@ $(function () {
          * // "Polling interval must be an integer between 1 and 120 seconds."
          */
         var origSave = settingsVM.save.bind(settingsVM);
-        settingsVM.save = function () {
+        // Helper: Validate integer in range with localized message on failure.
+        function validateIntegerRange(rawValue, min, max, message) {
           try {
-            var errors = [];
-            try {
-              var throttle = Number(
-                settings.plugins.octoprint_uptime.debug_throttle_seconds(),
-              );
-              if (
-                !Number.isFinite(throttle) ||
-                throttle < 1 ||
-                throttle > 120 ||
-                Math.floor(throttle) !== throttle
-              ) {
-                errors.push(
-                  typeof gettext === "function"
-                    ? gettext(
-                        "Debug throttle must be an integer between 1 and 120 seconds.",
-                      )
-                    : "Debug throttle must be an integer between 1 and 120 seconds.",
-                );
-              }
-            } catch (e) {}
-            try {
-              var poll = Number(
-                settings.plugins.octoprint_uptime.poll_interval_seconds(),
-              );
-              if (
-                !Number.isFinite(poll) ||
-                poll < 1 ||
-                poll > 120 ||
-                Math.floor(poll) !== poll
-              ) {
-                errors.push(
-                  typeof gettext === "function"
-                    ? gettext(
-                        "Polling interval must be an integer between 1 and 120 seconds.",
-                      )
-                    : "Polling interval must be an integer between 1 and 120 seconds.",
-                );
-              }
-            } catch (e) {}
-
-            if (errors.length) {
-              try {
-                if (
-                  typeof OctoPrint !== "undefined" &&
-                  OctoPrint.notifications &&
-                  OctoPrint.notifications.error
-                ) {
-                  OctoPrint.notifications.error(errors.join("\n"));
-                } else {
-                  alert(errors.join("\n"));
-                }
-              } catch (e) {
-                alert(errors.join("\n"));
-              }
-              return;
+            if (
+              rawValue === "" ||
+              rawValue === null ||
+              rawValue === undefined
+            ) {
+              return typeof gettext === "function" ? gettext(message) : message;
+            }
+            var n = Number(rawValue);
+            if (
+              !Number.isFinite(n) ||
+              n < min ||
+              n > max ||
+              Math.floor(n) !== n
+            ) {
+              return typeof gettext === "function" ? gettext(message) : message;
             }
           } catch (e) {}
+          return null;
+        }
+
+        // Helper: Validate debug throttle
+        function validateDebugThrottle() {
+          try {
+            var raw =
+              settings.plugins.octoprint_uptime.debug_throttle_seconds();
+          } catch (e) {
+            return typeof gettext === "function"
+              ? gettext("Unable to read debug throttle setting.")
+              : "Unable to read debug throttle setting.";
+          }
+          return validateIntegerRange(
+            raw,
+            1,
+            120,
+            "Debug throttle must be an integer between 1 and 120 seconds.",
+          );
+        }
+
+        // Helper: Validate poll interval
+        function validatePollInterval() {
+          var raw;
+          try {
+            raw = settings.plugins.octoprint_uptime.poll_interval_seconds();
+          } catch (e) {
+            return typeof gettext === "function"
+              ? gettext("Unable to read polling interval setting.")
+              : "Unable to read polling interval setting.";
+          }
+          return validateIntegerRange(
+            raw,
+            1,
+            120,
+            "Polling interval must be an integer between 1 and 120 seconds.",
+          );
+        }
+
+        // Helper: Show error notification
+        function showValidationErrors(errors) {
+          try {
+            if (
+              typeof OctoPrint !== "undefined" &&
+              OctoPrint.notifications &&
+              OctoPrint.notifications.error
+            ) {
+              OctoPrint.notifications.error(errors.join("\n"));
+            } else {
+              alert(errors.join("\n"));
+            }
+          } catch (e) {
+            alert(errors.join("\n"));
+          }
+        }
+
+        settingsVM.save = function () {
+          var errors = [];
+          var throttleError = validateDebugThrottle();
+          if (throttleError) errors.push(throttleError);
+          var pollError = validatePollInterval();
+          if (pollError) errors.push(pollError);
+
+          if (errors.length) {
+            showValidationErrors(errors);
+            return Promise.reject(new Error("validation failed"));
+          }
           return origSave();
         };
       }
