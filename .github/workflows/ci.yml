@@ -62,6 +62,14 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[develop]" build
 
+      - name: Create ./venv for translation check
+        if: ${{ matrix.run-precommit }}
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install Babel
+
       - name: Run tests
         if: ${{ !matrix.run-coverage }}
         run: |
