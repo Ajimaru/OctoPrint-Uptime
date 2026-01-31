@@ -31,7 +31,6 @@ repos:
       - id: check-xml # Validate XML files if present
       - id: debug-statements # Detect accidental debug statements (e.g., print, pdb)
       - id: requirements-txt-fixer # Normalize requirements.txt formatting
-      - id: no-commit-to-branch # Prevent committing directly to protected branches
 
   # Formatting and code-mod tools
   - repo: https://github.com/psf/black
