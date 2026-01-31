@@ -70,4 +70,8 @@ jobs:
 
       - name: Compile catalogs
         run: |
-          pybabel compile -d octoprint_uptime/translations
+          # Compile from the top-level `translations/` directory (where PO files live)
+          pybabel compile -d translations
+          # Ensure compiled catalogs are present in the package dir for downstream checks
+          mkdir -p octoprint_uptime/translations
+          cp -a translations/* octoprint_uptime/translations/ || true
