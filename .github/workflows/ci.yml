@@ -73,6 +73,7 @@ jobs:
           . .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install "OctoPrint>=1.11.0,<2"
+          python -m pip install Babel
           # Use --no-build-isolation on 3.8 to avoid trying to install
           # setuptools>=77 as a build dependency (may be unavailable).
           python -m pip install --no-build-isolation -e ".[develop]" build
@@ -83,16 +84,8 @@ jobs:
           . .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install "OctoPrint>=1.11.0,<2"
-          python -m pip install -e ".[develop]" build
-
-      - # Create small venv for translation (Babel) checks
-        name: Create ./venv for translation check
-        if: ${{ matrix.run-precommit }}
-        run: |
-          python -m venv venv
-          . venv/bin/activate
-          python -m pip install --upgrade pip
           python -m pip install Babel
+          python -m pip install -e ".[develop]" build
 
       - # Run unit tests (no coverage)
         name: Run tests
