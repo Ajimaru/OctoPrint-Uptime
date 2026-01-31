@@ -106,6 +106,16 @@ repos:
     hooks:
       - id: shellcheck # Shell script linter (ShellCheck) to catch common shell mistakes
         args: ["--severity=warning"]
+
+  - repo: https://github.com/OctoPrint/pre-commit-lessc
+    rev: 4.4.0
+    hooks:
+      - id: lessc # Compile and minify LESS files for frontend styles
+        args:
+          ["--wrapper-quiet", "--clean-css=--s1 --advanced --compatibility=ie8"]
+        additional_dependencies: ["less-plugin-clean-css"]
+        files: ^octoprint_uptime/static/less/.*\\.less$
+
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
