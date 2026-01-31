@@ -690,7 +690,7 @@ def test_get_uptime_from_psutil_and_proc(monkeypatch):
             "octoprint_uptime.plugin",
         }
         if name in allowed_modules:
-            return importlib.import_module(name)
+            return sys.modules[name]
         raise ImportError(f"Import of module '{name}' is not allowed in tests")
 
     monkeypatch.setattr(
@@ -1432,7 +1432,7 @@ def test_get_uptime_from_psutil_future_boot(monkeypatch):
         if name == "psutil":
             return fake_ps
         if name in allowed_modules:
-            return importlib.import_module(name)
+            return sys.modules[name]
         raise ImportError(f"Import of module '{name}' is not allowed in tests")
 
     monkeypatch.setattr(

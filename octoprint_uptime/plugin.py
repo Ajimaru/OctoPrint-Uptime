@@ -360,7 +360,7 @@ class OctoprintUptimePlugin(
             return len(params)
         except (ValueError, TypeError) as e:
             if logger:
-                logger.warning(
+                logger.info(
                     "_get_hook_positional_param_count: unable to inspect signature for %r: %s",
                     hook,
                     e,
