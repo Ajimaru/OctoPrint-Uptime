@@ -149,6 +149,11 @@ jobs:
           if [ -d .venv ]; then . .venv/bin/activate; fi
           pre-commit run --all-files
 
+      - name: Smoke install (import check)
+        run: |
+          if [ -d .venv ]; then . .venv/bin/activate; fi
+          python -c "import importlib, sys; importlib.import_module('octoprint_uptime'); print('ok')"
+
       - # Build source and wheel distributions
         name: Build package
         if: ${{ matrix.run-build }}
