@@ -1,4 +1,4 @@
-# pylint: disable=protected-access, too-many-lines
+# pylint: disable=protected-access, too-many-lines, too-many-statements
 
 """
 Unit tests for the OctoPrint-Uptime plugin.
