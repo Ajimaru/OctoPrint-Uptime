@@ -21,6 +21,12 @@ if [ -z "${BASH_VERSION-}" ]; then
   fi
 fi
 
+# Ensure relative paths and module discovery resolve from repo root
+cd "$REPO_ROOT" || {
+  echo "Failed to cd to repo root: $REPO_ROOT" >&2
+  exit 1
+}
+
 # Description: Generate UML class and package diagrams used in project documentation.
 # Behavior:
 #  - Uses `pyreverse` to emit DOT (or PNG fallback) files for classes and packages.
