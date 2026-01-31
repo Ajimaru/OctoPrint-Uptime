@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-31 14:28+0100\n"
+"POT-Creation-Date: 2026-01-31 15:33+0100\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -20,11 +20,11 @@ msgstr ""
 
 #: octoprint_uptime/plugin.py:234
 msgid "navbar_uptime"
-msgstr ""
+msgstr "Uptime"
 
 #: octoprint_uptime/plugin.py:240
 msgid "OctoPrint Uptime"
-msgstr ""
+msgstr "OctoPrint Uptime"
 
 #: octoprint_uptime/plugin.py:588 octoprint_uptime/plugin.py:630
 #: octoprint_uptime/plugin.py:739 octoprint_uptime/plugin.py:746

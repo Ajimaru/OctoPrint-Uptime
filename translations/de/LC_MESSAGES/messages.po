@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-31 14:28+0100\n"
+"POT-Creation-Date: 2026-01-31 15:33+0100\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -33,7 +33,6 @@ msgstr "unbekannt"
 
 #: octoprint_uptime/plugin.py:604 octoprint_uptime/plugin.py:620
 #: octoprint_uptime/templates/settings.jinja2:6
-#, fuzzy
 msgid "Uptime could not be determined on this system."
 msgstr "Die Uptime konnte auf diesem System nicht ermittelt werden."
 
