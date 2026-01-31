@@ -57,6 +57,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
+      - name: Preinstall setuptools for Python 3.8
+        if: ${{ matrix['python-version'] == '3.8' }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "setuptools>=77,<81"
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
