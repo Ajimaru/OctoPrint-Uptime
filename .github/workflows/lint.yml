@@ -65,7 +65,9 @@ jobs:
 
       - name: Install Node.js dependencies for hooks
         run: |
-          if [ -f package-lock.json ] || [ -f package.json ]; then npm ci --no-audit --no-fund; fi
+          if [ -f package-lock.json ] || [ -f package.json ]; then
+            npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+          fi
 
       - name: Run pre-commit on all files
         run: |
