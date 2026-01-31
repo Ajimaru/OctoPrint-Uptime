@@ -463,7 +463,8 @@ def test_fallback_uptime_response_handles_type_errors(monkeypatch):
     )
     resp = p._fallback_uptime_response()
     assert isinstance(resp, dict)
-    assert resp.get("uptime") == "1m 40s"
+    if resp.get("uptime") != "1m 40s":
+        raise ValueError("Uptime response is not as expected.")
 
 
 def test_fallback_uptime_response_logger_exception(monkeypatch):
@@ -578,9 +579,11 @@ def test_fallback_uptime_response_flask_jsonify_args(monkeypatch):
         lambda _: (50, "50s", "0m", "0h", "0d"),
     )
     resp = p._fallback_uptime_response()
-    assert isinstance(resp, dict) and "json" in resp
-    assert captured.get("uptime") == "50s"
-    assert captured.get("navbar_enabled") is False
+    if not (isinstance(resp, dict) and "json" in resp):
+        raise ValueError("Response is not a valid JSON dictionary")
+    assert captured.get("uptime") == "50s", "Expected uptime to be '50s'"
+    if captured.get("navbar_enabled") is not False:
+        raise AssertionError("navbar_enabled should be False")
     assert captured.get("display_format") == "compact"
     assert captured.get("poll_interval_seconds") == 10
 
@@ -855,7 +858,7 @@ def test_get_uptime_from_psutil_import_error_and_bad_boot(monkeypatch):
     res = p._get_uptime_from_psutil()
     if res is not None:
         pytest.fail(
-            "_get_uptime_from_psutil() should return None when " "import_module raises ImportError"
+            "_get_uptime_from_psutil() should return None when import_module raises ImportError"
         )
 
     fake_ps = SimpleNamespace(boot_time=lambda: "invalid")
@@ -1136,7 +1139,8 @@ def test_reload_with_octoprint_present_and_flask_abort(monkeypatch):
     monkeypatch.setitem(sys.modules, "octoprint.access.permissions", fake_perm)
     monkeypatch.setitem(sys.modules, "flask", fake_flask)
 
-    importlib.reload(plugin)
+    if aborted.get("code") != 403:
+        raise ValueError("Expected aborted code to be 403")
 
     p = plugin.OctoprintUptimePlugin()
 
@@ -1237,7 +1241,7 @@ def test_fallback_uptime_response_handles_exceptions(monkeypatch):
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_uptime_info",
-        lambda: (_ for _ in ()).throw(AttributeError("boom")),
+        lambda self: (_ for _ in ()).throw(AttributeError("boom")),
     )
     out = p._fallback_uptime_response()
     if isinstance(out, dict):
@@ -1402,7 +1406,7 @@ def test_get_uptime_from_psutil_future_boot(monkeypatch):
 
     if p._get_uptime_from_psutil() is not None:
         pytest.fail(
-            "_get_uptime_from_psutil() should return None when " "import_module raises ImportError"
+            "_get_uptime_from_psutil() should return None when import_module raises ImportError"
         )
 
 
@@ -1724,7 +1728,8 @@ def test_get_uptime_seconds_prefers_proc(monkeypatch):
     mo = mock.mock_open(read_data="123.4 0")
     monkeypatch.setattr(builtins, "open", mo)
     sec, src = p._get_uptime_seconds()
-    assert src == "proc"
+    if src != "proc":
+        raise AssertionError("Expected source to be 'proc'")
     assert sec is not None and abs(sec - 123.4) < 0.001
 
 
@@ -1792,7 +1797,8 @@ def test_validate_and_sanitize_settings_sanitizes_values():
     }
     p._validate_and_sanitize_settings(data)
     cfg = data["plugins"]["octoprint_uptime"]
-    assert cfg["debug_throttle_seconds"] == 60
+    if cfg["debug_throttle_seconds"] != 60:
+        raise ValueError("Invalid debug_throttle_seconds")
     assert cfg["poll_interval_seconds"] == 5
 
 
@@ -1810,7 +1816,9 @@ def test_log_settings_after_save_logs_change():
     p._settings._data["navbar_enabled"] = not prev
     p._update_internal_state()
     p._log_settings_after_save(prev)
-    assert any(r[0] == "info" for r in p._logger.records)
+    assert any(
+        r[0] == "info" for r in p._logger.records
+    ), "Expected info-level log message not found."
 
 
 def test_safe_update_internal_state_logs_warning_on_failure():
@@ -1888,7 +1896,8 @@ def test_handle_permission_check_aborts_and_handles_abort_exception():
 
     p._abort_forbidden = bad_abort
     res = p._handle_permission_check()
-    assert isinstance(res, dict) and res.get("error") == plugin._("Forbidden")
+    if not (isinstance(res, dict) and res.get("error") == plugin._("Forbidden")):
+        raise RuntimeError("Permission check failed")
 
 
 def test_handle_permission_check_check_raises_and_abort_fallback():
@@ -1940,7 +1949,7 @@ def test__get_uptime_seconds_prefers_psutil_branch():
     p._get_uptime_from_proc = lambda: None
     p._get_uptime_from_psutil = lambda: 123.0
     sec, src = p._get_uptime_seconds()
-    assert src == "psutil"
+    assert src == "psutil", "Expected source to be 'psutil'"
     assert sec == 123.0
 
 
