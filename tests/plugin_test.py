@@ -145,11 +145,16 @@ def test_format_uptime_variants():
     Test the format_uptime function with various input values to ensure correct
     formatting of uptime strings.
     """
-    assert plugin.format_uptime(0) == "0s"
-    assert plugin.format_uptime(1) == "1s"
-    assert plugin.format_uptime(61) == "1m 1s"
-    assert plugin.format_uptime(3601) == "1h 0m 1s"
-    assert plugin.format_uptime(90061) == "1d 1h 1m 1s"
+    if plugin.format_uptime(0) != "0s":
+        pytest.fail("format_uptime(0) != '0s'")
+    if plugin.format_uptime(1) != "1s":
+        pytest.fail("format_uptime(1) != '1s'")
+    if plugin.format_uptime(61) != "1m 1s":
+        pytest.fail("format_uptime(61) != '1m 1s'")
+    if plugin.format_uptime(3601) != "1h 0m 1s":
+        pytest.fail("format_uptime(3601) != '1h 0m 1s'")
+    if plugin.format_uptime(90061) != "1d 1h 1m 1s":
+        pytest.fail("format_uptime(90061) != '1d 1h 1m 1s'")
 
 
 def test_format_uptime_dhm_dh_d():
@@ -163,11 +168,25 @@ def test_format_uptime_dhm_dh_d():
 
     Assertions are made for representative input values to ensure expected output strings.
     """
-    assert plugin.format_uptime_dhm(3600) == "1h 0m"
-    assert plugin.format_uptime_dhm(90061) == "1d 1h 1m"
-    assert plugin.format_uptime_dh(3600) == "1h"
-    assert plugin.format_uptime_dh(90061) == "1d 1h"
-    assert plugin.format_uptime_d(90061) == "1d"
+    val = plugin.format_uptime_dhm(3600)
+    if val != "1h 0m":
+        pytest.fail(f"format_uptime_dhm(3600) != '1h 0m' (got {val!r})")
+
+    val = plugin.format_uptime_dhm(90061)
+    if val != "1d 1h 1m":
+        pytest.fail(f"format_uptime_dhm(90061) != '1d 1h 1m' (got {val!r})")
+
+    val = plugin.format_uptime_dh(3600)
+    if val != "1h":
+        pytest.fail(f"format_uptime_dh(3600) != '1h' (got {val!r})")
+
+    val = plugin.format_uptime_dh(90061)
+    if val != "1d 1h":
+        pytest.fail(f"format_uptime_dh(90061) != '1d 1h' (got {val!r})")
+
+    val = plugin.format_uptime_d(90061)
+    if val != "1d":
+        pytest.fail(f"format_uptime_d(90061) != '1d' (got {val!r})")
 
 
 def test_validate_and_sanitize_settings_plugins_not_dict():
@@ -183,7 +202,8 @@ def test_validate_and_sanitize_settings_plugins_not_dict():
     data3 = {"plugins": 123}
     for data in [data1, data2, data3]:
         p._validate_and_sanitize_settings(data)
-        assert "plugins" in data
+        if "plugins" not in data:
+            pytest.fail("'plugins' key missing from settings after validation")
 
 
 def test_validate_and_sanitize_settings_octoprint_uptime_not_dict():
@@ -199,7 +219,8 @@ def test_validate_and_sanitize_settings_octoprint_uptime_not_dict():
     data3 = {"plugins": {"octoprint_uptime": 123}}
     for data in [data1, data2, data3]:
         p._validate_and_sanitize_settings(data)
-        assert "octoprint_uptime" in data["plugins"]
+        if "octoprint_uptime" not in data["plugins"]:
+            pytest.fail("'octoprint_uptime' key missing from settings['plugins'] after validation")
 
 
 def test_validate_and_sanitize_settings_valid_and_invalid_values():
@@ -220,8 +241,10 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
     }
     p._validate_and_sanitize_settings(data)
     cfg = data["plugins"]["octoprint_uptime"]
-    assert cfg["debug_throttle_seconds"] == 120
-    assert cfg["poll_interval_seconds"] == 1
+    if cfg.get("debug_throttle_seconds") != 120:
+        pytest.fail("debug_throttle_seconds should be 120")
+    if cfg.get("poll_interval_seconds") != 1:
+        pytest.fail("poll_interval_seconds should be 1")
 
     data2 = {
         "plugins": {
@@ -233,8 +256,10 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
     }
     p._validate_and_sanitize_settings(data2)
     cfg2 = data2["plugins"]["octoprint_uptime"]
-    assert cfg2["debug_throttle_seconds"] == 1
-    assert cfg2["poll_interval_seconds"] == 120
+    if cfg2.get("debug_throttle_seconds") != 1:
+        pytest.fail("debug_throttle_seconds should be 1")
+    if cfg2.get("poll_interval_seconds") != 120:
+        pytest.fail("poll_interval_seconds should be 120")
 
     data3 = {
         "plugins": {
@@ -246,8 +271,10 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
     }
     p._validate_and_sanitize_settings(data3)
     cfg3 = data3["plugins"]["octoprint_uptime"]
-    assert cfg3["debug_throttle_seconds"] == 60
-    assert cfg3["poll_interval_seconds"] == 5
+    if cfg3.get("debug_throttle_seconds") != 60:
+        pytest.fail("debug_throttle_seconds should be 60")
+    if cfg3.get("poll_interval_seconds") != 5:
+        pytest.fail("poll_interval_seconds should be 5")
 
 
 def test_log_settings_save_data_and_call_base_on_settings_save():
@@ -295,15 +322,22 @@ def test_update_internal_state_and_get_api_settings_and_logging():
     else:
         setattr(p, "_logger", FakeLogger())
     p._update_internal_state()
-    assert p._debug_enabled is True
-    assert p._navbar_enabled is False
-    assert p._display_format == "compact"
-    assert p._debug_throttle_seconds == 30
+    if p._debug_enabled is not True:
+        pytest.fail("p._debug_enabled is not True")
+    if p._navbar_enabled is not False:
+        pytest.fail("p._navbar_enabled is not False")
+    if p._display_format != "compact":
+        pytest.fail(f"p._display_format != 'compact' (got {p._display_format!r})")
+    if p._debug_throttle_seconds != 30:
+        pytest.fail(f"p._debug_throttle_seconds != 30 (got {p._debug_throttle_seconds!r})")
 
     nav, fmt, poll = p._get_api_settings()
-    assert nav is False
-    assert fmt == "compact"
-    assert poll == 120
+    if nav is not False:
+        pytest.fail("nav is not False")
+    if fmt != "compact":
+        pytest.fail(f"fmt != 'compact' (got {fmt!r})")
+    if poll != 120:
+        pytest.fail(f"poll != 120 (got {poll!r})")
 
 
 def test_log_settings_after_save_prev_navbar_change():
@@ -327,7 +361,8 @@ def test_log_settings_after_save_prev_navbar_change():
     p._debug_throttle_seconds = 7
     p._log_settings_after_save(prev_navbar=False)
     infos = [c for c in p._logger.calls if c[0] == "info"]
-    assert len(infos) >= 2
+    if len(infos) < 2:
+        pytest.fail("expected at least 2 info log calls")
 
 
 def test_log_debug_throttle(monkeypatch):
@@ -346,26 +381,23 @@ def test_log_debug_throttle(monkeypatch):
     p._debug_throttle_seconds = 10
     monkeypatch.setattr(time, "time", lambda: 1000)
     p._log_debug("hello")
-    assert any(c[0] == "debug" for c in p._logger.calls)
+    if not any(c[0] == "debug" for c in p._logger.calls):
+        pytest.fail("expected a debug log call")
 
 
-def test_fallback_uptime_response_no_flask_and_with_flask(monkeypatch):
+def test_fallback_uptime_response_no_flask_uptime_unavailable(monkeypatch):
     """
-    Test the _fallback_uptime_response method of OctoprintUptimePlugin under different conditions:
-    - When uptime information is available and Flask is not present.
-    - When uptime information is not available, ensuring the response contains an uptime note.
-    - When Flask is present, verifying that the response uses Flask's jsonify method.
+    Test _fallback_uptime_response when uptime info is unavailable and Flask is not present.
     """
     p = plugin.OctoprintUptimePlugin()
     if hasattr(p, "set_logger"):
         p.set_logger(FakeLogger())
     else:
         setattr(p, "_logger", FakeLogger())
-
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_uptime_info",
-        lambda _: (100, "1m 40s", "1m", "1h", "0d"),
+        lambda _: (None, "unknown", "unknown", "unknown", "unknown"),
     )
     monkeypatch.setattr(plugin, "_flask", None)
     resp = p._fallback_uptime_response()
@@ -375,63 +407,182 @@ def test_fallback_uptime_response_no_flask_and_with_flask(monkeypatch):
         data = resp.get_json()
     else:
         data = None
-    assert isinstance(data, dict) and data.get("uptime") == "1m 40s"
-
-    monkeypatch.setattr(
-        plugin.OctoprintUptimePlugin,
-        "_get_uptime_info",
-        lambda _: (None, "unknown", "unknown", "unknown", "unknown"),
-    )
-    resp = p._fallback_uptime_response()
-    if isinstance(resp, dict):
-        data = resp
-    elif hasattr(resp, "get_json"):
-        data = resp.get_json()
-    else:
-        data = None
-    assert (
+    if not (
         isinstance(data, dict) and data.get("uptime_available") is False and "uptime_note" in data
-    )
+    ):
+        pytest.fail(
+            "Expected data to be a dict with uptime_available == False and "
+            "containing 'uptime_note'"
+        )
 
-    class FakeFlask:
+
+def test_fallback_uptime_response_handles_type_errors(monkeypatch):
+    """
+    Test that _fallback_uptime_response handles TypeError from Flask's jsonify gracefully,
+    falling back to a dict response.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    if hasattr(p, "set_logger"):
+        p.set_logger(FakeLogger())
+    else:
+        setattr(p, "_logger", FakeLogger())
+
+    class BadFlask:
         """
-        A minimal fake Flask class for testing purposes.
+        A mock Flask-like class used for testing error handling when the jsonify method fails.
 
-        Provides a static jsonify method that returns its keyword
-        arguments as a dictionary.
+        Methods
+        -------
+        jsonify(**kwargs):
+            Static method that simulates a failure by always raising a TypeError.
         """
 
         @staticmethod
         def jsonify(**kwargs):
             """
-            Convert keyword arguments into a dictionary under the 'json' key.
+            Simulates a failure in JSON serialization by always raising a TypeError.
 
             Args:
-                **kwargs: Arbitrary keyword arguments to include in the dictionary.
+                **kwargs: Arbitrary keyword arguments intended for JSON serialization.
 
-            Returns:
-                dict: A dictionary with a single key 'json' containing the provided
-                keyword arguments.
+            Raises:
+                TypeError: Always raised to indicate JSON serialization failure.
             """
-            return {"json": kwargs}
+            raise TypeError("jsonify failed")
 
-        def another_public_method(self):
-            """Dummy public method to satisfy linter for public methods."""
-            return True
-
-    monkeypatch.setattr(plugin, "_flask", FakeFlask)
+    monkeypatch.setattr(plugin, "_flask", BadFlask)
+    monkeypatch.setattr(
+        plugin.OctoprintUptimePlugin,
+        "_get_uptime_info",
+        lambda _: (100, "1m 40s", "1m", "1h", "0d"),
+    )
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_api_settings",
         lambda _: (True, "full", 5),
     )
+    resp = p._fallback_uptime_response()
+    assert isinstance(resp, dict)
+    assert resp.get("uptime") == "1m 40s"
+
+
+def test_fallback_uptime_response_logger_exception(monkeypatch):
+    """
+    Test that _fallback_uptime_response handles exceptions from logger without crashing.
+    """
+    p = plugin.OctoprintUptimePlugin()
+
+    class BadLogger:
+        """
+        A mock logger class that simulates a logger raising a TypeError when its
+        exception method is called.
+        Useful for testing error handling when logging fails.
+        """
+
+        def exception(self, *a, **k):
+            """
+            Raises a TypeError with the message "badlog".
+
+            Args:
+                *a: Variable length argument list.
+                **k: Arbitrary keyword arguments.
+
+            Raises:
+                TypeError: Always raised with the message "badlog".
+            """
+            raise TypeError("badlog")
+
+    p._logger = BadLogger()
+    monkeypatch.setattr(plugin, "_flask", None)
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_uptime_info",
-        lambda _: (100, "1m", "1m", "1h", "0d"),
+        lambda _: (_ for _ in ()).throw(AttributeError("fail")),
     )
-    out = p._fallback_uptime_response()
-    assert isinstance(out, dict) and "json" in out
+    resp = p._fallback_uptime_response()
+    assert isinstance(resp, dict)
+    assert resp.get("uptime") == plugin._("unknown")
+    assert resp.get("uptime_available") is False
+
+
+def test_fallback_uptime_response_with_partial_uptime(monkeypatch):
+    """
+    Test _fallback_uptime_response when uptime is zero or negative.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    monkeypatch.setattr(plugin, "_flask", None)
+    monkeypatch.setattr(
+        plugin.OctoprintUptimePlugin,
+        "_get_uptime_info",
+        lambda _: (0, "0s", "0m", "0h", "0d"),
+    )
+    resp = p._fallback_uptime_response()
+    assert isinstance(resp, dict)
+    assert resp.get("uptime") == "0s"
+    assert resp.get("uptime_available") is True
+
+    monkeypatch.setattr(
+        plugin.OctoprintUptimePlugin,
+        "_get_uptime_info",
+        lambda _: (-1, "unknown", "unknown", "unknown", "unknown"),
+    )
+    resp = p._fallback_uptime_response()
+    assert isinstance(resp, dict)
+    assert resp.get("uptime_available") is False
+
+
+def test_fallback_uptime_response_flask_jsonify_args(monkeypatch):
+    """
+    Test _fallback_uptime_response passes correct arguments to Flask's jsonify.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    captured = {}
+
+    class CaptureFlask:
+        """
+        A helper class to capture Flask JSON responses during testing.
+
+        Methods
+        -------
+        jsonify(**kwargs):
+            Static method that updates the captured dict with provided kwargs and
+            returns them in a JSON-like dict.
+        """
+
+        @staticmethod
+        def jsonify(**kwargs):
+            """
+            Converts keyword arguments to a JSON-like dictionary and updates the captured
+            dictionary with the provided values.
+
+            Args:
+                **kwargs: Arbitrary keyword arguments to be included in the JSON response
+                and captured.
+
+            Returns:
+                dict: A dictionary containing the provided keyword arguments under the
+                'json' key.
+            """
+            captured.update(kwargs)
+            return {"json": kwargs}
+
+    monkeypatch.setattr(plugin, "_flask", CaptureFlask)
+    monkeypatch.setattr(
+        plugin.OctoprintUptimePlugin,
+        "_get_api_settings",
+        lambda _: (False, "compact", 10),
+    )
+    monkeypatch.setattr(
+        plugin.OctoprintUptimePlugin,
+        "_get_uptime_info",
+        lambda _: (50, "50s", "0m", "0h", "0d"),
+    )
+    resp = p._fallback_uptime_response()
+    assert isinstance(resp, dict) and "json" in resp
+    assert captured.get("uptime") == "50s"
+    assert captured.get("navbar_enabled") is False
+    assert captured.get("display_format") == "compact"
+    assert captured.get("poll_interval_seconds") == 10
 
 
 def test_on_api_get_permission_and_response(monkeypatch):
@@ -456,13 +607,15 @@ def test_on_api_get_permission_and_response(monkeypatch):
     )
     plugin._flask = None
     out = p.on_api_get()
-    assert out == {"uptime": "42s"}
+    if out != {"uptime": "42s"}:
+        pytest.fail(f"Expected out == {{'uptime': '42s'}}, got {out!r}")
 
-    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_check_permissions", lambda self: False)
+    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_check_permissions", lambda _: False)
     p2 = plugin.OctoprintUptimePlugin()
     plugin._flask = None
     got = p2._handle_permission_check()
-    assert got and isinstance(got, dict)
+    if not (got and isinstance(got, dict)):
+        pytest.fail(f"Expected got to be a dict and truthy, got {got!r}")
 
 
 def test_get_uptime_info_custom_getter():
@@ -476,8 +629,10 @@ def test_get_uptime_info_custom_getter():
     p = plugin.OctoprintUptimePlugin()
     p.get_uptime_seconds = lambda: (200, "custom")
     seconds, *_ = p._get_uptime_info()
-    assert seconds == 200
-    assert p._last_uptime_source == "custom"
+    if seconds != 200:
+        pytest.fail(f"Expected seconds == 200, got {seconds!r}")
+    if p._last_uptime_source != "custom":
+        pytest.fail(f"Expected _last_uptime_source == 'custom', got {p._last_uptime_source!r}")
 
 
 def test_get_uptime_from_psutil_and_proc(monkeypatch):
@@ -491,19 +646,53 @@ def test_get_uptime_from_psutil_and_proc(monkeypatch):
     p = plugin.OctoprintUptimePlugin()
 
     fake_ps = SimpleNamespace(boot_time=lambda: time.time() - 1234)
+
+    def safe_import_module(name):
+        """
+        Safely imports a module by name, restricting imports to a predefined set of allowed modules.
+
+        Args:
+            name (str): The name of the module to import.
+
+        Returns:
+            module: The imported module object.
+
+        Raises:
+            ImportError: If the module name is not in the allowed set.
+
+        Special Cases:
+            - If 'psutil' is requested, returns the 'fake_ps' object instead of importing.
+        """
+        if name == "psutil":
+            return fake_ps
+        allowed_modules = {
+            "os",
+            "sys",
+            "time",
+            "types",
+            "builtins",
+            "pytest",
+            "octoprint_uptime.plugin",
+        }
+        if name in allowed_modules:
+            return importlib.import_module(name)
+        raise ImportError(f"Import of module '{name}' is not allowed in tests")
+
     monkeypatch.setattr(
         importlib,
         "import_module",
-        lambda name: fake_ps if name == "psutil" else importlib.import_module(name),
+        safe_import_module,
     )
     val = p._get_uptime_from_psutil()
-    assert isinstance(val, float) and abs(val - 1234) < 5
+    if not (isinstance(val, float) and abs(val - 1234) < 5):
+        pytest.fail("Expected val to be a float and within 5 of 1234")
 
-    monkeypatch.setattr(plugin.os.path, "exists", lambda path: True)
+    monkeypatch.setattr(plugin.os.path, "exists", lambda _: True)
     mo = mock.mock_open(read_data="987.65 0.00\n")
     monkeypatch.setattr(builtins, "open", mo)
     val2 = p._get_uptime_from_proc()
-    assert val2 is not None and abs(val2 - 987.65) < 0.001
+    if not (val2 is not None and abs(val2 - 987.65) < 0.001):
+        pytest.fail("Expected val2 to be not None and within 0.001 of 987.65")
 
 
 def test_hook_inspection_and_safe_invoke(monkeypatch):
@@ -558,19 +747,23 @@ def test_hook_inspection_and_safe_invoke(monkeypatch):
         """Public wrapper for testing positional param count."""
         return p._get_hook_positional_param_count(hook)
 
-    assert get_hook_param_count_public(no_arg_func) == 0
-    assert get_hook_param_count_public(identity) == 1
-    assert get_hook_param_count_public(two) == 2
+    if get_hook_param_count_public(no_arg_func) != 0:
+        pytest.fail("get_hook_param_count_public(no_arg_func) != 0")
+    if get_hook_param_count_public(identity) != 1:
+        pytest.fail("get_hook_param_count_public(identity) != 1")
+    if get_hook_param_count_public(two) != 2:
+        pytest.fail("get_hook_param_count_public(two) != 2")
 
     monkeypatch.setattr(
-        plugin.inspect, "signature", lambda h: (_ for _ in ()).throw(ValueError("nope"))
+        plugin.inspect, "signature", lambda h: (_ for _ in ()).throw(ValueError("nope")) or (_ := h)
     )
     if hasattr(p, "set_logger"):
         p.set_logger(FakeLogger())
     else:
         setattr(p, "_logger", FakeLogger())
 
-    assert get_hook_param_count_public(no_arg_func) is None
+    if get_hook_param_count_public(no_arg_func) is not None:
+        pytest.fail("get_hook_param_count_public(no_arg_func) is not None")
 
     def bad(one):
         """
@@ -589,7 +782,8 @@ def test_hook_inspection_and_safe_invoke(monkeypatch):
     else:
         setattr(p, "_logger", FakeLogger())
     p._safe_invoke_hook(bad, 1)
-    assert any(c[0] == "exception" for c in p._logger.calls)
+    if not any(c[0] == "exception" for c in p._logger.calls):
+        pytest.fail("Expected at least one 'exception' log call")
 
 
 def test_module_simple_methods_and_uptime_seconds_none(monkeypatch):
@@ -607,17 +801,23 @@ def test_module_simple_methods_and_uptime_seconds_none(monkeypatch):
     """
     p = plugin.OctoprintUptimePlugin()
     info = p.get_update_information()
-    assert "octoprint_uptime" in info
-    assert p.get_assets() == {"js": ["js/uptime.js"]}
+    if "octoprint_uptime" not in info:
+        pytest.fail('"octoprint_uptime" not in update information')
+    if p.get_assets() != {"js": ["js/uptime.js"]}:
+        pytest.fail("get_assets() did not return expected value")
     tcs = p.get_template_configs()
-    assert any(isinstance(x, dict) for x in tcs)
-    assert p.is_api_protected() is True
-    assert p.is_template_autoescaped() is True
+    if not any(isinstance(x, dict) for x in tcs):
+        pytest.fail("No dict found in template configs")
+    if p.is_api_protected() is not True:
+        pytest.fail("is_api_protected() did not return True")
+    if p.is_template_autoescaped() is not True:
+        pytest.fail("is_template_autoescaped() did not return True")
 
-    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_get_uptime_from_proc", lambda self: None)
-    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_get_uptime_from_psutil", lambda self: None)
+    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_get_uptime_from_proc", lambda _: None)
+    monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_get_uptime_from_psutil", lambda _: None)
     secs, src = p._get_uptime_seconds()
-    assert secs is None and src == "none"
+    if not (secs is None and src == "none"):
+        pytest.fail("_get_uptime_seconds() did not return (None, 'none')")
 
 
 def test_get_uptime_from_proc_bad_content(monkeypatch):
@@ -633,7 +833,8 @@ def test_get_uptime_from_proc_bad_content(monkeypatch):
     monkeypatch.setattr(plugin.os.path, "exists", lambda path: True)
     mo = mock.mock_open(read_data="not-a-number\n")
     monkeypatch.setattr(builtins, "open", mo)
-    assert p._get_uptime_from_proc() is None
+    if p._get_uptime_from_proc() is not None:
+        pytest.fail("_get_uptime_from_proc() should return None when /proc/uptime is missing")
 
 
 def test_get_uptime_from_psutil_import_error_and_bad_boot(monkeypatch):
@@ -651,11 +852,17 @@ def test_get_uptime_from_psutil_import_error_and_bad_boot(monkeypatch):
         "import_module",
         lambda name: (_ for _ in ()).throw(ImportError("nope")),
     )
-    assert p._get_uptime_from_psutil() is None
+    res = p._get_uptime_from_psutil()
+    if res is not None:
+        pytest.fail(
+            "_get_uptime_from_psutil() should return None when " "import_module raises ImportError"
+        )
 
     fake_ps = SimpleNamespace(boot_time=lambda: "invalid")
     monkeypatch.setattr(importlib, "import_module", lambda name: fake_ps)
-    assert p._get_uptime_from_psutil() is None
+    res2 = p._get_uptime_from_psutil()
+    if res2 is not None:
+        pytest.fail("_get_uptime_from_psutil() should return None when boot_time is invalid")
 
 
 def test_on_settings_initialized_invokes_hook_variants(monkeypatch):
@@ -684,7 +891,8 @@ def test_on_settings_initialized_invokes_hook_variants(monkeypatch):
 
     monkeypatch.setattr(plugin.SettingsPluginBase, "on_settings_initialized", base0, raising=False)
     p.on_settings_initialized()
-    assert called["base0"] is True
+    if called["base0"] is not True:
+        pytest.fail("Expected called['base0'] to be True")
 
     monkeypatch.setattr(plugin.SettingsPluginBase, "on_settings_initialized", base1, raising=False)
     p.on_settings_initialized()
@@ -825,7 +1033,8 @@ def test_on_api_get_with_flask_returns_json(monkeypatch):
         lambda self: (5, "5s", "5s", "0h", "0d"),
     )
     out = p.on_api_get()
-    assert isinstance(out, dict) and "json" in out
+    if not (isinstance(out, dict) and "json" in out):
+        pytest.fail("Expected output to be a dict containing 'json' key")
 
 
 def test_handle_permission_check_abort_raises(monkeypatch):
@@ -1005,7 +1214,8 @@ def test_get_api_settings_multiple_cases():
 
     p._settings = DummySettings({"poll_interval_seconds": "999"})
     nav, fmt, poll = p._get_api_settings()
-    assert poll == 120
+    if poll != 120:
+        pytest.fail(f"poll != 120 (got {poll!r})")
 
     p._settings = DummySettings({"poll_interval_seconds": "bad"})
     nav, fmt, poll = p._get_api_settings()
@@ -1152,12 +1362,48 @@ def test_get_uptime_from_psutil_future_boot(monkeypatch):
     """
     p = plugin.OctoprintUptimePlugin()
     fake_ps = SimpleNamespace(boot_time=lambda: time.time() + 10000)
+    allowed_modules = {
+        "os",
+        "sys",
+        "time",
+        "types",
+        "builtins",
+        "pytest",
+        "octoprint_uptime.plugin",
+    }
+
+    def safe_import_module(name):
+        """
+        Safely imports a module by name, restricting imports to a predefined set of allowed modules.
+
+        Args:
+            name (str): The name of the module to import.
+
+        Returns:
+            module: The imported module object.
+
+        Raises:
+            ImportError: If the module name is not in the allowed set.
+
+        Special Cases:
+            - If 'psutil' is requested, returns the 'fake_ps' object instead of importing.
+        """
+        if name == "psutil":
+            return fake_ps
+        if name in allowed_modules:
+            return importlib.import_module(name)
+        raise ImportError(f"Import of module '{name}' is not allowed in tests")
+
     monkeypatch.setattr(
         importlib,
         "import_module",
-        lambda name: fake_ps if name == "psutil" else importlib.import_module(name),
+        safe_import_module,
     )
-    assert p._get_uptime_from_psutil() is None
+
+    if p._get_uptime_from_psutil() is not None:
+        pytest.fail(
+            "_get_uptime_from_psutil() should return None when " "import_module raises ImportError"
+        )
 
 
 def test_get_uptime_from_proc_missing(monkeypatch):
@@ -1169,7 +1415,8 @@ def test_get_uptime_from_proc_missing(monkeypatch):
     """
     p = plugin.OctoprintUptimePlugin()
     monkeypatch.setattr(plugin.os.path, "exists", lambda path: False)
-    assert p._get_uptime_from_proc() is None
+    if p._get_uptime_from_proc() is not None:
+        pytest.fail("_get_uptime_from_proc() should return None when /proc/uptime is missing")
 
 
 def test_get_uptime_info_exception_path():
@@ -1264,12 +1511,13 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
     monkeypatch.setattr(p, "_update_internal_state", lambda: called.__setitem__("updated", True))
 
     p.on_settings_save({})
-    assert (
+    if not (
         called.get("validate")
         and called.get("log")
         and called.get("call_base")
         and called.get("updated")
-    )
+    ):
+        pytest.fail("Expected all hooks to be called: validate, log, call_base, updated")
 
 
 def test_reload_plugin_with_gettext_bind_failure(monkeypatch):
@@ -1601,7 +1849,8 @@ def test_get_uptime_info_handles_custom_getter():
     p.get_uptime_seconds = lambda: 42
     seconds, *_ = p._get_uptime_info()
     assert seconds == 42
-    assert p._last_uptime_source == "custom"
+    if p._last_uptime_source != "custom":
+        pytest.fail(f"Expected _last_uptime_source == 'custom', got {p._last_uptime_source!r}")
 
 
 def test_get_uptime_info_none_returns_unknown():

@@ -2,7 +2,11 @@
 
 # If running on native Windows, re-exec this script under Git Bash if available.
 # This is idempotent: if already running under Bash it does nothing.
-_SCRIPT_DIR_HINT="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd || dirname "$0")"
+if _dir="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd)"; then
+  _SCRIPT_DIR_HINT="$_dir"
+else
+  _SCRIPT_DIR_HINT="$(dirname "$0")"
+fi
 REPO_ROOT="$(cd "$_SCRIPT_DIR_HINT/.." >/dev/null 2>&1 && pwd || echo "$_SCRIPT_DIR_HINT")"
 WRAPPER="$REPO_ROOT/scripts/win-bash-wrapper.sh"
 if [ -z "${BASH_VERSION-}" ]; then
@@ -30,7 +34,7 @@ cd "$REPO_ROOT"
 
 VENV_PYBABEL="./venv/bin/pybabel"
 if [[ ! -x "$VENV_PYBABEL" ]]; then
-  echo "pybabel not found in ./venv. Install dev requirements: <TODO> describe how to manually install pybabel in the virtual environment <TODO>" >&2
+  echo "pybabel not found in ./venv. Install dev requirements: pip install babel" >&2
   exit 1
 fi
 

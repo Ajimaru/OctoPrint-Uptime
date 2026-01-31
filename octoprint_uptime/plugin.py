@@ -35,7 +35,7 @@ try:
     _ = gettext.gettext
 except (ImportError, AttributeError):
 
-    def _(message):
+    def _(message: str) -> str:
         return message
 
 
@@ -168,14 +168,14 @@ class OctoprintUptimePlugin(
     can be imported in environments where OctoPrint is not installed.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: object, **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
-        self._debug_enabled = False
-        self._navbar_enabled = True
-        self._display_format = "full"
-        self._last_debug_time = 0
-        self._last_throttle_notice = 0
-        self._debug_throttle_seconds = 60
+        self._debug_enabled: bool = False
+        self._navbar_enabled: bool = True
+        self._display_format: str = "full"
+        self._last_debug_time: float = 0.0
+        self._last_throttle_notice: float = 0.0
+        self._debug_throttle_seconds: int = 60
         self._last_uptime_source: Optional[str] = None
 
     def get_update_information(self) -> Dict[str, Any]:
@@ -340,7 +340,7 @@ class OctoprintUptimePlugin(
                     e,
                 )
 
-    def _get_hook_positional_param_count(self, hook) -> Optional[int]:
+    def _get_hook_positional_param_count(self, hook: Any) -> Optional[int]:
         """Return the number of positional params a callable accepts or None on error.
 
         Uses `inspect.signature` and logs a warning on failure.
@@ -367,7 +367,7 @@ class OctoprintUptimePlugin(
                 )
             return None
 
-    def _safe_invoke_hook(self, hook, param_count: int) -> None:
+    def _safe_invoke_hook(self, hook: Any, param_count: int) -> None:
         """Invoke a hook with either zero or one positional parameter and log failures.
 
         `param_count` should be 0 or 1; any exception raised by the hook is logged
@@ -383,7 +383,7 @@ class OctoprintUptimePlugin(
             if logger:
                 logger.exception("_safe_invoke_hook: %r raised", hook)
 
-    def _invoke_settings_hook(self, hook) -> None:
+    def _invoke_settings_hook(self, hook: Any) -> None:
         """Invoke a settings hook using signature inspection and log call errors.
 
         Delegates signature inspection and the actual call to small helpers to
@@ -621,9 +621,12 @@ class OctoprintUptimePlugin(
                 return resp
         except (AttributeError, TypeError, ValueError):
             if logger:
-                logger.exception(
-                    "_fallback_uptime_response: unexpected error while building response"
-                )
+                try:
+                    logger.exception(
+                        "_fallback_uptime_response: unexpected error while building response"
+                    )
+                except (AttributeError, TypeError, ValueError):
+                    pass
             return {"uptime": _("unknown"), "uptime_available": False}
 
     def on_api_get(self, _request: Any = None) -> Any:
@@ -799,7 +802,7 @@ class OctoprintUptimePlugin(
                 poll_interval = 5
                 if logger:
                     logger.debug(
-                        "_get_api_settings: poll_interval_seconds missing, " "defaulting to 5"
+                        "_get_api_settings: poll_interval_seconds missing, defaulting to 5"
                     )
             else:
                 try:

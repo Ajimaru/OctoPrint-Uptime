@@ -58,6 +58,24 @@ $(function () {
      * @returns {string} one of "full", "dhm", "dh", "d", or "short"
      */
 
+    var pollTimer = null;
+
+    /**
+     * Schedule the next polling cycle.
+     * @function scheduleNext
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @param {number} intervalSeconds - seconds until next poll (clamped by caller)
+     * @returns {void}
+     */
+    function scheduleNext(intervalSeconds) {
+      try {
+        if (pollTimer) {
+          clearTimeout(pollTimer);
+        }
+      } catch (e) {}
+      pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
+    }
+
     /**
      * Fetch uptime from the plugin API and update the navbar display and tooltip.
      * Silently updates polling interval based on server or local settings.
@@ -125,10 +143,7 @@ $(function () {
               }
             }
           } catch (e) {
-            if (
-              typeof window.UptimeDebug !== "undefined" &&
-              window.UptimeDebug
-            ) {
+            if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
               console.error(
                 "octoprint_uptime: error processing uptime_available flag",
                 e,
@@ -170,8 +185,8 @@ $(function () {
                 }
               } catch (disposeErr) {
                 if (
-                  typeof window.UptimeDebug !== "undefined" &&
-                  window.UptimeDebug
+                  typeof globalThis !== "undefined" &&
+                  globalThis.UptimeDebug
                 ) {
                   console.error(
                     "octoprint_uptime: failed to dispose existing tooltip",
@@ -189,10 +204,7 @@ $(function () {
               anchor.removeAttr("data-original-title");
             }
           } catch (e) {
-            if (
-              typeof window.UptimeDebug !== "undefined" &&
-              window.UptimeDebug
-            ) {
+            if (typeof globalThis !== "undefined" && globalThis.UptimeDebug) {
               console.error(
                 "octoprint_uptime: tooltip calculation error",
                 e,
@@ -214,10 +226,7 @@ $(function () {
             }
             scheduleNext(pollInterval);
           } catch (e) {
-            if (
-              typeof window.UptimeDebug !== "undefined" &&
-              window.UptimeDebug
-            ) {
+            if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
               console.error(
                 "octoprint_uptime: poll interval calculation error",
                 e,
@@ -237,24 +246,6 @@ $(function () {
           scheduleNext(DEFAULT_POLL);
         });
     };
-
-    var pollTimer = null;
-
-    /**
-     * Schedule the next polling cycle.
-     * @function scheduleNext
-     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
-     * @param {number} intervalSeconds - seconds until next poll (clamped by caller)
-     * @returns {void}
-     */
-    function scheduleNext(intervalSeconds) {
-      try {
-        if (pollTimer) {
-          clearTimeout(pollTimer);
-        }
-      } catch (e) {}
-      pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
-    }
 
     // Start the polling loop; the initial fetch will reschedule itself based on
     // the server-provided `poll_interval_seconds` or local setting.
@@ -318,10 +309,13 @@ $(function () {
 
         // Helper: Validate poll interval
         function validatePollInterval() {
+          var raw;
           try {
-            var raw = settings.plugins.octoprint_uptime.poll_interval_seconds();
+            raw = settings.plugins.octoprint_uptime.poll_interval_seconds();
           } catch (e) {
-            return null;
+            return typeof gettext === "function"
+              ? gettext("Unable to read polling interval setting.")
+              : "Unable to read polling interval setting.";
           }
           return validateIntegerRange(
             raw,
