@@ -28,10 +28,13 @@ jobs:
           python-version: "3.10"
           cache: pip
 
-      - name: Install dependencies
+      - name: Create venv and install minimal i18n deps
         run: |
+          python -m venv .venv
+          . .venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install -e ".[develop]"
+          # Install only Babel and polib required for extraction/compilation
+          python -m pip install Babel polib
 
       - name: Verify messages.pot is up to date
         run: |
@@ -70,6 +73,7 @@ jobs:
 
       - name: Compile catalogs
         run: |
+          . .venv/bin/activate
           # Compile from the top-level `translations/` directory (where PO files live)
           pybabel compile -d translations
           # Ensure compiled catalogs are present in the package dir for downstream checks

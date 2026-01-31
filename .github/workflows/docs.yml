@@ -28,10 +28,12 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install docs deps
+      - name: Create venv and install docs deps
         run: |
+          python -m venv .venv
+          . .venv/bin/activate
           python -m pip install --upgrade pip
-          pip install -r requirements-docs.txt
+          python -m pip install -r requirements-docs.txt
 
       - name: Install Node.js
         uses: actions/setup-node@v6
@@ -47,13 +49,19 @@ jobs:
           sudo apt-get install -y graphviz potrace imagemagick
 
       - name: Generate diagrams
-        run: ./scripts/generate-diagrams.sh
+        run: |
+          . .venv/bin/activate
+          ./scripts/generate-diagrams.sh
 
       - name: Generate JavaScript API docs
-        run: ./scripts/generate-jsdocs.sh
+        run: |
+          . .venv/bin/activate
+          ./scripts/generate-jsdocs.sh
 
       - name: Build MkDocs site
-        run: mkdocs build --strict
+        run: |
+          . .venv/bin/activate
+          mkdocs build --strict
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4

@@ -39,9 +39,10 @@ jobs:
           pip install "bandit==1.9.3"
 
       - name: Run Bandit with JSON output
+        # Limit Bandit scan to the plugin package to avoid scanning unrelated files
         run: |
           mkdir -p reports
-          bandit -r . -x tests,.venv,venv,.git -ll \
+          bandit -r octoprint_uptime -x .venv,venv,.git -ll \
             --format json --output reports/bandit.json || true
 
       - name: Upload Bandit JSON artifact
