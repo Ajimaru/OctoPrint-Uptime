@@ -75,7 +75,7 @@ Configure the plugin in **Settings** → **OctoPrint Uptime**:
 - `display_format`: `full` – Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`)
 - `poll_interval_seconds`: `5` – Polling interval in seconds (validated and clamped between 1–120s)
 - `debug_logging`: `false` – Enable debug logging for troubleshooting
-- `debug_throttle`: `60` – Throttle debug logs to reduce log spam (validated and clamped between 1–120s)
+- `debug_throttle_seconds`: `60` – Throttle debug logs to reduce log spam (validated and clamped between 1–120s)
 
 </details>
 <!-- markdownlint-enable MD033 -->
@@ -187,6 +187,6 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 
 ---
 
-![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime?style=social)![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime?style=social)![Watchers](https://img.shields.io/github/watchers/Ajimaru/OctoPrint-Uptime?style=social)
+![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime?style=social) ![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime?style=social) ![Watchers](https://img.shields.io/github/watchers/Ajimaru/OctoPrint-Uptime?style=social)
 
 **Like this plugin?** ⭐ Star the repo and share it with the OctoPrint community!
