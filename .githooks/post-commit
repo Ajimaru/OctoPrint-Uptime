@@ -66,7 +66,6 @@ if [[ -d "$POST_D_DIR" ]]; then
       bash -- "$f" || { rc=$?; echo "Script failed: $f (exit $rc)"; }
     fi
   done
-  done
 else
   echo "No post-commit.d scripts to run"
 fi
