@@ -23,12 +23,12 @@ jobs:
         include:
           - python-version: "3.8"
             os: ubuntu-latest
-            run-precommit: true
+            run-precommit: false
             run-coverage: false
             run-build: false
           - python-version: "3.9"
             os: ubuntu-latest
-            run-precommit: true
+            run-precommit: false
             run-coverage: false
             run-build: false
           - python-version: "3.10"
@@ -72,6 +72,7 @@ jobs:
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
+          python -m pip install "OctoPrint>=1.11.0,<2"
           # Use --no-build-isolation on 3.8 to avoid trying to install
           # setuptools>=77 as a build dependency (may be unavailable).
           python -m pip install --no-build-isolation -e ".[develop]" build
@@ -81,6 +82,7 @@ jobs:
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
+          python -m pip install "OctoPrint>=1.11.0,<2"
           python -m pip install -e ".[develop]" build
 
       - # Create small venv for translation (Babel) checks
