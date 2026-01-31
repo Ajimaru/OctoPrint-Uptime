@@ -462,7 +462,8 @@ def test_fallback_uptime_response_handles_type_errors(monkeypatch):
         lambda _: (True, "full", 5),
     )
     resp = p._fallback_uptime_response()
-    assert isinstance(resp, dict)
+    if not isinstance(resp, dict):
+        raise AssertionError("resp is not a dict")
     if resp.get("uptime") != "1m 40s":
         raise ValueError("Uptime response is not as expected.")
 
@@ -501,9 +502,12 @@ def test_fallback_uptime_response_logger_exception(monkeypatch):
         lambda _: (_ for _ in ()).throw(AttributeError("fail")),
     )
     resp = p._fallback_uptime_response()
-    assert isinstance(resp, dict)
-    assert resp.get("uptime") == plugin._("unknown")
-    assert resp.get("uptime_available") is False
+    if not isinstance(resp, dict):
+        raise AssertionError("resp is not a dict")
+    if resp.get("uptime") != plugin._("unknown"):
+        raise AssertionError("resp.get('uptime') != plugin._('unknown')")
+    if resp.get("uptime_available") is not False:
+        raise AssertionError("resp.get('uptime_available') is not False")
 
 
 def test_fallback_uptime_response_with_partial_uptime(monkeypatch):
@@ -518,9 +522,12 @@ def test_fallback_uptime_response_with_partial_uptime(monkeypatch):
         lambda _: (0, "0s", "0m", "0h", "0d"),
     )
     resp = p._fallback_uptime_response()
-    assert isinstance(resp, dict)
-    assert resp.get("uptime") == "0s"
-    assert resp.get("uptime_available") is True
+    if not isinstance(resp, dict):
+        pytest.fail("resp is not a dict")
+    if resp.get("uptime") != "0s":
+        pytest.fail("resp.get('uptime') != '0s'")
+    if resp.get("uptime_available") is not True:
+        pytest.fail("resp.get('uptime_available') is not True")
 
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
@@ -528,8 +535,10 @@ def test_fallback_uptime_response_with_partial_uptime(monkeypatch):
         lambda _: (-1, "unknown", "unknown", "unknown", "unknown"),
     )
     resp = p._fallback_uptime_response()
-    assert isinstance(resp, dict)
-    assert resp.get("uptime_available") is False
+    if not isinstance(resp, dict):
+        raise AssertionError("resp is not a dict")
+    if resp.get("uptime_available") is not False:
+        raise AssertionError("resp.get('uptime_available') is not False")
 
 
 def test_fallback_uptime_response_flask_jsonify_args(monkeypatch):
@@ -581,11 +590,14 @@ def test_fallback_uptime_response_flask_jsonify_args(monkeypatch):
     resp = p._fallback_uptime_response()
     if not (isinstance(resp, dict) and "json" in resp):
         raise ValueError("Response is not a valid JSON dictionary")
-    assert captured.get("uptime") == "50s", "Expected uptime to be '50s'"
+    if captured.get("uptime") != "50s":
+        raise AssertionError("Expected uptime to be '50s'")
     if captured.get("navbar_enabled") is not False:
         raise AssertionError("navbar_enabled should be False")
-    assert captured.get("display_format") == "compact"
-    assert captured.get("poll_interval_seconds") == 10
+    if captured.get("display_format") != "compact":
+        raise AssertionError("display_format should be 'compact'")
+    if captured.get("poll_interval_seconds") != 10:
+        raise AssertionError("poll_interval_seconds should be 10")
 
 
 def test_on_api_get_permission_and_response(monkeypatch):
@@ -899,7 +911,8 @@ def test_on_settings_initialized_invokes_hook_variants(monkeypatch):
 
     monkeypatch.setattr(plugin.SettingsPluginBase, "on_settings_initialized", base1, raising=False)
     p.on_settings_initialized()
-    assert called["base1"] is not None
+    if called["base1"] is None:
+        raise AssertionError("Expected called['base1'] to be not None")
 
 
 def test_invoke_settings_hook_unexpected_param_count():
@@ -915,7 +928,8 @@ def test_invoke_settings_hook_unexpected_param_count():
     mp = pytest.MonkeyPatch()
     mp.setattr(p, "_get_hook_positional_param_count", lambda hook: 3)
     p._invoke_settings_hook(lambda: None)
-    assert any(c[0] == "warning" for c in p._logger.calls)
+    if not any(c[0] == "warning" for c in p._logger.calls):
+        raise AssertionError("Expected at least one 'warning' log call")
     mp.undo()
 
 
@@ -937,7 +951,8 @@ def test_log_debug_throttled_no_logging(monkeypatch):
     p._last_debug_time = 1000
     p._debug_throttle_seconds = 60
     p._log_debug("x")
-    assert not any(c[0] == "debug" for c in p._logger.calls)
+    if any(c[0] == "debug" for c in p._logger.calls):
+        raise AssertionError("Expected no debug log calls when throttling is in effect")
 
 
 def test_fallback_uptime_response_flask_jsonify_raises(monkeypatch):
@@ -989,7 +1004,8 @@ def test_fallback_uptime_response_flask_jsonify_raises(monkeypatch):
         lambda self: (True, "full", 5),
     )
     out = p._fallback_uptime_response()
-    assert isinstance(out, dict)
+    if not isinstance(out, dict):
+        raise AssertionError("Expected 'out' to be a dict")
 
 
 def test_on_api_get_with_flask_returns_json(monkeypatch):
@@ -1062,7 +1078,8 @@ def test_handle_permission_check_abort_raises(monkeypatch):
         lambda self: (_ for _ in ()).throw(RuntimeError("abort fail")),
     )
     res = p._handle_permission_check()
-    assert res and isinstance(res, dict)
+    if not (res and isinstance(res, dict)):
+        raise AssertionError("Expected res to be truthy and a dict")
 
 
 def test_get_api_settings_exceptions():
@@ -1098,7 +1115,11 @@ def test_get_api_settings_exceptions():
 
     p._settings = BadSettings()
     nav, fmt, poll = p._get_api_settings()
-    assert nav is True and fmt == plugin._("full") and poll == 5
+    if not (nav is True and fmt == plugin._("full") and poll == 5):
+        pytest.fail(
+            f"Expected nav=True, fmt={plugin._('full')}, poll=5 but got nav={nav}, "
+            f"fmt={fmt}, poll={poll}"
+        )
 
 
 def test_reload_with_octoprint_present_and_flask_abort(monkeypatch):
@@ -1139,14 +1160,16 @@ def test_reload_with_octoprint_present_and_flask_abort(monkeypatch):
     monkeypatch.setitem(sys.modules, "octoprint.access.permissions", fake_perm)
     monkeypatch.setitem(sys.modules, "flask", fake_flask)
 
-    if aborted.get("code") != 403:
-        raise ValueError("Expected aborted code to be 403")
-
+    importlib.reload(plugin)
     p = plugin.OctoprintUptimePlugin()
 
     res = p._abort_forbidden()
-    assert res == {"error": plugin._("Forbidden")} or isinstance(res, dict)
-    assert aborted.get("code") == 403
+    if not (res == {"error": plugin._("Forbidden")} or isinstance(res, dict)):
+        raise AssertionError(
+            f"Expected res to be {{'error': plugin._('Forbidden')}} or a dict, " f"got {res!r}"
+        )
+    if aborted.get("code") != 403:
+        raise ValueError("Expected aborted code to be 403")
 
     monkeypatch.delitem(sys.modules, "octoprint.plugin", raising=False)
     monkeypatch.delitem(sys.modules, "octoprint.access.permissions", raising=False)
@@ -1180,7 +1203,8 @@ def test_reload_with_missing_gettext_uses_fallback(monkeypatch):
 
     monkeypatch.setitem(sys.modules, "gettext", fake_gettext)
     importlib.reload(plugin)
-    assert plugin._("something") == "something"
+    if plugin._("something") != "something":
+        raise AssertionError('plugin._("something") != "something"')
     monkeypatch.delitem(sys.modules, "gettext", raising=False)
     importlib.reload(plugin)
 
@@ -1202,19 +1226,24 @@ def test_get_api_settings_multiple_cases():
 
     p._settings = DummySettings({})
     nav, fmt, poll = p._get_api_settings()
-    assert nav is True
-    assert fmt == plugin._("full")
-    assert poll == 5
-    assert any(
+    if nav is not True:
+        pytest.fail("nav is not True")
+    if fmt != plugin._("full"):
+        pytest.fail(f"fmt != plugin._('full') (got {fmt!r})")
+    if poll != 5:
+        pytest.fail(f"poll != 5 (got {poll!r})")
+    if not any(
         "defaulting to True" in str(c[1]) or "defaulting to 'full'" in str(c[1])
         for c in p._logger.calls
-    )
+    ):
+        pytest.fail("Expected defaulting log message not found in logger calls")
 
     p._settings = DummySettings(
         {"navbar_enabled": False, "display_format": "x", "poll_interval_seconds": "0"}
     )
     nav, fmt, poll = p._get_api_settings()
-    assert poll == 1
+    if poll != 1:
+        pytest.fail(f"poll != 1 (got {poll!r})")
 
     p._settings = DummySettings({"poll_interval_seconds": "999"})
     nav, fmt, poll = p._get_api_settings()
@@ -1223,7 +1252,8 @@ def test_get_api_settings_multiple_cases():
 
     p._settings = DummySettings({"poll_interval_seconds": "bad"})
     nav, fmt, poll = p._get_api_settings()
-    assert poll == 5
+    if poll != 5:
+        raise AssertionError(f"poll != 5 (got {poll!r})")
 
 
 def test_fallback_uptime_response_handles_exceptions(monkeypatch):
@@ -1253,7 +1283,13 @@ def test_fallback_uptime_response_handles_exceptions(monkeypatch):
     else:
         data = None
     if isinstance(data, dict):
-        assert data.get("uptime") == plugin._("unknown") and data.get("uptime_available") is False
+        uptime_is_unknown = data.get("uptime") == plugin._("unknown")
+        uptime_not_available = data.get("uptime_available") is False
+        if not (uptime_is_unknown and uptime_not_available):
+            raise AssertionError(
+                "Expected data['uptime'] == plugin._('unknown') and "
+                "data['uptime_available'] is False"
+            )
     else:
         pytest.fail("Response is not a dict and cannot check keys")
 
@@ -1284,7 +1320,8 @@ def test_safe_update_internal_state_logs_warning():
     else:
         setattr(p, "_logger", FakeLogger())
     p._safe_update_internal_state()
-    assert any(c[0] == "warning" for c in p._logger.calls)
+    if not any(c[0] == "warning" for c in p._logger.calls):
+        raise AssertionError("Expected at least one 'warning' log call")
 
 
 def test_log_settings_save_data_handles_logger_errors():
@@ -1437,7 +1474,8 @@ def test_get_uptime_info_exception_path():
         setattr(p, "_logger", FakeLogger())
     p.get_uptime_seconds = lambda: (_ for _ in ()).throw(TypeError("boom"))
     s, full, *_ = p._get_uptime_info()
-    assert s is None and full == plugin._("unknown")
+    if not (s is None and full == plugin._("unknown")):
+        raise AssertionError("Expected s to be None and full to be plugin._('unknown')")
 
 
 def test_execute_plugin_source_for_coverage():
@@ -1453,8 +1491,10 @@ def test_execute_plugin_source_for_coverage():
     runpy.run_path(plugin.__file__, run_name="__main__")
 
     mod = importlib.import_module("octoprint_uptime.plugin")
-    assert hasattr(mod, "format_uptime")
-    assert mod.format_uptime(1) == "1s"
+    if not hasattr(mod, "format_uptime"):
+        raise AssertionError("Module does not have 'format_uptime'")
+    if mod.format_uptime(1) != "1s":
+        raise AssertionError("mod.format_uptime(1) != '1s'")
 
 
 def test_get_settings_defaults_and_on_settings_save(monkeypatch):
@@ -1472,8 +1512,10 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
     """
     p = plugin.OctoprintUptimePlugin()
     defaults = p.get_settings_defaults()
-    assert defaults["debug"] is False
-    assert defaults["navbar_enabled"] is True
+    if defaults["debug"] is not False:
+        pytest.fail('Expected defaults["debug"] to be False')
+    if defaults["navbar_enabled"] is not True:
+        pytest.fail('Expected defaults["navbar_enabled"] to be True')
 
     called = {}
 
@@ -1555,7 +1597,8 @@ def test_reload_plugin_with_gettext_bind_failure(monkeypatch):
 
     monkeypatch.setitem(sys.modules, "gettext", fake_gettext)
     importlib.reload(plugin)
-    assert callable(plugin._)
+    if not callable(plugin._):
+        raise AssertionError("plugin._ is not callable")
     monkeypatch.delitem(sys.modules, "gettext", raising=False)
     importlib.reload(plugin)
 
@@ -1576,8 +1619,10 @@ def test_reload_plugin_without_octoprint(monkeypatch):
     monkeypatch.delitem(sys.modules, "octoprint.plugin", raising=False)
     monkeypatch.delitem(sys.modules, "octoprint.access.permissions", raising=False)
     importlib.reload(plugin)
-    assert hasattr(plugin, "SettingsPluginBase")
-    assert hasattr(plugin, "SimpleApiPluginBase")
+    if not hasattr(plugin, "SettingsPluginBase"):
+        raise AssertionError("plugin does not have attribute 'SettingsPluginBase'")
+    if not hasattr(plugin, "SimpleApiPluginBase"):
+        raise AssertionError("plugin does not have attribute 'SimpleApiPluginBase'")
     importlib.reload(plugin)
 
 
@@ -1730,7 +1775,8 @@ def test_get_uptime_seconds_prefers_proc(monkeypatch):
     sec, src = p._get_uptime_seconds()
     if src != "proc":
         raise AssertionError("Expected source to be 'proc'")
-    assert sec is not None and abs(sec - 123.4) < 0.001
+    if not (sec is not None and abs(sec - 123.4) < 0.001):
+        raise AssertionError("Expected sec to be not None and within 0.001 of 123.4")
 
 
 def test_get_uptime_seconds_uses_psutil_when_no_proc(monkeypatch):
@@ -1765,7 +1811,8 @@ def test_get_uptime_seconds_uses_psutil_when_no_proc(monkeypatch):
 
     monkeypatch.setattr(importlib, "import_module", lambda name: FakePs())
     sec = p._get_uptime_from_psutil()
-    assert sec is not None and sec > 0
+    if not (sec is not None and sec > 0):
+        raise AssertionError("Expected sec to be not None and greater than 0")
 
 
 def test_validate_and_sanitize_settings_handles_bad_shapes():
@@ -1799,7 +1846,8 @@ def test_validate_and_sanitize_settings_sanitizes_values():
     cfg = data["plugins"]["octoprint_uptime"]
     if cfg["debug_throttle_seconds"] != 60:
         raise ValueError("Invalid debug_throttle_seconds")
-    assert cfg["poll_interval_seconds"] == 5
+    if cfg["poll_interval_seconds"] != 5:
+        raise AssertionError("poll_interval_seconds should be 5")
 
 
 def test_log_settings_after_save_logs_change():
@@ -1816,9 +1864,8 @@ def test_log_settings_after_save_logs_change():
     p._settings._data["navbar_enabled"] = not prev
     p._update_internal_state()
     p._log_settings_after_save(prev)
-    assert any(
-        r[0] == "info" for r in p._logger.records
-    ), "Expected info-level log message not found."
+    if not any(r[0] == "info" for r in p._logger.records):
+        raise AssertionError("Expected info-level log message not found.")
 
 
 def test_safe_update_internal_state_logs_warning_on_failure():
@@ -1842,7 +1889,8 @@ def test_safe_update_internal_state_logs_warning_on_failure():
 
     p._update_internal_state = bad_update
     p._safe_update_internal_state()
-    assert any(r[0] == "warn" for r in p._logger.records)
+    if not any(r[0] == "warn" for r in p._logger.records):
+        raise AssertionError("Expected at least one 'warn' log call")
 
 
 def test_get_uptime_info_handles_custom_getter():
@@ -1856,7 +1904,8 @@ def test_get_uptime_info_handles_custom_getter():
     p = make_plugin()
     p.get_uptime_seconds = lambda: 42
     seconds, *_ = p._get_uptime_info()
-    assert seconds == 42
+    if seconds != 42:
+        pytest.fail(f"Expected seconds == 42, got {seconds!r}")
     if p._last_uptime_source != "custom":
         pytest.fail(f"Expected _last_uptime_source == 'custom', got {p._last_uptime_source!r}")
 
@@ -1873,8 +1922,10 @@ def test_get_uptime_info_none_returns_unknown():
     p = make_plugin()
     p.get_uptime_seconds = lambda: None
     seconds, full, *_ = p._get_uptime_info()
-    assert seconds is None
-    assert full == plugin._("unknown")
+    if seconds is not None:
+        pytest.fail("Expected seconds to be None")
+    if full != plugin._("unknown"):
+        pytest.fail(f"Expected full == plugin._('unknown'), got {full!r}")
 
 
 def test_handle_permission_check_aborts_and_handles_abort_exception():
@@ -1917,7 +1968,8 @@ def test_handle_permission_check_check_raises_and_abort_fallback():
     p._check_permissions = bad_check
     p._abort_forbidden = lambda: {"error": "ok"}
     res = p._handle_permission_check()
-    assert res == {"error": "ok"}
+    if res != {"error": "ok"}:
+        raise AssertionError(f"Expected res == {{'error': 'ok'}}, got {res!r}")
 
 
 def test_abort_forbidden_returns_dict_when_no_flask():
@@ -1932,12 +1984,16 @@ def test_abort_forbidden_returns_dict_when_no_flask():
         res = p._abort_forbidden()
     except Forbidden as e:
         try:
-            assert isinstance(e, Forbidden)
-            assert getattr(e, "code", None) == 403
+            if not isinstance(e, Forbidden):
+                pytest.fail("Exception is not instance of Forbidden")
+            if getattr(e, "code", None) != 403:
+                pytest.fail("Forbidden exception code is not 403")
         except (ImportError, AttributeError):
-            assert hasattr(e, "args")
+            if not hasattr(e, "args"):
+                pytest.fail("Exception does not have 'args' attribute")
     else:
-        assert isinstance(res, dict) and res.get("error") == plugin._("Forbidden")
+        if not (isinstance(res, dict) and res.get("error") == plugin._("Forbidden")):
+            pytest.fail("Expected a dict with error == plugin._('Forbidden')")
 
 
 def test__get_uptime_seconds_prefers_psutil_branch():
@@ -1949,8 +2005,10 @@ def test__get_uptime_seconds_prefers_psutil_branch():
     p._get_uptime_from_proc = lambda: None
     p._get_uptime_from_psutil = lambda: 123.0
     sec, src = p._get_uptime_seconds()
-    assert src == "psutil", "Expected source to be 'psutil'"
-    assert sec == 123.0
+    if src != "psutil":
+        raise AssertionError("Expected source to be 'psutil'")
+    if sec != 123.0:
+        raise AssertionError("Expected sec == 123.0")
 
 
 def test__log_settings_after_save_handles_info_exceptions():
@@ -2024,7 +2082,8 @@ def test_on_api_get_returns_early_when_permission_denied():
     p = plugin.OctoprintUptimePlugin()
     p._handle_permission_check = lambda: {"error": "nope"}
     res = p.on_api_get()
-    assert res == {"error": "nope"}
+    if res != {"error": "nope"}:
+        raise AssertionError(f"Expected res == {{'error': 'nope'}}, got {res!r}")
 
 
 def test__check_permissions_default_true():
@@ -2032,7 +2091,8 @@ def test__check_permissions_default_true():
     Test that the _check_permissions method of OctoprintUptimePlugin returns True by default.
     """
     p = plugin.OctoprintUptimePlugin()
-    assert p._check_permissions() is True
+    if p._check_permissions() is not True:
+        raise AssertionError("Expected _check_permissions() to return True")
 
 
 def test__get_uptime_info_uses_internal_getter():
@@ -2064,8 +2124,10 @@ def test__get_uptime_info_uses_internal_getter():
 
     p._get_uptime_seconds = internal_get
     sec, _, _, _, _ = p._get_uptime_info()
-    assert sec == 321
-    assert p._last_uptime_source == "proc"
+    if sec != 321:
+        raise AssertionError("Expected sec == 321")
+    if p._last_uptime_source != "proc":
+        raise AssertionError("Expected p._last_uptime_source == 'proc'")
 
 
 def test__get_uptime_info_handles_logger_exception():
@@ -2098,4 +2160,5 @@ def test__get_uptime_info_handles_logger_exception():
 
     p._logger = BadLogger()
     s, full, *_ = p._get_uptime_info()
-    assert s is None and full == plugin._("unknown")
+    if not (s is None and full == plugin._("unknown")):
+        raise AssertionError("Expected s is None and full == plugin._('unknown')")
