@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>generate-diagrams.sh flow — OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+    </head>
+    <body>
+        <h1>generate-diagrams.sh — UML Diagram Generation</h1>
+        <pre class="mermaid">
+            flowchart TD
+                Start([Start]) --> Check["Check prerequisites<br />Python + Graphviz/ImageMagick"]
+                                        Check --> CheckDot{dot command<br />available?}
+                                        CheckDot -->|no| CheckFallback{ImageMagick +<br />potrace available?}
+                                        CheckDot -->|yes| GenCompact["Generate compact UML<br />pyreverse -A -S -m y"]
+                                        GenCompact --> RenderDot1["Render DOT to SVG<br />dot -Tsvg"]
+                                        RenderDot1 --> CheckDot2{Detailed diagram?}
+                                        CheckFallback -->|yes| GenPNG["Generate PNG<br />pyreverse output"]
+                                        CheckFallback -->|no| ErrorFail["FAIL: No renderer<br />available"]
+                                        GenPNG --> ConvertPNG["Convert PNG to PNM<br />ImageMagick convert"]
+                                        ConvertPNG --> TracePNM["Trace PNM to SVG<br />potrace"]
+                                        TracePNM --> CheckDot2
+                                        GenCompact --> GenDetailed["Generate detailed UML<br />pyreverse -f ALL -A -S"]
+                                        CheckDot2 -->|yes| RenderDetailed
+                                        GenDetailed --> CheckDot3{dot command<br />available?}
+                                        CheckDot3 -->|yes| RenderDetailed["Render detailed DOT to SVG"]
+                                        CheckDot3 -->|no| DetailedFallback["Try PNG/potrace fallback"]
+                                        DetailedFallback --> CheckFallback2{ImageMagick +<br />potrace?}
+                                        CheckFallback2 -->|yes| ConvertDetailed["Convert to SVG"]
+                                        CheckFallback2 -->|no| DetailedFail["Skip detailed diagram"]
+                                        RenderDetailed --> GenPackages["Generate packages diagram<br />pyreverse -o dot"]
+                                        DetailedFail --> GenPackages
+                                        ConvertDetailed --> GenPackages
+                                        GenPackages --> CheckDot4{dot command<br />available?}
+                                        CheckDot4 -->|yes| RenderPackages["Render packages DOT to SVG"]
+                                        CheckDot4 -->|no| PackagesFallback["Try PNG/potrace fallback"]
+                                        RenderPackages --> Cleanup["Clean up intermediate files<br />*.dot, *.png, *.pnm"]
+                                        PackagesFallback --> Fallback2{ImageMagick +<br />potrace?}
+                                        Fallback2 -->|yes| ConvertPackages["Convert to SVG"]
+                                        Fallback2 -->|no| PackagesFail["Skip packages diagram"]
+                                        ConvertPackages --> Cleanup
+                                        PackagesFail --> Cleanup
+                                        Cleanup --> SaveOutput["Save SVGs to<br />docs/reference/diagrams/"]
+                                        SaveOutput --> Success([Diagrams generated])
+                                        ErrorFail --> Fail([Exit with error])
+                                        Success -.-> Fail
+
+                                        classDef action fill:#ecfeff,stroke:#06b6d4
+                                        classDef decision fill:#fef3c7,stroke:#f59e0b
+                                        classDef success fill:#d1fae5,stroke:#10b981
+                                        classDef error fill:#fee2e2,stroke:#ef4444
+                                        class GenCompact,RenderDot1,GenDetailed,RenderDetailed,GenPackages,RenderPackages,Cleanup,SaveOutput action
+                                        class Check,CheckDot,CheckFallback,CheckDot2,CheckDot3,CheckFallback2,CheckDot4,Fallback2 decision
+                                        class Success success
+                                        class ErrorFail,Fail,DetailedFail,PackagesFail error
+                    </pre>
+    <p>
+        <a href="index.html">Back to build scripts</a>
+    </p>
+    <script>
+            window.addEventListener('load', () => {
+                if (window.mermaid) {
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+                    mermaid.run({ querySelector: '.mermaid' });
+                }
+            });
+    </script>
+</body>
+</html>

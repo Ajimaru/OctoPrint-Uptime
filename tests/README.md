@@ -2,6 +2,16 @@
 
 This directory contains the test suite for your OctoPrint plugin. The template ships without test files—add unit and integration tests as you build features.
 
+## Documentation
+
+View detailed diagrams and documentation for the test suite:
+
+→ **[Testing — Diagrams and Documentation](../docs/development/testing-diagrams.md)**
+
+This includes a comprehensive overview of all test categories, coverage areas, and test flows.
+
+---
+
 ## Running Tests
 
 - Tests are executed in a Python virtual environment (`venv`). Create and activate a virtual environment before running tests:

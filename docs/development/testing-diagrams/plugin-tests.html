@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Plugin Tests — OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {
+                font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial;
+                padding: 24px;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                border: 1px solid #ccc;
+            }
+            table tr:first-child {
+                background-color: #f0f0f0;
+            }
+            table td, table th {
+                border: 1px solid #ccc;
+                padding: 10px;
+            }
+            pre.test-commands {
+                background-color: #f5f5f5;
+                padding: 10px;
+                border-radius: 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>plugin_test.py — Test Coverage Overview</h1>
+        <pre class="mermaid">
+            flowchart TD
+                Start([pytest runs plugin_test.py]) --> Setup["Setup:<br />FakeLogger, monkeypatch,<br />mock dependencies"]
+
+                                        Setup --> UtilTests["Utility Functions Tests"]
+                                        Setup --> SettingsTests["Settings Tests"]
+                                        Setup --> LoggingTests["Logging Tests"]
+                                        Setup --> UptimeTests["Uptime Retrieval Tests"]
+                                        Setup --> APITests["API Tests"]
+                                        Setup --> HookTests["Hook Tests"]
+                                        Setup --> ReloadTests["Reload Tests"]
+
+                                        UtilTests --> Format["test_format_uptime_*<br />- Format variants<br />- DHM/DH/D formats"]
+                                        Format --> FormatOK{All variants<br />pass?}
+
+                                        SettingsTests --> ValidateSave["test_validate_and_sanitize_*<br />test_log_settings_save_*<br />- Validation logic<br />- Data structure checks<br />- Defaults handling"]
+                                        ValidateSave --> SettingsOK{Settings<br />valid?}
+
+                                        LoggingTests --> DebugThrottle["test_log_debug_throttle<br />test_log_debug_*<br />- Throttling behavior<br />- Exception handling<br />- Multiple calls"]
+                                        DebugThrottle --> LogOK{Logging<br />works?}
+
+                                        UptimeTests --> GetUptime["test_get_uptime_*<br />- /proc/uptime parsing<br />- psutil fallback<br />- Error handling<br />- Boot time handling"]
+                                        GetUptime --> UptimeOK{Uptime<br />retrieved?}
+
+                                        APITests --> OnAPI["test_on_api_get*<br />test_fallback_uptime_*<br />- Flask integration<br />- Permission checks<br />- JSON responses<br />- Error responses"]
+                                        OnAPI --> APIOK{API<br />works?}
+
+                                        HookTests --> SafeInvoke["test_hook_inspection_*<br />test_on_settings_*<br />- Hook detection<br />- Safe invocation<br />- Parameter validation"]
+                                        SafeInvoke --> HookOK{Hooks<br />safe?}
+
+                                        ReloadTests --> PluginReload["test_reload_*<br />- Module reloading<br />- Dependency checking<br />- Fallback handling"]
+                                        PluginReload --> ReloadOK{Reload<br />works?}
+
+                                        FormatOK -->|PASS| TestPass["All tests pass"]
+                                        SettingsOK -->|PASS| TestPass
+                                        LogOK -->|PASS| TestPass
+                                        UptimeOK -->|PASS| TestPass
+                                        APIOK -->|PASS| TestPass
+                                        HookOK -->|PASS| TestPass
+                                        ReloadOK -->|PASS| TestPass
+
+                                        FormatOK -->|FAIL| TestFail["Test fails"]
+                                        SettingsOK -->|FAIL| TestFail
+                                        LogOK -->|FAIL| TestFail
+                                        UptimeOK -->|FAIL| TestFail
+                                        APIOK -->|FAIL| TestFail
+                                        HookOK -->|FAIL| TestFail
+                                        ReloadOK -->|FAIL| TestFail
+
+                                        TestPass --> Coverage["Generate Coverage Report<br />--cov=octoprint_uptime"]
+                                        TestFail --> FailReport["Report Failures"]
+
+                                        Coverage --> Success([Coverage Report Generated])
+                                        FailReport --> Fail([Tests Failed])
+
+                                        classDef category fill:#3b82f6,stroke:#1e40af,color:#fff
+                                        classDef process fill:#ecfeff,stroke:#06b6d4
+                                        classDef check fill:#fef3c7,stroke:#f59e0b
+                                        classDef success fill:#d1fae5,stroke:#10b981,color:#000
+                                        classDef error fill:#fee2e2,stroke:#ef4444,color:#000
+                                        class UtilTests,SettingsTests,LoggingTests,UptimeTests,APITests,HookTests,ReloadTests category
+                                        class Format,ValidateSave,DebugThrottle,GetUptime,OnAPI,SafeInvoke,PluginReload process
+                                        class FormatOK,SettingsOK,LogOK,UptimeOK,APIOK,HookOK,ReloadOK check
+                                        class TestPass,Success success
+                                        class TestFail,Fail,FailReport error
+            </pre>
+        <h2>Test Categories</h2>
+        <table>
+            <tr>
+                <th>Category</th>
+                <th>Test Functions</th>
+                <th>Focus Areas</th>
+            </tr>
+        <tr>
+            <td>
+                <strong>Utility Functions</strong>
+            </td>
+            <td>test_format_uptime_*</td>
+            <td>Uptime formatting with various time units</td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Settings</strong>
+            </td>
+            <td>
+                test_validate_and_sanitize_*
+                <br />
+                test_log_settings_*
+            </td>
+            <td>Settings validation, defaults, sanitization</td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Logging</strong>
+            </td>
+            <td>test_log_debug_*</td>
+            <td>Debug throttling, error logging, exceptions</td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Uptime Retrieval</strong>
+            </td>
+            <td>test_get_uptime_*</td>
+            <td>/proc/uptime, psutil, boot time, error cases</td>
+        </tr>
+        <tr>
+            <td>
+                <strong>API</strong>
+            </td>
+            <td>
+                test_on_api_get*
+                <br />
+                test_fallback_uptime_*
+            </td>
+            <td>Flask integration, permissions, JSON responses</td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Hooks</strong>
+            </td>
+            <td>
+                test_hook_inspection_*
+                <br />
+                test_on_settings_*
+            </td>
+            <td>Hook detection, safe invocation, OctoPrint integration</td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Plugin Reload</strong>
+            </td>
+            <td>test_reload_*</td>
+            <td>Module reloading, dependency handling, fallbacks</td>
+        </tr>
+    </table>
+    <h2>Running Tests</h2>
+        <pre class="test-commands">
+pytest
+
+# Run with coverage report
+pytest --cov=octoprint_uptime --cov-report=html
+
+# Run specific test category
+pytest tests/plugin_test.py::test_format_uptime_variants
+</pre>
+    <p>
+        <a href="index.html">Back to testing diagrams</a>
+    </p>
+    <script>
+            window.addEventListener('load', () => {
+                if (window.mermaid) {
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+                    mermaid.run({ querySelector: '.mermaid' });
+                }
+            });
+    </script>
+</body>
+</html>

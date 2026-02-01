@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Scripts Overview — OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+    </head>
+    <body>
+        <h1>Build & Documentation Scripts — Overview</h1>
+        <pre class="mermaid">
+            flowchart LR
+                subgraph Scripts["Helper Scripts"]
+                    genDiag["generate-diagrams.sh<br />UML class diagrams"]
+                    genJS["generate-jsdocs.sh<br />JS API documentation"]
+                    winBash["win-bash-wrapper.sh<br />Windows Git Bash"]
+                end
+
+                subgraph Output["Generated Output"]
+                    SVGs["UML SVGs<br />docs/reference/diagrams/"]
+                    JSDoc["JS API Markdown<br />docs/api/javascript.md"]
+                end
+
+                subgraph Deps["Dependencies"]
+                    pyreverse["pyreverse<br />pylint"]
+                    graphviz["graphviz<br />dot"]
+                    potrace["potrace +<br />ImageMagick"]
+                    jsdoc2md["jsdoc-to-markdown<br />node_modules"]
+                end
+
+                genDiag -->|uses| pyreverse
+                                        genDiag -->|uses| graphviz
+                                        genDiag -->|fallback| potrace
+                                        genDiag -->|generates| SVGs
+
+                                        genJS -->|uses| jsdoc2md
+                                        genJS -->|generates| JSDoc
+
+                                        genDiag -->|uses| winBash
+                                        genJS -->|uses| winBash
+
+                                        classDef script fill:#3b82f6,stroke:#1e40af,color:#fff
+                                        classDef output fill:#10b981,stroke:#065f46,color:#fff
+                                        classDef dependency fill:#f59e0b,stroke:#b45309,color:#fff
+                                        class genDiag,genJS,winBash script
+                                        class SVGs,JSDoc output
+                                        class pyreverse,graphviz,potrace,jsdoc2md dependency
+                    </pre>
+    <h2>Individual Script Flows</h2>
+    <ul>
+        <li>
+            <a href="generate-diagrams.html"><strong>generate-diagrams.sh</strong></a> — Generates UML class and package diagrams
+        </li>
+        <li>
+            <a href="generate-jsdocs.html"><strong>generate-jsdocs.sh</strong></a> — Generates JavaScript API documentation
+        </li>
+    </ul>
+    <hr>
+    <p>
+        <a href="../../README.md">Back to reference</a>
+    </p>
+    <script>
+            window.addEventListener('load', () => {
+                if (window.mermaid) {
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+                    mermaid.run({ querySelector: '.mermaid' });
+                }
+            });
+    </script>
+</body>
+</html>

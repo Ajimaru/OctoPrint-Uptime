@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>generate-jsdocs.sh flow — OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+    </head>
+    <body>
+        <h1>generate-jsdocs.sh — JavaScript API Documentation Generation</h1>
+        <pre class="mermaid">
+            flowchart TD
+                Start([Start]) --> ParseArgs["Parse command-line arguments"]
+                                        ParseArgs --> HasArgs{FILES<br />provided?}
+                                        HasArgs -->|no| ScanDir["Scan octoprint_uptime/static/js<br />for *.js files"]
+                                        HasArgs -->|yes| ValidateFiles["Validate provided<br />file paths exist"]
+                                        ScanDir --> CheckFiles{Files<br />found?}
+                                        ValidateFiles --> ValidOK{All files<br />valid?}
+                                        CheckFiles -->|no| Warning["Warn: No JavaScript files<br />Create empty docs/api/javascript.md"]
+                                        CheckFiles -->|yes| FindJsdoc
+                                        ValidOK -->|no| Abort["FAIL: Missing files"]
+                                        ValidOK -->|yes| FindJsdoc["Find jsdoc2md tool<br />local or global"]
+                                        FindJsdoc --> ToolFound{jsdoc2md<br />available?}
+                                        ToolFound -->|no| InstallPrompt["Prompt to install<br />jsdoc2md"]
+                                        ToolFound -->|yes| GenMarkdown
+                                        InstallPrompt --> InstallOK{User<br />accepted?}
+                                        InstallOK -->|yes| NPMInstall["npm install<br />jsdoc-to-markdown"]
+                                        InstallOK -->|no| Exit1["Exit without<br />generation"]
+                                        NPMInstall --> GenMarkdown["Generate Markdown<br />using jsdoc2md"]
+                                        GenMarkdown --> NormalizeMD["Normalize output<br />- Fix whitespace<br />- Trim trailing spaces"]
+                                        NormalizeMD --> SaveOutput["Save to<br />docs/api/javascript.md"]
+                                        SaveOutput --> Success([Documentation generated])
+                                        Warning --> Success
+                                        Exit1 --> End([End])
+                                        Abort --> Fail([Exit with error])
+
+                                        classDef action fill:#ecfeff,stroke:#06b6d4
+                                        classDef decision fill:#fef3c7,stroke:#f59e0b
+                                        classDef success fill:#d1fae5,stroke:#10b981
+                                        classDef error fill:#fee2e2,stroke:#ef4444
+                                        class ParseArgs,ScanDir,ValidateFiles,FindJsdoc,NPMInstall,GenMarkdown,NormalizeMD,SaveOutput action
+                                        class HasArgs,CheckFiles,ValidOK,ToolFound,InstallOK decision
+                                        class Success success
+                                        class Warning,Abort,Fail,Exit1 error
+                    </pre>
+    <p>
+        <a href="index.html">Back to build scripts</a>
+    </p>
+    <script>
+            window.addEventListener('load', () => {
+                if (window.mermaid) {
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+                    mermaid.run({ querySelector: '.mermaid' });
+                }
+            });
+    </script>
+</body>
+</html>
