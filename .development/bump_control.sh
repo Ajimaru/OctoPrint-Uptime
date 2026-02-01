@@ -59,11 +59,12 @@ EOF
 }
 
 to_pep440() {
-    # Convert a developer-suffixed version ("-dev") to PEP 440 ".dev" form.
+    # Convert a developer-suffixed version (".dev") to PEP 440 ".dev" form.
     # Accepts a single version string argument and writes the converted
     # version to stdout so callers can use: result="$(to_pep440 "$ver")".
+    # Note: Already using dot notation, so no conversion needed
     local ver="${1:-}"
-    printf '%s' "${ver/-dev/.dev}"
+    printf '%s' "${ver}"
 }
 
 choose_menu() {
@@ -335,72 +336,72 @@ if [[ -z "$BUMP_TYPE" ]]; then
     fi
 
     if [[ "$BUMP_TYPE" == "rc" ]]; then
-        if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ -dev([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%-dev*}
-            NEW_CURRENT="${base}-rc1"
+        if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ \.dev([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%.dev*}
+            NEW_CURRENT="${base}.rc1"
         elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ dev([0-9]+)$ ]]; then
             base=${CURRENT_VERSION%dev*}
-            NEW_CURRENT="${base}-rc1"
-        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ -rc([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%-rc*}
+            NEW_CURRENT="${base}.rc1"
+        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ \.rc([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%.rc*}
             num=${BASH_REMATCH[1]}
             next=$((num+1))
-            NEW_CURRENT="${base}-rc${next}"
+            NEW_CURRENT="${base}.rc${next}"
         elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ rc([0-9]+)$ ]]; then
             base=${CURRENT_VERSION%rc*}
             num=${BASH_REMATCH[1]}
             next=$((num+1))
-            NEW_CURRENT="${base}-rc${next}"
+            NEW_CURRENT="${base}.rc${next}"
         elif [[ -n "$CURRENT_VERSION" && ! "$CURRENT_VERSION" =~ rc ]]; then
-            NEW_CURRENT="${CURRENT_VERSION}-rc1"
+            NEW_CURRENT="${CURRENT_VERSION}.rc1"
         else
             NEW_CURRENT=""
         fi
         if [[ -z "$NEW_CURRENT" ]]; then
-            read -r -p "Enter RC version to set (e.g. 0.2.0-rc1): " NEW_CURRENT
+            read -r -p "Enter RC version to set (e.g. 0.2.0.rc1): " NEW_CURRENT
             if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
         else
             printf "%b\n" "Auto-selected RC version: ${GREEN}$NEW_CURRENT${RESET}"
             read -r -p "Accept this version? [Y/n] " accept_rc
             accept_rc=${accept_rc:-Y}
             if [[ ! "$accept_rc" =~ ^[Yy] ]]; then
-                read -r -p "Enter RC version to set (e.g. 0.2.0-rc1): " NEW_CURRENT
+                read -r -p "Enter RC version to set (e.g. 0.2.0.rc1): " NEW_CURRENT
                 if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
             fi
         fi
     fi
 
     if [[ "$BUMP_TYPE" == "dev" ]]; then
-        if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ -rc([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%-rc*}
-            NEW_CURRENT="${base}-dev1"
+        if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ \.rc([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%.rc*}
+            NEW_CURRENT="${base}.dev1"
         elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ rc([0-9]+)$ ]]; then
             base=${CURRENT_VERSION%rc*}
-            NEW_CURRENT="${base}-dev1"
-        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ -dev([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%-dev*}
+            NEW_CURRENT="${base}.dev1"
+        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ \.dev([0-9]+)$ ]]; then
+            base=${CURRENT_VERSION%.dev*}
             num=${BASH_REMATCH[1]}
             next=$((num+1))
-            NEW_CURRENT="${base}-dev${next}"
+            NEW_CURRENT="${base}.dev${next}"
         elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ dev([0-9]+)$ ]]; then
             base=${CURRENT_VERSION%dev*}
             num=${BASH_REMATCH[1]}
             next=$((num+1))
-            NEW_CURRENT="${base}-dev${next}"
+            NEW_CURRENT="${base}.dev${next}"
         elif [[ -n "$CURRENT_VERSION" && ! "$CURRENT_VERSION" =~ dev ]]; then
-            NEW_CURRENT="${CURRENT_VERSION}-dev1"
+            NEW_CURRENT="${CURRENT_VERSION}.dev1"
         else
             NEW_CURRENT=""
         fi
         if [[ -z "$NEW_CURRENT" ]]; then
-            read -r -p "Enter $BUMP_TYPE version to set (e.g. 0.2.0-${BUMP_TYPE}1): " NEW_CURRENT
+            read -r -p "Enter $BUMP_TYPE version to set (e.g. 0.2.0.${BUMP_TYPE}1): " NEW_CURRENT
             if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
         else
             printf "%b\n" "Auto-selected $BUMP_TYPE version: ${GREEN}$NEW_CURRENT${RESET}"
             read -r -p "Accept this version? [Y/n] " accept_pre
             accept_pre=${accept_pre:-Y}
             if [[ ! "$accept_pre" =~ ^[Yy] ]]; then
-                read -r -p "Enter $BUMP_TYPE version to set (e.g. 0.2.0-${BUMP_TYPE}1): " NEW_CURRENT
+                read -r -p "Enter $BUMP_TYPE version to set (e.g. 0.2.0.${BUMP_TYPE}1): " NEW_CURRENT
                 if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
             fi
         fi
@@ -417,9 +418,8 @@ if [[ -z "$BUMP_TYPE" ]]; then
             exit 0
         fi
         sed -E -i "s/VERSION = \"[^\"]+\"/VERSION = \"$NEW_CURRENT\"/" octoprint_uptime/_version.py
-        # Use PEP 440 compatible dev separator when updating pyproject.toml
-        py_ver="$(to_pep440 "$NEW_CURRENT")"
-        sed -E -i "s/version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$py_ver\"/" pyproject.toml
+        # Version already uses dot notation (PEP 440 compatible)
+        sed -E -i "s/version[[:space:]]*=[[:space:]]*\"[^\"]+\"/version = \"$NEW_CURRENT\"/" pyproject.toml
         sed -E -i "s/^current_version[[:space:]]*=[[:space:]]*\"[^\"]+\"/current_version = \"$NEW_CURRENT\"/" "$CONFIG"
         if [[ "$COMMIT" == "true" ]]; then
             git add octoprint_uptime/_version.py pyproject.toml "$CONFIG"
