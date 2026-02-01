@@ -76,7 +76,6 @@ jobs:
           . .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install "OctoPrint>=1.10.0,<2"
-          python -m pip install "werkzeug<3.1"
           python -m pip install Babel
           python -m pip install -e ".[develop]" build
 
