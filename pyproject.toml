@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=77,<81",
+    "setuptools>=70,<76",
     "wheel",
     "OctoPrint",
 ]
