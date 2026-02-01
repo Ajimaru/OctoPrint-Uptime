@@ -26,9 +26,6 @@ Thanks for your interest in contributing to the OctoPrint-Uptime plugin!
      python -m pip install -e ".[develop]"
      ```
 
-   These commands ensure tooling (pytest, pre-commit, linters, Sphinx, Babel) is
-   available locally for testing and documentation builds.
-
 6. Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 7. Note: `main` is protected on GitHub, so changes go through PRs.
 
@@ -93,7 +90,28 @@ We use `pre-commit` to enforce consistent formatting and basic quality checks.
 pre-commit run --hook-stage manual --all-files
 ```
 
-**_TODO_** describe how to manually enables repo-local git hooks via `core.hooksPath=.githooks`.
+### Enabling repository-local git hooks
+
+The repository includes custom git hooks in the `.githooks/` directory. To enable them locally:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+This configures Git to use the hooks from `.githooks/` instead of the default `.git/hooks/` directory. You only need to run this command once per repository clone.
+
+Available hooks:
+
+- `pre-commit` - Runs code formatting, linting, and validation checks before each commit
+- `commit-msg` - Validates commit message format
+
+After configuring, Git will automatically run these hooks on each commit. If a hook fails, the commit is rejected — fix the issues and try again.
+
+To temporarily skip hooks (not recommended):
+
+```bash
+git commit --no-verify
+```
 
 ### Translations sync check
 

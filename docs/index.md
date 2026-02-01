@@ -57,9 +57,11 @@ Install the appropriate requirements for your purpose:
 pip install -r requirements-dev.txt
 ```
 
-- For building the documentation (mkdocs + docs tooling):
+- For building the documentation (mkdocs + docs tooling), create a **separate virtual environment** to avoid dependency conflicts:
 
 ```bash
+python3 -m venv venv-docs
+source venv-docs/bin/activate  # On Windows: venv-docs\Scripts\activate
 pip install -r requirements-docs.txt
 ```
 
@@ -69,7 +71,7 @@ pip install -r requirements-docs.txt
 pip install -r requirements.txt
 ```
 
-If you need both development and docs tooling locally, install both `requirements-dev.txt` and `requirements-docs.txt`.
+**Important:** Use separate virtual environments for development (`venv`) and documentation (`venv-docs`) to avoid version conflicts, as `requirements-dev.txt` and `requirements-docs.txt` have overlapping dependencies (`pylint`, `ruff`).
 
 Install Node.js dependencies for frontend tooling when needed:
 
@@ -115,21 +117,23 @@ docs/
 ├── development/                      # Developer guides
 │   ├── contributing.md               # Contributing guide (synced with top-level CONTRIBUTING.md)
 │   ├── testing.md                    # Testing guide (commands, coverage)
-│   └── release-process.md            # Release process (notes about .development helpers)
+│   └── release-process.md            # Release process for maintainers
 └── reference/                        # Reference docs
     ├── configuration.md             # Configuration reference
     ├── cli-dev-scripts.md           # Dev scripts reference
     ├── frontend.md                  # Frontend reference
     └── diagrams/
-        ├── classes.svg              # UML/diagrams used in docs
-        ├── classes_detailed.svg     # Detailed UML diagram
-        ├── packages.svg             # Package diagram
-        └── overview.md              # Conceptual diagram (Mermaid)
+        ├── overview.md              # Conceptual diagram (Mermaid)
+        ├── classes.md               # UML class diagram (auto-generated, SVG generated during CI)
+        ├── classes_detailed.md      # Detailed UML class diagram (auto-generated, SVG generated during CI)
+        ├── packages.md              # Package diagram (auto-generated, SVG generated during CI)
+        └── REGENERATE.md            # Instructions to regenerate diagrams locally
 
 Diagrams
 
-- The conceptual Mermaid overview and generated UML diagrams are available in `reference/diagrams/`.
-- Open `reference/diagrams/overview.md` for a quick conceptual diagram plus thumbnails and links to the generated SVGs.
+- The conceptual Mermaid overview and auto-generated UML diagram markdown files are available in `reference/diagrams/`.
+- SVG diagrams are auto-generated during CI/documentation builds (not committed; see `.gitignore`).
+- Open `reference/diagrams/overview.md` for the conceptual diagram overview and links to generated diagram markdown files.
 ```
 
 ## Technology Stack
@@ -152,13 +156,13 @@ To update:
 
 ### JavaScript API
 
-JavaScript API documentation is generated from JSDoc comments.
+JavaScript API documentation is generated from JSDoc comments during the documentation build.
 
 To update:
 
 1. Add JSDoc comments to JavaScript files
 2. Run `./scripts/generate-jsdocs.sh`
-3. Run `mkdocs build`
+3. The script generates `docs/api/javascript.md` (which is generated but not committed; see `.gitignore`)
 
 Example JSDoc comment:
 

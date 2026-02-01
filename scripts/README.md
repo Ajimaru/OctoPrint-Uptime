@@ -24,7 +24,7 @@ From the repository root:
 
 ## JavaScript docs generation
 
-This repository generates JavaScript API docs from JSDoc comments using `jsdoc-to-markdown` (`jsdoc2md`). The helper script `./scripts/generate-jsdocs.sh` writes Markdown to `docs/api/javascript.md`.
+This repository generates JavaScript API docs from JSDoc comments using `jsdoc-to-markdown` (`jsdoc2md`). The helper script `./scripts/generate-jsdocs.sh` writes Markdown to `docs/api/javascript.md` (which is generated but not committed; see `.gitignore`).
 
 To install the JavaScript doc tooling locally, run from the repository root:
 

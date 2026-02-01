@@ -16,16 +16,10 @@ This page gives a concise overview of the main components of the OctoPrint-Uptim
 - [Settings reference](settings.md)
 - [OctoPrint integration](octoprint-integration.md)
 
-The class/interaction diagrams used in the docs are available below — open the detailed or packages views for more context.
+The class/interaction diagrams used in the docs are available below — see the reference section for more context.
 
-- Compact class diagram: [classes.svg](../reference/diagrams/classes.svg)
+- Compact class diagram: See [../reference/diagrams/classes.md](../reference/diagrams/classes.md)
+- Detailed class diagram (includes private/protected members): See [../reference/diagrams/classes_detailed.md](../reference/diagrams/classes_detailed.md)
+- Package/module overview: See [../reference/diagrams/packages.md](../reference/diagrams/packages.md)
 
-![classes](../reference/diagrams/classes.svg)
-
-- Detailed class diagram (includes private/protected members): [classes_detailed.svg](../reference/diagrams/classes_detailed.svg)
-
-![classes_detailed](../reference/diagrams/classes_detailed.svg)
-
-- Package/module overview: [packages.svg](../reference/diagrams/packages.svg)
-
-![packages](../reference/diagrams/packages.svg)
+Note: The SVG diagrams are auto-generated during CI and available when viewing the rendered documentation online.

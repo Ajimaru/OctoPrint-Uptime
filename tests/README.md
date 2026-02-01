@@ -4,19 +4,27 @@ This directory contains the test suite for your OctoPrint plugin. The template s
 
 ## Running Tests
 
-Install test dependencies:
+- Tests are executed in a Python virtual environment (`venv`). Create and activate a virtual environment before running tests:
+
+```bash
+python -m venv venv
+
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+- Install test dependencies in the virtual environment:
 
 ```bash
 pip install -e ".[develop]"
 ```
 
-Run all tests:
+- Run all tests:
 
 ```bash
 pytest
 ```
 
-Run with coverage:
+- Run with coverage:
 
 ```bash
 pytest --cov=octoprint_uptime --cov-report=html

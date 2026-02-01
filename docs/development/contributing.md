@@ -48,7 +48,7 @@ npm install -g jsdoc-to-markdown
 ./scripts/generate-jsdocs.sh <changed-file.js>
 ```
 
-If you prefer to track this work and postpone changing contributors' setup, see issue `#123` for adding repository guidance and an npm workflow.
+Note: The generated `docs/api/javascript.md` file is not committed (see `.gitignore`).
 
 ## Internationalization
 
@@ -63,8 +63,6 @@ pybabel compile -d octoprint_uptime/translations -D messages
 
 This will write the compiled `.mo` files into `octoprint_uptime/translations/<lang>/LC_MESSAGES/messages.mo` (the plugin runtime loads `.mo` files from `octoprint_uptime/translations/`). See the Babel docs for more details: [Babel docs](https://python-babel.github.io/).
 
-If you prefer a short helper, this repository includes a convenience script `.development/compile_translations.sh` that wraps the `pybabel` invocation.
-
-Notes
+Notes:
 
 - Keep changes small and focused. Follow the coding style in `CONTRIBUTING.md` (4-space indentation, English text, use `self._logger` for logging). Use the 'venv' directory for the virtual environment.

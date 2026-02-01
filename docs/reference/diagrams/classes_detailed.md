@@ -1,7 +1,7 @@
 # Classes (detailed)
 
-This detailed class diagram is auto-generated from the plugin source using `pyreverse`.
+This detailed class diagram markdown file is auto-generated from the plugin source using `pyreverse`.
 
-![Classes (detailed)](classes_detailed.svg)
+The actual SVG diagram (`classes_detailed.svg`) is generated during the CI/documentation build process and not committed to the repository (see [.gitignore](../../.gitignore)).
 
-See [REGENERATE](REGENERATE.md) for local regeneration instructions.
+For local regeneration instructions, see [REGENERATE.md](./REGENERATE.md).
