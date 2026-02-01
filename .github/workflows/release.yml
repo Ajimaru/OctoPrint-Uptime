@@ -141,11 +141,8 @@ jobs:
       - name: Read release title
         id: release_title
         run: |
-          {
-            echo 'title<<EOF'
-            cat release_title.txt
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
+          title=$(cat release_title.txt)
+          echo "title=$title" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
