@@ -29,4 +29,4 @@ The OctoPrint-Uptime project uses several helper scripts to automate documentati
 
 ---
 
-For more information about these scripts, see [Scripts README](/scripts/README.md).
+For more information about these scripts, see [Scripts README](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/scripts/README.md).

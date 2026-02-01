@@ -8,7 +8,7 @@ authors:
   - Ajimaru
 license: AGPLv3
 
-date: 2026-01-26
+date: 2026-02-01
 
 homepage: https://ajimaru.github.io/OctoPrint-Uptime/
 source: https://github.com/Ajimaru/OctoPrint-Uptime
@@ -35,7 +35,7 @@ compatibility:
     - 1.10.0
   os:
     - linux
-  python: ">=3.8,<3.14"
+  python: ">=3.7,<3.14"
 ---
 
 OctoPrint-Uptime is a lightweight plugin that displays the system uptime of your OctoPrint server directly in the navbar. Additionally, it provides a small, authenticated JSON API that can be queried by external tools or scripts.

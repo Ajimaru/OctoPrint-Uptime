@@ -48,7 +48,7 @@ npm install -g jsdoc-to-markdown
 ./scripts/generate-jsdocs.sh <changed-file.js>
 ```
 
-Note: The generated `docs/api/javascript.md` file is not committed (see `.gitignore`).
+Note: The generated `docs/api/javascript.md` file is not committed.
 
 ## Internationalization
 

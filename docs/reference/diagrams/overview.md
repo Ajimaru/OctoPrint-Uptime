@@ -33,6 +33,6 @@ Below are the markdown files for the automatically generated diagrams:
 - **Detailed class diagram**: [classes_detailed.md](./classes_detailed.md) - Auto-generated from source code
 - **Packages diagram**: [packages.md](./packages.md) - Auto-generated from source code
 
-These markdown files contain references to SVG diagrams that are **auto-generated during the CI/documentation build process and not committed to the repository** (see [.gitignore](../../.gitignore)).
+These markdown files contain references to SVG diagrams that are **auto-generated during the CI/documentation build process and not committed to the repository** .
 
 To regenerate the diagrams locally, see [REGENERATE.md](./REGENERATE.md).

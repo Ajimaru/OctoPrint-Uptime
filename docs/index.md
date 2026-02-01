@@ -10,7 +10,7 @@ OctoPrint-Uptime is a plugin for OctoPrint that displays the system uptime in th
 
 ### Prerequisites
 
-- OctoPrint 1.12.0+ (Python 3.8+)
+- OctoPrint 1.10.0+ (Python 3.7+)
 - Node.js 20+ (for frontend development)
 - mkdocs (for documentation)
 
@@ -132,7 +132,7 @@ docs/
 Diagrams
 
 - The conceptual Mermaid overview and auto-generated UML diagram markdown files are available in `reference/diagrams/`.
-- SVG diagrams are auto-generated during CI/documentation builds (not committed; see `.gitignore`).
+- SVG diagrams are auto-generated during CI/documentation builds.
 - Open `reference/diagrams/overview.md` for the conceptual diagram overview and links to generated diagram markdown files.
 ```
 
@@ -162,7 +162,7 @@ To update:
 
 1. Add JSDoc comments to JavaScript files
 2. Run `./scripts/generate-jsdocs.sh`
-3. The script generates `docs/api/javascript.md` (which is generated but not committed; see `.gitignore`)
+3. The script generates `docs/api/javascript.md` (which is generated but not committed).
 
 Example JSDoc comment:
 
