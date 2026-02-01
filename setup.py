@@ -113,7 +113,7 @@ PLUGIN_IGNORED_PACKAGES: List[str] = []
 # to prevent confused users and provide a helpful error.
 # Remove it if you would like to support Python 2 as well as 3
 # (not recommended).
-additional_setup_parameters = {"python_requires": ">=3.7,<3.14"}
+additional_setup_parameters = {"python_requires": ">=3.8,<3.14"}
 
 ####################################################################
 

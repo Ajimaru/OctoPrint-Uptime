@@ -21,18 +21,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - python-version: "3.7"
-            os: ubuntu-22.04
-            run-precommit: true
-            run-coverage: false
-            run-build: false
           - python-version: "3.8"
-            os: ubuntu-22.04
+            os: ubuntu-latest
             run-precommit: true
             run-coverage: false
             run-build: false
           - python-version: "3.9"
-            os: ubuntu-22.04
+            os: ubuntu-latest
             run-precommit: true
             run-coverage: false
             run-build: false

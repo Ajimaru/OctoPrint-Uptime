@@ -10,7 +10,7 @@ OctoPrint-Uptime is a plugin for OctoPrint that displays the system uptime in th
 
 ### Prerequisites
 
-- OctoPrint 1.10.0+ (Python 3.7+)
+- OctoPrint 1.10.0+ (Python 3.8+)
 - Node.js 20+ (for frontend development)
 - mkdocs (for documentation)
 
