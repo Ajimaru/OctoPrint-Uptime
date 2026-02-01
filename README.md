@@ -9,8 +9,8 @@
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
 [![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
 [![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
-![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)
-![Made with Love](https://img.shields.io/badge/made_with-❤️-ff69b4)
+[![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
+[![Made with Love](https://img.shields.io/badge/made_with-❤️-ff69b4)](https://github.com/Ajimaru/OctoPrint-Uptime)
 
 ### Effortlessly track your OctoPrint server's uptime, right from your navbar
 
@@ -135,9 +135,9 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 
 [![CI](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
 [![i18n](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
-![Lint](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/lint.yml/badge.svg)
-[![Docs workflow](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml/badge.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml)
-[![Bandit SARIF](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/bandit-sarif.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/bandit-sarif.yml)
+[![Lint](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/lint.yml?query=branch%3Amain)
+[![Docs workflow](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml?query=branch%3Amain)
+[![Bandit SARIF](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/bandit-sarif.yml/badge.svg?branch=main)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/bandit-sarif.yml?query=branch%3Amain)
 
 ### 🧪 2. Code Quality & Formatting
 
@@ -148,18 +148,21 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/1b946ed41ef2479fa1eb254e6eea9fb0)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime)
 [![Coverage](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/graph/badge.svg?branch=main)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
-![Coverage Diff](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/branch/main/graph/badge.svg?flag=patch)
+[![Coverage Diff](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/branch/main/graph/badge.svg?flag=patch)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
+[![Pylint Score](https://img.shields.io/badge/pylint-10.0-green.svg)](https://www.pylint.org/)
+[![Bandit Security](https://img.shields.io/badge/bandit-security-green.svg)](https://bandit.readthedocs.io/en/latest/)
+[![Snyk Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/Ajimaru/OctoPrint-Uptime?logo=snyk)](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime)
 
 ### 🔄 3. CI/CD & Release
 
-![SemVer](https://img.shields.io/badge/semver-2.0.0-blue)
-![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime)
+[![SemVer](https://img.shields.io/badge/semver-2.0.0-blue)](https://semver.org/)
+[![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
 [![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
-![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)
-![Pre‑Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?include_prereleases&label=pre-release)
+[![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
+[![Pre‑Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?include_prereleases&label=pre-release)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
 [![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
-![Maintenance](https://img.shields.io/maintenance/yes/2026)
+[![Maintenance](https://img.shields.io/maintenance/yes/2026)](https://github.com/Ajimaru/OctoPrint-Uptime/graphs/commit-activity)
 
 ### 📊 4. Repository Activity
 
@@ -167,9 +170,9 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 [![Closed Issues](https://img.shields.io/github/issues-closed-raw/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aclosed)
 [![Open PRs](https://img.shields.io/github/issues-pr/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aopen)
 [![Closed PRs](https://img.shields.io/github/issues-pr-closed/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aclosed)
-![Last Commit](https://img.shields.io/github/last-commit/Ajimaru/OctoPrint-Uptime)
-![Commit Activity (year)](https://img.shields.io/github/commit-activity/y/Ajimaru/OctoPrint-Uptime)
-![Contributors](https://img.shields.io/github/contributors/Ajimaru/OctoPrint-Uptime)
+[![Last Commit](https://img.shields.io/github/last-commit/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/commits/main)
+[![Commit Activity (year)](https://img.shields.io/github/commit-activity/y/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/graphs/commit-activity)
+[![Contributors](https://img.shields.io/github/contributors/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/graphs/contributors)
 
 ### 🧾 5. Metadata
 
