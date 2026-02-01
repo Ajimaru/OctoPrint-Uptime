@@ -767,9 +767,7 @@ def test_hook_inspection_and_safe_invoke(monkeypatch):
     if get_hook_param_count_public(two) != 2:
         pytest.fail("get_hook_param_count_public(two) != 2")
 
-    monkeypatch.setattr(
-        plugin.inspect, "signature", lambda h: (_ for _ in ()).throw(ValueError("nope")) or (_ := h)
-    )
+    monkeypatch.setattr(plugin.inspect, "signature", lambda h: h)
     if hasattr(p, "set_logger"):
         p.set_logger(FakeLogger())
     else:

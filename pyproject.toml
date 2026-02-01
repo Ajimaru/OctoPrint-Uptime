@@ -15,7 +15,7 @@ authors = [
 ]
 readme = {file = "README.md", content-type = "text/markdown"}
 
-requires-python = ">=3.8, <3.14"
+requires-python = ">=3.7, <3.14"
 
 dynamic = [
     "license"
@@ -53,7 +53,7 @@ Issues = "https://github.com/Ajimaru/OctoPrint-Uptime/issues"
 develop = [
     "Babel>=2.17.0",
     "build",
-    "flask>=2.3.2",
+    "flask>=2.1,<2.2",
     "mock",
     "pre-commit>=3.0.0",
     "pylint>=2.17.0",
@@ -67,4 +67,4 @@ develop = [
 
 [tool.black]
 line-length = 100
-target-version = ["py38", "py39", "py310", "py311", "py312", "py313"]
+target-version = ["py37", "py38", "py39", "py310", "py311", "py312", "py313"]
