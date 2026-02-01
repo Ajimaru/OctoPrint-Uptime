@@ -48,7 +48,7 @@ repos:
         additional_dependencies: ["eslint@9.29.0", "globals@16.2.0"]
 
   - repo: https://github.com/pycqa/isort
-    rev: 7.0.0
+    rev: 5.13.2 # 6.0.0+ requires Python >=3.10
     hooks:
       - id: isort # Sorts and groups Python imports to a consistent order
         args: ["--profile", "black"]
