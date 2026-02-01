@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8"]
+        python-version: ["3.12"]
 
     steps:
       - # Checkout repository code
@@ -95,7 +95,7 @@ jobs:
         name: Bandit (security)
         if: success() || failure()
         run: |
-          pip install bandit==1.8.6
+          pip install bandit==1.9.3
           bandit -r octoprint_uptime -x .venv,venv,.git -ll
       - # Print summary message
         name: Summary

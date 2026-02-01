@@ -9,7 +9,7 @@ Thanks for your interest in contributing to the OctoPrint-Uptime plugin!
 3. Write tests for new features
 4. Submit a pull request
 5. Install development dependencies (prerequisites & commands):
-   - Prerequisites: Python 3.10+ and `python3-venv` (or equivalent) installed.
+   - Prerequisites: Python 3.12+ and `python3-venv` (or equivalent) installed.
 
    - Create and activate a virtual environment, then install dev deps:
 

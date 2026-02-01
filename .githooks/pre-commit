@@ -25,7 +25,7 @@ fi
 # Description: Wrapper to run pre-commit hooks from the repository virtualenv.
 # Behavior:
 #  - Attempts to execute `./venv/bin/pre-commit` to ensure hooks run inside the project's venv.
-#  - Validates that the venv Python meets the minimum required version (Python 3.10+).
+#  - Validates that the venv Python meets the minimum required version (Python 3.12+).
 #  - Optionally runs `pre-commit autoupdate` once per 24h when `PRECOMMIT_AUTOUPDATE=1`.
 # Usage:
 #  - Installed as a git hook via `core.hooksPath` and invoked automatically by Git.
@@ -74,9 +74,9 @@ exec > >(tee >($STRIP_FUNC)) 2> >(tee >($STRIP_FUNC) >&2)
 echo "===== $LOG_PREFIX START: $(date -u +"%Y-%m-%dT%H:%M:%SZ") (pid=$PID) ====="
 # -------------------------------------------------------------------
 
-python_is_at_least_310() {
+python_is_at_least_312() {
     local python_bin="$1"
-    "$python_bin" -c 'import sys; sys.exit(0 if sys.version_info[:2] >= (3, 10) else 1)' >/dev/null 2>&1
+    "$python_bin" -c 'import sys; sys.exit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1
 }
 
 run_pre_commit_from_venv() {
@@ -88,8 +88,8 @@ run_pre_commit_from_venv() {
         return 1
     fi
 
-    if ! python_is_at_least_310 "$python_bin"; then
-        echo "ERROR: $python_bin is < 3.10; pre-commit hooks require Python 3.10+" >&2
+    if ! python_is_at_least_312 "$python_bin"; then
+        echo "ERROR: $python_bin is < 3.12; pre-commit hooks require Python 3.12+" >&2
         return 2
     fi
 
