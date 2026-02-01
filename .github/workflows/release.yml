@@ -109,7 +109,7 @@ jobs:
 
             const tag = process.env.GITHUB_REF_NAME;
             const isPrerelease = tag.includes("rc") || tag.includes("a") || tag.includes("b");
-            const title = isPrerelease ? `Prerelease ${tag}` : `Release ${tag}`;
+            const title = isPrerelease ? `OctoPrint-Uptime Prerelease ${tag}` : `OctoPrint-Uptime ${tag}`;
 
             const { owner, repo } = context.repo;
             const response = await github.rest.repos.generateReleaseNotes({
@@ -136,10 +136,21 @@ jobs:
             ].join("\n");
 
             fs.writeFileSync("release_notes.md", body, { encoding: "utf-8" });
+            fs.writeFileSync("release_title.txt", title, { encoding: "utf-8" });
+
+      - name: Read release title
+        id: release_title
+        run: |
+          {
+            echo 'title<<EOF'
+            cat release_title.txt
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          name: ${{ steps.release_title.outputs.title }}
           draft: false
           prerelease: ${{ contains(github.ref_name, 'rc') || contains(github.ref_name, 'a') || contains(github.ref_name, 'b') }}
           body_path: release_notes.md
