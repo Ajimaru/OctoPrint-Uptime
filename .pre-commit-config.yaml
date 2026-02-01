@@ -9,7 +9,7 @@ exclude: '^docs/api/python\.md$'
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0 # v6.0.0+ requires Python >=3.9
+    rev: v6.0.0
     hooks:
       - id: check-merge-conflict # Detect unresolved merge conflict markers and fail early
       - id: detect-private-key # Scan for likely private keys to avoid accidental leaks
@@ -34,7 +34,7 @@ repos:
 
   # Formatting and code-mod tools
   - repo: https://github.com/psf/black
-    rev: 24.8.0 # 25.0.0+ requires Python >=3.9
+    rev: 26.1.0
     hooks:
       - id: black # Code formatter: reformats Python files to a canonical style (Black)
         language_version: python3
@@ -48,7 +48,7 @@ repos:
         additional_dependencies: ["eslint@9.29.0", "globals@16.2.0"]
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2 # 6.0.0+ requires Python >=3.10
+    rev: 7.0.0
     hooks:
       - id: isort # Sorts and groups Python imports to a consistent order
         args: ["--profile", "black"]
