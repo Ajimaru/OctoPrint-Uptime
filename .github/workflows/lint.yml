@@ -95,7 +95,7 @@ jobs:
         name: Bandit (security)
         if: success() || failure()
         run: |
-          pip install bandit==1.9.3
+          pip install bandit==1.8.6
           bandit -r octoprint_uptime -x .venv,venv,.git -ll
       - # Print summary message
         name: Summary
