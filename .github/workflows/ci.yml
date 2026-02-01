@@ -21,14 +21,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - python-version: "3.7"
+            os: ubuntu-latest
+            run-precommit: true
+            run-coverage: false
+            run-build: false
           - python-version: "3.8"
             os: ubuntu-latest
-            run-precommit: false
+            run-precommit: true
             run-coverage: false
             run-build: false
           - python-version: "3.9"
             os: ubuntu-latest
-            run-precommit: false
+            run-precommit: true
             run-coverage: false
             run-build: false
           - python-version: "3.10"
@@ -48,7 +53,7 @@ jobs:
             run-build: true
           - python-version: "3.13"
             os: ubuntu-latest
-            run-precommit: false
+            run-precommit: true
             run-coverage: false
             run-build: false
 
@@ -64,29 +69,18 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - # Ensure setuptools/wheel on Python 3.8
-        name: Preinstall setuptools for Python 3.8
-        if: ${{ matrix['python-version'] == '3.8' }}
+      - # Upgrade pip and build tools
+        name: Upgrade pip/setuptools/wheel
         run: |
           python -m pip install --upgrade pip setuptools wheel
 
-      - # Create a dedicated .venv and install development dependencies
-        name: Create venv and install dependencies (Python 3.8)
-        if: ${{ matrix['python-version'] == '3.8' }}
+      - # Create venv and install all dependencies
+        name: Create venv and install dependencies
         run: |
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
-          python -m pip install "OctoPrint>=1.11.0,<2"
-          python -m pip install Babel
-          python -m pip install --no-build-isolation -e ".[develop]" build
-      - name: Create venv and install dependencies (other Pythons)
-        if: ${{ matrix['python-version'] != '3.8' }}
-        run: |
-          python -m venv .venv
-          . .venv/bin/activate
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install "OctoPrint>=1.11.0,<2"
+          python -m pip install "OctoPrint>=1.10.0,<2"
           python -m pip install Babel
           python -m pip install -e ".[develop]" build
 
@@ -186,13 +180,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: pip
 
       - name: Install OctoPrint
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "OctoPrint>=1.11.0,<2"
+          python -m pip install "OctoPrint>=1.10.0,<2"
 
       - name: Install plugin
         run: |

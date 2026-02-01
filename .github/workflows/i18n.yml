@@ -19,23 +19,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - # Checkout repository code
+        name: Checkout
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - # Setup Python 3.10 for i18n tools
+        name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
           cache: pip
 
-      - name: Create venv and install minimal i18n deps
+      - # Create venv and install Babel and polib for i18n
+        name: Create venv and install minimal i18n deps
         run: |
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip
           python -m pip install Babel polib
 
-      - name: Verify messages.pot is up to date
+      - # Extract and validate translation catalog
+        name: Verify messages.pot is up to date
         run: |
           pybabel extract --sort-output -F babel.cfg -o /tmp/messages.pot .
           python - <<'PY'
@@ -70,7 +74,8 @@ jobs:
               sys.exit(1)
           PY
 
-      - name: Compile catalogs
+      - # Compile translation catalogs and copy to plugin directory
+        name: Compile catalogs
         run: |
           . .venv/bin/activate
           pybabel compile -d translations

@@ -24,27 +24,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - # Checkout repository code
+        name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - # Setup Python 3.12 for Bandit security scanning
+        name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.12"
           cache: "pip"
 
-      - name: Install tools
+      - # Install Bandit and SARIF formatter
+        name: Install tools
         run: |
           python -m pip install --upgrade pip setuptools wheel
           pip install "bandit==1.9.3" bandit-sarif-formatter
 
-      - name: Run Bandit (SARIF)
+      - # Run Bandit and output SARIF format
+        name: Run Bandit (SARIF)
         run: |
           mkdir -p reports
           bandit -r octoprint_uptime -x .venv,venv,.git -ll \
             --format sarif --output reports/bandit.sarif
 
-      - name: Upload Bandit SARIF to GitHub Security
+      - # Upload SARIF report to GitHub Security tab
+        name: Upload Bandit SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: reports/bandit.sarif

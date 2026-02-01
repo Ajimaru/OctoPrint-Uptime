@@ -18,52 +18,62 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - # Checkout repository with full history for docs
+        name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Set up Python
+      - # Setup Python 3.12 for documentation tools
+        name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.10"
+          python-version: "3.12"
 
-      - name: Create venv and install docs deps
+      - # Create venv and install mkdocs and dependencies
+        name: Create venv and install docs deps
         run: |
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip
           python -m pip install -r requirements-docs.txt
 
-      - name: Install Node.js
+      - # Setup Node.js for documentation tooling
+        name: Install Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "20"
 
-      - name: Install Node.js dependencies
+      - # Install npm dependencies for docs
+        name: Install Node.js dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Install diagram system deps
+      - # Install system packages for diagram generation
+        name: Install diagram system deps
         run: |
           sudo apt-get update
           sudo apt-get install -y graphviz potrace imagemagick
 
-      - name: Generate diagrams
+      - # Generate Mermaid diagrams from scripts
+        name: Generate diagrams
         run: |
           . .venv/bin/activate
           ./scripts/generate-diagrams.sh
 
-      - name: Generate JavaScript API docs
+      - # Generate JSDoc API documentation
+        name: Generate JavaScript API docs
         run: |
           . .venv/bin/activate
           ./scripts/generate-jsdocs.sh
 
-      - name: Build MkDocs site
+      - # Build documentation site with MkDocs
+        name: Build MkDocs site
         run: |
           . .venv/bin/activate
           mkdocs build --strict
 
-      - name: Upload Pages artifact
+      - # Upload built site as artifact for deployment
+        name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./site
@@ -75,6 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - # Deploy built site to GitHub Pages
+        name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
