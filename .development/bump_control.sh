@@ -67,6 +67,12 @@ to_pep440() {
     printf '%s' "${ver}"
 }
 
+get_commit_hash() {
+    # Get the short commit hash (7 characters) of the current HEAD
+    # Returns empty string if not in a git repository
+    git rev-parse --short=7 HEAD 2>/dev/null || echo ""
+}
+
 choose_menu() {
     local prompt="$1"; shift
     local options=("$@")
@@ -336,72 +342,92 @@ if [[ -z "$BUMP_TYPE" ]]; then
     fi
 
     if [[ "$BUMP_TYPE" == "rc" ]]; then
-        if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ \.dev([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%.dev*}
+        # Strip existing +hash suffix if present
+        STRIPPED_VERSION="${CURRENT_VERSION%%+*}"
+
+        if [[ -n "$STRIPPED_VERSION" && "$STRIPPED_VERSION" =~ \.dev([0-9]+)$ ]]; then
+            base=${STRIPPED_VERSION%.dev*}
             NEW_CURRENT="${base}.rc1"
-        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ dev([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%dev*}
+        elif [[ -n "$STRIPPED_VERSION" && "$STRIPPED_VERSION" =~ dev([0-9]+)$ ]]; then
+            base=${STRIPPED_VERSION%dev*}
             NEW_CURRENT="${base}.rc1"
-        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ \.rc([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%.rc*}
+        elif [[ -n "$STRIPPED_VERSION" && "$STRIPPED_VERSION" =~ \.rc([0-9]+)$ ]]; then
+            base=${STRIPPED_VERSION%.rc*}
             num=${BASH_REMATCH[1]}
             next=$((num+1))
             NEW_CURRENT="${base}.rc${next}"
-        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ rc([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%rc*}
+        elif [[ -n "$STRIPPED_VERSION" && "$STRIPPED_VERSION" =~ rc([0-9]+)$ ]]; then
+            base=${STRIPPED_VERSION%rc*}
             num=${BASH_REMATCH[1]}
             next=$((num+1))
             NEW_CURRENT="${base}.rc${next}"
-        elif [[ -n "$CURRENT_VERSION" && ! "$CURRENT_VERSION" =~ rc ]]; then
-            NEW_CURRENT="${CURRENT_VERSION}.rc1"
+        elif [[ -n "$STRIPPED_VERSION" && ! "$STRIPPED_VERSION" =~ rc ]]; then
+            NEW_CURRENT="${STRIPPED_VERSION}.rc1"
         else
             NEW_CURRENT=""
         fi
+
+        # Add commit hash to rc versions (PEP 440: +local)
+        COMMIT_HASH="$(get_commit_hash)"
+        if [[ -n "$COMMIT_HASH" && -n "$NEW_CURRENT" ]]; then
+            NEW_CURRENT="${NEW_CURRENT}+${COMMIT_HASH}"
+        fi
+
         if [[ -z "$NEW_CURRENT" ]]; then
-            read -r -p "Enter RC version to set (e.g. 0.2.0.rc1): " NEW_CURRENT
+            read -r -p "Enter RC version to set (e.g. 0.2.0.rc1+abc1234): " NEW_CURRENT
             if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
         else
             printf "%b\n" "Auto-selected RC version: ${GREEN}$NEW_CURRENT${RESET}"
             read -r -p "Accept this version? [Y/n] " accept_rc
             accept_rc=${accept_rc:-Y}
             if [[ ! "$accept_rc" =~ ^[Yy] ]]; then
-                read -r -p "Enter RC version to set (e.g. 0.2.0.rc1): " NEW_CURRENT
+                read -r -p "Enter RC version to set (e.g. 0.2.0.rc1+abc1234): " NEW_CURRENT
                 if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
             fi
         fi
     fi
 
     if [[ "$BUMP_TYPE" == "dev" ]]; then
-        if [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ \.rc([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%.rc*}
+        # Strip existing +hash suffix if present
+        STRIPPED_VERSION="${CURRENT_VERSION%%+*}"
+
+        if [[ -n "$STRIPPED_VERSION" && "$STRIPPED_VERSION" =~ \.rc([0-9]+)$ ]]; then
+            base=${STRIPPED_VERSION%.rc*}
             NEW_CURRENT="${base}.dev1"
-        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ rc([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%rc*}
+        elif [[ -n "$STRIPPED_VERSION" && "$STRIPPED_VERSION" =~ rc([0-9]+)$ ]]; then
+            base=${STRIPPED_VERSION%rc*}
             NEW_CURRENT="${base}.dev1"
-        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ \.dev([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%.dev*}
+        elif [[ -n "$STRIPPED_VERSION" && "$STRIPPED_VERSION" =~ \.dev([0-9]+)$ ]]; then
+            base=${STRIPPED_VERSION%.dev*}
             num=${BASH_REMATCH[1]}
             next=$((num+1))
             NEW_CURRENT="${base}.dev${next}"
-        elif [[ -n "$CURRENT_VERSION" && "$CURRENT_VERSION" =~ dev([0-9]+)$ ]]; then
-            base=${CURRENT_VERSION%dev*}
+        elif [[ -n "$STRIPPED_VERSION" && "$STRIPPED_VERSION" =~ dev([0-9]+)$ ]]; then
+            base=${STRIPPED_VERSION%dev*}
             num=${BASH_REMATCH[1]}
             next=$((num+1))
             NEW_CURRENT="${base}.dev${next}"
-        elif [[ -n "$CURRENT_VERSION" && ! "$CURRENT_VERSION" =~ dev ]]; then
-            NEW_CURRENT="${CURRENT_VERSION}.dev1"
+        elif [[ -n "$STRIPPED_VERSION" && ! "$STRIPPED_VERSION" =~ dev ]]; then
+            NEW_CURRENT="${STRIPPED_VERSION}.dev1"
         else
             NEW_CURRENT=""
         fi
+
+        # Add commit hash to dev versions (PEP 440: +local)
+        COMMIT_HASH="$(get_commit_hash)"
+        if [[ -n "$COMMIT_HASH" && -n "$NEW_CURRENT" ]]; then
+            NEW_CURRENT="${NEW_CURRENT}+${COMMIT_HASH}"
+        fi
+
         if [[ -z "$NEW_CURRENT" ]]; then
-            read -r -p "Enter $BUMP_TYPE version to set (e.g. 0.2.0.${BUMP_TYPE}1): " NEW_CURRENT
+            read -r -p "Enter $BUMP_TYPE version to set (e.g. 0.2.0.${BUMP_TYPE}1+abc1234): " NEW_CURRENT
             if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
         else
             printf "%b\n" "Auto-selected $BUMP_TYPE version: ${GREEN}$NEW_CURRENT${RESET}"
             read -r -p "Accept this version? [Y/n] " accept_pre
             accept_pre=${accept_pre:-Y}
             if [[ ! "$accept_pre" =~ ^[Yy] ]]; then
-                read -r -p "Enter $BUMP_TYPE version to set (e.g. 0.2.0.${BUMP_TYPE}1): " NEW_CURRENT
+                read -r -p "Enter $BUMP_TYPE version to set (e.g. 0.2.0.${BUMP_TYPE}1+abc1234): " NEW_CURRENT
                 if [[ -z "$NEW_CURRENT" ]]; then printf "%b\n" "${RED}No version provided, aborting.${RESET}"; exit 1; fi
             fi
         fi
