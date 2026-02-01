@@ -1,65 +1,81 @@
-*.pyc
-*.pyo
+# === Editor & IDE ===
+.DS_Store
+.idea
+.vscode
 *.swp
 *.swo
 *~
-.DS_Store
-*.egg-info
+*.bak
+
+# === Python Build & Distribution ===
 dist/
 build/
+*.egg-info
+
+# === Python Runtime & Environments ===
 venv/
 .venv/
-.venv-docs/
 venv-docs/
+.venv-docs/
+
+# === Python Generated ===
+*.pyc
+*.pyo
 __pycache__
+
+# === Python Testing & Coverage ===
 .pytest_cache
 .coverage
 coverage.xml
 htmlcov
-*.log
-.idea
-.vscode
-*.bak
-GITHUB_UPLOAD.md
 
-# pre-commit/prettier temporary install artifacts
+# === Python Tools Cache ===
+.ruff_cache
+
+# === Logging ===
+*.log
+.logs/
+
+# === Node/Frontend ===
 node_modules/
 
-# Development-only folders and files (not for GitHub)
-.drafts/
-.local/
-.notes/
-.ideas/
-.logs/
-.qodo
-.codacy/
-gh_logs
-codacy_trivy_results.json
+# === Git & GitHub ===
 .github/instructions/
-.ruff_cache/
+.github/copilot-instructions.md
+GITHUB_UPLOAD.md
+
+# === CI/Code Quality ===
+.codacy/
+.codacyignore
+.trivyignore
+codacy_trivy_results.json
 codacy-trivy.sarif
 codacy-trivy-skip.sarif
 codacy-trivy-args.sarif
 codacy-trivy-ignore.sarif
-.github/copilot-instructions.md
+
+# === Development-Only Folders ===
 .development/
-.codacyignore
-.trivyignore
+.drafts/
+.local/
+.notes/
+.ideas/
+.qodo/
+gh_logs/
+
+# === Local Configuration ===
 .python-version
 
-# Generated API docs (created by CI / scripts)
+# === Generated API Docs ===
 docs/api/javascript.md
 
-# Generated diagram intermediates
-# pyreverse/graphviz intermediate files
+# === Generated Diagrams (Intermediates) ===
 classes_OctoPrint-Uptime*.dot
 packages_OctoPrint-Uptime*.dot
 *.pnm
 
-# Generated diagram outputs (created by CI)
+# === Generated Diagrams (Output) ===
 docs/reference/diagrams/*.svg
 
-#Ignore vscode AI rules
-
-# Local MkDocs build output
+# === Documentation Build Output ===
 site/
