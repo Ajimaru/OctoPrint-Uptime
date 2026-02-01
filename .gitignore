@@ -46,6 +46,7 @@ codacy-trivy-ignore.sarif
 .development/bumpversion.toml
 .codacyignore
 .trivyignore
+.python-version
 
 # Generated API docs (created by CI / scripts)
 docs/api/javascript.md
