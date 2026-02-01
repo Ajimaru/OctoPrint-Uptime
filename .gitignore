@@ -43,7 +43,6 @@ codacy-trivy-args.sarif
 codacy-trivy-ignore.sarif
 .github/copilot-instructions.md
 .development/
-.development/bumpversion.toml
 .codacyignore
 .trivyignore
 .python-version
