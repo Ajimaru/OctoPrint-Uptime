@@ -85,9 +85,11 @@ repos:
     hooks:
       - id: djlint-reformat # Autoformat Jinja/Django templates (reformat only)
         files: "\\.(html|jinja2|j2)$"
+        exclude: "^docs/(development/testing-diagrams|reference/diagrams)/" # Exclude mermaid diagrams
         types: [html]
       - id: djlint-reformat-jinja # Reformat Jinja templates (reformat only)
         files: "\\.(html|jinja2|j2)$"
+        exclude: "^docs/(development/testing-diagrams|reference/diagrams)/" # Exclude mermaid diagrams
 
   # Frontend / formatting tools
   - repo: local
