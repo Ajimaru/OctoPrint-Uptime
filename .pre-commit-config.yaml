@@ -9,7 +9,7 @@ exclude: '^docs/api/python\.md$'
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v5.0.0 # v6.0.0+ requires Python >=3.9
     hooks:
       - id: check-merge-conflict # Detect unresolved merge conflict markers and fail early
       - id: detect-private-key # Scan for likely private keys to avoid accidental leaks
