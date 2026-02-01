@@ -34,7 +34,7 @@ repos:
 
   # Formatting and code-mod tools
   - repo: https://github.com/psf/black
-    rev: 26.1.0
+    rev: 24.8.0 # 25.0.0+ requires Python >=3.9
     hooks:
       - id: black # Code formatter: reformats Python files to a canonical style (Black)
         language_version: python3
