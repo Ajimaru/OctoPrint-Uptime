@@ -618,10 +618,15 @@ def test_on_api_get_permission_and_response(monkeypatch):
         "_get_uptime_info",
         lambda self: (42, "42s", "42s", "0h", "0d"),
     )
+    monkeypatch.setattr(
+        plugin.OctoprintUptimePlugin,
+        "_get_octoprint_uptime_info",
+        lambda self: (1, "1s", "1s", "0h", "0d"),
+    )
     monkeypatch.setattr(plugin, "_flask", None, raising=False)
     out = p.on_api_get()
-    if out != {"uptime": "42s"}:
-        pytest.fail(f"Expected out == {{'uptime': '42s'}}, got {out!r}")
+    if out != {"uptime": "42s", "octoprint_uptime": "1s"}:
+        pytest.fail(f"Expected out == {{'uptime': '42s', 'octoprint_uptime': '1s'}}, got {out!r}")
 
     monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_check_permissions", lambda _: False)
     p2 = plugin.OctoprintUptimePlugin()
@@ -877,6 +882,81 @@ def test_get_uptime_from_psutil_import_error_and_bad_boot(monkeypatch):
     res2 = p._get_uptime_from_psutil()
     if res2 is not None:
         pytest.fail("_get_uptime_from_psutil() should return None when boot_time is invalid")
+
+
+def test_get_octoprint_uptime_success(monkeypatch):
+    """
+    Test that _get_octoprint_uptime successfully retrieves OctoPrint process uptime.
+
+    This test verifies that the method correctly calculates uptime using psutil's
+    Process.create_time() for the current process.
+    """
+    p = plugin.OctoprintUptimePlugin()
+
+    class FakeProcess:
+        def __init__(self, pid):
+            self.pid = pid
+
+        def create_time(self):
+            return time.time() - 500
+
+    fake_ps = SimpleNamespace(Process=FakeProcess)
+
+    def safe_import_module(name):
+        if name == "psutil":
+            return fake_ps
+        return importlib.import_module(name)
+
+    monkeypatch.setattr(importlib, "import_module", safe_import_module)
+    val = p._get_octoprint_uptime()
+    if not (isinstance(val, float) and abs(val - 500) < 5):
+        pytest.fail("Expected val to be a float and within 5 of 500")
+
+
+def test_get_octoprint_uptime_import_error(monkeypatch):
+    """
+    Test that _get_octoprint_uptime returns None when psutil cannot be imported.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    monkeypatch.setattr(
+        importlib,
+        "import_module",
+        lambda name: (_ for _ in ()).throw(ImportError("nope")),
+    )
+    res = p._get_octoprint_uptime()
+    if res is not None:
+        pytest.fail("_get_octoprint_uptime() should return None when import_module raises ImportError")
+
+
+def test_get_octoprint_uptime_info(monkeypatch):
+    """
+    Test that _get_octoprint_uptime_info returns formatted uptime strings.
+    """
+    p = plugin.OctoprintUptimePlugin()
+
+    class FakeProcess:
+        def __init__(self, pid):
+            self.pid = pid
+
+        def create_time(self):
+            return time.time() - 3665  # 1h 1m 5s
+
+    fake_ps = SimpleNamespace(Process=FakeProcess)
+
+    def safe_import_module(name):
+        if name == "psutil":
+            return fake_ps
+        return importlib.import_module(name)
+
+    monkeypatch.setattr(importlib, "import_module", safe_import_module)
+    seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = p._get_octoprint_uptime_info()
+    
+    if not isinstance(seconds, float):
+        pytest.fail("Expected seconds to be a float")
+    if not uptime_full:
+        pytest.fail("Expected uptime_full to be non-empty")
+    if not uptime_dhm:
+        pytest.fail("Expected uptime_dhm to be non-empty")
 
 
 def test_on_settings_initialized_invokes_hook_variants(monkeypatch):
