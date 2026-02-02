@@ -140,8 +140,9 @@ $(function () {
           } else if (fmt === "short") {
             // legacy value: keep days+hours behaviour
             displayValue = data.uptime_short || data.uptime || "unknown";
+            // Use dh format for OctoPrint uptime in legacy "short" mode
             octoprintDisplayValue =
-              data.octoprint_uptime_short || data.octoprint_uptime || "unknown";
+              data.octoprint_uptime_dh || data.octoprint_uptime || "unknown";
           } else {
             displayValue = data.uptime || "unknown";
             octoprintDisplayValue = data.octoprint_uptime || "unknown";
