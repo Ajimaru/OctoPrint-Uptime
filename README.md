@@ -154,7 +154,6 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 [![Depfu](https://img.shields.io/badge/dependencies-managed%20by%20Depfu-blue)](https://depfu.com/repos/github/Ajimaru/OctoPrint-Uptime)
 [![Known Vulnerabilities](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime/badge.svg)](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime)
 
-
 ### 🔄 3. CI/CD & Release
 
 [![SemVer](https://img.shields.io/badge/semver-2.0.0-blue)](https://semver.org/)
