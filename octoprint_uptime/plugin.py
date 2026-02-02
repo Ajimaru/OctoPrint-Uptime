@@ -293,7 +293,7 @@ class OctoprintUptimePlugin(
             uptime = time.time() - boot
             if isinstance(uptime, (int, float)) and 0 <= uptime < 10 * 365 * 24 * 3600:
                 return uptime
-        except (AttributeError, TypeError, ValueError):
+        except (AttributeError, TypeError, ValueError, OSError):
             return None
         return None
 

@@ -189,27 +189,29 @@ $(function () {
 
             if (secs !== null && !isNaN(secs)) {
               var started = new Date(Date.now() - secs * 1000);
-              var systemLabel = "System Started:";
+              var systemStartedLabel = "System Started:";
               if (typeof gettext === "function") {
-                systemLabel = gettext("System Started:");
+                systemStartedLabel = gettext("System Started:");
               } else if (typeof _ === "function") {
-                systemLabel = _("System Started:");
+                systemStartedLabel = _("System Started:");
               }
-              tooltipLines.push(systemLabel + " " + started.toLocaleString());
+              tooltipLines.push(
+                systemStartedLabel + " " + started.toLocaleString(),
+              );
             }
 
             if (octoprintSecs !== null && !isNaN(octoprintSecs)) {
               var octoprintStarted = new Date(
                 Date.now() - octoprintSecs * 1000,
               );
-              var octoprintLabel = "OctoPrint Started:";
+              var octoprintStartedLabel = "OctoPrint Started:";
               if (typeof gettext === "function") {
-                octoprintLabel = gettext("OctoPrint Started:");
+                octoprintStartedLabel = gettext("OctoPrint Started:");
               } else if (typeof _ === "function") {
-                octoprintLabel = _("OctoPrint Started:");
+                octoprintStartedLabel = _("OctoPrint Started:");
               }
               tooltipLines.push(
-                octoprintLabel + " " + octoprintStarted.toLocaleString(),
+                octoprintStartedLabel + " " + octoprintStarted.toLocaleString(),
               );
             }
 
