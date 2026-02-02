@@ -297,6 +297,24 @@ class OctoprintUptimePlugin(
             return None
         return None
 
+    def _get_octoprint_uptime(self) -> Optional[float]:
+        """Get OctoPrint process uptime using psutil if available."""
+        try:
+            _ps = importlib.import_module("psutil")
+        except ImportError:
+            return None
+        try:
+            # Get current process
+            current_process = _ps.Process(os.getpid())
+            # Get process creation time
+            create_time = current_process.create_time()
+            uptime = time.time() - create_time
+            if isinstance(uptime, (int, float)) and 0 <= uptime < 10 * 365 * 24 * 3600:
+                return uptime
+        except (AttributeError, TypeError, ValueError, OSError):
+            return None
+        return None
+
     def on_settings_initialized(self) -> None:
         """
         Called when OctoPrint has initialized plugin settings.
@@ -638,6 +656,13 @@ class OctoprintUptimePlugin(
             return permission_result
 
         seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = self._get_uptime_info()
+        (
+            octoprint_seconds,
+            octoprint_uptime_full,
+            octoprint_uptime_dhm,
+            octoprint_uptime_dh,
+            octoprint_uptime_d,
+        ) = self._get_octoprint_uptime_info()
         self._log_debug(_("Uptime API requested, result=%s") % uptime_full)
 
         if _flask is not None:
@@ -648,12 +673,17 @@ class OctoprintUptimePlugin(
                 uptime_dh=uptime_dh,
                 uptime_d=uptime_d,
                 seconds=seconds,
+                octoprint_uptime=octoprint_uptime_full,
+                octoprint_uptime_dhm=octoprint_uptime_dhm,
+                octoprint_uptime_dh=octoprint_uptime_dh,
+                octoprint_uptime_d=octoprint_uptime_d,
+                octoprint_seconds=octoprint_seconds,
                 navbar_enabled=navbar_enabled,
                 display_format=display_format,
                 poll_interval_seconds=poll_interval,
             )
 
-        return {"uptime": uptime_full}
+        return {"uptime": uptime_full, "octoprint_uptime": octoprint_uptime_full}
 
     def _handle_permission_check(self) -> Optional[Any]:
         """
@@ -741,6 +771,38 @@ class OctoprintUptimePlugin(
         except (AttributeError, TypeError, ValueError):
             try:
                 self._logger.exception(_("Error computing uptime"))
+            except (AttributeError, TypeError, ValueError):
+                pass
+            uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
+            seconds = None
+            return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
+
+    def _get_octoprint_uptime_info(self) -> Tuple[Optional[float], str, str, str, str]:
+        """
+        Retrieve OctoPrint process uptime information and formatted strings.
+
+        Returns:
+            Tuple: (seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d)
+        """
+        try:
+            seconds = self._get_octoprint_uptime()
+
+            if isinstance(seconds, (int, float)):
+                seconds = float(seconds)
+            else:
+                seconds = None
+
+            if seconds is not None:
+                uptime_full = format_uptime(seconds)
+                uptime_dhm = format_uptime_dhm(seconds)
+                uptime_dh = format_uptime_dh(seconds)
+                uptime_d = format_uptime_d(seconds)
+            else:
+                uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
+            return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
+        except (AttributeError, TypeError, ValueError):
+            try:
+                self._logger.exception(_("Error computing OctoPrint uptime"))
             except (AttributeError, TypeError, ValueError):
                 pass
             uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
