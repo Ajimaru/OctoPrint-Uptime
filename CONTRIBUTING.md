@@ -60,22 +60,6 @@ python -m pip install -U pip
 python -m pip install -e ".[develop]"
 ```
 
-## Automatic pre-commit autoupdate
-
-If you want your local hooks to attempt to keep themselves updated before running,
-set the environment variable `PRECOMMIT_AUTOUPDATE=1`. The repo-local wrapper will
-run `pre-commit autoupdate` at most once per 24 hours. This is opt-in — running
-autoupdate on every commit by default is not recommended because it may change
-`.pre-commit-config.yaml` unexpectedly.
-
-To enable:
-
-```bash
-export PRECOMMIT_AUTOUPDATE=1
-```
-
-Review any changes created by `autoupdate` before committing them.
-
 ## Running tests
 
 ```bash
@@ -112,6 +96,22 @@ To temporarily skip hooks (not recommended):
 ```bash
 git commit --no-verify
 ```
+
+### Automatic pre-commit autoupdate
+
+If you want your local hooks to attempt to keep themselves updated before running,
+set the environment variable `PRECOMMIT_AUTOUPDATE=1`. The repo-local wrapper will
+run `pre-commit autoupdate` at most once per 24 hours. This is opt-in — running
+autoupdate on every commit by default is not recommended because it may change
+`.pre-commit-config.yaml` unexpectedly.
+
+To enable:
+
+```bash
+export PRECOMMIT_AUTOUPDATE=1
+```
+
+Review any changes created by `autoupdate` before committing them.
 
 ### Translations sync check
 
