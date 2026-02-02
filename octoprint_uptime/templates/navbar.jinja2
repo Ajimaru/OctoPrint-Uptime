@@ -1,8 +1,10 @@
 <li id="navbar_plugin_navbar_uptime" class="dropdown">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-        <i class="fas fa-history"></i> {{ _("System:") }} <span data-bind="text: uptimeDisplay"></span> | {{ _("OctoPrint:") }} <span data-bind="text: octoprintUptimeDisplay"></span>
+        <i class="fas fa-history"></i> <span data-bind="html: uptimeDisplayHtml"></span>
     </a>
     {# Ensure JS translation loader picks up the tooltip strings used in JavaScript #}
+    <span style="display:none" aria-hidden="true">{{ _("System Uptime:") }}</span>
+    <span style="display:none" aria-hidden="true">{{ _("OctoPrint Uptime:") }}</span>
     <span style="display:none" aria-hidden="true">{{ _("System Started:") }}</span>
     <span style="display:none" aria-hidden="true">{{ _("OctoPrint Started:") }}</span>
 </li>

@@ -26,6 +26,7 @@ $(function () {
         : parameters[0];
     self.uptimeDisplay = ko.observable("Loading...");
     self.octoprintUptimeDisplay = ko.observable("Loading...");
+    self.uptimeDisplayHtml = ko.observable("Loading...");
 
     var navbarEl = $("#navbar_plugin_navbar_uptime");
     var DEFAULT_POLL = 5;
@@ -40,6 +41,21 @@ $(function () {
     /**
      * Check whether the navbar uptime widget is enabled in current settings.
      * @function isNavbarEnabled
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {boolean} true when enabled, false otherwise
+     */
+
+    var showOctoprintUptime = function () {
+      try {
+        return settings.plugins.octoprint_uptime.show_octoprint_uptime();
+      } catch (e) {
+        return true;
+      }
+    };
+
+    /**
+     * Check whether OctoPrint uptime should be shown alongside system uptime.
+     * @function showOctoprintUptime
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
      * @returns {boolean} true when enabled, false otherwise
      */
@@ -175,6 +191,28 @@ $(function () {
           self.uptimeDisplay(displayValue);
           self.octoprintUptimeDisplay(octoprintDisplayValue);
 
+          // Build HTML display based on settings
+          var htmlDisplay;
+          var showOctoprint = showOctoprintUptime();
+          
+          // Get localized labels
+          var systemLabel = "System Uptime:";
+          var octoprintLabel = "OctoPrint Uptime:";
+          if (typeof gettext === "function") {
+            systemLabel = gettext("System Uptime:");
+            octoprintLabel = gettext("OctoPrint Uptime:");
+          } else if (typeof _ === "function") {
+            systemLabel = _("System Uptime:");
+            octoprintLabel = _("OctoPrint Uptime:");
+          }
+
+          if (showOctoprint) {
+            htmlDisplay = systemLabel + " " + displayValue + " | " + octoprintLabel + " " + octoprintDisplayValue;
+          } else {
+            htmlDisplay = systemLabel + " " + displayValue;
+          }
+          self.uptimeDisplayHtml(htmlDisplay);
+
           // compute start time for tooltip from seconds if available
           try {
             var secs =
@@ -201,7 +239,7 @@ $(function () {
               );
             }
 
-            if (octoprintSecs !== null && !isNaN(octoprintSecs)) {
+            if (showOctoprint && octoprintSecs !== null && !isNaN(octoprintSecs)) {
               var octoprintStarted = new Date(
                 Date.now() - octoprintSecs * 1000,
               );
