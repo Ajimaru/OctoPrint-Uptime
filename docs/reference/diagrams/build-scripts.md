@@ -1,4 +1,4 @@
-# Build Scripts — Flow Diagrams
+# Build Scripts - Flow Diagrams
 
 This section contains detailed flow diagrams for the build and documentation helper scripts in the `/scripts` directory.
 
