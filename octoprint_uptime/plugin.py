@@ -169,6 +169,15 @@ class OctoprintUptimePlugin(
     """
 
     def __init__(self, *args: object, **kwargs: object) -> None:
+        """Initialize the OctoPrint-Uptime plugin.
+
+        Sets up default internal state variables for debug settings, navbar display,
+        display format, and uptime tracking.
+
+        Args:
+            *args: Variable length argument list passed to parent class.
+            **kwargs: Arbitrary keyword arguments passed to parent class.
+        """
         super().__init__(*args, **kwargs)
         self._debug_enabled: bool = False
         self._navbar_enabled: bool = True

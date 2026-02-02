@@ -122,6 +122,11 @@ class DummySettings:
     """
 
     def __init__(self, data=None):
+        """Initialize DummySettings with optional data dictionary.
+
+        Args:
+            data (dict, optional): Initial settings data. Defaults to empty dict.
+        """
         self._data = data or {}
 
     def get(self, keys):
