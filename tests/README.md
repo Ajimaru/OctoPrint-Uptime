@@ -1,12 +1,12 @@
 # Test Suite
 
-This directory contains the test suite for your OctoPrint plugin. The template ships without test files—add unit and integration tests as you build features.
+This directory contains the test suite for the OctoPrint plugin.
 
 ## Documentation
 
 View detailed diagrams and documentation for the test suite:
 
-→ **[Testing — Diagrams and Documentation](../docs/development/testing-diagrams.md)**
+→ **[Testing - Diagrams and Documentation](../docs/development/testing-diagrams.md)**
 
 This includes a comprehensive overview of all test categories, coverage areas, and test flows.
 
