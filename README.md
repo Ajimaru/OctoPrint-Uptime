@@ -151,7 +151,9 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 [![Coverage Diff](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/branch/main/graph/badge.svg?flag=patch)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
 [![Pylint Score](https://img.shields.io/badge/pylint-10.0-green.svg)](https://www.pylint.org/)
 [![Bandit Security](https://img.shields.io/badge/bandit-security-green.svg)](https://bandit.readthedocs.io/en/latest/)
-[![Snyk Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/Ajimaru/OctoPrint-Uptime?logo=snyk)](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime)
+[![Depfu](https://img.shields.io/badge/dependencies-managed%20by%20Depfu-blue)](https://depfu.com/repos/github/Ajimaru/OctoPrint-Uptime)
+[![Known Vulnerabilities](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime/badge.svg)](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime)
+
 
 ### 🔄 3. CI/CD & Release
 
@@ -177,8 +179,8 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 ### 🧾 5. Metadata
 
 ![Code Size](https://img.shields.io/github/languages/code-size/Ajimaru/OctoPrint-Uptime)
-![Security](https://img.shields.io/badge/security-policy-blue)
-![Snyk](https://img.shields.io/badge/security-snyk-blueviolet)
+[![Security](https://img.shields.io/badge/security-policy-blue)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/SECURITY.md))
+[![Snyk](https://img.shields.io/badge/security-snyk-blueviolet)](https://app.snyk.io)
 ![Languages Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)
 ![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
 [![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/LICENSE)
