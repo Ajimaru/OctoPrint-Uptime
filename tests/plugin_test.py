@@ -925,7 +925,9 @@ def test_get_octoprint_uptime_import_error(monkeypatch):
     )
     res = p._get_octoprint_uptime()
     if res is not None:
-        pytest.fail("_get_octoprint_uptime() should return None when import_module raises ImportError")
+        pytest.fail(
+            "_get_octoprint_uptime() should return None when import_module raises ImportError"
+        )
 
 
 def test_get_octoprint_uptime_info(monkeypatch):
@@ -950,7 +952,7 @@ def test_get_octoprint_uptime_info(monkeypatch):
 
     monkeypatch.setattr(importlib, "import_module", safe_import_module)
     seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = p._get_octoprint_uptime_info()
-    
+
     if not isinstance(seconds, float):
         pytest.fail("Expected seconds to be a float")
     if not uptime_full:

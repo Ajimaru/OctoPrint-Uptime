@@ -120,24 +120,28 @@ $(function () {
           navbarEl.show();
           var displayValue;
           var octoprintDisplayValue;
-          
+
           // Format system uptime
           if (fmt === "full") {
             displayValue = data.uptime || "unknown";
             octoprintDisplayValue = data.octoprint_uptime || "unknown";
           } else if (fmt === "dhm") {
             displayValue = data.uptime_dhm || data.uptime || "unknown";
-            octoprintDisplayValue = data.octoprint_uptime_dhm || data.octoprint_uptime || "unknown";
+            octoprintDisplayValue =
+              data.octoprint_uptime_dhm || data.octoprint_uptime || "unknown";
           } else if (fmt === "dh") {
             displayValue = data.uptime_dh || data.uptime || "unknown";
-            octoprintDisplayValue = data.octoprint_uptime_dh || data.octoprint_uptime || "unknown";
+            octoprintDisplayValue =
+              data.octoprint_uptime_dh || data.octoprint_uptime || "unknown";
           } else if (fmt === "d") {
             displayValue = data.uptime_d || data.uptime || "unknown";
-            octoprintDisplayValue = data.octoprint_uptime_d || data.octoprint_uptime || "unknown";
+            octoprintDisplayValue =
+              data.octoprint_uptime_d || data.octoprint_uptime || "unknown";
           } else if (fmt === "short") {
             // legacy value: keep days+hours behaviour
             displayValue = data.uptime_short || data.uptime || "unknown";
-            octoprintDisplayValue = data.octoprint_uptime_short || data.octoprint_uptime || "unknown";
+            octoprintDisplayValue =
+              data.octoprint_uptime_short || data.octoprint_uptime || "unknown";
           } else {
             displayValue = data.uptime || "unknown";
             octoprintDisplayValue = data.octoprint_uptime || "unknown";
@@ -180,9 +184,9 @@ $(function () {
               data && typeof data.octoprint_seconds !== "undefined"
                 ? Number(data.octoprint_seconds)
                 : null;
-            
+
             var tooltipLines = [];
-            
+
             if (secs !== null && !isNaN(secs)) {
               var started = new Date(Date.now() - secs * 1000);
               var systemLabel = "System Started:";
@@ -193,18 +197,22 @@ $(function () {
               }
               tooltipLines.push(systemLabel + " " + started.toLocaleString());
             }
-            
+
             if (octoprintSecs !== null && !isNaN(octoprintSecs)) {
-              var octoprintStarted = new Date(Date.now() - octoprintSecs * 1000);
+              var octoprintStarted = new Date(
+                Date.now() - octoprintSecs * 1000,
+              );
               var octoprintLabel = "OctoPrint Started:";
               if (typeof gettext === "function") {
                 octoprintLabel = gettext("OctoPrint Started:");
               } else if (typeof _ === "function") {
                 octoprintLabel = _("OctoPrint Started:");
               }
-              tooltipLines.push(octoprintLabel + " " + octoprintStarted.toLocaleString());
+              tooltipLines.push(
+                octoprintLabel + " " + octoprintStarted.toLocaleString(),
+              );
             }
-            
+
             if (tooltipLines.length > 0) {
               var startedText = tooltipLines.join("\n");
               var anchor = navbarEl.find("a").first();
