@@ -89,6 +89,18 @@
             </div>
         </div>
         <div class="control-group">
+            <label class="control-label" for="plugin_uptime_show_octoprint">{{ _("Show OctoPrint Uptime") }}</label>
+            <div class="controls">
+                <label class="checkbox" for="plugin_uptime_show_octoprint">
+                    <input id="plugin_uptime_show_octoprint"
+                           type="checkbox"
+                           data-bind="checked: settings.plugins.octoprint_uptime.show_octoprint_uptime" />
+                    {{ _("Show OctoPrint uptime alongside system uptime") }}
+                </label>
+                <p class="help-block">{{ _("When enabled, displays both system and OctoPrint process uptime in the navbar.") }}</p>
+            </div>
+        </div>
+        <div class="control-group">
             <label class="control-label" for="plugin_uptime_format">{{ _("Display format") }}</label>
             <div class="controls">
                 <select id="plugin_uptime_format"
