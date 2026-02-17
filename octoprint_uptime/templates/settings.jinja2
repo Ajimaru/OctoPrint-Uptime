@@ -89,15 +89,41 @@
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label" for="plugin_uptime_show_octoprint">{{ _("Show OctoPrint Uptime") }}</label>
+            <label class="control-label" for="plugin_uptime_show_system">{{ _("System Uptime") }}</label>
+            <div class="controls">
+                <label class="checkbox" for="plugin_uptime_show_system">
+                    <input id="plugin_uptime_show_system"
+                           type="checkbox"
+                           data-bind="checked: settings.plugins.octoprint_uptime.show_system_uptime, enable: settings.plugins.octoprint_uptime.navbar_enabled" />
+                    {{ _("Show system uptime in navbar") }}
+                </label>
+                <p class="help-block">{{ _("When enabled, displays the system uptime in the navbar.") }}</p>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="plugin_uptime_show_octoprint">{{ _("OctoPrint Uptime") }}</label>
             <div class="controls">
                 <label class="checkbox" for="plugin_uptime_show_octoprint">
                     <input id="plugin_uptime_show_octoprint"
                            type="checkbox"
-                           data-bind="checked: settings.plugins.octoprint_uptime.show_octoprint_uptime" />
-                    {{ _("Show OctoPrint uptime alongside system uptime") }}
+                           data-bind="checked: settings.plugins.octoprint_uptime.show_octoprint_uptime, enable: settings.plugins.octoprint_uptime.navbar_enabled" />
+                    {{ _("Show OctoPrint uptime") }}
                 </label>
-                <p class="help-block">{{ _("When enabled, displays both system and OctoPrint process uptime in the navbar.") }}</p>
+                <p class="help-block">{{ _("When enabled, displays the OctoPrint process uptime in the navbar.") }}</p>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="plugin_uptime_compact">{{ _("Compact Display") }}</label>
+            <div class="controls">
+                <label class="checkbox" for="plugin_uptime_compact">
+                    <input id="plugin_uptime_compact"
+                           type="checkbox"
+                           data-bind="checked: settings.plugins.octoprint_uptime.compact_display, enable: settings.plugins.octoprint_uptime.navbar_enabled() && (settings.plugins.octoprint_uptime.show_system_uptime() && settings.plugins.octoprint_uptime.show_octoprint_uptime())" />
+                    {{ _("Toggle between system and OctoPrint uptime every 5 seconds") }}
+                </label>
+                <p class="help-block">
+                    {{ _("When enabled and both uptimes are displayed, alternately show system and OctoPrint uptime to save navbar space.") }}
+                </p>
             </div>
         </div>
         <div class="control-group">

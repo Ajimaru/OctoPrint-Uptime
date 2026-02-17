@@ -30,9 +30,21 @@ $(function () {
 
     var navbarEl = $("#navbar_plugin_navbar_uptime");
     var DEFAULT_POLL = 5;
+    var COMPACT_TOGGLE_INTERVAL = 5; // seconds
+    var compactToggleTimer = null;
+    var compactDisplayUptimeType = "system"; // "system" or "octoprint"
+
     var isNavbarEnabled = function () {
       try {
         return settings.plugins.octoprint_uptime.navbar_enabled();
+      } catch (e) {
+        return true;
+      }
+    };
+
+    var showSystemUptime = function () {
+      try {
+        return settings.plugins.octoprint_uptime.show_system_uptime();
       } catch (e) {
         return true;
       }
@@ -49,6 +61,14 @@ $(function () {
         return settings.plugins.octoprint_uptime.show_octoprint_uptime();
       } catch (e) {
         return true;
+      }
+    };
+
+    var isCompactDisplay = function () {
+      try {
+        return settings.plugins.octoprint_uptime.compact_display();
+      } catch (e) {
+        return false;
       }
     };
 
@@ -83,6 +103,83 @@ $(function () {
         }
       } catch (e) {}
       pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
+    }
+
+    /**
+     * Schedule the compact display toggle.
+     * @function scheduleCompactToggle
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {void}
+     */
+    function scheduleCompactToggle() {
+      try {
+        if (compactToggleTimer) {
+          clearTimeout(compactToggleTimer);
+        }
+      } catch (e) {}
+      compactToggleTimer = setTimeout(function () {
+        // Toggle between system and octoprint
+        compactDisplayUptimeType =
+          compactDisplayUptimeType === "system" ? "octoprint" : "system";
+        updateCompactDisplay();
+      }, COMPACT_TOGGLE_INTERVAL * 1000);
+    }
+
+    /**
+     * Update compact display by toggling between system and octoprint uptime.
+     * @function updateCompactDisplay
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {void}
+     */
+    function updateCompactDisplay() {
+      if (!isCompactDisplay() || !isNavbarEnabled()) {
+        return;
+      }
+
+      var htmlDisplay;
+      var uptimeLabel = "Uptime:";
+      if (typeof gettext === "function") {
+        uptimeLabel = gettext("Uptime:");
+      } else if (typeof _ === "function") {
+        uptimeLabel = _("Uptime:");
+      }
+
+      if (
+        compactDisplayUptimeType === "system" &&
+        self.uptimeDisplay() !== "Loading..." &&
+        self.uptimeDisplay() !== "Error"
+      ) {
+        var systemLabel = "System";
+        if (typeof gettext === "function") {
+          systemLabel = gettext("System");
+        } else if (typeof _ === "function") {
+          systemLabel = _("System");
+        }
+        htmlDisplay =
+          uptimeLabel + " " + systemLabel + " " + self.uptimeDisplay();
+      } else if (
+        compactDisplayUptimeType === "octoprint" &&
+        self.octoprintUptimeDisplay() !== "Loading..." &&
+        self.octoprintUptimeDisplay() !== "Error"
+      ) {
+        var octoprintLabel = "OctoPrint";
+        if (typeof gettext === "function") {
+          octoprintLabel = gettext("OctoPrint");
+        } else if (typeof _ === "function") {
+          octoprintLabel = _("OctoPrint");
+        }
+        htmlDisplay =
+          uptimeLabel +
+          " " +
+          octoprintLabel +
+          " " +
+          self.octoprintUptimeDisplay();
+      }
+
+      if (htmlDisplay) {
+        self.uptimeDisplayHtml(htmlDisplay);
+      }
+      scheduleCompactToggle();
     }
 
     /**
@@ -185,21 +282,44 @@ $(function () {
 
           // Build HTML display based on settings
           var htmlDisplay;
+          var showSystem = showSystemUptime();
           var showOctoprint = showOctoprintUptime();
+          var useCompactDisplay = isCompactDisplay();
 
           // Get localized labels
-          var systemLabel = "System Uptime:";
-          var octoprintLabel = "OctoPrint Uptime:";
+          var uptimeLabel = "Uptime:";
+          var systemLabel = "System";
+          var octoprintLabel = "OctoPrint";
           if (typeof gettext === "function") {
-            systemLabel = gettext("System Uptime:");
-            octoprintLabel = gettext("OctoPrint Uptime:");
+            uptimeLabel = gettext("Uptime:");
+            systemLabel = gettext("System");
+            octoprintLabel = gettext("OctoPrint");
           } else if (typeof _ === "function") {
-            systemLabel = _("System Uptime:");
-            octoprintLabel = _("OctoPrint Uptime:");
+            uptimeLabel = _("Uptime:");
+            systemLabel = _("System");
+            octoprintLabel = _("OctoPrint");
           }
 
-          if (showOctoprint) {
+          // Handle compact display (toggling between system and octoprint)
+          if (useCompactDisplay && showSystem && showOctoprint) {
+            compactDisplayUptimeType = "system"; // start with system on fetch
+            updateCompactDisplay();
+            return; // updateCompactDisplay will handle display updates
+          }
+
+          // Cancel any pending compact toggle timer if not in compact mode
+          try {
+            if (compactToggleTimer) {
+              clearTimeout(compactToggleTimer);
+              compactToggleTimer = null;
+            }
+          } catch (e) {}
+
+          // Regular display logic: show selected uptimes
+          if (showSystem && showOctoprint) {
             htmlDisplay =
+              uptimeLabel +
+              " " +
               systemLabel +
               " " +
               displayValue +
@@ -207,8 +327,13 @@ $(function () {
               octoprintLabel +
               " " +
               octoprintDisplayValue;
+          } else if (showSystem) {
+            htmlDisplay = uptimeLabel + " " + systemLabel + " " + displayValue;
+          } else if (showOctoprint) {
+            htmlDisplay =
+              uptimeLabel + " " + octoprintLabel + " " + octoprintDisplayValue;
           } else {
-            htmlDisplay = systemLabel + " " + displayValue;
+            htmlDisplay = uptimeLabel + " " + "None";
           }
           self.uptimeDisplayHtml(htmlDisplay);
 

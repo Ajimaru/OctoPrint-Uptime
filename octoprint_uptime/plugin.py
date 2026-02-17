@@ -503,7 +503,9 @@ class OctoprintUptimePlugin(
         return {
             "debug": False,
             "navbar_enabled": True,
+            "show_system_uptime": True,
             "show_octoprint_uptime": True,
+            "compact_display": False,
             "display_format": "full",
             "debug_throttle_seconds": 60,
             "poll_interval_seconds": 5,
