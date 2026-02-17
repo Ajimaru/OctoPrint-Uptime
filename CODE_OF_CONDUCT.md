@@ -51,4 +51,4 @@ We strive to be transparent where possible, but will protect reporter confidenti
 
 ## Attribution
 
-This document is inspired by common open source community standards (e.g. the Contributor Covenant). For a more detailed community standard, see: https://www.contributor-covenant.org
+This document is inspired by common open-source community standards (e.g. the Contributor Covenant). For a more detailed community standard, see: https://www.contributor-covenant.org
