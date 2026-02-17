@@ -25,7 +25,7 @@ python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-- **Python dependencies**: Install the project development requirements which include `pyreverse` (provided by `pylint`)  in `requirements-dev.txt`:
+- **Python dependencies**: Install the project development requirements—including `pyreverse` (provided by `pylint`)—from `requirements-dev.txt`:
 
 ```bash
 pip install -r requirements-dev.txt
