@@ -33,6 +33,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
 VENV_PYBABEL="./venv/bin/pybabel"
+VENV_PYTHON="./venv/bin/python3"
 PYBABEL=""
 if [[ -x "$VENV_PYBABEL" ]]; then
   PYBABEL="$VENV_PYBABEL"
@@ -63,6 +64,49 @@ if ! output="$($PYBABEL update -i translations/messages.pot -d "$tmpdir"/transla
     echo "pybabel failed while updating temporary translations. Output follows:" >&2
     printf '%s\n' "$output" >&2
   exit 1
+fi
+
+# mirror compile_translations behavior: remove obsolete (#~) entries in temp copy
+if [[ -x "$VENV_PYTHON" ]]; then
+  FORCE_CLEAN=true "$VENV_PYTHON" - <<'PY' "$tmpdir" || true
+import os
+import sys
+from pathlib import Path
+
+tmpdir = Path(sys.argv[1])
+translations = tmpdir / "translations"
+
+try:
+  import polib
+except Exception:
+  print("polib not available; skipping obsolete cleanup in temp copy", file=sys.stderr)
+  sys.exit(0)
+
+def iter_po_files(root: Path):
+  if not root.exists():
+    return
+  for lang_dir in root.iterdir():
+    po = lang_dir / "LC_MESSAGES" / "messages.po"
+    if po.exists():
+      yield po
+
+total = 0
+for po in iter_po_files(translations):
+  pofile = polib.pofile(str(po))
+  obsolete = [e for e in pofile if e.obsolete]
+  if not obsolete:
+    continue
+  for entry in obsolete:
+    try:
+      pofile.remove(entry)
+    except ValueError:
+      pass
+  pofile.save()
+  total += len(obsolete)
+
+if total:
+  print(f"Removed {total} obsolete entries from temp PO files.")
+PY
 fi
 
 # check for any differences between real translations and the updated temp copy
