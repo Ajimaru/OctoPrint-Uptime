@@ -25,6 +25,8 @@ $(function () {
         ? parameters[0].settings
         : parameters[0];
     self.uptimeDisplay = ko.observable("Loading...");
+    self.octoprintUptimeDisplay = ko.observable("Loading...");
+    self.uptimeDisplayHtml = ko.observable("Loading...");
 
     var navbarEl = $("#navbar_plugin_navbar_uptime");
     var DEFAULT_POLL = 5;
@@ -37,11 +39,18 @@ $(function () {
     };
 
     /**
-     * Check whether the navbar uptime widget is enabled in current settings.
-     * @function isNavbarEnabled
+     * Check whether OctoPrint uptime should be shown alongside system uptime.
+     * @function showOctoprintUptime
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
      * @returns {boolean} true when enabled, false otherwise
      */
+    var showOctoprintUptime = function () {
+      try {
+        return settings.plugins.octoprint_uptime.show_octoprint_uptime();
+      } catch (e) {
+        return true;
+      }
+    };
 
     var displayFormat = function () {
       try {
@@ -118,19 +127,33 @@ $(function () {
             data && data.display_format ? data.display_format : displayFormat();
           navbarEl.show();
           var displayValue;
+          var octoprintDisplayValue;
+
+          // Format system uptime
           if (fmt === "full") {
             displayValue = data.uptime || "unknown";
+            octoprintDisplayValue = data.octoprint_uptime || "unknown";
           } else if (fmt === "dhm") {
             displayValue = data.uptime_dhm || data.uptime || "unknown";
+            octoprintDisplayValue =
+              data.octoprint_uptime_dhm || data.octoprint_uptime || "unknown";
           } else if (fmt === "dh") {
             displayValue = data.uptime_dh || data.uptime || "unknown";
+            octoprintDisplayValue =
+              data.octoprint_uptime_dh || data.octoprint_uptime || "unknown";
           } else if (fmt === "d") {
             displayValue = data.uptime_d || data.uptime || "unknown";
+            octoprintDisplayValue =
+              data.octoprint_uptime_d || data.octoprint_uptime || "unknown";
           } else if (fmt === "short") {
             // legacy value: keep days+hours behaviour
             displayValue = data.uptime_short || data.uptime || "unknown";
+            // Use dh format for OctoPrint uptime in legacy "short" mode
+            octoprintDisplayValue =
+              data.octoprint_uptime_dh || data.octoprint_uptime || "unknown";
           } else {
             displayValue = data.uptime || "unknown";
+            octoprintDisplayValue = data.octoprint_uptime || "unknown";
           }
 
           // If server explicitly reports uptime unavailable, show localized "Unavailable"
@@ -158,6 +181,29 @@ $(function () {
 
           // update visible text
           self.uptimeDisplay(displayValue);
+          self.octoprintUptimeDisplay(octoprintDisplayValue);
+
+          // Build HTML display based on settings
+          var htmlDisplay;
+          var showOctoprint = showOctoprintUptime();
+          
+          // Get localized labels
+          var systemLabel = "System Uptime:";
+          var octoprintLabel = "OctoPrint Uptime:";
+          if (typeof gettext === "function") {
+            systemLabel = gettext("System Uptime:");
+            octoprintLabel = gettext("OctoPrint Uptime:");
+          } else if (typeof _ === "function") {
+            systemLabel = _("System Uptime:");
+            octoprintLabel = _("OctoPrint Uptime:");
+          }
+
+          if (showOctoprint) {
+            htmlDisplay = systemLabel + " " + displayValue + " | " + octoprintLabel + " " + octoprintDisplayValue;
+          } else {
+            htmlDisplay = systemLabel + " " + displayValue;
+          }
+          self.uptimeDisplayHtml(htmlDisplay);
 
           // compute start time for tooltip from seconds if available
           try {
@@ -165,18 +211,43 @@ $(function () {
               data && typeof data.seconds !== "undefined"
                 ? Number(data.seconds)
                 : null;
+            var octoprintSecs =
+              data && typeof data.octoprint_seconds !== "undefined"
+                ? Number(data.octoprint_seconds)
+                : null;
+
+            var tooltipLines = [];
+
             if (secs !== null && !isNaN(secs)) {
               var started = new Date(Date.now() - secs * 1000);
-              // format like: "Started: 2026-01-19 12:34:56" using locale string
-              var startedText;
+              var systemStartedLabel = "System Started:";
               if (typeof gettext === "function") {
-                startedText =
-                  gettext("Started:") + " " + started.toLocaleString();
+                systemStartedLabel = gettext("System Started:");
               } else if (typeof _ === "function") {
-                startedText = _("Started:") + " " + started.toLocaleString();
-              } else {
-                startedText = "Started: " + started.toLocaleString();
+                systemStartedLabel = _("System Started:");
               }
+              tooltipLines.push(
+                systemStartedLabel + " " + started.toLocaleString(),
+              );
+            }
+
+            if (showOctoprint && octoprintSecs !== null && !isNaN(octoprintSecs)) {
+              var octoprintStarted = new Date(
+                Date.now() - octoprintSecs * 1000,
+              );
+              var octoprintStartedLabel = "OctoPrint Started:";
+              if (typeof gettext === "function") {
+                octoprintStartedLabel = gettext("OctoPrint Started:");
+              } else if (typeof _ === "function") {
+                octoprintStartedLabel = _("OctoPrint Started:");
+              }
+              tooltipLines.push(
+                octoprintStartedLabel + " " + octoprintStarted.toLocaleString(),
+              );
+            }
+
+            if (tooltipLines.length > 0) {
+              var startedText = tooltipLines.join("\n");
               var anchor = navbarEl.find("a").first();
               try {
                 // dispose existing tooltip if present (remove bootstrap tooltip)
