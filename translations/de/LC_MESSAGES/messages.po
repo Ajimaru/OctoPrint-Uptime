@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-17 19:56+0100\n"
+"POT-Creation-Date: 2026-02-17 20:10+0100\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -51,6 +51,15 @@ msgstr "Debug"
 msgid "Debug throttle (s)"
 msgstr "Debug-Drossel (s)"
 
+#: octoprint_uptime/templates/settings.jinja2:4
+#, fuzzy
+msgid ""
+"Display both system and OctoPrint uptime in the navbar, with optional "
+"compact toggling."
+msgstr ""
+"Zeigen Sie sowohl System- als auch OctoPrint-Uptime in der navbar, mit "
+"optionaler kompakter Fesselung."
+
 #: octoprint_uptime/templates/settings.jinja2:130
 msgid "Display format"
 msgstr "Anzeigeformat"
@@ -58,6 +67,13 @@ msgstr "Anzeigeformat"
 #: octoprint_uptime/templates/settings.jinja2:161
 msgid "Enable debug logging (throttled)"
 msgstr "Debug-Protokollierung aktivieren (gedrosselt)"
+
+#: octoprint_uptime/templates/settings.jinja2:88
+#, fuzzy
+msgid "Enable the navbar entry so the other uptime options can be shown."
+msgstr ""
+"Aktivieren Sie den navbar-Eintrag, damit die anderen Uptime-Optionen "
+"angezeigt werden können."
 
 #: octoprint_uptime/plugin.py:817
 #, fuzzy
@@ -144,10 +160,6 @@ msgstr "Uptime:"
 msgid "Toggle between system and OctoPrint uptime every 5 seconds"
 msgstr "Toggle zwischen System und OctoPrint Uptime alle 5 Sekunden"
 
-#: octoprint_uptime/templates/settings.jinja2:88
-msgid "Toggle whether the uptime is visible in the top navigation bar."
-msgstr "Umschalten, ob die Uptime in der oberen Navigationsleiste sichtbar ist."
-
 #: octoprint_uptime/plugin.py:678
 #, python-format
 msgid "Uptime API requested, result=%s"
@@ -162,10 +174,6 @@ msgstr "Die Uptime konnte auf diesem System nicht ermittelt werden."
 #, fuzzy
 msgid "Uptime:"
 msgstr "Uptime:"
-
-#: octoprint_uptime/templates/settings.jinja2:4
-msgid "Use this plugin to display system uptime in the Navbar."
-msgstr "Dieses Plugin zeigt die System-Uptime in der Navbar an."
 
 #: octoprint_uptime/templates/settings.jinja2:125
 #, fuzzy
