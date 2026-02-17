@@ -79,3 +79,4 @@ docs/reference/diagrams/*.svg
 
 # === Documentation Build Output ===
 site/
+.development/bumpversion.toml
