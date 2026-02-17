@@ -111,31 +111,7 @@ $(function () {
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
      * @returns {void}
      */
-    function scheduleCompactToggle() {
-      try {
-        if (compactToggleTimer) {
-          clearTimeout(compactToggleTimer);
-        }
-      } catch (e) {}
-      compactToggleTimer = setTimeout(function () {
-        // Toggle between system and octoprint
-        compactDisplayUptimeType =
-          compactDisplayUptimeType === "system" ? "octoprint" : "system";
-        updateCompactDisplay();
-      }, COMPACT_TOGGLE_INTERVAL * 1000);
-    }
-
-    /**
-     * Update compact display by toggling between system and octoprint uptime.
-     * @function updateCompactDisplay
-     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
-     * @returns {void}
-     */
-    function updateCompactDisplay() {
-      if (!isCompactDisplay() || !isNavbarEnabled()) {
-        return;
-      }
-
+    function renderCompactDisplay() {
       var htmlDisplay;
       var uptimeLabel = "Uptime:";
       if (typeof gettext === "function") {
@@ -179,7 +155,28 @@ $(function () {
       if (htmlDisplay) {
         self.uptimeDisplayHtml(htmlDisplay);
       }
-      scheduleCompactToggle();
+    }
+
+    function scheduleCompactToggle() {
+      if (compactToggleTimer) {
+        return;
+      }
+      compactToggleTimer = setTimeout(function () {
+        compactToggleTimer = null;
+        compactDisplayUptimeType =
+          compactDisplayUptimeType === "system" ? "octoprint" : "system";
+        renderCompactDisplay();
+        scheduleCompactToggle();
+      }, COMPACT_TOGGLE_INTERVAL * 1000);
+    }
+
+    function stopCompactToggleLoop() {
+      try {
+        if (compactToggleTimer) {
+          clearTimeout(compactToggleTimer);
+        }
+      } catch (e) {}
+      compactToggleTimer = null;
     }
 
     /**
@@ -302,18 +299,13 @@ $(function () {
 
           // Handle compact display (toggling between system and octoprint)
           if (useCompactDisplay && showSystem && showOctoprint) {
-            compactDisplayUptimeType = "system"; // start with system on fetch
-            updateCompactDisplay();
-            return; // updateCompactDisplay will handle display updates
+            renderCompactDisplay();
+            scheduleCompactToggle();
+            return;
           }
 
           // Cancel any pending compact toggle timer if not in compact mode
-          try {
-            if (compactToggleTimer) {
-              clearTimeout(compactToggleTimer);
-              compactToggleTimer = null;
-            }
-          } catch (e) {}
+          stopCompactToggleLoop();
 
           // Regular display logic: show selected uptimes
           if (showSystem && showOctoprint) {
