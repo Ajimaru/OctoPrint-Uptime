@@ -215,7 +215,7 @@ $(function () {
               ? data.navbar_enabled
               : isNavbarEnabled();
           if (!navbarEnabled) {
-            // Server says navbar disabled — keep it hidden
+            // Server says navbar disabled, keep it hidden
             navbarEl.hide();
             return;
           }

@@ -25,7 +25,7 @@ fi
 set -euo pipefail
 
 if [[ -z "${GIT_DIR-}" ]]; then
-  # Not running as a Git hook — skip silently.
+  # Not running as a Git hook, skip silently.
   exit 0
 fi
 

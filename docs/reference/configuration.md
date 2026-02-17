@@ -5,24 +5,24 @@ the `get_settings_defaults()` method in `octoprint_uptime/plugin.py`.
 
 Settings (defaults):
 
-- `debug` (bool) — default: `false`\
+- `debug` (bool) - default: `false`\
    Enable debug logging for the plugin. When enabled, the plugin attempts to set
   its logger to DEBUG level and emits additional diagnostic messages.
 
-- `navbar_enabled` (bool) — default: `true`\
+- `navbar_enabled` (bool) - default: `true`\
    Controls whether the small uptime widget is shown in the OctoPrint navbar.
 
-- `display_format` (string) — default: `"full"`\
+- `display_format` (string) - default: `"full"`\
    Controls the default formatted uptime string returned by the API and used in
   the UI. Valid values include `full`, `dhm`, `dh`, and `d` which map to the
   helper formatters exposed by the plugin (see API docs).
 
-- `debug_throttle_seconds` (int) — default: `60`\
+- `debug_throttle_seconds` (int) - default: `60`\
    Minimum interval (in seconds) between repeated debug log messages to avoid
   logging spam when debug mode is enabled. Values are validated and clamped
   to a sensible range (currently 1–120 seconds).
 
-- `poll_interval_seconds` (int) — default: `5`\
+- `poll_interval_seconds` (int) - default: `5`\
    Suggested polling interval (in seconds) that clients can use to refresh the
   uptime display. The frontend uses this to adjust its polling frequency. The
   plugin validates and clamps this value (1–120 seconds).

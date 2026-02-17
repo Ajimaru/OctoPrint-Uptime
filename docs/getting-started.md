@@ -37,7 +37,7 @@ When working on translations during development, use the repository helper which
 
 If a commit fails due to translations being out of sync, run the compile command above, add the changed PO files, and re-commit.
 
-Note: the repository's translations pre-commit check is non-destructive — it reports when PO files would change and fails the commit so you can run the update step manually.
+Note: the repository's translations pre-commit check is non-destructive, it reports when PO files would change and fails the commit so you can run the update step manually.
 
 ## Notes
 

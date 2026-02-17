@@ -48,7 +48,7 @@ The navbar template defines an anchor element with an ID where the viewmodel bin
 
 ## API usage (frontend)
 
-Always use OctoPrint's helper API to query plugin endpoints — pass the plugin id only. Example:
+Always use OctoPrint's helper API to query plugin endpoints, pass the plugin id only. Example:
 
 ```js
 OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {

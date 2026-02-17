@@ -8,7 +8,7 @@
 # If already running under Bash, do nothing (when sourced). If executed,
 # behave as a launcher: first argument should be the target script path.
 if [ -n "${BASH_VERSION-}" ]; then
-    # Running under bash already — return when sourced, or exit when executed.
+    # Running under bash already, return when sourced, or exit when executed.
     if [ "${BASH_SOURCE[0]}" != "$0" ]; then
         return 0
     else
