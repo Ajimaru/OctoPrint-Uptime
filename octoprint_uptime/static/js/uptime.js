@@ -186,7 +186,7 @@ $(function () {
           // Build HTML display based on settings
           var htmlDisplay;
           var showOctoprint = showOctoprintUptime();
-          
+
           // Get localized labels
           var systemLabel = "System Uptime:";
           var octoprintLabel = "OctoPrint Uptime:";
@@ -199,7 +199,14 @@ $(function () {
           }
 
           if (showOctoprint) {
-            htmlDisplay = systemLabel + " " + displayValue + " | " + octoprintLabel + " " + octoprintDisplayValue;
+            htmlDisplay =
+              systemLabel +
+              " " +
+              displayValue +
+              " | " +
+              octoprintLabel +
+              " " +
+              octoprintDisplayValue;
           } else {
             htmlDisplay = systemLabel + " " + displayValue;
           }
@@ -231,7 +238,11 @@ $(function () {
               );
             }
 
-            if (showOctoprint && octoprintSecs !== null && !isNaN(octoprintSecs)) {
+            if (
+              showOctoprint &&
+              octoprintSecs !== null &&
+              !isNaN(octoprintSecs)
+            ) {
               var octoprintStarted = new Date(
                 Date.now() - octoprintSecs * 1000,
               );
