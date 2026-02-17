@@ -10,7 +10,7 @@ This includes interactive flowcharts for `generate-diagrams.sh`, `generate-jsdoc
 
 ---
 
-## generate-diagrams.sh - helper scrip
+## generate-diagrams.sh - helper script
 
 ### What it does
 
