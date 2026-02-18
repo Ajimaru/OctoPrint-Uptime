@@ -40,12 +40,12 @@ repos:
         language_version: python3
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v10.0.0-rc.2
+    rev: v10.0.0
     hooks:
       - id: eslint # JavaScript/TypeScript linter (ESLint)
         files: \.js$
         exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|docs/|scripts/|translations/)
-        additional_dependencies: ["eslint@9.29.0", "globals@16.2.0"]
+        additional_dependencies: ["eslint@10.0.0", "globals@17.3.0"]
 
   - repo: https://github.com/pycqa/isort
     rev: 7.0.0
@@ -106,10 +106,9 @@ repos:
     hooks:
       - id: shellcheck # Requires local shellcheck >= 0.11.0 for consistent lint results
         name: ShellCheck
-        entry: shellcheck
-        language: system
+        entry: .githooks/shellcheck-hook.sh
+        language: script
         types: [shell]
-        args: ["--severity=warning"]
 
   - repo: https://github.com/OctoPrint/pre-commit-lessc
     rev: 4.4.0
