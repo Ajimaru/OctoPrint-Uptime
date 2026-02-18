@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-18 15:14+0100\n"
+"POT-Creation-Date: 2026-02-18 15:32+0100\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -23,9 +23,8 @@ msgid "Choose how the uptime is shown in the navbar."
 msgstr "Wählen Sie, wie die Uptime in der Navbar angezeigt wird."
 
 #: octoprint_uptime/templates/settings.jinja2:104
-#, fuzzy
 msgid "Compact Display"
-msgstr "Kompaktes Display"
+msgstr "Kompaktanzeige"
 
 #: octoprint_uptime/templates/settings.jinja2:118
 msgid "Compact Toggle Interval (s)"
@@ -56,13 +55,12 @@ msgid "Debug throttle (s)"
 msgstr "Debug-Drossel (s)"
 
 #: octoprint_uptime/templates/settings.jinja2:4
-#, fuzzy
 msgid ""
 "Display both system and OctoPrint uptime in the navbar, with optional "
 "compact toggling."
 msgstr ""
-"Zeigen Sie sowohl System- als auch OctoPrint-Uptime in der navbar, mit "
-"optionaler kompakter Fesselung."
+"Zeigt sowohl System- als auch OctoPrint-Uptime in der Navbar an, mit "
+"optionaler kompakter Umschaltung."
 
 #: octoprint_uptime/templates/settings.jinja2:130
 msgid "Display format"
@@ -73,9 +71,8 @@ msgid "Enable debug logging (throttled)"
 msgstr "Debug-Protokollierung aktivieren (gedrosselt)"
 
 #: octoprint_uptime/plugin.py:797
-#, fuzzy
 msgid "Error computing OctoPrint uptime"
-msgstr "Fehler bei der Ermittlung der Uptime"
+msgstr "Fehler bei der Ermittlung der OctoPrint-Uptime"
 
 #: octoprint_uptime/plugin.py:765
 msgid "Error computing uptime"
@@ -91,14 +88,12 @@ msgid "Minimum seconds between debug log entries."
 msgstr "Minimale Sekunden zwischen Debug-Protokolleinträgen."
 
 #: octoprint_uptime/templates/navbar.jinja2:8
-#, fuzzy
 msgid "OctoPrint"
-msgstr "OctoPrint-Uptime"
+msgstr "OctoPrint"
 
 #: octoprint_uptime/templates/navbar.jinja2:10
-#, fuzzy
 msgid "OctoPrint Started:"
-msgstr "OctoPrint Uptime"
+msgstr "OctoPrint gestartet:"
 
 #: octoprint_uptime/plugin.py:248
 #: octoprint_uptime/templates/settings.jinja2:92
@@ -121,30 +116,24 @@ msgstr ""
 "Protokoll füllen; Standard ist 5s."
 
 #: octoprint_uptime/templates/settings.jinja2:126
-#, fuzzy
 msgid "Seconds between navbar uptime switches in compact mode (5–60)."
-msgstr ""
-"Sekunden zwischen Wechseln der Navbar-Uptime im Compact-Modus (5\\u201360)."
+msgstr "Sekunden zwischen Wechseln der Navbar-Uptime im Kompaktmodus (5–60)."
 
 #: octoprint_uptime/templates/settings.jinja2:98
-#, fuzzy
 msgid "Show OctoPrint uptime"
-msgstr "OctoPrint Uptime"
+msgstr "OctoPrint-Uptime in der Navbar anzeigen"
 
 #: octoprint_uptime/templates/settings.jinja2:86
-#, fuzzy
 msgid "Show system uptime in navbar"
-msgstr "Uptime in der Navbar anzeigen"
+msgstr "System-Uptime in der Navbar anzeigen"
 
 #: octoprint_uptime/templates/navbar.jinja2:7
-#, fuzzy
 msgid "System"
-msgstr "Uptime:"
+msgstr "System"
 
 #: octoprint_uptime/templates/navbar.jinja2:9
-#, fuzzy
 msgid "System Started:"
-msgstr "Gestartet:"
+msgstr "System gestartet:"
 
 #: octoprint_uptime/templates/settings.jinja2:80
 msgid "System Uptime:"
@@ -165,26 +154,26 @@ msgid "Uptime could not be determined on this system."
 msgstr "Die Uptime konnte auf diesem System nicht ermittelt werden."
 
 #: octoprint_uptime/templates/navbar.jinja2:6
-#, fuzzy
 msgid "Uptime:"
 msgstr "Uptime:"
 
 #: octoprint_uptime/templates/settings.jinja2:113
-#, fuzzy
 msgid ""
 "When enabled and both uptimes are displayed, alternately show system and "
 "OctoPrint uptime to save navbar space."
-msgstr "Dieses Plugin zeigt die System-Uptime in der Navbar an."
+msgstr ""
+"Wenn aktiviert und beide Uptime-Werte angezeigt werden, wird abwechselnd "
+"System- und OctoPrint-Uptime angezeigt, um Platz in der Navbar zu sparen."
 
 #: octoprint_uptime/templates/settings.jinja2:100
-#, fuzzy
 msgid "When enabled, displays the OctoPrint process uptime in the navbar."
-msgstr "Dieses Plugin zeigt die System-Uptime in der Navbar an."
+msgstr ""
+"Wenn aktiviert, wird die Uptime des OctoPrint-Prozesses in der Navbar "
+"angezeigt."
 
 #: octoprint_uptime/templates/settings.jinja2:88
-#, fuzzy
 msgid "When enabled, displays the system uptime in the navbar."
-msgstr "Dieses Plugin zeigt die System-Uptime in der Navbar an."
+msgstr "Wenn aktiviert, wird die System-Uptime in der Navbar angezeigt."
 
 #: octoprint_uptime/templates/settings.jinja2:164
 msgid ""
