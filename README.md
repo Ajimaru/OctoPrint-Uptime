@@ -16,7 +16,7 @@
 
 <!-- markdownlint-disable MD033-->
 <strong>
-  Lightweight OctoPrint plugin that displays the host system uptime in the navbar and exposes a small JSON API for tooling and integrations.<br />
+  Lightweight OctoPrint plugin that displays both host system and OctoPrint process uptime in the navbar and exposes a small JSON API for tooling and integrations.<br />
 </strong>
 </br />
 <img src="assets/img/uptime_navbar.png" alt="OctoPrint Uptime Navbar" width="666" />
@@ -24,9 +24,9 @@
 
 ## Highlights
 
-- 🖥️ Navbar widget with configurable display formats (full / dhm / dh / d)
+- 🖥️ Navbar widget displaying system and OctoPrint uptime with configurable formats (full / dhm / dh / d)
 - 🔒 Small read‑only API at `/api/plugin/octoprint_uptime` (OctoPrint auth enforced)
-- ⚙️ Configurable polling interval
+- ⚙️ Configurable polling interval and optional compact toggle mode
 
 ## Installation
 
@@ -55,11 +55,11 @@ The `releases/latest` URL always points to the newest stable release.
 
 ## How It Works
 
-The navbar widget polls the plugin API and shows a formatted uptime string. The tooltip displays the calculated start datetime (localized).
+The navbar widget polls the plugin API and displays both system and OctoPrint process uptime as formatted strings. The tooltip shows the calculated start datetimes for each enabled uptime type (localized).
 
 ### Note about uptime retrieval
 
-The plugin determines system uptime using either `/proc/uptime` on Linux systems or the Python library `psutil`. `psutil` is installed automatically as a dependency. If neither method can provide uptime, the plugin API returns `uptime_available: false` along with a human‑readable `uptime_note`.
+The plugin determines system uptime using either `/proc/uptime` on Linux systems or the Python library `psutil`; OctoPrint process uptime is retrieved via the OctoPrint API. `psutil` is installed automatically as a dependency. If system uptime cannot be determined, the plugin API returns `uptime_available: false` along with a human‑readable `uptime_note`.
 
 ## Configuration
 
@@ -71,11 +71,14 @@ Configure the plugin in **Settings** → **OctoPrint Uptime**:
 <details>
 <summary>Settings Defaults</summary>
 
-- `navbar_enabled`: `true` – Show uptime in the OctoPrint navbar
-- `display_format`: `full` – Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`)
-- `poll_interval_seconds`: `5` – Polling interval in seconds (validated and clamped between 1–120s)
-- `debug_logging`: `false` – Enable debug logging for troubleshooting
-- `debug_throttle_seconds`: `60` – Throttle debug logs to reduce log spam (validated and clamped between 1–120s)
+- `show_system_uptime`: `true` - Show system uptime in the OctoPrint navbar
+- `show_octoprint_uptime`: `true` - Show OctoPrint uptime in the navbar
+- `compact_display`: `false` - Toggle between system and OctoPrint uptime in the navbar
+- `compact_toggle_interval_seconds`: `5` - Interval for toggling between system and OctoPrint uptime in seconds (validated and clamped between 5-60s)
+- `display_format`: `full` - Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`)
+- `poll_interval_seconds`: `5` - Polling interval in seconds (validated and clamped between 1-120s)
+- `debug`: `false` - Enable debug logging for troubleshooting
+- `debug_throttle_seconds`: `60` - Throttle debug logs to reduce log spam (validated and clamped between 1-120s)
 
 </details>
 <!-- markdownlint-enable MD033 -->
@@ -151,7 +154,8 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 [![Coverage Diff](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime/branch/main/graph/badge.svg?flag=patch)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
 [![Pylint Score](https://img.shields.io/badge/pylint-10.0-green.svg)](https://www.pylint.org/)
 [![Bandit Security](https://img.shields.io/badge/bandit-security-green.svg)](https://bandit.readthedocs.io/en/latest/)
-[![Snyk Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/Ajimaru/OctoPrint-Uptime?logo=snyk)](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime)
+[![Depfu](https://img.shields.io/badge/dependencies-managed%20by%20Depfu-blue)](https://depfu.com/repos/github/Ajimaru/OctoPrint-Uptime)
+[![Known Vulnerabilities](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime/badge.svg)](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime)
 
 ### 🔄 3. CI/CD & Release
 
@@ -177,8 +181,8 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 ### 🧾 5. Metadata
 
 ![Code Size](https://img.shields.io/github/languages/code-size/Ajimaru/OctoPrint-Uptime)
-![Security](https://img.shields.io/badge/security-policy-blue)
-![Snyk](https://img.shields.io/badge/security-snyk-blueviolet)
+[![Security](https://img.shields.io/badge/security-policy-blue)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/SECURITY.md))
+[![Snyk](https://img.shields.io/badge/security-snyk-blueviolet)](https://app.snyk.io)
 ![Languages Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)
 ![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
 [![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/LICENSE)

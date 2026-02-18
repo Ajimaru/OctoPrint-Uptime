@@ -102,10 +102,13 @@ repos:
         pass_filenames: true
         exclude: '^docs/api/python\.md$'
 
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.11.0
+  - repo: local
     hooks:
-      - id: shellcheck # Shell script linter (ShellCheck) to catch common shell mistakes
+      - id: shellcheck
+        name: ShellCheck
+        entry: shellcheck
+        language: system
+        types: [shell]
         args: ["--severity=warning"]
 
   - repo: https://github.com/OctoPrint/pre-commit-lessc

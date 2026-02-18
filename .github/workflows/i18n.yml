@@ -36,7 +36,7 @@ jobs:
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install 'Babel>=2.17.0' polib
+          python -m pip install 'Babel==2.18.0' polib
 
       - # Extract and validate translation catalog
         name: Verify messages.pot is up to date

@@ -52,7 +52,7 @@ if command -v dot >/dev/null 2>&1; then
   dot -Tsvg "${DOTFILE}" -o "${OUT_SVG}"
   echo "Wrote ${OUT_SVG}"
 else
-  echo "graphviz 'dot' not found — trying PNG fallback for compact diagram"
+  echo "graphviz 'dot' not found, trying PNG fallback for compact diagram"
   pyreverse -A -S -m y -o png -p OctoPrint-Uptime octoprint_uptime
   PNGFILE="classes_OctoPrint-Uptime.png"
   PNMFILE="classes_OctoPrint-Uptime.pnm"
@@ -78,7 +78,7 @@ if command -v dot >/dev/null 2>&1; then
   dot -Tsvg "${DETAILED_DOT}" -o "${DETAILED_OUT}"
   echo "Wrote ${DETAILED_OUT}"
 else
-  echo "graphviz 'dot' not found — attempting PNG fallback for detailed diagram"
+  echo "graphviz 'dot' not found, attempting PNG fallback for detailed diagram"
   pyreverse -f ALL -A -S -m y -o png -p OctoPrint-Uptime-detailed octoprint_uptime
   PNGFILE_D="classes_OctoPrint-Uptime-detailed.png"
   PNMFILE_D="classes_OctoPrint-Uptime-detailed.pnm"
@@ -101,7 +101,7 @@ if command -v dot >/dev/null 2>&1; then
   dot -Tsvg "${PKG_DOT}" -o "${PKG_OUT}"
   echo "Wrote ${PKG_OUT}"
 else
-  echo "graphviz 'dot' not found — attempting PNG fallback for packages diagram"
+  echo "graphviz 'dot' not found, attempting PNG fallback for packages diagram"
   pyreverse -o png -p OctoPrint-Uptime octoprint_uptime
   PKG_PNG="packages_OctoPrint-Uptime.png"
   PKG_PNM="packages_OctoPrint-Uptime.pnm"
