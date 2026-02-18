@@ -20,7 +20,7 @@ Settings (defaults):
 
 - `compact_toggle_interval_seconds` (int) - default: `5`\
    Interval in seconds between navbar uptime switches when compact mode is active.
-  Valid range: 5–60 seconds (integers only). Values are validated and clamped by
+  Valid range: 5-60 seconds (integers only). Values are validated and clamped by
   the plugin on save.
 
 - `display_format` (string) - default: `"full"`\
@@ -31,12 +31,12 @@ Settings (defaults):
 - `debug_throttle_seconds` (int) - default: `60`\
    Minimum interval (in seconds) between repeated debug log messages to avoid
   logging spam when debug mode is enabled. Values are validated and clamped
-  to a sensible range (currently 1–120 seconds).
+  to a sensible range (currently 1-120 seconds).
 
 - `poll_interval_seconds` (int) - default: `5`\
    Suggested polling interval (in seconds) that clients can use to refresh the
   uptime display. The frontend uses this to adjust its polling frequency. The
-  plugin validates and clamps this value (1–120 seconds).
+  plugin validates and clamps this value (1-120 seconds).
 
 ## Changing settings
 

@@ -1,4 +1,4 @@
-# Frontend – API & Test Examples
+# Frontend - API & Test Examples
 
 - **Endpoint**: `/api/plugin/octoprint_uptime`
 - **Summary**: Returns uptime representations and recommended client settings (e.g., `poll_interval_seconds`).
@@ -48,7 +48,10 @@ Navbar visibility is driven entirely by the JavaScript ViewModel:
   immediately when a setting is re-enabled without a page reload.
 - Compact mode (`compact_display: true`) is active only when **both** uptime
   types are enabled; it alternates the displayed entry at the interval configured
-  by `compact_toggle_interval_seconds` (default: 5 seconds, range: 5–60 seconds).
+  by `compact_toggle_interval_seconds` (default: 5 seconds, range: 5-60 seconds).
+- The navbar mouseover tooltip is updated in both regular and compact modes
+  and shows the same localized start-time details (`System Started`,
+  `OctoPrint Started`) as long as the corresponding uptime values are enabled.
 
 ## Startup lifecycle
 

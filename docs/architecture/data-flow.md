@@ -32,7 +32,8 @@ Example response (partial):
   from the plugin settings. If both are `false` the navbar is hidden immediately
   via `navbarEl.hide()` and polling resumes after the configured interval.
 - When both are enabled and `compact_display` is `true`, the navbar alternates
-  between system and OctoPrint uptime every `COMPACT_TOGGLE_INTERVAL` seconds
+  between system and OctoPrint uptime at the configured
+  `compact_toggle_interval_seconds` interval (default 5s, range 5-60)
   without an additional API call.
 - The poll interval is taken from the server response (`poll_interval_seconds`);
   if absent it falls back to the local setting and then to the built-in default
@@ -40,8 +41,10 @@ Example response (partial):
 - Configuration is accessed through a `getPluginSettings()` helper that
   re-resolves `settingsViewModel.settings.plugins.octoprint_uptime` on every
   call, avoiding stale captures from early construction time.
-- On each fetch the UI updates the navbar text and adjusts scheduling; errors
-  are tolerated and the widget falls back to a sensible retry schedule.
+- On each fetch the UI updates the navbar text, refreshes the localized tooltip
+  content (`System Started`, `OctoPrint Started`) in both regular and compact
+  modes, and adjusts scheduling; errors are tolerated and the widget falls back
+  to a sensible retry schedule.
 
 ## Resilience
 

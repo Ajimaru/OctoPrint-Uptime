@@ -44,6 +44,10 @@ Navbar visibility is controlled **in JavaScript** via `navbarEl.hide()` /
 `show_system_uptime` and `show_octoprint_uptime` from the plugin settings on
 every polling cycle and calls the appropriate jQuery method.
 
+The same JavaScript path also updates the anchor `title` tooltip in both normal
+and compact display modes, so mouseover content remains consistent when
+`compact_display` is enabled.
+
 ## Customizing placement
 
 - Change the selector in the `OCTOPRINT_VIEWMODELS.push` call to bind elsewhere (e.g. a different navbar region or a settings panel).
