@@ -5,4 +5,4 @@ This file exposes a single `VERSION` symbol which is used by
 for the package version.
 """
 
-VERSION = "0.2.2.dev6+2c01ec1"
+VERSION = "0.2.2.dev7+154ecba"
