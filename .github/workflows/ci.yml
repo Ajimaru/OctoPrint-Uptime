@@ -17,6 +17,9 @@ jobs:
   test:
     name: Test (Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
+    env:
+      BABEL_VERSION: "2.18.0"
+      POLIB_VERSION: "1.2.0"
     strategy:
       fail-fast: false
       matrix:
@@ -76,7 +79,7 @@ jobs:
           . .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install "OctoPrint>=1.10.0,<2"
-          python -m pip install 'Babel==2.18.0' 'polib==1.2.0'
+          python -m pip install "Babel==${{ env.BABEL_VERSION }}" "polib==${{ env.POLIB_VERSION }}"
           python -m pip install -e ".[develop]" build
 
       - name: Use existing .venv for translation check
@@ -89,9 +92,9 @@ jobs:
           else
             python -m venv .venv
             . .venv/bin/activate
+            python -m pip install --upgrade pip
+            python -m pip install "Babel==${{ env.BABEL_VERSION }}" "polib==${{ env.POLIB_VERSION }}"
           fi
-          python -m pip install --upgrade pip
-          python -m pip install 'Babel==2.18.0' 'polib==1.2.0'
 
       - # Run unit tests (no coverage)
         name: Run tests
