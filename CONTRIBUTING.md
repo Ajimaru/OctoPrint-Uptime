@@ -83,7 +83,7 @@ This configures Git to use the hooks from `.githooks/` instead of the default `.
 - `pre-commit` - Runs code formatting, linting, and validation checks before each commit
 - `commit-msg` - Validates commit message format
 
-After configuring, Git will automatically run these hooks on each commit. If a hook fails, the commit is rejected, fix the issues and try again.
+After configuring, Git will automatically run these hooks on each commit. If a hook fails, the commit is rejected. Fix the issues and try again.
 
 To temporarily skip hooks (not recommended):
 

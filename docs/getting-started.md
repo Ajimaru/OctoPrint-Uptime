@@ -39,7 +39,7 @@ Example:
 
 ```bash
 # Compile and clean translations
-FORCE_CLEAN=true ./.development/compile_translations.sh --all
+FORCE_CLEAN=true ./.development/compile_translations.sh --all  # Removes stale/old translation files before compile (forces a clean build)
 ```
 
 If a commit fails due to translations being out of sync, run the compile command above, add the changed PO/MO files, and re-commit.

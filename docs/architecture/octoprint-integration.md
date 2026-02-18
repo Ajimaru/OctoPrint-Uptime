@@ -13,11 +13,14 @@ Use OctoPrint's JavaScript helper to query the plugin API:
 
 ```js
 OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {
-  // data.seconds, data.uptime (system),
+  // data.seconds (system), data.uptime (system),
   // data.octoprint_seconds, data.octoprint_uptime,
   // data.uptime_available, data.uptime_note
 });
 ```
+
+`data.seconds` / `data.uptime` describe host system uptime, while
+`data.octoprint_seconds` / `data.octoprint_uptime` describe the OctoPrint process uptime.
 
 ## Consuming from Python (other plugins)
 

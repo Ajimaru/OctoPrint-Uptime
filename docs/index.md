@@ -27,7 +27,7 @@ OctoPrint-Uptime is a plugin for OctoPrint that displays both system and OctoPri
 ### Usage
 
 - System and OctoPrint process uptime can be displayed independently or together in the navbar (with optional compact alternating mode).
-- API endpoint: `/api/plugin/octoprint_uptime` returns both system and OctoPrint uptime values.
+- API endpoint: `/api/plugin/octoprint_uptime` returns both system uptime fields (`seconds`, `uptime`, `uptime_dhm`, `uptime_dh`, `uptime_d`) and separate OctoPrint process uptime fields (`octoprint_seconds`, `octoprint_uptime`, `octoprint_uptime_dhm`, `octoprint_uptime_dh`, `octoprint_uptime_d`).
 - Configuration: Settings → Plugin OctoPrint-Uptime
 
 ## API Example
@@ -35,12 +35,17 @@ OctoPrint-Uptime is a plugin for OctoPrint that displays both system and OctoPri
 ```json
 {
   "seconds": 3600,
-  "uptime": "1 hour",
+  "uptime": "1h 0m 0s",
   "uptime_dhm": "0d 1h 0m",
+  "uptime_dh": "1h",
+  "uptime_d": "0d",
+  "octoprint_seconds": 3450,
+  "octoprint_uptime": "57m 30s",
+  "octoprint_uptime_dhm": "0h 57m",
+  "octoprint_uptime_dh": "0h",
+  "octoprint_uptime_d": "0d",
   "display_format": "dhm",
-  "poll_interval_seconds": 5,
-  "uptime_available": true,
-  "uptime_note": null
+  "poll_interval_seconds": 5
 }
 ```
 
@@ -182,10 +187,15 @@ Example JSDoc comment:
  *   seconds: number,
  *   uptime: string,
  *   uptime_dhm: string,
+ *   uptime_dh: string,
+ *   uptime_d: string,
+ *   octoprint_seconds: number,
+ *   octoprint_uptime: string,
+ *   octoprint_uptime_dhm: string,
+ *   octoprint_uptime_dh: string,
+ *   octoprint_uptime_d: string,
  *   display_format: string,
- *   poll_interval_seconds: number,
- *   uptime_available: boolean,
- *   uptime_note: string|null
+ *   poll_interval_seconds: number
  * }|null>} Parsed uptime object or null on error
  */
 async function fetchUptime(baseUrl = "/") {

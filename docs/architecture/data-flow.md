@@ -33,7 +33,7 @@ Example response (partial):
   via `navbarEl.hide()` and polling resumes after the configured interval.
 - When both are enabled and `compact_display` is `true`, the navbar alternates
   between system and OctoPrint uptime at the configured
-  `compact_toggle_interval_seconds` interval (default 5s, range 5-60)
+  `compact_toggle_interval_seconds` interval (default 5s, range 5-60 seconds)
   without an additional API call.
 - The poll interval is taken from the server response (`poll_interval_seconds`);
   if absent it falls back to the local setting and then to the built-in default

@@ -24,7 +24,7 @@
 
 ## Highlights
 
-- 🖥️ Navbar widget displaying system and OctoPrint uptime with configurable formats (full / dhm / dh / d)
+- 🖥️ Navbar widget displaying system and OctoPrint uptime with configurable formats (full / dhm / dh / d / short)
 - 🔒 Small read‑only API at `/api/plugin/octoprint_uptime` (OctoPrint auth enforced)
 - ⚙️ Configurable polling interval and optional compact toggle mode
 

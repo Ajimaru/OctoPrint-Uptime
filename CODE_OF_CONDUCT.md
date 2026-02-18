@@ -30,13 +30,15 @@ This Code of Conduct applies within all project spaces, including GitHub issues,
 
 If you experience or witness unacceptable behavior, please report it as soon as possible. We will treat reports confidentially to the extent practicable.
 
-Preferred: email the maintainer at <ajimaru_gdr@pm.me>
+Preferred: email the maintainer at <ajimaru_gdr<!--nospam-->@<!--nospam-->pm.me>
 
 Alternative: open a GitHub issue and request a private follow-up, or contact any other project maintainer listed in the repository.
 
+If your report involves a listed maintainer, use an alternative reporting channel or escalate to a neutral authority (for example a project sponsor, steering committee, or parent organization); conflicts of interest will be handled by routing the report to that alternate authority to ensure an impartial investigation.
+
 If you would prefer to report anonymously, indicate that in your report; we will still attempt to investigate while protecting your privacy.
 
-Please include as much relevant information as possible (what happened, where, when, and any screenshots/logs if applicable). We will acknowledge receipt of reports within 3 business days and aim to follow up about next steps promptly.
+Please include as much relevant information as possible (what happened, where, when, and any screenshots/logs if applicable).
 
 ## Enforcement
 
@@ -46,6 +48,8 @@ Project maintainers will respond to reported concerns in a fair and timely manne
 - Private warning to the offender
 - Temporary or permanent removal from project spaces
 - Any other action deemed appropriate by the maintainers
+
+If you are subject to an enforcement action, you may request a review by contacting the maintainers at the address listed in the Reporting section. Appeals will be considered for new information or procedural concerns and handled in a fair and timely manner while preserving reporter confidentiality.
 
 We strive to be transparent where possible, but will protect reporter confidentiality. Retaliation against anyone who reports a concern in good faith will not be tolerated.
 
