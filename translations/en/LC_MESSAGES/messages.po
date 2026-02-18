@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-17 20:10+0100\n"
+"POT-Creation-Date: 2026-02-18 13:00+0100\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.16.0\n"
 
 #: octoprint_uptime/templates/settings.jinja2:140
@@ -114,7 +114,8 @@ msgid "Polling interval (s)"
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:151
-msgid "Seconds between navbar API polls. Low values may spam logs; default is 5s."
+msgid ""
+"Seconds between navbar API polls. Low values may spam logs; default is 5s."
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:110
@@ -139,8 +140,9 @@ msgid "System Started:"
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:92
-msgid "System Uptime"
-msgstr ""
+#, fuzzy
+msgid "System Uptime:"
+msgstr "Uptime"
 
 #: octoprint_uptime/templates/settings.jinja2:122
 msgid "Toggle between system and OctoPrint uptime every 5 seconds"
@@ -177,8 +179,8 @@ msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:164
 msgid ""
-"When enabled, the plugin will log debug messages. Messages are throttled "
-"to avoid spamming the log."
+"When enabled, the plugin will log debug messages. Messages are throttled to "
+"avoid spamming the log."
 msgstr ""
 
 #: octoprint_uptime/plugin.py:860 octoprint_uptime/plugin.py:866
@@ -194,4 +196,3 @@ msgstr "Uptime"
 #: octoprint_uptime/plugin.py:813 octoprint_uptime/plugin.py:820
 msgid "unknown"
 msgstr ""
-
