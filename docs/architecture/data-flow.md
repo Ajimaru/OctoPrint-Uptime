@@ -16,7 +16,6 @@ Example response (partial):
   "seconds": 3600,
   "uptime": "1 hour",
   "uptime_dhm": "0d 1h 0m",
-  "navbar_enabled": true,
   "display_format": "dhm",
   "poll_interval_seconds": 5,
   "uptime_available": true,

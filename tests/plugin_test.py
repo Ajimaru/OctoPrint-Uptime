@@ -314,7 +314,6 @@ def test_update_internal_state_and_get_api_settings_and_logging():
     p._settings = DummySettings(
         {
             "debug": True,
-            "navbar_enabled": False,
             "display_format": "compact",
             "debug_throttle_seconds": 30,
             "poll_interval_seconds": 999,
@@ -327,16 +326,12 @@ def test_update_internal_state_and_get_api_settings_and_logging():
     p._update_internal_state()
     if p._debug_enabled is not True:
         pytest.fail("p._debug_enabled is not True")
-    if p._navbar_enabled is not False:
-        pytest.fail("p._navbar_enabled is not False")
     if p._display_format != "compact":
         pytest.fail(f"p._display_format != 'compact' (got {p._display_format!r})")
     if p._debug_throttle_seconds != 30:
         pytest.fail(f"p._debug_throttle_seconds != 30 (got {p._debug_throttle_seconds!r})")
 
-    nav, fmt, poll = p._get_api_settings()
-    if nav is not False:
-        pytest.fail("nav is not False")
+    fmt, poll = p._get_api_settings()
     if fmt != "compact":
         pytest.fail(f"fmt != 'compact' (got {fmt!r})")
     if poll != 120:
@@ -345,13 +340,10 @@ def test_update_internal_state_and_get_api_settings_and_logging():
 
 def test_log_settings_after_save_prev_navbar_change():
     """
-    Test that the plugin logs settings correctly after saving when the previous
-    navbar state changes.
+    Test that the plugin logs settings correctly after saving.
 
-    This test initializes the plugin with specific settings,
-    simulates a change in the navbar state,
-    and verifies that at least two info log calls are made:
-    one for the current state and one for the change.
+    This test initializes the plugin with specific settings
+    and verifies that at least one info log call is made.
     """
     p = plugin.OctoprintUptimePlugin()
     if hasattr(p, "set_logger"):
@@ -359,13 +351,12 @@ def test_log_settings_after_save_prev_navbar_change():
     else:
         setattr(p, "_logger", FakeLogger())
     p._debug_enabled = True
-    p._navbar_enabled = True
     p._display_format = "f"
     p._debug_throttle_seconds = 7
-    p._log_settings_after_save(prev_navbar=False)
+    p._log_settings_after_save()
     infos = [c for c in p._logger.calls if c[0] == "info"]
-    if len(infos) < 2:
-        pytest.fail("expected at least 2 info log calls")
+    if len(infos) < 1:
+        pytest.fail("expected at least 1 info log call")
 
 
 def test_log_debug_throttle(monkeypatch):
@@ -425,6 +416,12 @@ def test_fallback_uptime_response_handles_type_errors(monkeypatch):
     falling back to a dict response.
     """
     p = plugin.OctoprintUptimePlugin()
+    p._settings = DummySettings(
+        {
+            "show_system_uptime": True,
+            "show_octoprint_uptime": True,
+        }
+    )
     if hasattr(p, "set_logger"):
         p.set_logger(FakeLogger())
     else:
@@ -462,7 +459,7 @@ def test_fallback_uptime_response_handles_type_errors(monkeypatch):
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_api_settings",
-        lambda _: (True, "full", 5),
+        lambda _: ("full", 5),
     )
     resp = p._fallback_uptime_response()
     if not isinstance(resp, dict):
@@ -549,6 +546,12 @@ def test_fallback_uptime_response_flask_jsonify_args(monkeypatch):
     Test _fallback_uptime_response passes correct arguments to Flask's jsonify.
     """
     p = plugin.OctoprintUptimePlugin()
+    p._settings = DummySettings(
+        {
+            "show_system_uptime": False,
+            "show_octoprint_uptime": False,
+        }
+    )
     captured = {}
 
     class CaptureFlask:
@@ -583,7 +586,7 @@ def test_fallback_uptime_response_flask_jsonify_args(monkeypatch):
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_api_settings",
-        lambda _: (False, "compact", 10),
+        lambda _: ("compact", 10),
     )
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
@@ -595,8 +598,6 @@ def test_fallback_uptime_response_flask_jsonify_args(monkeypatch):
         raise ValueError("Response is not a valid JSON dictionary")
     if captured.get("uptime") != "50s":
         raise AssertionError("Expected uptime to be '50s'")
-    if captured.get("navbar_enabled") is not False:
-        raise AssertionError("navbar_enabled should be False")
     if captured.get("display_format") != "compact":
         raise AssertionError("display_format should be 'compact'")
     if captured.get("poll_interval_seconds") != 10:
@@ -899,10 +900,25 @@ def test_get_octoprint_uptime_success(monkeypatch):
     p = plugin.OctoprintUptimePlugin()
 
     class FakeProcess:
+        """
+        A fake process class used for testing purposes.
+
+        Attributes:
+            pid (int): The process ID.
+
+        Methods:
+            create_time(): Returns a simulated process creation time (500 seconds ago).
+        """
+
         def __init__(self, pid):
             self.pid = pid
 
         def create_time(self):
+            """Create a mock time value for testing purposes.
+
+            Returns:
+                float: A timestamp 500 seconds in the past from the current time.
+            """
             return time.time() - 500
 
     fake_ps = SimpleNamespace(Process=FakeProcess)
@@ -942,10 +958,27 @@ def test_get_octoprint_uptime_info(monkeypatch):
     p = plugin.OctoprintUptimePlugin()
 
     class FakeProcess:
+        """
+        A mock process class for testing uptime calculations.
+
+        This class simulates a psutil.Process object with a fixed uptime,
+        useful for testing time-related functionality without relying on actual processes.
+
+        Attributes:
+            pid: The process ID of the fake process.
+        """
+
         def __init__(self, pid):
             self.pid = pid
 
         def create_time(self):
+            """
+            Create a mock time value for testing.
+
+            Returns:
+                float: A timestamp representing 1 hour, 1 minute, and 5 seconds ago from the
+                current time.
+            """
             return time.time() - 3665  # 1h 1m 5s
 
     fake_ps = SimpleNamespace(Process=FakeProcess)
@@ -1052,6 +1085,12 @@ def test_fallback_uptime_response_flask_jsonify_raises(monkeypatch):
     back to returning a plain dictionary.
     """
     p = plugin.OctoprintUptimePlugin()
+    p._settings = DummySettings(
+        {
+            "show_system_uptime": True,
+            "show_octoprint_uptime": True,
+        }
+    )
     if hasattr(p, "set_logger"):
         p.set_logger(FakeLogger())
     else:
@@ -1087,7 +1126,7 @@ def test_fallback_uptime_response_flask_jsonify_raises(monkeypatch):
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_api_settings",
-        lambda self: (True, "full", 5),
+        lambda self: ("full", 5),
     )
     out = p._fallback_uptime_response()
     if not isinstance(out, dict):
@@ -1107,6 +1146,12 @@ def test_on_api_get_with_flask_returns_json(monkeypatch):
     Asserts that the output is a dictionary containing a "json" key.
     """
     p = plugin.OctoprintUptimePlugin()
+    p._settings = DummySettings(
+        {
+            "show_system_uptime": True,
+            "show_octoprint_uptime": True,
+        }
+    )
 
     class FakeFlask:
         """
@@ -1136,6 +1181,11 @@ def test_on_api_get_with_flask_returns_json(monkeypatch):
         plugin.OctoprintUptimePlugin,
         "_get_uptime_info",
         lambda self: (5, "5s", "5s", "0h", "0d"),
+    )
+    monkeypatch.setattr(
+        plugin.OctoprintUptimePlugin,
+        "_get_octoprint_uptime_info",
+        lambda self: (10, "10s", "10s", "0h", "0d"),
     )
     out = p.on_api_get()
     if not (isinstance(out, dict) and "json" in out):
@@ -1200,12 +1250,9 @@ def test_get_api_settings_exceptions():
             raise ValueError("bad")
 
     p._settings = BadSettings()
-    nav, fmt, poll = p._get_api_settings()
-    if not (nav is True and fmt == plugin._("full") and poll == 5):
-        pytest.fail(
-            f"Expected nav=True, fmt={plugin._('full')}, poll=5 but got nav={nav}, "
-            f"fmt={fmt}, poll={poll}"
-        )
+    fmt, poll = p._get_api_settings()
+    if not (fmt == plugin._("full") and poll == 5):
+        pytest.fail(f"Expected fmt={plugin._('full')}, poll=5 but got fmt={fmt}, poll={poll}")
 
 
 def test_reload_with_octoprint_present_and_flask_abort(monkeypatch):
@@ -1311,33 +1358,26 @@ def test_get_api_settings_multiple_cases():
         setattr(p, "_logger", FakeLogger())
 
     p._settings = DummySettings({})
-    nav, fmt, poll = p._get_api_settings()
-    if nav is not True:
-        pytest.fail("nav is not True")
+    fmt, poll = p._get_api_settings()
     if fmt != plugin._("full"):
         pytest.fail(f"fmt != plugin._('full') (got {fmt!r})")
     if poll != 5:
         pytest.fail(f"poll != 5 (got {poll!r})")
-    if not any(
-        "defaulting to True" in str(c[1]) or "defaulting to 'full'" in str(c[1])
-        for c in p._logger.calls
-    ):
+    if not any("defaulting to 'full'" in str(c[1]) for c in p._logger.calls):
         pytest.fail("Expected defaulting log message not found in logger calls")
 
-    p._settings = DummySettings(
-        {"navbar_enabled": False, "display_format": "x", "poll_interval_seconds": "0"}
-    )
-    nav, fmt, poll = p._get_api_settings()
+    p._settings = DummySettings({"display_format": "x", "poll_interval_seconds": "0"})
+    fmt, poll = p._get_api_settings()
     if poll != 1:
         pytest.fail(f"poll != 1 (got {poll!r})")
 
     p._settings = DummySettings({"poll_interval_seconds": "999"})
-    nav, fmt, poll = p._get_api_settings()
+    fmt, poll = p._get_api_settings()
     if poll != 120:
         pytest.fail(f"poll != 120 (got {poll!r})")
 
     p._settings = DummySettings({"poll_interval_seconds": "bad"})
-    nav, fmt, poll = p._get_api_settings()
+    fmt, poll = p._get_api_settings()
     if poll != 5:
         raise AssertionError(f"poll != 5 (got {poll!r})")
 
@@ -1600,8 +1640,10 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
     defaults = p.get_settings_defaults()
     if defaults["debug"] is not False:
         pytest.fail('Expected defaults["debug"] to be False')
-    if defaults["navbar_enabled"] is not True:
-        pytest.fail('Expected defaults["navbar_enabled"] to be True')
+    if defaults["show_system_uptime"] is not True:
+        pytest.fail('Expected defaults["show_system_uptime"] to be True')
+    if defaults["show_octoprint_uptime"] is not True:
+        pytest.fail('Expected defaults["show_octoprint_uptime"] to be True')
 
     called = {}
 
@@ -1748,18 +1790,22 @@ def make_plugin():
                 _data (dict): A dictionary containing the following default settings:
                     - "debug" (bool): Enables or disables debug mode
                       (default: False).
-                    - "navbar_enabled" (bool): Shows or hides the navbar
-                      (default: True).
+                                        - "show_system_uptime" (bool): Shows or hides system uptime
+                                            (default: True).
+                                        - "show_octoprint_uptime" (bool): Shows or hides OctoPrint
+                                            uptime
+                                            (default: True).
                     - "display_format" (str): Format for display, e.g., "full"
                       (default: "full").
-                    - "debug_throttle_seconds" (int): Throttle interval for debug mode
-                      in seconds (default: 60).
-                    - "poll_interval_seconds" (int): Interval for polling in seconds
-                      (default: 5).
+                    - "debug_throttle_seconds" (int): Throttle interval for
+                      debug mode in seconds (default: 60).
+                    - "poll_interval_seconds" (int): Interval for polling
+                      in seconds (default: 5).
             """
             self._data = {
                 "debug": False,
-                "navbar_enabled": True,
+                "show_system_uptime": True,
+                "show_octoprint_uptime": True,
                 "display_format": "full",
                 "debug_throttle_seconds": 60,
                 "poll_interval_seconds": 5,
@@ -1938,18 +1984,11 @@ def test_validate_and_sanitize_settings_sanitizes_values():
 
 def test_log_settings_after_save_logs_change():
     """
-    Test that changing the 'navbar_enabled' setting and saving logs an info message.
-
-    This test verifies that after toggling the 'navbar_enabled' setting in the plugin's
-    settings, the internal state is updated and the '_log_settings_after_save' method logs
-    an info-level message.
+    Test that the settings save log emits an info message.
     """
     p = make_plugin()
     p._update_internal_state()
-    prev = p._navbar_enabled
-    p._settings._data["navbar_enabled"] = not prev
-    p._update_internal_state()
-    p._log_settings_after_save(prev)
+    p._log_settings_after_save()
     if not any(r[0] == "info" for r in p._logger.records):
         raise AssertionError("Expected info-level log message not found.")
 
@@ -2137,10 +2176,9 @@ def test__log_settings_after_save_handles_info_exceptions():
 
     p._logger = BadLogger()
     p._debug_enabled = True
-    p._navbar_enabled = True
     p._display_format = "f"
     p._debug_throttle_seconds = 1
-    p._log_settings_after_save(prev_navbar=False)
+    p._log_settings_after_save()
 
 
 def test__log_debug_outer_exception_handled(monkeypatch):

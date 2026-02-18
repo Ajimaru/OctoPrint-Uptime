@@ -36,7 +36,10 @@ $(function () {
 
     var isNavbarEnabled = function () {
       try {
-        return settings.plugins.octoprint_uptime.navbar_enabled();
+        return (
+          settings.plugins.octoprint_uptime.show_system_uptime() ||
+          settings.plugins.octoprint_uptime.show_octoprint_uptime()
+        );
       } catch (e) {
         return true;
       }
@@ -192,7 +195,6 @@ $(function () {
      * //   "uptime": "1 hour",
      * //   "uptime_dhm": "0d 1h 0m",
      * //   "uptime_short": "1h",
-     * //   "navbar_enabled": true,
      * //   "display_format": "dhm",
      * //   "poll_interval_seconds": 5
      * // }
@@ -206,13 +208,7 @@ $(function () {
 
       OctoPrint.simpleApiGet("octoprint_uptime")
         .done(function (data) {
-          // Prefer server-side settings
-          var navbarEnabled =
-            data && typeof data.navbar_enabled !== "undefined"
-              ? data.navbar_enabled
-              : isNavbarEnabled();
-          if (!navbarEnabled) {
-            // Server says navbar disabled, keep it hidden
+          if (!isNavbarEnabled()) {
             navbarEl.hide();
             return;
           }

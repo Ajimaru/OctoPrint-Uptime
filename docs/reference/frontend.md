@@ -11,7 +11,6 @@ Example response (partial):
   "uptime": "1 hour",
   "uptime_dhm": "0d 1h 0m",
   "uptime_short": "1h",
-  "navbar_enabled": true,
   "display_format": "dhm",
   "poll_interval_seconds": 5,
   "uptime_available": true,
@@ -40,7 +39,7 @@ Check / test poll interval:
 
 ## Debugging tips
 
-- If the navbar is not displayed, check `navbar_enabled` in the API response.
+- If the navbar is not displayed, check `show_system_uptime` and `show_octoprint_uptime` in the plugin settings.
 - For empty or faulty responses: check OctoPrint logs and use `curl -v` for troubleshooting.
 
 ## Further additions

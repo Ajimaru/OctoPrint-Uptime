@@ -9,8 +9,14 @@ Settings (defaults):
    Enable debug logging for the plugin. When enabled, the plugin attempts to set
   its logger to DEBUG level and emits additional diagnostic messages.
 
-- `navbar_enabled` (bool) - default: `true`\
-   Controls whether the small uptime widget is shown in the OctoPrint navbar.
+- `show_system_uptime` (bool) - default: `true`\
+   Controls whether the system uptime is shown in the OctoPrint navbar.
+
+- `show_octoprint_uptime` (bool) - default: `true`\
+   Controls whether the OctoPrint process uptime is shown in the navbar.
+
+- `compact_display` (bool) - default: `false`\
+   When enabled and both uptimes are shown, alternates between system and OctoPrint uptime.
 
 - `display_format` (string) - default: `"full"`\
    Controls the default formatted uptime string returned by the API and used in
