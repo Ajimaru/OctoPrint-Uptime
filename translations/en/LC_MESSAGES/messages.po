@@ -124,7 +124,7 @@ msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:124
 #, fuzzy
-msgid "Switch interval in compact mode (5–60 s)."
+msgid "Switch interval in compact mode (5-60 s)."
 msgstr "Seconds between navbar uptime switches in compact mode (5\\u201360)."
 
 #: octoprint_uptime/templates/navbar.jinja2:7
