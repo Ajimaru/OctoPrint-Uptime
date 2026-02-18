@@ -42,9 +42,12 @@ Example response (partial):
 - Configuration is accessed through a `getPluginSettings()` helper that
   re-resolves `settingsViewModel.settings.plugins.octoprint_uptime` on every
   call, avoiding stale captures from early construction time.
-- On each fetch the UI updates the navbar text, refreshes the localized tooltip
-  content (`System Started`, `OctoPrint Started`) in both regular and compact
-  modes, and adjusts scheduling; errors are tolerated and the widget retries with a fixed interval of 5 seconds (the `DEFAULT_POLL` interval), displaying "Error" in the navbar until recovery.
+- On each fetch the UI updates the navbar text and refreshes the localized
+  tooltip content (`System Started`, `OctoPrint Started`) in both regular and
+  compact modes.
+- Scheduling is adjusted accordingly based on the poll interval.
+- Errors are tolerated; the widget displays "Error" in the navbar and continues
+  retrying at the fixed `DEFAULT_POLL` interval (5 seconds) until recovery.
 
 ## Resilience
 
