@@ -15,7 +15,7 @@ This document lists the plugin settings that affect the uptime display and polli
   - `dh`: Days, hours; e.g., "2d 3h"
   - `d`: Days only; e.g., "2d"
   - `short`: Compact machine-friendly form; e.g., "2d3h15m" or "2h15m" (omits zero-value leading components)
-- `debug_throttle_seconds` (integer, default `60`): Minimum seconds between debug log entries; non-integer values fall back to default (60), and integer values outside 1-120 are clamped to the nearest bound.
+- `debug_throttle_seconds` (integer, default `60`): Minimum seconds between debug log entries; values that cannot be parsed as integers (invalid or non-numeric input) fall back to the default (60), and integer values outside 1-120 are clamped to the nearest bound.
 - `poll_interval_seconds` (integer, default `5`): Client polling interval in seconds; the frontend uses the API response `poll_interval_seconds` when present, otherwise it falls back to the local setting (e.g., API sends `10` → poll every 10s, else use the configured 5s).
 
 ## Where to change
