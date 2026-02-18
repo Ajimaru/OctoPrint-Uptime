@@ -4,7 +4,7 @@ This document lists the plugin settings that affect the uptime display and polli
 
 ## Settings
 
-- `debug` (boolean, default `false`): Enable throttled plugin debug entries (for example, uptime API access messages); other debug/info output still depends on OctoPrint's global log level.
+- `debug` (boolean, default `false`): Enable throttled plugin debug entries (for example, uptime API access messages); throttling duration is controlled by `debug_throttle_seconds`. Other debug/info output still depends on OctoPrint's global log level.
 - `show_system_uptime` (boolean, default `true`): Show system uptime in the navbar when enabled.
 - `show_octoprint_uptime` (boolean, default `true`): Show OctoPrint uptime in the navbar when enabled.
 - `compact_display` (boolean, default `false`): Alternate between system and OctoPrint uptime only when both `show_system_uptime` and `show_octoprint_uptime` are enabled; if only one is enabled, that uptime is shown continuously; if both are disabled, no uptime is displayed.

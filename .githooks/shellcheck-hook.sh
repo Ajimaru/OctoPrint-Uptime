@@ -62,7 +62,7 @@ if ! command -v shellcheck >/dev/null 2>&1; then
 fi
 
 # Check shellcheck version
-SHELLCHECK_VERSION=$(shellcheck --version | grep -oP 'version: \K[0-9]+\.[0-9]+\.[0-9]+')
+SHELLCHECK_VERSION=$(shellcheck --version | sed -n 's/^version: \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p')
 if [ -z "$SHELLCHECK_VERSION" ]; then
     echo "ERROR: Could not determine shellcheck version" >&2
     exit 1
@@ -83,7 +83,7 @@ if [ "$VERSION_INT" -lt "$MIN_VERSION_INT" ]; then
     echo "ERROR: ShellCheck version $SHELLCHECK_VERSION is outdated" >&2
     echo "Minimum required version: $SHELLCHECK_MIN_VERSION" >&2
     echo "Please upgrade ShellCheck:" >&2
-    echo "  Ubuntu/Debian: sudo apt-get install --upgrade shellcheck" >&2
+    echo "  Ubuntu/Debian: sudo apt-get install --only-upgrade shellcheck" >&2
     echo "  macOS: brew upgrade shellcheck" >&2
     echo "  See: https://github.com/koalaman/shellcheck?tab=readme-ov-file#installing" >&2
     exit 1

@@ -229,13 +229,14 @@ $(function () {
     function renderCompactDisplay() {
       var htmlDisplay;
       var uptimeLabel = localize("Uptime:");
+      var systemLabel = localize("System");
+      var octoprintLabel = localize("OctoPrint");
 
       if (
         compactDisplayUptimeType === "system" &&
         self.uptimeDisplay() !== "Loading..." &&
         self.uptimeDisplay() !== "Error"
       ) {
-        var systemLabel = localize("System");
         htmlDisplay =
           uptimeLabel + " " + systemLabel + " " + self.uptimeDisplay();
       } else if (
@@ -243,7 +244,18 @@ $(function () {
         self.octoprintUptimeDisplay() !== "Loading..." &&
         self.octoprintUptimeDisplay() !== "Error"
       ) {
-        var octoprintLabel = localize("OctoPrint");
+        htmlDisplay =
+          uptimeLabel +
+          " " +
+          octoprintLabel +
+          " " +
+          self.octoprintUptimeDisplay();
+      } else if (compactDisplayUptimeType === "system") {
+        // Show system even if loading/error
+        htmlDisplay =
+          uptimeLabel + " " + systemLabel + " " + self.uptimeDisplay();
+      } else {
+        // Show octoprint even if loading/error
         htmlDisplay =
           uptimeLabel +
           " " +
@@ -252,9 +264,7 @@ $(function () {
           self.octoprintUptimeDisplay();
       }
 
-      if (htmlDisplay) {
-        self.uptimeDisplayHtml(htmlDisplay);
-      }
+      self.uptimeDisplayHtml(htmlDisplay);
     }
 
     /**

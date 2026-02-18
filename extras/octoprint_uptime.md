@@ -61,10 +61,8 @@ All settings are available in the OctoPrint UI under "OctoPrint Uptime".
 
 ## API Endpoint
 
-```
 GET /api/plugin/octoprint_uptime
 Authorization: Required (OctoPrint API key or authenticated session)
-```
 
 Returns system and OctoPrint uptime information with formatted variants:
 

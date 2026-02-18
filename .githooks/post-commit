@@ -10,7 +10,8 @@ fi
 if cd "$_SCRIPT_DIR_HINT/.." >/dev/null 2>&1; then
   REPO_ROOT="$(pwd)"
 else
-  REPO_ROOT="$_SCRIPT_DIR_HINT"
+  # Fallback: try dirname to get parent, or use hint as last resort
+  REPO_ROOT="$(dirname "$_SCRIPT_DIR_HINT")"
 fi
 WRAPPER="$REPO_ROOT/scripts/win-bash-wrapper.sh"
 if [ -z "${BASH_VERSION-}" ]; then

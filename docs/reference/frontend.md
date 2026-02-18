@@ -65,7 +65,7 @@ appear broken.
 ## Debugging tips
 
 - If the navbar is not displayed, check `show_system_uptime` and `show_octoprint_uptime`
-  in the plugin settings (Settings → Plugin OctoPrint-Uptime).
+  in the plugin settings (Settings → Plugin OctoPrint Uptime).
 - Enable `debug: true` in the plugin settings to get throttled server-side log
   messages from each API call.
 - For empty or faulty responses: check OctoPrint logs and use `curl -v` for troubleshooting.
