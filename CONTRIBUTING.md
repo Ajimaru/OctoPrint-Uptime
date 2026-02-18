@@ -93,7 +93,7 @@ git commit --no-verify
 
 **Automatic pre-commit autoupdate (optional):**
 
-If you want your local hooks to attempt to keep themselves updated before running, set the environment variable `PRECOMMIT_AUTOUPDATE=1`. The repo-local wrapper will run `pre-commit autoupdate` at most once per 24 hours. This is opt-in, running autoupdate on every commit by default is not recommended because it may change `.pre-commit-config.yaml` unexpectedly.
+If you want your local hooks to attempt to keep themselves updated before running, set the environment variable `PRECOMMIT_AUTOUPDATE=1`. The repo-local wrapper will run `pre-commit autoupdate` at most once per 24 hours. This is opt-in. Running autoupdate on every commit by default is not recommended because it may change `.pre-commit-config.yaml` unexpectedly.
 
 To enable:
 

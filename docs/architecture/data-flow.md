@@ -31,6 +31,7 @@ Example response (partial):
 - On each cycle the ViewModel reads `show_system_uptime` and `show_octoprint_uptime`
   from the plugin settings. If both are `false` the navbar is hidden immediately
   via `navbarEl.hide()` and polling resumes after the configured interval.
+  - **Polling continues when both are disabled because:** The ViewModel continues to poll to detect runtime changes to those settings (allowing the navbar to be re-shown without a page reload), to pick up remote or central config updates, and to keep the ViewModel lifecycle simple rather than introducing pause/resume logic.
 - When both are enabled and `compact_display` is `true`, the navbar alternates
   between system and OctoPrint uptime at the configured
   `compact_toggle_interval_seconds` interval (default 5s, range 5-60 seconds)
@@ -43,9 +44,11 @@ Example response (partial):
   call, avoiding stale captures from early construction time.
 - On each fetch the UI updates the navbar text, refreshes the localized tooltip
   content (`System Started`, `OctoPrint Started`) in both regular and compact
-  modes, and adjusts scheduling; errors are tolerated and the widget falls back
-  to a sensible retry schedule.
+  modes, and adjusts scheduling; errors are tolerated and the widget retries with a fixed interval of 5 seconds (the `DEFAULT_POLL` interval), displaying "Error" in the navbar until recovery.
 
 ## Resilience
 
-- When uptime is unavailable the UI surfaces the `uptime_note` to guide the operator.
+- **Error handling:** When the API fetch fails, the ViewModel displays "Error" in the navbar and continues polling at the fixed `DEFAULT_POLL` interval (5 seconds) without requiring manual intervention.
+- **Graceful degradation:** When uptime data is unavailable (e.g., `/proc/uptime` not accessible on Linux or `psutil` not installed), the API returns `uptime_available: false` and includes an optional `uptime_note` with remediation guidance (e.g., "psutil not available; install via `pip install psutil`"). The UI surfaces this note to help operators resolve the issue.
+- **Throttled logging:** Debug log entries are throttled to avoid spam; plugin debug flag controls only these throttled entries while general logs depend on OctoPrint's global log level.
+- **Continued operation:** The widget tolerates transient failures and continues polling and refreshing the display, allowing automatic recovery when the API becomes available again without requiring a page reload.

@@ -57,7 +57,7 @@ All settings are available in the OctoPrint UI under "OctoPrint Uptime".
 ## How Uptime is Retrieved
 
 - The plugin reads system uptime from `/proc/uptime` on Linux or via the `psutil` Python package when available.
-- If neither source is available the API sets `uptime_available: false` and may include an `uptime_note` with remediation instructions (for example suggesting `pip install psutil` in the OctoPrint virtualenv).
+- If neither source is available the API sets `uptime_available: false`, and may include an `uptime_note` with remediation instructions (for example, suggesting `pip install psutil` in the OctoPrint virtualenv).
 
 GET `/api/plugin/octoprint_uptime` (OctoPrint API key required)
 

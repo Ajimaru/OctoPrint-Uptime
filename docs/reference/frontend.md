@@ -37,7 +37,7 @@ Check / test poll interval:
 
 - If the API returns `uptime_available: false` the client should fall back to a sensible UI state (for example display "unknown") and surface the localized `uptime_note` when present to guide remediation.
 
-## Navbar show / hide behavior
+## Navbar show/hide behavior
 
 Navbar visibility is driven entirely by the JavaScript ViewModel:
 

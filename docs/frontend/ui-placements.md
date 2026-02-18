@@ -61,7 +61,7 @@ and compact display modes, so mouseover content remains consistent when
 
 ## API usage (frontend)
 
-Always use OctoPrint's helper API to query plugin endpoints; pass only the plugin id. Example:
+Always use OctoPrint's helper API to query the plugin's API; pass only the plugin identifier (the helper constructs the endpoint path automatically). Example:
 
 ```js
 OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {

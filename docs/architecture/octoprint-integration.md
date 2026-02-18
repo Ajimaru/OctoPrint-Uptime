@@ -22,6 +22,9 @@ OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {
 `data.seconds` / `data.uptime` describe host system uptime, while
 `data.octoprint_seconds` / `data.octoprint_uptime` describe the OctoPrint process uptime.
 
+- `data.uptime_available`: Boolean indicating whether uptime information could be successfully determined. If `false`, the system or OctoPrint uptime data may be unavailable or unreachable.
+- `data.uptime_note`: Optional string containing caveats, error messages, or source information (e.g., "psutil not available; install via `pip install psutil`" if uptime could not be determined).
+
 ## Consuming from Python (other plugins)
 
 ```py

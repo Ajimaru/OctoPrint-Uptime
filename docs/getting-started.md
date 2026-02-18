@@ -28,10 +28,7 @@ mkdocs serve
 
 ## Developer utilities
 
-### Windows
-
-The repository helper scripts are POSIX shell scripts and expect a Bash
-environment. On Windows prefer running the helper scripts from Git Bash.
+### Translation Management
 
 When working on translations during development, use the repository helper script to manage translations.
 
@@ -46,6 +43,7 @@ If a commit fails due to translations being out of sync, run the compile command
 
 Note: the repository's translations pre-commit check is non-destructive; it reports when PO/MO files would change and fails the commit so you can run the update step manually.
 
-## Notes
+### Windows
 
-If a commit fails due to translations being out of sync, run `pybabel update` (see [i18n docs](frontend/i18n.md)), add the changed PO files, and re-commit.
+The repository helper scripts are POSIX shell scripts and expect a Bash
+environment. On Windows prefer running the helper scripts from Git Bash.

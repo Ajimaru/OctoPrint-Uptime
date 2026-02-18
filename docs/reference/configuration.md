@@ -16,7 +16,7 @@ Settings (defaults):
    Controls whether the OctoPrint process uptime is shown in the navbar.
 
 - `compact_display` (bool) - default: `false`\
-   When enabled and both uptimes are shown, alternates between system and OctoPrint uptime.
+   When enabled and both uptimes are shown, alternates between system and OctoPrint uptime. Has no effect if fewer than two uptimes are visible.
 
 - `compact_toggle_interval_seconds` (int) - default: `5`\
    Interval in seconds between navbar uptime switches when compact mode is active.
@@ -26,7 +26,7 @@ Settings (defaults):
 - `display_format` (string) - default: `"full"`\
    Controls the default formatted uptime string returned by the API and used in
   the UI. Valid values include `full`, `dhm`, `dh`, and `d` which map to the
-  helper formatters exposed by the plugin (see API docs).
+  helper formatters exposed by the plugin (see [API docs](../api/python.md)).
 
 - `debug_throttle_seconds` (int) - default: `60`\
    Minimum interval (in seconds) between repeated debug log messages to avoid
