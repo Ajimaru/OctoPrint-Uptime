@@ -73,10 +73,11 @@ Configure the plugin in **Settings** → **OctoPrint Uptime**:
 
 - `show_system_uptime`: `true` – Show system uptime in the OctoPrint navbar
 - `show_octoprint_uptime`: `true` – Show OctoPrint uptime in the navbar
-- `compact_display`: `false` – Toggle between system and OctoPrint uptime every 5 seconds
+- `compact_display`: `false` – Toggle between system and OctoPrint uptime in the navbar
+- `compact_toggle_interval_seconds`: `5` – Interval for toggling between system and OctoPrint uptime in seconds (validated and clamped between 5–60s)
 - `display_format`: `full` – Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`)
 - `poll_interval_seconds`: `5` – Polling interval in seconds (validated and clamped between 1–120s)
-- `debug_logging`: `false` – Enable debug logging for troubleshooting
+- `debug`: `false` – Enable debug logging for troubleshooting
 - `debug_throttle_seconds`: `60` – Throttle debug logs to reduce log spam (validated and clamped between 1–120s)
 
 </details>

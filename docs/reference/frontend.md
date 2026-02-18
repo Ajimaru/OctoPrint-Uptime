@@ -47,7 +47,8 @@ Navbar visibility is driven entirely by the JavaScript ViewModel:
   polling continues at the configured interval so the widget reappears
   immediately when a setting is re-enabled without a page reload.
 - Compact mode (`compact_display: true`) is active only when **both** uptime
-  types are enabled; it alternates the displayed entry every 5 seconds.
+  types are enabled; it alternates the displayed entry at the interval configured
+  by `compact_toggle_interval_seconds` (default: 5 seconds, range: 5–60 seconds).
 
 ## Startup lifecycle
 

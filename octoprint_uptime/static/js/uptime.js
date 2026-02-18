@@ -46,9 +46,33 @@ $(function () {
 
     var navbarEl = $("#navbar_plugin_navbar_uptime");
     var DEFAULT_POLL = 5;
-    var COMPACT_TOGGLE_INTERVAL = 5; // seconds
+    var DEFAULT_COMPACT_TOGGLE_INTERVAL = 5; // seconds, used as fallback
     var compactToggleTimer = null;
     var compactDisplayUptimeType = "system"; // "system" or "octoprint"
+
+    /**
+     * Return the configured compact toggle interval in seconds.
+     * Reads `compact_toggle_interval_seconds` from plugin settings and validates
+     * the result against the allowed range (5–60). Falls back to
+     * `DEFAULT_COMPACT_TOGGLE_INTERVAL` when settings are unavailable or the
+     * stored value is out of range.
+     * @function getCompactToggleInterval
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {number} interval in seconds (integer, 5–60)
+     */
+    function getCompactToggleInterval() {
+      try {
+        var ps = getPluginSettings();
+        if (!ps) return DEFAULT_COMPACT_TOGGLE_INTERVAL;
+        var raw = ps.compact_toggle_interval_seconds();
+        var n = parseInt(raw, 10);
+        if (!Number.isFinite(n) || n < 5 || n > 60)
+          return DEFAULT_COMPACT_TOGGLE_INTERVAL;
+        return n;
+      } catch (e) {
+        return DEFAULT_COMPACT_TOGGLE_INTERVAL;
+      }
+    }
 
     /**
      * Determine whether the navbar widget should be visible.
@@ -241,7 +265,9 @@ $(function () {
     /**
      * Schedule the compact display toggle timer.
      * Alternates `compactDisplayUptimeType` between "system" and "octoprint"
-     * every `COMPACT_TOGGLE_INTERVAL` seconds. No-ops if already scheduled.
+     * using the interval from `getCompactToggleInterval()` (reads the
+     * `compact_toggle_interval_seconds` plugin setting on every cycle, 5–60 s).
+     * No-ops if already scheduled.
      * @function scheduleCompactToggle
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
      * @returns {void}
@@ -256,7 +282,7 @@ $(function () {
           compactDisplayUptimeType === "system" ? "octoprint" : "system";
         renderCompactDisplay();
         scheduleCompactToggle();
-      }, COMPACT_TOGGLE_INTERVAL * 1000);
+      }, getCompactToggleInterval() * 1000);
     }
 
     /**
@@ -574,6 +600,25 @@ $(function () {
           return null;
         }
 
+        // Helper: Validate compact toggle interval
+        function validateCompactToggleInterval() {
+          var raw;
+          try {
+            var ps = getPluginSettings();
+            raw = ps ? ps.compact_toggle_interval_seconds() : undefined;
+          } catch (e) {
+            return typeof gettext === "function"
+              ? gettext("Unable to read compact toggle interval setting.")
+              : "Unable to read compact toggle interval setting.";
+          }
+          return validateIntegerRange(
+            raw,
+            5,
+            60,
+            "Compact toggle interval must be an integer between 5 and 60 seconds.",
+          );
+        }
+
         // Helper: Validate debug throttle
         function validateDebugThrottle() {
           try {
@@ -630,6 +675,8 @@ $(function () {
 
         settingsVM.save = function () {
           var errors = [];
+          var compactToggleError = validateCompactToggleInterval();
+          if (compactToggleError) errors.push(compactToggleError);
           var throttleError = validateDebugThrottle();
           if (throttleError) errors.push(throttleError);
           var pollError = validatePollInterval();

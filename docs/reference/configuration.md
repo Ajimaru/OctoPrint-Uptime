@@ -18,6 +18,11 @@ Settings (defaults):
 - `compact_display` (bool) - default: `false`\
    When enabled and both uptimes are shown, alternates between system and OctoPrint uptime.
 
+- `compact_toggle_interval_seconds` (int) - default: `5`\
+   Interval in seconds between navbar uptime switches when compact mode is active.
+  Valid range: 5–60 seconds (integers only). Values are validated and clamped by
+  the plugin on save.
+
 - `display_format` (string) - default: `"full"`\
    Controls the default formatted uptime string returned by the API and used in
   the UI. Valid values include `full`, `dhm`, `dh`, and `d` which map to the

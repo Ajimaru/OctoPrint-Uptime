@@ -107,11 +107,23 @@
                     <input id="plugin_uptime_compact"
                            type="checkbox"
                            data-bind="checked: settings.plugins.octoprint_uptime.compact_display, enable: settings.plugins.octoprint_uptime.show_system_uptime() && settings.plugins.octoprint_uptime.show_octoprint_uptime()" />
-                    {{ _("Toggle between system and OctoPrint uptime every 5 seconds") }}
+                    {{ _("Toggle between system and OctoPrint uptime in the navbar") }}
                 </label>
                 <p class="help-block">
                     {{ _("When enabled and both uptimes are displayed, alternately show system and OctoPrint uptime to save navbar space.") }}
                 </p>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="plugin_uptime_compact_interval">{{ _("Compact Toggle Interval (s)") }}</label>
+            <div class="controls">
+                <input id="plugin_uptime_compact_interval"
+                       type="number"
+                       class="span2"
+                       min="5"
+                       max="60"
+                       data-bind="value: settings.plugins.octoprint_uptime.compact_toggle_interval_seconds, enable: settings.plugins.octoprint_uptime.compact_display() && settings.plugins.octoprint_uptime.show_system_uptime() && settings.plugins.octoprint_uptime.show_octoprint_uptime()" />
+                <p class="help-block">{{ _("Seconds between navbar uptime switches in compact mode (5–60).") }}</p>
             </div>
         </div>
         <div class="control-group">

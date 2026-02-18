@@ -241,6 +241,7 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
             "octoprint_uptime": {
                 "debug_throttle_seconds": "999",
                 "poll_interval_seconds": "0",
+                "compact_toggle_interval_seconds": "2",
             }
         }
     }
@@ -250,12 +251,15 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
         pytest.fail("debug_throttle_seconds should be 120")
     if cfg.get("poll_interval_seconds") != 1:
         pytest.fail("poll_interval_seconds should be 1")
+    if cfg.get("compact_toggle_interval_seconds") != 5:
+        pytest.fail("compact_toggle_interval_seconds should be clamped to 5")
 
     data2 = {
         "plugins": {
             "octoprint_uptime": {
                 "debug_throttle_seconds": "-1",
                 "poll_interval_seconds": "200",
+                "compact_toggle_interval_seconds": "999",
             }
         }
     }
@@ -265,12 +269,15 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
         pytest.fail("debug_throttle_seconds should be 1")
     if cfg2.get("poll_interval_seconds") != 120:
         pytest.fail("poll_interval_seconds should be 120")
+    if cfg2.get("compact_toggle_interval_seconds") != 60:
+        pytest.fail("compact_toggle_interval_seconds should be clamped to 60")
 
     data3 = {
         "plugins": {
             "octoprint_uptime": {
                 "debug_throttle_seconds": None,
                 "poll_interval_seconds": "bad",
+                "compact_toggle_interval_seconds": "bad",
             }
         }
     }
@@ -280,6 +287,8 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
         pytest.fail("debug_throttle_seconds should be 60")
     if cfg3.get("poll_interval_seconds") != 5:
         pytest.fail("poll_interval_seconds should be 5")
+    if cfg3.get("compact_toggle_interval_seconds") != 5:
+        pytest.fail("compact_toggle_interval_seconds should be 5")
 
 
 def test_log_settings_save_data_and_call_base_on_settings_save(monkeypatch):
@@ -1644,6 +1653,8 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
         pytest.fail('Expected defaults["show_system_uptime"] to be True')
     if defaults["show_octoprint_uptime"] is not True:
         pytest.fail('Expected defaults["show_octoprint_uptime"] to be True')
+    if defaults.get("compact_toggle_interval_seconds") != 5:
+        pytest.fail('Expected defaults["compact_toggle_interval_seconds"] to be 5')
 
     called = {}
 
@@ -1971,6 +1982,7 @@ def test_validate_and_sanitize_settings_sanitizes_values():
             "octoprint_uptime": {
                 "debug_throttle_seconds": None,
                 "poll_interval_seconds": "bad",
+                "compact_toggle_interval_seconds": None,
             }
         }
     }
@@ -1980,6 +1992,8 @@ def test_validate_and_sanitize_settings_sanitizes_values():
         raise ValueError("Invalid debug_throttle_seconds")
     if cfg["poll_interval_seconds"] != 5:
         raise AssertionError("poll_interval_seconds should be 5")
+    if cfg["compact_toggle_interval_seconds"] != 5:
+        raise AssertionError("compact_toggle_interval_seconds should be 5")
 
 
 def test_log_settings_after_save_logs_change():

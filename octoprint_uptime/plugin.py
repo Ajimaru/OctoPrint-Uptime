@@ -438,9 +438,10 @@ class OctoprintUptimePlugin(
         uptime_cfg = plugins.get("octoprint_uptime")
         if not isinstance(uptime_cfg, dict):
             return
-        for key, default in (
-            ("debug_throttle_seconds", 60),
-            ("poll_interval_seconds", 5),
+        for key, default, lo, hi in (
+            ("debug_throttle_seconds", 60, 1, 120),
+            ("poll_interval_seconds", 5, 1, 120),
+            ("compact_toggle_interval_seconds", 5, 5, 60),
         ):
             if key in uptime_cfg:
                 raw = uptime_cfg.get(key)
@@ -450,7 +451,7 @@ class OctoprintUptimePlugin(
                     val = int(raw)
                 except (ValueError, TypeError):
                     val = default
-                val = max(1, min(val, 120))
+                val = max(lo, min(val, hi))
                 uptime_cfg[key] = val
 
     def _log_settings_save_data(self, data: Dict[str, Any]) -> None:
@@ -503,6 +504,7 @@ class OctoprintUptimePlugin(
             "show_system_uptime": True,
             "show_octoprint_uptime": True,
             "compact_display": False,
+            "compact_toggle_interval_seconds": 5,
             "display_format": "full",
             "debug_throttle_seconds": 60,
             "poll_interval_seconds": 5,
