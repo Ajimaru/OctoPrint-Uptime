@@ -93,14 +93,14 @@ generate_diagram \
   -A -S -m y -p OctoPrint-Uptime octoprint_uptime
 
 # detailed diagram (show private/protected and expanded details)
-DETAILED_DOT="classes_OctoPrint-Uptime-detailed.dot"
-DETAILED_OUT="docs/reference/diagrams/classes_detailed.svg"
+DOTFILE_D="classes_OctoPrint-Uptime-detailed.dot"
+OUT_SVG_D="docs/reference/diagrams/classes_detailed.svg"
 PNGFILE_D="classes_OctoPrint-Uptime-detailed.png"
 PNMFILE_D="classes_OctoPrint-Uptime-detailed.pnm"
 generate_diagram \
   "detailed class diagram (filter-mode=ALL)" \
-  "${DETAILED_DOT}" \
-  "${DETAILED_OUT}" \
+  "${DOTFILE_D}" \
+  "${OUT_SVG_D}" \
   "${PNGFILE_D}" \
   "${PNMFILE_D}" \
   "detailed diagram" \
