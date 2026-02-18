@@ -20,10 +20,17 @@ $(function () {
   function NavbarUptimeViewModel(parameters) {
     var self = this;
     var settingsVM = parameters[0];
-    var settings =
-      parameters[0] && parameters[0].settings
-        ? parameters[0].settings
-        : parameters[0];
+    // Dynamic accessor: always re-resolves settingsVM.settings to avoid stale
+    // captures when the ViewModel is constructed before settings are loaded.
+    var getPluginSettings = function () {
+      try {
+        var s =
+          settingsVM && settingsVM.settings ? settingsVM.settings : settingsVM;
+        return s && s.plugins ? s.plugins.octoprint_uptime : null;
+      } catch (e) {
+        return null;
+      }
+    };
     self.uptimeDisplay = ko.observable("Loading...");
     self.octoprintUptimeDisplay = ko.observable("Loading...");
     self.uptimeDisplayHtml = ko.observable("Loading...");
@@ -36,10 +43,9 @@ $(function () {
 
     var isNavbarEnabled = function () {
       try {
-        return (
-          settings.plugins.octoprint_uptime.show_system_uptime() ||
-          settings.plugins.octoprint_uptime.show_octoprint_uptime()
-        );
+        var ps = getPluginSettings();
+        if (!ps) return true; // default: show navbar when settings unavailable
+        return ps.show_system_uptime() || ps.show_octoprint_uptime();
       } catch (e) {
         return true;
       }
@@ -47,7 +53,8 @@ $(function () {
 
     var showSystemUptime = function () {
       try {
-        return settings.plugins.octoprint_uptime.show_system_uptime();
+        var ps = getPluginSettings();
+        return ps ? ps.show_system_uptime() : true;
       } catch (e) {
         return true;
       }
@@ -61,7 +68,8 @@ $(function () {
      */
     var showOctoprintUptime = function () {
       try {
-        return settings.plugins.octoprint_uptime.show_octoprint_uptime();
+        var ps = getPluginSettings();
+        return ps ? ps.show_octoprint_uptime() : true;
       } catch (e) {
         return true;
       }
@@ -69,7 +77,8 @@ $(function () {
 
     var isCompactDisplay = function () {
       try {
-        return settings.plugins.octoprint_uptime.compact_display();
+        var ps = getPluginSettings();
+        return ps ? ps.compact_display() : false;
       } catch (e) {
         return false;
       }
@@ -77,7 +86,8 @@ $(function () {
 
     var displayFormat = function () {
       try {
-        return settings.plugins.octoprint_uptime.display_format() || "full";
+        var ps = getPluginSettings();
+        return (ps && ps.display_format()) || "full";
       } catch (e) {
         return "full";
       }
@@ -115,7 +125,8 @@ $(function () {
           pollInterval = Number(data.poll_interval_seconds) || DEFAULT_POLL;
         } else {
           try {
-            var s = settings.plugins.octoprint_uptime.poll_interval_seconds();
+            var ps = getPluginSettings();
+            var s = ps ? ps.poll_interval_seconds() : null;
             if (s) pollInterval = Number(s) || DEFAULT_POLL;
           } catch (e) {}
         }
@@ -452,9 +463,12 @@ $(function () {
         });
     };
 
-    // Start the polling loop; the initial fetch will reschedule itself based on
-    // the server-provided `poll_interval_seconds` or local setting.
-    fetchUptime();
+    // Start the polling loop after OctoPrint has finished loading all settings
+    // and applying ViewModel bindings. Using onStartupComplete guarantees that
+    // settingsVM.settings is fully populated before the first fetchUptime() call.
+    self.onStartupComplete = function () {
+      fetchUptime();
+    };
 
     // Validate numeric settings on save: enforce integers in [1,120].
     try {
@@ -497,8 +511,8 @@ $(function () {
         // Helper: Validate debug throttle
         function validateDebugThrottle() {
           try {
-            var raw =
-              settings.plugins.octoprint_uptime.debug_throttle_seconds();
+            var ps = getPluginSettings();
+            var raw = ps ? ps.debug_throttle_seconds() : undefined;
           } catch (e) {
             return typeof gettext === "function"
               ? gettext("Unable to read debug throttle setting.")
@@ -516,7 +530,8 @@ $(function () {
         function validatePollInterval() {
           var raw;
           try {
-            raw = settings.plugins.octoprint_uptime.poll_interval_seconds();
+            var ps = getPluginSettings();
+            raw = ps ? ps.poll_interval_seconds() : undefined;
           } catch (e) {
             return typeof gettext === "function"
               ? gettext("Unable to read polling interval setting.")
