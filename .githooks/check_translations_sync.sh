@@ -68,13 +68,12 @@ fi
 
 # mirror compile_translations behavior: autofill translations in temp copy if argostranslate is available
 if [[ -x "$VENV_PYTHON" ]]; then
-  "$VENV_PYTHON" - <<'AUTOFILL' "$tmpdir" "$REPO_ROOT" || true
+  "$VENV_PYTHON" - <<'AUTOFILL' "$tmpdir" || true
 import os
 import sys
 from pathlib import Path
 
 tmpdir = Path(sys.argv[1])
-repo_root = Path(sys.argv[2])
 translations = tmpdir / "translations"
 
 try:
@@ -143,7 +142,7 @@ fi
 
 # mirror compile_translations behavior: remove obsolete (#~) entries in temp copy
 if [[ -x "$VENV_PYTHON" ]]; then
-  FORCE_CLEAN=true "$VENV_PYTHON" - <<'PY' "$tmpdir" || true
+  "$VENV_PYTHON" - <<'PY' "$tmpdir" || true
 import os
 import sys
 from pathlib import Path

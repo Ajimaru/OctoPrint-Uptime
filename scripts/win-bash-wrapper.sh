@@ -18,6 +18,10 @@ fi
 
 # Determine target script (first argument) and remaining args
 target_script="$1"
+if [ -z "$target_script" ]; then
+    printf '%s\n' "Missing target script argument for win-bash-wrapper.sh." >&2
+    exit 2
+fi
 shift || true
 
 # Try to find a bash executable in PATH
