@@ -311,6 +311,7 @@ class OctoprintUptimePlugin(
             _ps = importlib.import_module("psutil")
         except ImportError:
             return None
+        psutil_base_error = getattr(_ps, "Error", Exception)
         try:
             # Get current process
             current_process = _ps.Process(os.getpid())
@@ -319,7 +320,7 @@ class OctoprintUptimePlugin(
             uptime = time.time() - create_time
             if isinstance(uptime, (int, float)) and 0 <= uptime < 10 * 365 * 24 * 3600:
                 return uptime
-        except (AttributeError, TypeError, ValueError, OSError):
+        except (AttributeError, TypeError, ValueError, OSError, psutil_base_error):
             return None
         return None
 
@@ -746,28 +747,36 @@ class OctoprintUptimePlugin(
                     self._last_uptime_source = "custom"
             else:
                 seconds, _source = self._get_uptime_seconds()
-
-            if isinstance(seconds, (int, float)):
-                seconds = float(seconds)
-            else:
-                seconds = None
-
-            if seconds is not None:
-                uptime_full = format_uptime(seconds)
-                uptime_dhm = format_uptime_dhm(seconds)
-                uptime_dh = format_uptime_dh(seconds)
-                uptime_d = format_uptime_d(seconds)
-            else:
-                uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
-            return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
+            uptime_seconds: Optional[float] = (
+                seconds if isinstance(seconds, (int, float, type(None))) else None
+            )
+            return self._format_uptime_tuple(uptime_seconds)
         except (AttributeError, TypeError, ValueError):
             try:
                 self._logger.exception(_("Error computing uptime"))
             except (AttributeError, TypeError, ValueError):
                 pass
-            uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
+            return self._format_uptime_tuple(None)
+
+    def _format_uptime_tuple(
+        self, seconds: Optional[float]
+    ) -> Tuple[Optional[float], str, str, str, str]:
+        """
+        Normalize and format an uptime value into display strings.
+        """
+        if isinstance(seconds, (int, float)):
+            seconds = float(seconds)
+        else:
             seconds = None
-            return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
+
+        if seconds is not None:
+            uptime_full = format_uptime(seconds)
+            uptime_dhm = format_uptime_dhm(seconds)
+            uptime_dh = format_uptime_dh(seconds)
+            uptime_d = format_uptime_d(seconds)
+        else:
+            uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
+        return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
 
     def _get_octoprint_uptime_info(self) -> Tuple[Optional[float], str, str, str, str]:
         """
@@ -778,28 +787,13 @@ class OctoprintUptimePlugin(
         """
         try:
             seconds = self._get_octoprint_uptime()
-
-            if isinstance(seconds, (int, float)):
-                seconds = float(seconds)
-            else:
-                seconds = None
-
-            if seconds is not None:
-                uptime_full = format_uptime(seconds)
-                uptime_dhm = format_uptime_dhm(seconds)
-                uptime_dh = format_uptime_dh(seconds)
-                uptime_d = format_uptime_d(seconds)
-            else:
-                uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
-            return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
+            return self._format_uptime_tuple(seconds)
         except (AttributeError, TypeError, ValueError):
             try:
                 self._logger.exception(_("Error computing OctoPrint uptime"))
             except (AttributeError, TypeError, ValueError):
                 pass
-            uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
-            seconds = None
-            return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
+            return self._format_uptime_tuple(None)
 
     def _get_api_settings(self) -> Tuple[str, int]:
         """

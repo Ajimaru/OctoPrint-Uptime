@@ -40,6 +40,16 @@ $(function () {
         return null;
       }
     };
+
+    function localize(text) {
+      if (typeof gettext === "function") {
+        return gettext(text);
+      }
+      if (typeof _ === "function") {
+        return _(text);
+      }
+      return text;
+    }
     self.uptimeDisplay = ko.observable("Loading...");
     self.octoprintUptimeDisplay = ko.observable("Loading...");
     self.uptimeDisplayHtml = ko.observable("Loading...");
@@ -218,24 +228,14 @@ $(function () {
      */
     function renderCompactDisplay() {
       var htmlDisplay;
-      var uptimeLabel = "Uptime:";
-      if (typeof gettext === "function") {
-        uptimeLabel = gettext("Uptime:");
-      } else if (typeof _ === "function") {
-        uptimeLabel = _("Uptime:");
-      }
+      var uptimeLabel = localize("Uptime:");
 
       if (
         compactDisplayUptimeType === "system" &&
         self.uptimeDisplay() !== "Loading..." &&
         self.uptimeDisplay() !== "Error"
       ) {
-        var systemLabel = "System";
-        if (typeof gettext === "function") {
-          systemLabel = gettext("System");
-        } else if (typeof _ === "function") {
-          systemLabel = _("System");
-        }
+        var systemLabel = localize("System");
         htmlDisplay =
           uptimeLabel + " " + systemLabel + " " + self.uptimeDisplay();
       } else if (
@@ -243,12 +243,7 @@ $(function () {
         self.octoprintUptimeDisplay() !== "Loading..." &&
         self.octoprintUptimeDisplay() !== "Error"
       ) {
-        var octoprintLabel = "OctoPrint";
-        if (typeof gettext === "function") {
-          octoprintLabel = gettext("OctoPrint");
-        } else if (typeof _ === "function") {
-          octoprintLabel = _("OctoPrint");
-        }
+        var octoprintLabel = localize("OctoPrint");
         htmlDisplay =
           uptimeLabel +
           " " +
@@ -325,12 +320,7 @@ $(function () {
 
         if (secs !== null && !isNaN(secs)) {
           var started = new Date(Date.now() - secs * 1000);
-          var systemStartedLabel = "System Started:";
-          if (typeof gettext === "function") {
-            systemStartedLabel = gettext("System Started:");
-          } else if (typeof _ === "function") {
-            systemStartedLabel = _("System Started:");
-          }
+          var systemStartedLabel = localize("System Started:");
           tooltipLines.push(
             systemStartedLabel + " " + started.toLocaleString(),
           );
@@ -342,12 +332,7 @@ $(function () {
           !isNaN(octoprintSecs)
         ) {
           var octoprintStarted = new Date(Date.now() - octoprintSecs * 1000);
-          var octoprintStartedLabel = "OctoPrint Started:";
-          if (typeof gettext === "function") {
-            octoprintStartedLabel = gettext("OctoPrint Started:");
-          } else if (typeof _ === "function") {
-            octoprintStartedLabel = _("OctoPrint Started:");
-          }
+          var octoprintStartedLabel = localize("OctoPrint Started:");
           tooltipLines.push(
             octoprintStartedLabel + " " + octoprintStarted.toLocaleString(),
           );
@@ -361,7 +346,7 @@ $(function () {
               anchor.tooltip("dispose");
             }
           } catch (disposeErr) {
-            if (typeof globalThis !== "undefined" && globalThis.UptimeDebug) {
+            if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
               console.error(
                 "octoprint_uptime: failed to dispose existing tooltip",
                 disposeErr,
@@ -376,7 +361,7 @@ $(function () {
           anchor.removeAttr("data-original-title");
         }
       } catch (e) {
-        if (typeof globalThis !== "undefined" && globalThis.UptimeDebug) {
+        if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
           console.error("octoprint_uptime: tooltip calculation error", e, data);
         }
       }
@@ -440,7 +425,7 @@ $(function () {
             octoprintDisplayValue =
               data.octoprint_uptime_d || data.octoprint_uptime || "unknown";
           } else if (fmt === "short") {
-            // legacy value: keep days+hours behaviour
+            // legacy value: keep days+hours behavior
             displayValue = data.uptime_short || data.uptime || "unknown";
             // Use dh format for OctoPrint uptime in legacy "short" mode
             octoprintDisplayValue =
@@ -453,11 +438,7 @@ $(function () {
           // If server explicitly reports uptime unavailable, show localized "Unavailable"
           try {
             if (data && data.uptime_available === false) {
-              if (typeof gettext === "function") {
-                displayValue = gettext("Unavailable");
-              } else {
-                displayValue = "Unavailable";
-              }
+              displayValue = localize("Unavailable");
             }
           } catch (e) {
             if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
@@ -484,18 +465,9 @@ $(function () {
           var useCompactDisplay = isCompactDisplay();
 
           // Get localized labels
-          var uptimeLabel = "Uptime:";
-          var systemLabel = "System";
-          var octoprintLabel = "OctoPrint";
-          if (typeof gettext === "function") {
-            uptimeLabel = gettext("Uptime:");
-            systemLabel = gettext("System");
-            octoprintLabel = gettext("OctoPrint");
-          } else if (typeof _ === "function") {
-            uptimeLabel = _("Uptime:");
-            systemLabel = _("System");
-            octoprintLabel = _("OctoPrint");
-          }
+          var uptimeLabel = localize("Uptime:");
+          var systemLabel = localize("System");
+          var octoprintLabel = localize("OctoPrint");
 
           // Handle compact display (toggling between system and octoprint)
           if (useCompactDisplay && showSystem && showOctoprint) {
@@ -585,7 +557,7 @@ $(function () {
               rawValue === null ||
               rawValue === undefined
             ) {
-              return typeof gettext === "function" ? gettext(message) : message;
+              return localize(message);
             }
             var n = Number(rawValue);
             if (
@@ -594,7 +566,7 @@ $(function () {
               n > max ||
               Math.floor(n) !== n
             ) {
-              return typeof gettext === "function" ? gettext(message) : message;
+              return localize(message);
             }
           } catch (e) {}
           return null;
@@ -607,9 +579,7 @@ $(function () {
             var ps = getPluginSettings();
             raw = ps ? ps.compact_toggle_interval_seconds() : undefined;
           } catch (e) {
-            return typeof gettext === "function"
-              ? gettext("Unable to read compact toggle interval setting.")
-              : "Unable to read compact toggle interval setting.";
+            return localize("Unable to read compact toggle interval setting.");
           }
           return validateIntegerRange(
             raw,
@@ -625,9 +595,7 @@ $(function () {
             var ps = getPluginSettings();
             var raw = ps ? ps.debug_throttle_seconds() : undefined;
           } catch (e) {
-            return typeof gettext === "function"
-              ? gettext("Unable to read debug throttle setting.")
-              : "Unable to read debug throttle setting.";
+            return localize("Unable to read debug throttle setting.");
           }
           return validateIntegerRange(
             raw,
@@ -644,9 +612,7 @@ $(function () {
             var ps = getPluginSettings();
             raw = ps ? ps.poll_interval_seconds() : undefined;
           } catch (e) {
-            return typeof gettext === "function"
-              ? gettext("Unable to read polling interval setting.")
-              : "Unable to read polling interval setting.";
+            return localize("Unable to read polling interval setting.");
           }
           return validateIntegerRange(
             raw,
