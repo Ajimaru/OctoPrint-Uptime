@@ -108,6 +108,31 @@ $(function () {
       pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
     }
 
+    function scheduleNextFromData(data) {
+      try {
+        var pollInterval = DEFAULT_POLL;
+        if (data && typeof data.poll_interval_seconds !== "undefined") {
+          pollInterval = Number(data.poll_interval_seconds) || DEFAULT_POLL;
+        } else {
+          try {
+            var s = settings.plugins.octoprint_uptime.poll_interval_seconds();
+            if (s) pollInterval = Number(s) || DEFAULT_POLL;
+          } catch (e) {}
+        }
+        scheduleNext(pollInterval);
+      } catch (e) {
+        if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
+          console.error(
+            "octoprint_uptime: poll interval calculation error",
+            e,
+            data,
+          );
+        }
+        // Ensure polling continues even if interval calculation fails
+        scheduleNext(DEFAULT_POLL);
+      }
+    }
+
     /**
      * Schedule the compact display toggle.
      * @function scheduleCompactToggle
@@ -203,6 +228,8 @@ $(function () {
       // If local settings explicitly disable the navbar, hide immediately
       if (!isNavbarEnabled()) {
         navbarEl.hide();
+        stopCompactToggleLoop();
+        scheduleNext(DEFAULT_POLL);
         return;
       }
 
@@ -210,6 +237,8 @@ $(function () {
         .done(function (data) {
           if (!isNavbarEnabled()) {
             navbarEl.hide();
+            stopCompactToggleLoop();
+            scheduleNextFromData(data);
             return;
           }
 
@@ -297,6 +326,7 @@ $(function () {
           if (useCompactDisplay && showSystem && showOctoprint) {
             renderCompactDisplay();
             scheduleCompactToggle();
+            scheduleNextFromData(data);
             return;
           }
 
@@ -321,7 +351,10 @@ $(function () {
             htmlDisplay =
               uptimeLabel + " " + octoprintLabel + " " + octoprintDisplayValue;
           } else {
-            htmlDisplay = uptimeLabel + " " + "None";
+            navbarEl.hide();
+            stopCompactToggleLoop();
+            scheduleNextFromData(data);
+            return;
           }
           self.uptimeDisplayHtml(htmlDisplay);
 
@@ -407,30 +440,7 @@ $(function () {
               );
             }
           }
-          // Determine poll interval from server or local settings
-          try {
-            var pollInterval = DEFAULT_POLL;
-            if (data && typeof data.poll_interval_seconds !== "undefined") {
-              pollInterval = Number(data.poll_interval_seconds) || DEFAULT_POLL;
-            } else {
-              try {
-                var s =
-                  settings.plugins.octoprint_uptime.poll_interval_seconds();
-                if (s) pollInterval = Number(s) || DEFAULT_POLL;
-              } catch (e) {}
-            }
-            scheduleNext(pollInterval);
-          } catch (e) {
-            if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
-              console.error(
-                "octoprint_uptime: poll interval calculation error",
-                e,
-                data,
-              );
-            }
-            // Ensure polling continues even if interval calculation fails
-            scheduleNext(DEFAULT_POLL);
-          }
+          scheduleNextFromData(data);
         })
         .fail(function () {
           self.uptimeDisplay("Error");
