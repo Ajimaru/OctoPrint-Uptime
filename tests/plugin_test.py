@@ -998,7 +998,7 @@ def test_get_octoprint_uptime_info(monkeypatch):
         return importlib.import_module(name)
 
     monkeypatch.setattr(importlib, "import_module", safe_import_module)
-    seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = p._get_octoprint_uptime_info()
+    seconds, uptime_full, uptime_dhm, _, _ = p._get_octoprint_uptime_info()
 
     if not isinstance(seconds, float):
         pytest.fail("Expected seconds to be a float")
@@ -1763,6 +1763,170 @@ def test_reload_plugin_without_octoprint(monkeypatch):
     if not hasattr(plugin, "SimpleApiPluginBase"):
         raise AssertionError("plugin does not have attribute 'SimpleApiPluginBase'")
     importlib.reload(plugin)
+
+
+def test_reload_plugin_without_flask_import():
+    """
+    Test module reload path when importing flask raises ImportError.
+    """
+    original_import = builtins.__import__
+
+    def fake_import(name, *args, **kwargs):
+        if name == "flask":
+            raise ImportError("blocked for test")
+        return original_import(name, *args, **kwargs)
+
+    try:
+        builtins.__import__ = fake_import
+        importlib.reload(plugin)
+        if plugin._flask is not None:
+            raise AssertionError("Expected plugin._flask to be None when flask import fails")
+    finally:
+        builtins.__import__ = original_import
+        importlib.reload(plugin)
+
+
+def test_reload_plugin_without_permissions_module():
+    """Test module reload path when octoprint.access.permissions is unavailable."""
+    original_import_module = importlib.import_module
+
+    def fake_import_module(name):
+        if name == "octoprint.access.permissions":
+            raise ModuleNotFoundError("blocked for test")
+        return original_import_module(name)
+
+    try:
+        importlib.import_module = fake_import_module
+        importlib.reload(plugin)
+        if plugin.PERM is not None:
+            raise AssertionError(
+                "Expected plugin.PERM to be None when " "permissions module is missing"
+            )
+    finally:
+        importlib.import_module = original_import_module
+        importlib.reload(plugin)
+
+
+def test_reload_plugin_when_octoprint_plugin_import_fails():
+    """
+    Test module fallback classes when octoprint.plugin import raises ModuleNotFoundError.
+    """
+    original_import_module = importlib.import_module
+
+    def fake_import_module(name):
+        if name == "octoprint.plugin":
+            raise ModuleNotFoundError("blocked for test")
+        return original_import_module(name)
+
+    try:
+        importlib.import_module = fake_import_module
+        importlib.reload(plugin)
+        if plugin.PERM is not None:
+            raise AssertionError("Expected plugin.PERM to be None in fallback mode")
+        if plugin.SettingsPluginBase.__name__ != "_SettingsPluginBase":
+            raise AssertionError("Expected fallback SettingsPluginBase to be active")
+    finally:
+        importlib.import_module = original_import_module
+        importlib.reload(plugin)
+
+
+def test_safe_invoke_hook_param_count_zero_calls_hook():
+    """
+    Test _safe_invoke_hook executes zero-argument hooks when param_count is 0.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    called = {"ok": False}
+
+    def hook():
+        called["ok"] = True
+
+    p._safe_invoke_hook(hook, 0)
+    if called["ok"] is not True:
+        raise AssertionError("Expected zero-argument hook to be called")
+
+
+def test_invoke_settings_hook_param_count_none_returns_early():
+    """
+    Test _invoke_settings_hook returns early when parameter count cannot be determined.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    if hasattr(p, "set_logger"):
+        p.set_logger(FakeLogger())
+    else:
+        setattr(p, "_logger", FakeLogger())
+
+    called = {"invoked": False}
+
+    def hook():
+        called["invoked"] = True
+
+    mp = pytest.MonkeyPatch()
+    mp.setattr(p, "_get_hook_positional_param_count", lambda _hook: None)
+    p._invoke_settings_hook(hook)
+    mp.undo()
+
+    if called["invoked"] is not False:
+        raise AssertionError("Expected hook not to be invoked when param_count is None")
+
+
+def test_get_octoprint_uptime_handles_process_errors(monkeypatch):
+    """
+    Test _get_octoprint_uptime returns None when psutil.Process/create_time fails.
+    """
+    p = plugin.OctoprintUptimePlugin()
+
+    class BadProcess:
+        """
+        Mock process class for testing error handling in process time creation.
+        This class simulates a process object that raises an OSError when attempting
+        to retrieve creation time, used to test exception handling in time-related
+        operations.
+        """
+
+        def __init__(self, _pid):
+            pass
+
+        def create_time(self):
+            """
+            Raise an OSError exception with a boom message.
+            This method is used for testing error handling in time creation scenarios.
+            Raises:
+                OSError: Always raises with message "boom".
+            """
+            raise OSError("boom")
+
+    fake_ps = SimpleNamespace(Process=BadProcess)
+    monkeypatch.setattr(importlib, "import_module", lambda _name: fake_ps)
+
+    if p._get_octoprint_uptime() is not None:
+        raise AssertionError("Expected None when process create_time raises OSError")
+
+
+def test_get_octoprint_uptime_info_non_numeric_and_exception(monkeypatch):
+    """
+    Test _get_octoprint_uptime_info unknown and exception fallback paths.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    if hasattr(p, "set_logger"):
+        p.set_logger(FakeLogger())
+    else:
+        setattr(p, "_logger", FakeLogger())
+
+    monkeypatch.setattr(p, "_get_octoprint_uptime", lambda: "invalid")
+    seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = p._get_octoprint_uptime_info()
+    if not (
+        seconds is None
+        and uptime_full == plugin._("unknown")
+        and uptime_dhm == plugin._("unknown")
+        and uptime_dh == plugin._("unknown")
+        and uptime_d == plugin._("unknown")
+    ):
+        raise AssertionError("Expected unknown fallback for non-numeric OctoPrint uptime")
+
+    monkeypatch.setattr(p, "_get_octoprint_uptime", lambda: (_ for _ in ()).throw(TypeError("x")))
+    seconds2, uptime_full2, *_ = p._get_octoprint_uptime_info()
+    if not (seconds2 is None and uptime_full2 == plugin._("unknown")):
+        raise AssertionError("Expected unknown fallback when _get_octoprint_uptime raises")
 
 
 def make_plugin():
