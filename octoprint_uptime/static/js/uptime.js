@@ -22,6 +22,15 @@ $(function () {
     var settingsVM = parameters[0];
     // Dynamic accessor: always re-resolves settingsVM.settings to avoid stale
     // captures when the ViewModel is constructed before settings are loaded.
+    /**
+     * Return the plugin-specific settings object (`settings.plugins.octoprint_uptime`).
+     * Re-resolves on every call so that the ViewModel never holds a stale
+     * reference captured before `settingsViewModel.settings` was ready.
+     * @function getPluginSettings
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {Object|null} The KO-mapped plugin settings node, or `null` when
+     *   unavailable (e.g. during early startup before settings are loaded).
+     */
     var getPluginSettings = function () {
       try {
         var s =
@@ -41,6 +50,15 @@ $(function () {
     var compactToggleTimer = null;
     var compactDisplayUptimeType = "system"; // "system" or "octoprint"
 
+    /**
+     * Determine whether the navbar widget should be visible.
+     * Returns `true` when at least one of `show_system_uptime` or
+     * `show_octoprint_uptime` is enabled in the plugin settings, or when
+     * settings are not yet available (fail-safe: show by default).
+     * @function isNavbarEnabled
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {boolean}
+     */
     var isNavbarEnabled = function () {
       try {
         var ps = getPluginSettings();
@@ -51,6 +69,12 @@ $(function () {
       }
     };
 
+    /**
+     * Check whether the system uptime entry should be shown.
+     * @function showSystemUptime
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {boolean} true when enabled, false otherwise
+     */
     var showSystemUptime = function () {
       try {
         var ps = getPluginSettings();
@@ -75,6 +99,14 @@ $(function () {
       }
     };
 
+    /**
+     * Check whether compact display mode is enabled.
+     * In compact mode, system and OctoPrint uptime alternate in the navbar
+     * instead of being shown side-by-side.
+     * @function isCompactDisplay
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {boolean} true when compact display is enabled, false otherwise
+     */
     var isCompactDisplay = function () {
       try {
         var ps = getPluginSettings();
@@ -84,6 +116,12 @@ $(function () {
       }
     };
 
+    /**
+     * Get the configured display format (fallback to "full").
+     * @function displayFormat
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {string} one of "full", "dhm", "dh", "d", or "short"
+     */
     var displayFormat = function () {
       try {
         var ps = getPluginSettings();
@@ -92,13 +130,6 @@ $(function () {
         return "full";
       }
     };
-
-    /**
-     * Get the configured display format (fallback to "full").
-     * @function displayFormat
-     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
-     * @returns {string} one of "full", "dhm", "dh", "d", or "short"
-     */
 
     var pollTimer = null;
 
@@ -118,6 +149,15 @@ $(function () {
       pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
     }
 
+    /**
+     * Schedule the next polling cycle using the poll interval from the last API
+     * response. Falls back to the local setting or `DEFAULT_POLL` if the
+     * response does not include `poll_interval_seconds`.
+     * @function scheduleNextFromData
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @param {Object|null} data - The API response object, or null/undefined.
+     * @returns {void}
+     */
     function scheduleNextFromData(data) {
       try {
         var pollInterval = DEFAULT_POLL;
@@ -145,8 +185,10 @@ $(function () {
     }
 
     /**
-     * Schedule the compact display toggle.
-     * @function scheduleCompactToggle
+     * Render the current frame of the compact display.
+     * Reads `compactDisplayUptimeType` ("system" or "octoprint") and updates
+     * `uptimeDisplayHtml` with the corresponding uptime string.
+     * @function renderCompactDisplay
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
      * @returns {void}
      */
@@ -196,6 +238,14 @@ $(function () {
       }
     }
 
+    /**
+     * Schedule the compact display toggle timer.
+     * Alternates `compactDisplayUptimeType` between "system" and "octoprint"
+     * every `COMPACT_TOGGLE_INTERVAL` seconds. No-ops if already scheduled.
+     * @function scheduleCompactToggle
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {void}
+     */
     function scheduleCompactToggle() {
       if (compactToggleTimer) {
         return;
@@ -209,6 +259,13 @@ $(function () {
       }, COMPACT_TOGGLE_INTERVAL * 1000);
     }
 
+    /**
+     * Cancel any pending compact toggle timer.
+     * Safe to call when no timer is active.
+     * @function stopCompactToggleLoop
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @returns {void}
+     */
     function stopCompactToggleLoop() {
       try {
         if (compactToggleTimer) {
@@ -463,9 +520,18 @@ $(function () {
         });
     };
 
-    // Start the polling loop after OctoPrint has finished loading all settings
-    // and applying ViewModel bindings. Using onStartupComplete guarantees that
-    // settingsVM.settings is fully populated before the first fetchUptime() call.
+    /**
+     * OctoPrint lifecycle hook – called once after all ViewModels have been
+     * bound and the settings are fully populated.
+     *
+     * Polling is deliberately deferred to this hook instead of starting
+     * immediately in the constructor, so that `getPluginSettings()` can
+     * resolve the Knockout observables from `settingsViewModel.settings`
+     * reliably on the very first call.
+     * @function onStartupComplete
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel
+     * @returns {void}
+     */
     self.onStartupComplete = function () {
       fetchUptime();
     };

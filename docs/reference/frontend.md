@@ -37,9 +37,33 @@ Check / test poll interval:
 
 - If the API returns `uptime_available: false` the client should fall back to a sensible UI state (for example display "unknown") and surface the localized `uptime_note` when present to guide remediation.
 
+## Navbar show / hide behaviour
+
+Navbar visibility is driven entirely by the JavaScript ViewModel:
+
+- The element is shown (`navbarEl.show()`) when at least one of `show_system_uptime`
+  or `show_octoprint_uptime` is enabled.
+- When both settings are `false` the element is hidden (`navbarEl.hide()`) and
+  polling continues at the configured interval so the widget reappears
+  immediately when a setting is re-enabled without a page reload.
+- Compact mode (`compact_display: true`) is active only when **both** uptime
+  types are enabled; it alternates the displayed entry every 5 seconds.
+
+## Startup lifecycle
+
+The polling loop starts in the OctoPrint `onStartupComplete` hook rather than
+in the ViewModel constructor. This guarantees that `settingsViewModel.settings`
+is fully populated when the first settings read occurs. Starting the loop
+prematurely (in the constructor) caused settings reads to silently fail and
+return their default values, which made the show/hide and compact-mode logic
+appear broken.
+
 ## Debugging tips
 
-- If the navbar is not displayed, check `show_system_uptime` and `show_octoprint_uptime` in the plugin settings.
+- If the navbar is not displayed, check `show_system_uptime` and `show_octoprint_uptime`
+  in the plugin settings (Settings → Plugin OctoPrint-Uptime).
+- Enable `debug: true` in the plugin settings to get throttled server-side log
+  messages from each API call.
 - For empty or faulty responses: check OctoPrint logs and use `curl -v` for troubleshooting.
 
 ## Further additions
