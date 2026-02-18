@@ -6,8 +6,8 @@ the `get_settings_defaults()` method in `octoprint_uptime/plugin.py`.
 Settings (defaults):
 
 - `debug` (bool) - default: `false`\
-   Enable debug logging for the plugin. When enabled, the plugin attempts to set
-  its logger to DEBUG level and emits additional diagnostic messages.
+   Enable throttled debug logging for the plugin (for example, API access messages).
+  Other debug/info messages still depend on OctoPrint's global log level.
 
 - `show_system_uptime` (bool) - default: `true`\
    Controls whether the system uptime is shown in the OctoPrint navbar.
