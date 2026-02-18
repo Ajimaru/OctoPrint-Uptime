@@ -53,12 +53,12 @@ $(function () {
     /**
      * Return the configured compact toggle interval in seconds.
      * Reads `compact_toggle_interval_seconds` from plugin settings and validates
-     * the result against the allowed range (5–60). Falls back to
+     * the result against the allowed range (5-60). Falls back to
      * `DEFAULT_COMPACT_TOGGLE_INTERVAL` when settings are unavailable or the
      * stored value is out of range.
      * @function getCompactToggleInterval
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
-     * @returns {number} interval in seconds (integer, 5–60)
+     * @returns {number} interval in seconds (integer, 5-60)
      */
     function getCompactToggleInterval() {
       try {
@@ -266,7 +266,7 @@ $(function () {
      * Schedule the compact display toggle timer.
      * Alternates `compactDisplayUptimeType` between "system" and "octoprint"
      * using the interval from `getCompactToggleInterval()` (reads the
-     * `compact_toggle_interval_seconds` plugin setting on every cycle, 5–60 s).
+     * `compact_toggle_interval_seconds` plugin setting on every cycle, 5-60 s).
      * No-ops if already scheduled.
      * @function scheduleCompactToggle
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
@@ -299,6 +299,87 @@ $(function () {
         }
       } catch (e) {}
       compactToggleTimer = null;
+    }
+
+    /**
+     * Update navbar anchor tooltip with localized start times.
+     * Keeps tooltip behavior identical across compact and non-compact display.
+     * @function updateNavbarTooltip
+     * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+     * @param {Object} data - API payload that may include uptime second counters.
+     * @param {boolean} includeOctoprint - Whether to include OctoPrint start time.
+     * @returns {void}
+     */
+    function updateNavbarTooltip(data, includeOctoprint) {
+      try {
+        var secs =
+          data && typeof data.seconds !== "undefined"
+            ? Number(data.seconds)
+            : null;
+        var octoprintSecs =
+          data && typeof data.octoprint_seconds !== "undefined"
+            ? Number(data.octoprint_seconds)
+            : null;
+
+        var tooltipLines = [];
+
+        if (secs !== null && !isNaN(secs)) {
+          var started = new Date(Date.now() - secs * 1000);
+          var systemStartedLabel = "System Started:";
+          if (typeof gettext === "function") {
+            systemStartedLabel = gettext("System Started:");
+          } else if (typeof _ === "function") {
+            systemStartedLabel = _("System Started:");
+          }
+          tooltipLines.push(
+            systemStartedLabel + " " + started.toLocaleString(),
+          );
+        }
+
+        if (
+          includeOctoprint &&
+          octoprintSecs !== null &&
+          !isNaN(octoprintSecs)
+        ) {
+          var octoprintStarted = new Date(Date.now() - octoprintSecs * 1000);
+          var octoprintStartedLabel = "OctoPrint Started:";
+          if (typeof gettext === "function") {
+            octoprintStartedLabel = gettext("OctoPrint Started:");
+          } else if (typeof _ === "function") {
+            octoprintStartedLabel = _("OctoPrint Started:");
+          }
+          tooltipLines.push(
+            octoprintStartedLabel + " " + octoprintStarted.toLocaleString(),
+          );
+        }
+
+        if (tooltipLines.length > 0) {
+          var startedText = tooltipLines.join("\n");
+          var anchor = navbarEl.find("a").first();
+          try {
+            if (anchor.data("bs.tooltip")) {
+              anchor.tooltip("dispose");
+            }
+          } catch (disposeErr) {
+            if (typeof globalThis !== "undefined" && globalThis.UptimeDebug) {
+              console.error(
+                "octoprint_uptime: failed to dispose existing tooltip",
+                disposeErr,
+              );
+            } else {
+              console.warn(
+                "octoprint_uptime: failed to dispose existing tooltip",
+              );
+            }
+          }
+          anchor.attr("title", startedText);
+          anchor.removeAttr("data-original-title");
+        }
+      } catch (e) {
+        if (typeof globalThis !== "undefined" && globalThis.UptimeDebug) {
+          console.error("octoprint_uptime: tooltip calculation error", e, data);
+        }
+      }
     }
 
     /**
@@ -418,6 +499,7 @@ $(function () {
 
           // Handle compact display (toggling between system and octoprint)
           if (useCompactDisplay && showSystem && showOctoprint) {
+            updateNavbarTooltip(data, showOctoprint);
             renderCompactDisplay();
             scheduleCompactToggle();
             scheduleNextFromData(data);
@@ -451,89 +533,7 @@ $(function () {
             return;
           }
           self.uptimeDisplayHtml(htmlDisplay);
-
-          // compute start time for tooltip from seconds if available
-          try {
-            var secs =
-              data && typeof data.seconds !== "undefined"
-                ? Number(data.seconds)
-                : null;
-            var octoprintSecs =
-              data && typeof data.octoprint_seconds !== "undefined"
-                ? Number(data.octoprint_seconds)
-                : null;
-
-            var tooltipLines = [];
-
-            if (secs !== null && !isNaN(secs)) {
-              var started = new Date(Date.now() - secs * 1000);
-              var systemStartedLabel = "System Started:";
-              if (typeof gettext === "function") {
-                systemStartedLabel = gettext("System Started:");
-              } else if (typeof _ === "function") {
-                systemStartedLabel = _("System Started:");
-              }
-              tooltipLines.push(
-                systemStartedLabel + " " + started.toLocaleString(),
-              );
-            }
-
-            if (
-              showOctoprint &&
-              octoprintSecs !== null &&
-              !isNaN(octoprintSecs)
-            ) {
-              var octoprintStarted = new Date(
-                Date.now() - octoprintSecs * 1000,
-              );
-              var octoprintStartedLabel = "OctoPrint Started:";
-              if (typeof gettext === "function") {
-                octoprintStartedLabel = gettext("OctoPrint Started:");
-              } else if (typeof _ === "function") {
-                octoprintStartedLabel = _("OctoPrint Started:");
-              }
-              tooltipLines.push(
-                octoprintStartedLabel + " " + octoprintStarted.toLocaleString(),
-              );
-            }
-
-            if (tooltipLines.length > 0) {
-              var startedText = tooltipLines.join("\n");
-              var anchor = navbarEl.find("a").first();
-              try {
-                // dispose existing tooltip if present (remove bootstrap tooltip)
-                if (anchor.data("bs.tooltip")) {
-                  anchor.tooltip("dispose");
-                }
-              } catch (disposeErr) {
-                if (
-                  typeof globalThis !== "undefined" &&
-                  globalThis.UptimeDebug
-                ) {
-                  console.error(
-                    "octoprint_uptime: failed to dispose existing tooltip",
-                    disposeErr,
-                  );
-                } else {
-                  console.warn(
-                    "octoprint_uptime: failed to dispose existing tooltip",
-                  );
-                }
-              }
-              // Restore native browser tooltip by setting `title` and
-              // removing any Bootstrap-specific attributes.
-              anchor.attr("title", startedText);
-              anchor.removeAttr("data-original-title");
-            }
-          } catch (e) {
-            if (typeof globalThis !== "undefined" && globalThis.UptimeDebug) {
-              console.error(
-                "octoprint_uptime: tooltip calculation error",
-                e,
-                data,
-              );
-            }
-          }
+          updateNavbarTooltip(data, showOctoprint);
           scheduleNextFromData(data);
         })
         .fail(function () {
@@ -547,7 +547,7 @@ $(function () {
     };
 
     /**
-     * OctoPrint lifecycle hook – called once after all ViewModels have been
+     * OctoPrint lifecycle hook - called once after all ViewModels have been
      * bound and the settings are fully populated.
      *
      * Polling is deliberately deferred to this hook instead of starting
