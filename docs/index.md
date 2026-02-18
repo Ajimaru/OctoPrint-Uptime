@@ -4,7 +4,7 @@ This directory contains the documentation for the [OctoPrint-Uptime](https://git
 
 ## Overview
 
-OctoPrint-Uptime is a plugin for OctoPrint that displays the system uptime in the About → System dialog and provides an API endpoint for retrieving uptime information. It supports internationalization (English/German), configurable polling intervals, and integration with the OctoPrint frontend.
+OctoPrint-Uptime is a plugin for OctoPrint that displays both system and OctoPrint process uptime in the navbar and About → System dialog, and provides an API endpoint for retrieving uptime information. It supports internationalization (English/German), configurable polling intervals, optional compact toggle mode, and integration with the OctoPrint frontend.
 
 ## Quick Start
 
@@ -26,8 +26,8 @@ OctoPrint-Uptime is a plugin for OctoPrint that displays the system uptime in th
 
 ### Usage
 
-- The system uptime is shown in the About → System dialog and optionally in the navigation bar.
-- API endpoint: `/api/plugin/octoprint_uptime`
+- System and OctoPrint process uptime can be displayed independently or together in the navbar (with optional compact alternating mode).
+- API endpoint: `/api/plugin/octoprint_uptime` returns both system and OctoPrint uptime values.
 - Configuration: Settings → Plugin OctoPrint-Uptime
 
 ## API Example
