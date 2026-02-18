@@ -76,7 +76,7 @@ jobs:
           . .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install "OctoPrint>=1.10.0,<2"
-          python -m pip install Babel
+          python -m pip install 'Babel==2.18.0' 'polib==1.2.0'
           python -m pip install -e ".[develop]" build
 
       - name: Use existing .venv for translation check
@@ -91,7 +91,7 @@ jobs:
             . .venv/bin/activate
           fi
           python -m pip install --upgrade pip
-          python -m pip install Babel
+          python -m pip install 'Babel==2.18.0' 'polib==1.2.0'
 
       - # Run unit tests (no coverage)
         name: Run tests
