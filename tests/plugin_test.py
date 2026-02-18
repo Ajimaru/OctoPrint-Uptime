@@ -347,12 +347,13 @@ def test_update_internal_state_and_get_api_settings_and_logging():
         pytest.fail(f"poll != 120 (got {poll!r})")
 
 
-def test_log_settings_after_save_prev_navbar_change():
+def test_log_settings_after_save_emits_info():
     """
     Test that the plugin logs settings correctly after saving.
 
     This test initializes the plugin with specific settings
-    and verifies that at least one info log call is made.
+    and verifies that at least one info log call is made when
+    _log_settings_after_save() is invoked.
     """
     p = plugin.OctoprintUptimePlugin()
     if hasattr(p, "set_logger"):
