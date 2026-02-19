@@ -35,5 +35,5 @@ __plugin_description__ = "Adds system uptime to the navbar and exposes a small u
 __plugin_author__ = "Ajimaru"
 __plugin_url__ = "https://github.com/Ajimaru/OctoPrint-Uptime"
 __plugin_license__ = "AGPLv3"
-__plugin_pythoncompat__ = ">=3.8,<3.14"
+__plugin_pythoncompat__ = ">=3.8,<4"
 __plugin_implementation__ = OctoprintUptimePlugin()
