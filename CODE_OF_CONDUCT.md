@@ -32,11 +32,11 @@ If you experience or witness unacceptable behavior, please report it as soon as 
 
 Preferred: email the maintainer at ajimaru_gdr [at] pm [dot] me
 
-Alternative: open a GitHub issue and request a private follow-up, or contact any other project maintainer listed in the repository.
+Alternative: for non-sensitive concerns, open a GitHub issue and request a private follow-up. For sensitive matters, contact any other project maintainer listed in the repository directly.
 
-If your report involves a listed maintainer, use an alternative reporting channel or escalate to a neutral authority (for example a project sponsor, steering committee, or parent organization); conflicts of interest will be handled by routing the report to that alternate authority to ensure an impartial investigation.
+If your report involves a listed maintainer, use an alternative reporting channel or escalate to a neutral authority (for example a project sponsor, steering committee, or parent organization); conflicts of interest will be handled by routing the report to that alternate authority to ensure an impartial investigation. If no such authority exists, contact the repository hosting platform's abuse/reporting team (e.g., GitHub support) or seek assistance from an independent third-party mediator or trusted external contributor to facilitate a fair resolution.
 
-If you would prefer to report anonymously, indicate that in your report; we will still attempt to investigate while protecting your privacy.
+If you would prefer to report anonymously, you may use an anonymous online form, a throwaway email address, or explicitly state "I wish to remain anonymous" in your submission; we will still attempt to investigate while protecting your privacy. Providing an optional method for follow-up (such as a temporary contact channel) helps us investigate more effectively while ensuring your identity is kept confidential.
 
 Please include as much relevant information as possible (what happened, where, when, and any screenshots/logs if applicable).
 

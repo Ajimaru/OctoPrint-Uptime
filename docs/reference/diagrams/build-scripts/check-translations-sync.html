@@ -41,7 +41,7 @@
                 classDef decision fill:#fef3c7,stroke:#f59e0b
                 classDef success fill:#d1fae5,stroke:#10b981
                 classDef error fill:#fee2e2,stroke:#ef4444
-                class Wrapper,Copy,Update,RunAutofill,RemoveObsolete,NormalizePo,Report action
+                class Wrapper,Copy,Update,RunAutofill,SkipAutofill,RemoveObsolete,SkipObsolete,NormalizePo,SkipNormalize,Report action
                 class FindPybabel,CheckPot,UpdateOK,Autofill,Obsolete,Normalize,Diff decision
                 class Success success
                 class FailPybabel,FailPot,FailUpdate,Fail error
@@ -52,7 +52,7 @@
     <script>
             window.addEventListener('load', () => {
                 if (window.mermaid) {
-                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'strict' });
                     mermaid.run({ querySelector: '.mermaid' });
                 }
             });

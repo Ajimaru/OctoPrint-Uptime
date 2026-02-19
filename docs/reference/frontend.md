@@ -18,6 +18,8 @@ Example response (partial):
 }
 ```
 
+**Note**: This endpoint returns API-provided fields (`seconds`, `uptime`, `uptime_dhm`, `uptime_short`, `display_format`, `poll_interval_seconds`, `uptime_available`, `uptime_note`). Plugin configuration settings such as `show_system_uptime`, `show_octoprint_uptime`, `compact_display`, and `compact_toggle_interval_seconds` are retrieved from the OctoPrint settings system, not from this endpoint. See [Settings](../architecture/settings.md) for details on configuring these options.
+
 Quick test (local OctoPrint, with API key if needed):
 
 ```bash

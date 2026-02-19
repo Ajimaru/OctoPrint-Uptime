@@ -29,20 +29,21 @@
                 classDef action fill:#ecfeff,stroke:#06b6d4
                 classDef decision fill:#fef3c7,stroke:#f59e0b
                 classDef success fill:#d1fae5,stroke:#10b981
+                classDef error fill:#fee2e2,stroke:#ef4444
                 class Wrapper,RunLocal,RunLocal2,NpmCi,Npx action
                 class Args,Local,Node,Local2 decision
-                class Usage,Done success
+                class Usage error
+                class Done success
         </pre>
-    <p>
-        <a href="index.html">Back to build scripts</a>
-    </p>
-    <script>
+        <p>
+            <a href="index.html">Back to build scripts</a>
+        </p>
+        <script>
             window.addEventListener('load', () => {
                 if (window.mermaid) {
-                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
-                    mermaid.run({ querySelector: '.mermaid' });
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'strict' });
                 }
             });
-    </script>
-</body>
-</html>
+        </script>
+        </body>
+        </html>

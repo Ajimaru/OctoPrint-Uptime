@@ -44,9 +44,9 @@ Navbar visibility is controlled **in JavaScript** via `navbarEl.hide()` /
 `show_system_uptime` and `show_octoprint_uptime` from the plugin settings on
 every polling cycle and calls the appropriate jQuery method.
 
-The same JavaScript path also updates the anchor `title` tooltip in both normal
+The same JavaScript path also injects the anchor `title` tooltip attribute at runtime in both normal
 and compact display modes, so mouseover content remains consistent when
-`compact_display` is enabled.
+`compact_display` is enabled (the title is not present in the static template).
 
 ## Customizing placement
 
@@ -61,7 +61,7 @@ and compact display modes, so mouseover content remains consistent when
 
 ## API usage (frontend)
 
-Always use OctoPrint's helper API to query the plugin's API; pass only the plugin identifier (the helper constructs the endpoint path automatically). Example:
+Always use OctoPrint's helper to query the plugin's API; pass only the plugin identifier (the helper constructs the endpoint path automatically). Example:
 
 ```js
 OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {

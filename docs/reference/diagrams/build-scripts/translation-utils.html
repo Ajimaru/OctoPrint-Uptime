@@ -9,7 +9,7 @@
     </head>
     <body>
         <h1>translation_utils.py - Translation Helper Flow</h1>
-        <pre class="mermaid">
+        <pre class="mermaid" aria-label="Flowchart: start, check root, iterate directories, check messages.po, yield or skip, repeat until done, then stop.">
             flowchart TD
                 Start([Start]) --> CheckRoot{Root exists?}
                 CheckRoot -->|no| Stop([Return, no output])
@@ -17,8 +17,17 @@
                 Iterate --> CheckPo{messages.po exists?}
                 CheckPo -->|yes| Yield["Yield messages.po path"]
                 CheckPo -->|no| Next["Skip and continue"]
-                Yield --> Iterate
-                Next --> Iterate
+                Yield --> MoreDirs{More directories?}
+                Next --> MoreDirs
+                MoreDirs -->|yes| Iterate
+                MoreDirs -->|no| Stop
+
+                classDef action fill:#ecfeff,stroke:#06b6d4
+                classDef decision fill:#fef3c7,stroke:#f59e0b
+                classDef success fill:#d1fae5,stroke:#10b981
+                class Start,Iterate,Yield,Next action
+                class CheckRoot,CheckPo,MoreDirs decision
+                class Stop success
 
                 classDef action fill:#ecfeff,stroke:#06b6d4
                 classDef decision fill:#fef3c7,stroke:#f59e0b
@@ -33,7 +42,7 @@
     <script>
             window.addEventListener('load', () => {
                 if (window.mermaid) {
-                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'strict' });
                     mermaid.run({ querySelector: '.mermaid' });
                 }
             });

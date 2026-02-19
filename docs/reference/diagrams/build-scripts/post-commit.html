@@ -27,9 +27,9 @@
                 classDef action fill:#ecfeff,stroke:#06b6d4
                 classDef decision fill:#fef3c7,stroke:#f59e0b
                 classDef success fill:#d1fae5,stroke:#10b981
-                class Wrapper,SetupLog,RunDrop,Summary action
+                class Wrapper,SetupLog,RunDrop,Summary,SkipDrop action
                 class CheckGit,RepoRoot,DropIn decision
-                class Exit0,Exit1,SkipDrop,Done success
+                class Exit0,Exit1,Done success
         </pre>
     <p>
         <a href="index.html">Back to build scripts</a>
@@ -37,8 +37,7 @@
     <script>
             window.addEventListener('load', () => {
                 if (window.mermaid) {
-                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
-                    mermaid.run({ querySelector: '.mermaid' });
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'strict' });
                 }
             });
     </script>

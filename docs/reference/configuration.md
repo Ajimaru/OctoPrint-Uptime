@@ -16,7 +16,7 @@ Settings (defaults):
    Controls whether the OctoPrint process uptime is shown in the navbar.
 
 - `compact_display` (bool) - default: `false`\
-   Alternate between system and OctoPrint uptime in the navbar. Only takes effect when both `show_system_uptime` and `show_octoprint_uptime` are enabled; has no effect if either one is disabled (fewer than two uptimes visible).
+   Alternates between system and OctoPrint uptime in the navbar; only takes effect when both `show_system_uptime` and `show_octoprint_uptime` are enabled.
 
 - `compact_toggle_interval_seconds` (int) - default: `5`\
    Interval in seconds between navbar uptime switches when compact mode is active.
