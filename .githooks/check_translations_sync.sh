@@ -187,15 +187,16 @@ fi
 
 # normalize PO files in temp copy to match build output (polib reads/writes in canonical format)
 if [[ -x "$VENV_PYTHON" ]]; then
-  "$VENV_PYTHON" - <<'NORMALIZE' "$tmpdir" || true
+  "$VENV_PYTHON" - "$REPO_ROOT" "$tmpdir" <<'NORMALIZE' || true
 import sys
 from pathlib import Path
 
 # Add scripts to path to import shared utilities
-sys.path.insert(0, str(Path.cwd() / "scripts"))
+repo_root = Path(sys.argv[1])
+sys.path.insert(0, str(repo_root / "scripts"))
 from translation_utils import iter_po_files
 
-tmpdir = Path(sys.argv[1])
+tmpdir = Path(sys.argv[2])
 translations = tmpdir / "translations"
 
 try:
