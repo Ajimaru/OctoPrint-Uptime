@@ -54,7 +54,7 @@ $(function () {
     }
     self.uptimeDisplay = ko.observable("Loading...");
     self.octoprintUptimeDisplay = ko.observable("Loading...");
-    self.uptimeDisplayHtml = ko.observable("Loading...");
+    self.uptimeDisplayText = ko.observable("Loading...");
 
     var navbarEl = $("#navbar_plugin_navbar_uptime");
     var DEFAULT_POLL = 5;
@@ -223,13 +223,13 @@ $(function () {
     /**
      * Render the current frame of the compact display.
      * Reads `compactDisplayUptimeType` ("system" or "octoprint") and updates
-     * `uptimeDisplayHtml` with the corresponding uptime string.
+     * `uptimeDisplayText` with the corresponding uptime string.
      * @function renderCompactDisplay
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
      * @returns {void}
      */
     function renderCompactDisplay() {
-      var htmlDisplay;
+      var textDisplay;
       var uptimeLabel = localize("Uptime:");
       var systemLabel = localize("System");
       var octoprintLabel = localize("OctoPrint");
@@ -239,14 +239,14 @@ $(function () {
         self.uptimeDisplay() !== "Loading..." &&
         self.uptimeDisplay() !== "Error"
       ) {
-        htmlDisplay =
+        textDisplay =
           uptimeLabel + " " + systemLabel + " " + self.uptimeDisplay();
       } else if (
         compactDisplayUptimeType === "octoprint" &&
         self.octoprintUptimeDisplay() !== "Loading..." &&
         self.octoprintUptimeDisplay() !== "Error"
       ) {
-        htmlDisplay =
+        textDisplay =
           uptimeLabel +
           " " +
           octoprintLabel +
@@ -254,11 +254,11 @@ $(function () {
           self.octoprintUptimeDisplay();
       } else if (compactDisplayUptimeType === "system") {
         // Show system even if loading/error
-        htmlDisplay =
+        textDisplay =
           uptimeLabel + " " + systemLabel + " " + self.uptimeDisplay();
       } else {
         // Show octoprint even if loading/error
-        htmlDisplay =
+        textDisplay =
           uptimeLabel +
           " " +
           octoprintLabel +
@@ -266,7 +266,7 @@ $(function () {
           self.octoprintUptimeDisplay();
       }
 
-      self.uptimeDisplayHtml(htmlDisplay);
+      self.uptimeDisplayText(textDisplay);
     }
 
     /**
@@ -487,7 +487,7 @@ $(function () {
           self.octoprintUptimeDisplay(octoprintDisplayValue);
 
           // Build HTML display based on settings
-          var htmlDisplay;
+          var textDisplay;
           var showSystem = showSystemUptime();
           var showOctoprint = showOctoprintUptime();
           var useCompactDisplay = isCompactDisplay();
@@ -511,7 +511,7 @@ $(function () {
 
           // Regular display logic: show selected uptimes
           if (showSystem && showOctoprint) {
-            htmlDisplay =
+            textDisplay =
               uptimeLabel +
               " " +
               systemLabel +
@@ -522,9 +522,9 @@ $(function () {
               " " +
               octoprintDisplayValue;
           } else if (showSystem) {
-            htmlDisplay = uptimeLabel + " " + systemLabel + " " + displayValue;
+            textDisplay = uptimeLabel + " " + systemLabel + " " + displayValue;
           } else if (showOctoprint) {
-            htmlDisplay =
+            textDisplay =
               uptimeLabel + " " + octoprintLabel + " " + octoprintDisplayValue;
           } else {
             navbarEl.hide();
@@ -532,7 +532,7 @@ $(function () {
             scheduleNextFromData(data);
             return;
           }
-          self.uptimeDisplayHtml(htmlDisplay);
+          self.uptimeDisplayText(textDisplay);
           updateNavbarTooltip(data, showOctoprint);
           scheduleNextFromData(data);
         })
