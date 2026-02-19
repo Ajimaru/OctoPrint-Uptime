@@ -169,9 +169,17 @@ class OctoprintUptimePlugin(
     """
 
     def __init__(self, *args: object, **kwargs: object) -> None:
+        """Initialize the OctoPrint-Uptime plugin.
+
+        Sets up default internal state variables for debug settings,
+        display format, and uptime tracking.
+
+        Args:
+            *args: Variable length argument list passed to parent class.
+            **kwargs: Arbitrary keyword arguments passed to parent class.
+        """
         super().__init__(*args, **kwargs)
         self._debug_enabled: bool = False
-        self._navbar_enabled: bool = True
         self._display_format: str = "full"
         self._last_debug_time: float = 0.0
         self._last_throttle_notice: float = 0.0
@@ -293,7 +301,26 @@ class OctoprintUptimePlugin(
             uptime = time.time() - boot
             if isinstance(uptime, (int, float)) and 0 <= uptime < 10 * 365 * 24 * 3600:
                 return uptime
-        except (AttributeError, TypeError, ValueError):
+        except (AttributeError, TypeError, ValueError, OSError):
+            return None
+        return None
+
+    def _get_octoprint_uptime(self) -> Optional[float]:
+        """Get OctoPrint process uptime using psutil if available."""
+        try:
+            _ps = importlib.import_module("psutil")
+        except ImportError:
+            return None
+        psutil_base_error = getattr(_ps, "Error", Exception)
+        try:
+            # Get current process
+            current_process = _ps.Process(os.getpid())
+            # Get process creation time
+            create_time = current_process.create_time()
+            uptime = time.time() - create_time
+            if isinstance(uptime, (int, float)) and 0 <= uptime < 10 * 365 * 24 * 3600:
+                return uptime
+        except (AttributeError, TypeError, ValueError, OSError, psutil_base_error):
             return None
         return None
 
@@ -324,9 +351,8 @@ class OctoprintUptimePlugin(
         self._validate_and_sanitize_settings(data)
         self._log_settings_save_data(data)
         self._call_base_on_settings_save(data)
-        prev_navbar = getattr(self, "_navbar_enabled", None)
         self._update_internal_state()
-        self._log_settings_after_save(prev_navbar)
+        self._log_settings_after_save()
 
     def _safe_update_internal_state(self) -> None:
         """Helper that updates internal state and logs expected failures."""
@@ -413,9 +439,10 @@ class OctoprintUptimePlugin(
         uptime_cfg = plugins.get("octoprint_uptime")
         if not isinstance(uptime_cfg, dict):
             return
-        for key, default in (
-            ("debug_throttle_seconds", 60),
-            ("poll_interval_seconds", 5),
+        for key, default, lo, hi in (
+            ("debug_throttle_seconds", 60, 1, 120),
+            ("poll_interval_seconds", 5, 1, 120),
+            ("compact_toggle_interval_seconds", 5, 5, 60),
         ):
             if key in uptime_cfg:
                 raw = uptime_cfg.get(key)
@@ -425,7 +452,7 @@ class OctoprintUptimePlugin(
                     val = int(raw)
                 except (ValueError, TypeError):
                     val = default
-                val = max(1, min(val, 120))
+                val = max(lo, min(val, hi))
                 uptime_cfg[key] = val
 
     def _log_settings_save_data(self, data: Dict[str, Any]) -> None:
@@ -475,7 +502,10 @@ class OctoprintUptimePlugin(
         """
         return {
             "debug": False,
-            "navbar_enabled": True,
+            "show_system_uptime": True,
+            "show_octoprint_uptime": True,
+            "compact_display": False,
+            "compact_toggle_interval_seconds": 5,
             "display_format": "full",
             "debug_throttle_seconds": 60,
             "poll_interval_seconds": 5,
@@ -488,7 +518,6 @@ class OctoprintUptimePlugin(
         This method retrieves the latest configuration values from the settings object and updates
         the following internal attributes:
         - _debug_enabled: Whether debug mode is enabled.
-        - _navbar_enabled: Whether the navbar display is enabled.
         - _display_format: The format string for displaying uptime.
         - _debug_throttle_seconds: The throttle interval (in seconds) for debug messages.
 
@@ -496,20 +525,15 @@ class OctoprintUptimePlugin(
             None
         """
         self._debug_enabled = bool(self._settings.get(["debug"]))
-        self._navbar_enabled = bool(self._settings.get(["navbar_enabled"]))
         self._display_format = str(self._settings.get(["display_format"]))
         self._debug_throttle_seconds = int(self._settings.get(["debug_throttle_seconds"]) or 60)
 
-    def _log_settings_after_save(self, prev_navbar: Any) -> None:
+    def _log_settings_after_save(self) -> None:
         """
         Logs the current plugin settings after they have been saved.
 
-        This method logs the values of debug mode, navbar visibility, display format,
-        and debug throttle seconds. If the navbar setting has changed compared to its
-        previous value, it logs the change as well.
-
-        Args:
-            prev_navbar (Any): The previous value of the navbar_enabled setting.
+        This method logs the values of debug mode, display format, and debug
+        throttle seconds.
 
         Returns:
             None
@@ -520,28 +544,17 @@ class OctoprintUptimePlugin(
         try:
             msg = (
                 "UptimePlugin: settings after save: debug=%s, "
-                "navbar_enabled=%s, display_format=%s, "
+                "display_format=%s, "
                 "debug_throttle_seconds=%s"
             )
             logger.info(
                 msg,
                 self._debug_enabled,
-                self._navbar_enabled,
                 self._display_format,
                 self._debug_throttle_seconds,
             )
         except (AttributeError, TypeError, ValueError):
             pass
-
-        if prev_navbar is not None and prev_navbar != self._navbar_enabled:
-            try:
-                logger.info(
-                    "UptimePlugin: navbar_enabled changed from %s to %s",
-                    prev_navbar,
-                    self._navbar_enabled,
-                )
-            except (AttributeError, TypeError, ValueError):
-                pass
 
     def _log_debug(self, message: str) -> None:
         """
@@ -588,14 +601,13 @@ class OctoprintUptimePlugin(
                 isinstance(seconds, (int, float)) and seconds >= 0 and uptime_full != _("unknown")
             )
             if _flask is not None:
-                navbar_enabled, display_format, poll_interval = self._get_api_settings()
+                display_format, poll_interval = self._get_api_settings()
                 resp = {
                     "uptime": uptime_full,
                     "uptime_dhm": uptime_dhm,
                     "uptime_dh": uptime_dh,
                     "uptime_d": uptime_d,
                     "seconds": seconds,
-                    "navbar_enabled": navbar_enabled,
                     "display_format": display_format,
                     "poll_interval_seconds": poll_interval,
                     "uptime_available": uptime_available,
@@ -638,22 +650,33 @@ class OctoprintUptimePlugin(
             return permission_result
 
         seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = self._get_uptime_info()
+        (
+            octoprint_seconds,
+            octoprint_uptime_full,
+            octoprint_uptime_dhm,
+            octoprint_uptime_dh,
+            octoprint_uptime_d,
+        ) = self._get_octoprint_uptime_info()
         self._log_debug(_("Uptime API requested, result=%s") % uptime_full)
 
         if _flask is not None:
-            navbar_enabled, display_format, poll_interval = self._get_api_settings()
+            display_format, poll_interval = self._get_api_settings()
             return _flask.jsonify(
                 uptime=uptime_full,
                 uptime_dhm=uptime_dhm,
                 uptime_dh=uptime_dh,
                 uptime_d=uptime_d,
                 seconds=seconds,
-                navbar_enabled=navbar_enabled,
+                octoprint_uptime=octoprint_uptime_full,
+                octoprint_uptime_dhm=octoprint_uptime_dhm,
+                octoprint_uptime_dh=octoprint_uptime_dh,
+                octoprint_uptime_d=octoprint_uptime_d,
+                octoprint_seconds=octoprint_seconds,
                 display_format=display_format,
                 poll_interval_seconds=poll_interval,
             )
 
-        return {"uptime": uptime_full}
+        return {"uptime": uptime_full, "octoprint_uptime": octoprint_uptime_full}
 
     def _handle_permission_check(self) -> Optional[Any]:
         """
@@ -724,61 +747,68 @@ class OctoprintUptimePlugin(
                     self._last_uptime_source = "custom"
             else:
                 seconds, _source = self._get_uptime_seconds()
-
-            if isinstance(seconds, (int, float)):
-                seconds = float(seconds)
-            else:
-                seconds = None
-
-            if seconds is not None:
-                uptime_full = format_uptime(seconds)
-                uptime_dhm = format_uptime_dhm(seconds)
-                uptime_dh = format_uptime_dh(seconds)
-                uptime_d = format_uptime_d(seconds)
-            else:
-                uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
-            return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
+            uptime_seconds: Optional[float] = (
+                seconds if isinstance(seconds, (int, float, type(None))) else None
+            )
+            return self._format_uptime_tuple(uptime_seconds)
         except (AttributeError, TypeError, ValueError):
             try:
                 self._logger.exception(_("Error computing uptime"))
             except (AttributeError, TypeError, ValueError):
                 pass
-            uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
-            seconds = None
-            return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
+            return self._format_uptime_tuple(None)
 
-    def _get_api_settings(self) -> Tuple[bool, str, int]:
+    def _format_uptime_tuple(
+        self, seconds: Optional[float]
+    ) -> Tuple[Optional[float], str, str, str, str]:
+        """
+        Normalize and format an uptime value into display strings.
+        """
+        if isinstance(seconds, (int, float)):
+            seconds = float(seconds)
+        else:
+            seconds = None
+
+        if seconds is not None:
+            uptime_full = format_uptime(seconds)
+            uptime_dhm = format_uptime_dhm(seconds)
+            uptime_dh = format_uptime_dh(seconds)
+            uptime_d = format_uptime_d(seconds)
+        else:
+            uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
+        return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
+
+    def _get_octoprint_uptime_info(self) -> Tuple[Optional[float], str, str, str, str]:
+        """
+        Retrieve OctoPrint process uptime information and formatted strings.
+
+        Returns:
+            Tuple: (seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d)
+        """
+        try:
+            seconds = self._get_octoprint_uptime()
+            return self._format_uptime_tuple(seconds)
+        except (AttributeError, TypeError, ValueError):
+            try:
+                self._logger.exception(_("Error computing OctoPrint uptime"))
+            except (AttributeError, TypeError, ValueError):
+                pass
+            return self._format_uptime_tuple(None)
+
+    def _get_api_settings(self) -> Tuple[str, int]:
         """
         Retrieves and returns the plugin's API settings with appropriate fallbacks.
 
         Attempts to fetch the following settings from the plugin's configuration:
-        - navbar_enabled (bool): Whether the navbar is enabled.
-            Defaults to True if not set or invalid.
         - display_format (str): The format to display uptime.
             Defaults to "full" if not set or invalid.
         - poll_interval (int): The polling interval in seconds.
             Defaults to 5 if not set or invalid.
 
         Returns:
-            tuple: (navbar_enabled, display_format, poll_interval)
+            tuple: (display_format, poll_interval)
         """
         logger = getattr(self, "_logger", None)
-
-        try:
-            raw_nav = self._settings.get(["navbar_enabled"])
-            if raw_nav is None:
-                navbar_enabled = True
-                if logger:
-                    logger.debug("_get_api_settings: navbar_enabled missing, defaulting to True")
-            else:
-                navbar_enabled = bool(raw_nav)
-        except (AttributeError, TypeError, ValueError) as e:
-            navbar_enabled = True
-            if logger:
-                logger.exception(
-                    "_get_api_settings: failed to read navbar_enabled, defaulting to True: %s",
-                    e,
-                )
 
         try:
             raw_fmt = self._settings.get(["display_format"])
@@ -838,4 +868,4 @@ class OctoprintUptimePlugin(
                     e,
                 )
 
-        return navbar_enabled, display_format, poll_interval
+        return display_format, poll_interval

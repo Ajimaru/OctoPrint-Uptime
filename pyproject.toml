@@ -8,31 +8,29 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OctoPrint-Uptime"
-version = "0.2.1"
+version = "0.2.2rc7+38df8f7"
 description = "Adds system uptime to the navbar and exposes a small uptime API."
 authors = [
     {name = "Ajimaru", email = "ajimaru_gdr@pm.me"}
 ]
 readme = {file = "README.md", content-type = "text/markdown"}
 
-requires-python = ">=3.8, <3.14"
+requires-python = ">=3.8, <4"
+license = {text = "AGPL-3.0-or-later"}
 
 dynamic = [
-    "license"
-]
-
-dependencies = [
-    "psutil>=5.9.0",
+    "dependencies"
 ]
 
 [tool.setuptools]
 include-package-data = true
 
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
 [tool.setuptools.package-data]
 octoprint_uptime = [
-    "translations/**/*.po",
     "translations/**/*.mo",
-    "translations/**/*.pot",
 ]
 
 [tool.setuptools.packages.find]

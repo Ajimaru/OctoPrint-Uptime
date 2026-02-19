@@ -1,7 +1,7 @@
 <div id="settings_plugin_octoprint_uptime" class="form-horizontal">
     <fieldset>
         <legend>{{ _("OctoPrint-Uptime") }}</legend>
-        <p>{{ _("Use this plugin to display system uptime in the Navbar.") }}</p>
+        <p>{{ _("Display both system and OctoPrint uptime in the navbar, with optional compact toggling.") }}</p>
         <div id="uptime_note_container"
              data-note="{{ _('Uptime could not be determined on this system.') |e }}"
              style="display:none;
@@ -77,15 +77,51 @@
       })();
         </script>
         <div class="control-group">
-            <label class="control-label" for="plugin_uptime_navbar">{{ _("Navbar") }}</label>
+            <label class="control-label" for="plugin_uptime_show_system">{{ _("System Uptime:") }}</label>
             <div class="controls">
-                <label class="checkbox" for="plugin_uptime_navbar">
-                    <input id="plugin_uptime_navbar"
+                <label class="checkbox" for="plugin_uptime_show_system">
+                    <input id="plugin_uptime_show_system"
                            type="checkbox"
-                           data-bind="checked: settings.plugins.octoprint_uptime.navbar_enabled" />
-                    {{ _("Show uptime in navbar") }}
+                           data-bind="checked: settings.plugins.octoprint_uptime.show_system_uptime" />
+                    {{ _("Show system uptime in navbar") }}
                 </label>
-                <p class="help-block">{{ _("Toggle whether the uptime is visible in the top navigation bar.") }}</p>
+                <p class="help-block">{{ _("When enabled, shows system uptime in the navbar.") }}</p>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="plugin_uptime_show_octoprint">{{ _("OctoPrint Uptime:") }}</label>
+            <div class="controls">
+                <label class="checkbox" for="plugin_uptime_show_octoprint">
+                    <input id="plugin_uptime_show_octoprint"
+                           type="checkbox"
+                           data-bind="checked: settings.plugins.octoprint_uptime.show_octoprint_uptime" />
+                    {{ _("Show OctoPrint uptime") }}
+                </label>
+                <p class="help-block">{{ _("When enabled, shows OctoPrint uptime in the navbar.") }}</p>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="plugin_uptime_compact">{{ _("Compact Display") }}</label>
+            <div class="controls">
+                <label class="checkbox" for="plugin_uptime_compact">
+                    <input id="plugin_uptime_compact"
+                           type="checkbox"
+                           data-bind="checked: settings.plugins.octoprint_uptime.compact_display, enable: settings.plugins.octoprint_uptime.show_system_uptime() && settings.plugins.octoprint_uptime.show_octoprint_uptime()" />
+                    {{ _("Toggle between system and OctoPrint uptime in the navbar") }}
+                </label>
+                <p class="help-block">{{ _("When enabled, alternates system and OctoPrint uptime to save navbar space.") }}</p>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="plugin_uptime_compact_interval">{{ _("Compact Toggle Interval (s)") }}</label>
+            <div class="controls">
+                <input id="plugin_uptime_compact_interval"
+                       type="number"
+                       class="span2"
+                       min="5"
+                       max="60"
+                       data-bind="value: settings.plugins.octoprint_uptime.compact_toggle_interval_seconds, enable: settings.plugins.octoprint_uptime.compact_display() && settings.plugins.octoprint_uptime.show_system_uptime() && settings.plugins.octoprint_uptime.show_octoprint_uptime()" />
+                <p class="help-block">{{ _("Switch interval in compact mode (5-60 s).") }}</p>
             </div>
         </div>
         <div class="control-group">
@@ -98,8 +134,9 @@
                     <option value="dhm">{{ _("D + H + M (days + hours + minutes)") }}</option>
                     <option value="dh">{{ _("D + H (days + hours)") }}</option>
                     <option value="d">{{ _("D (days only)") }}</option>
+                    <option value="short">{{ _("Compact (e.g., 2d3h15m)") }}</option>
                 </select>
-                <p class="help-block">{{ _("Choose how the uptime is shown in the navbar.") }}</p>
+                <p class="help-block">{{ _("Choose uptime format for the navbar.") }}</p>
             </div>
         </div>
         <div class="control-group">
@@ -109,8 +146,9 @@
                        type="number"
                        class="span2"
                        min="1"
+                       max="120"
                        data-bind="value: settings.plugins.octoprint_uptime.poll_interval_seconds" />
-                <p class="help-block">{{ _("Seconds between navbar API polls. Low values may spam logs; default is 5s.") }}</p>
+                <p class="help-block">{{ _("API poll interval for navbar updates (default: 5 s).") }}</p>
             </div>
         </div>
         <div class="control-group">
@@ -122,9 +160,7 @@
                            data-bind="checked: settings.plugins.octoprint_uptime.debug" />
                     {{ _("Enable debug logging (throttled)") }}
                 </label>
-                <p class="help-block">
-                    {{ _("When enabled, the plugin will log debug messages. Messages are throttled to avoid spamming the log.") }}
-                </p>
+                <p class="help-block">{{ _("When enabled, writes throttled debug logs.") }}</p>
             </div>
         </div>
         <div class="control-group">
@@ -135,7 +171,7 @@
                        class="span2"
                        min="1"
                        data-bind="value: settings.plugins.octoprint_uptime.debug_throttle_seconds" />
-                <p class="help-block">{{ _("Minimum seconds between debug log entries.") }}</p>
+                <p class="help-block">{{ _("Minimum interval between debug log entries (s).") }}</p>
             </div>
         </div>
     </fieldset>

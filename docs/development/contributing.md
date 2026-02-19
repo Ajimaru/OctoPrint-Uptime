@@ -1,6 +1,6 @@
 # Contributing
 
-This page summarizes the contributor workflow for developers. The authoritative, repository-wide contributor guidance is in the top-level `CONTRIBUTING.md` — keep both in sync.
+This page summarizes the contributor workflow for developers. The authoritative, repository-wide contributor guidance is in the top-level `CONTRIBUTING.md`; keep both in sync.
 
 ## Quickstart
 

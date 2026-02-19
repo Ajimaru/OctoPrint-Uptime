@@ -7,136 +7,188 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-01 18:58+0100\n"
-"PO-Revision-Date: 2026-01-19 21:32+0100\n"
+"POT-Creation-Date: 2026-02-19 23:20+0100\n"
+"PO-Revision-Date: 2026-02-18 21:35+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: de\n"
 "Language-Team: de <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: octoprint_uptime/templates/settings.jinja2:102
-msgid "Choose how the uptime is shown in the navbar."
-msgstr "Wählen Sie, wie die Uptime in der Navbar angezeigt wird."
+#: octoprint_uptime/templates/settings.jinja2:151
+msgid "API poll interval for navbar updates (default: 5 s)."
+msgstr "API-Abfrageintervall für Navbar-Updates (Standard: 5 s)."
 
-#: octoprint_uptime/templates/settings.jinja2:100
+#: octoprint_uptime/templates/settings.jinja2:139
+msgid "Choose uptime format for the navbar."
+msgstr "Anzeigeformat für die Uptime in der Navbar wählen."
+
+#: octoprint_uptime/templates/settings.jinja2:137
+msgid "Compact (e.g., 2d3h15m)"
+msgstr "Kompakt (z.B. 2d3h15m)"
+
+#: octoprint_uptime/templates/settings.jinja2:104
+msgid "Compact Display"
+msgstr "Kompaktanzeige"
+
+#: octoprint_uptime/templates/settings.jinja2:116
+msgid "Compact Toggle Interval (s)"
+msgstr "Wechselintervall Kompaktmodus (s)"
+
+#: octoprint_uptime/templates/settings.jinja2:136
 msgid "D (days only)"
 msgstr "D (nur Tage)"
 
-#: octoprint_uptime/templates/settings.jinja2:99
+#: octoprint_uptime/templates/settings.jinja2:135
 msgid "D + H (days + hours)"
 msgstr "D + H (Tage + Stunden)"
 
-#: octoprint_uptime/templates/settings.jinja2:98
+#: octoprint_uptime/templates/settings.jinja2:134
 msgid "D + H + M (days + hours + minutes)"
 msgstr "D + H + M (Tage + Stunden + Minuten)"
 
-#: octoprint_uptime/templates/settings.jinja2:97
+#: octoprint_uptime/templates/settings.jinja2:133
 msgid "D + H + M + S (days + hours + minutes + seconds)"
 msgstr "D + H + M + S (Tage + Stunden + Minuten + Sekunden)"
 
-#: octoprint_uptime/templates/settings.jinja2:117
+#: octoprint_uptime/templates/settings.jinja2:155
 msgid "Debug"
 msgstr "Debug"
 
-#: octoprint_uptime/templates/settings.jinja2:131
+#: octoprint_uptime/templates/settings.jinja2:167
 msgid "Debug throttle (s)"
 msgstr "Debug-Drossel (s)"
 
-#: octoprint_uptime/templates/settings.jinja2:92
+#: octoprint_uptime/templates/settings.jinja2:4
+msgid ""
+"Display both system and OctoPrint uptime in the navbar, with optional "
+"compact toggling."
+msgstr ""
+"Zeigt sowohl System- als auch OctoPrint-Uptime in der Navbar an, mit "
+"optionaler kompakter Umschaltung."
+
+#: octoprint_uptime/templates/settings.jinja2:128
 msgid "Display format"
 msgstr "Anzeigeformat"
 
-#: octoprint_uptime/templates/settings.jinja2:123
+#: octoprint_uptime/templates/settings.jinja2:161
 msgid "Enable debug logging (throttled)"
 msgstr "Debug-Protokollierung aktivieren (gedrosselt)"
 
-#: octoprint_uptime/plugin.py:743
+#: octoprint_uptime/plugin.py:793
+msgid "Error computing OctoPrint uptime"
+msgstr "Fehler bei der Ermittlung der OctoPrint-Uptime"
+
+#: octoprint_uptime/plugin.py:756
 msgid "Error computing uptime"
 msgstr "Fehler bei der Ermittlung der Uptime"
 
-#: octoprint_uptime/plugin.py:671 octoprint_uptime/plugin.py:678
-#: octoprint_uptime/plugin.py:707
+#: octoprint_uptime/plugin.py:694 octoprint_uptime/plugin.py:701
+#: octoprint_uptime/plugin.py:730
 msgid "Forbidden"
 msgstr "Zugriff verweigert"
 
-#: octoprint_uptime/templates/settings.jinja2:138
-msgid "Minimum seconds between debug log entries."
-msgstr "Minimale Sekunden zwischen Debug-Protokolleinträgen."
+#: octoprint_uptime/templates/settings.jinja2:174
+msgid "Minimum interval between debug log entries (s)."
+msgstr "Mindestintervall zwischen Debug-Logeinträgen (s)."
 
-#: octoprint_uptime/templates/settings.jinja2:80
-msgid "Navbar"
-msgstr "Navbar"
+#: octoprint_uptime/templates/navbar.jinja2:8
+msgid "OctoPrint"
+msgstr "OctoPrint"
 
-#: octoprint_uptime/plugin.py:240
+#: octoprint_uptime/templates/navbar.jinja2:10
+msgid "OctoPrint Started:"
+msgstr "OctoPrint gestartet:"
+
+#: octoprint_uptime/plugin.py:248
 msgid "OctoPrint Uptime"
-msgstr "OctoPrint Uptime"
+msgstr "OctoPrint-Uptime"
+
+#: octoprint_uptime/templates/settings.jinja2:92
+msgid "OctoPrint Uptime:"
+msgstr "OctoPrint-Uptime:"
 
 #: octoprint_uptime/templates/settings.jinja2:3
 msgid "OctoPrint-Uptime"
 msgstr "OctoPrint-Uptime"
 
-#: octoprint_uptime/templates/settings.jinja2:106
+#: octoprint_uptime/templates/settings.jinja2:143
 msgid "Polling interval (s)"
 msgstr "Abfrageintervall (s)"
 
-#: octoprint_uptime/templates/settings.jinja2:113
-msgid "Seconds between navbar API polls. Low values may spam logs; default is 5s."
-msgstr ""
-"Sekunden zwischen API-Abfragen für die Navbar. Niedrige Werte können das "
-"Protokoll füllen; Standard ist 5s."
+#: octoprint_uptime/templates/settings.jinja2:98
+msgid "Show OctoPrint uptime"
+msgstr "OctoPrint-Uptime anzeigen"
 
 #: octoprint_uptime/templates/settings.jinja2:86
-msgid "Show uptime in navbar"
-msgstr "Uptime in der Navbar anzeigen"
+msgid "Show system uptime in navbar"
+msgstr "System-Uptime in der Navbar anzeigen"
 
-#: octoprint_uptime/templates/navbar.jinja2:6
-msgid "Started:"
-msgstr "Gestartet:"
+#: octoprint_uptime/templates/settings.jinja2:124
+msgid "Switch interval in compact mode (5-60 s)."
+msgstr "Wechselintervall im Kompaktmodus (5-60 s)."
 
-#: octoprint_uptime/templates/settings.jinja2:88
-msgid "Toggle whether the uptime is visible in the top navigation bar."
-msgstr "Umschalten, ob die Uptime in der oberen Navigationsleiste sichtbar ist."
+#: octoprint_uptime/templates/navbar.jinja2:7
+msgid "System"
+msgstr "System"
 
-#: octoprint_uptime/plugin.py:641
+#: octoprint_uptime/templates/navbar.jinja2:9
+msgid "System Started:"
+msgstr "System gestartet:"
+
+#: octoprint_uptime/templates/settings.jinja2:80
+msgid "System Uptime:"
+msgstr "System-Uptime:"
+
+#: octoprint_uptime/templates/settings.jinja2:110
+msgid "Toggle between system and OctoPrint uptime in the navbar"
+msgstr "Zwischen System- und OctoPrint-Uptime wechseln"
+
+#: octoprint_uptime/plugin.py:660
 #, python-format
 msgid "Uptime API requested, result=%s"
 msgstr "Uptime-API angefragt, Ergebnis=%s"
 
-#: octoprint_uptime/plugin.py:604 octoprint_uptime/plugin.py:620
+#: octoprint_uptime/plugin.py:616 octoprint_uptime/plugin.py:632
 #: octoprint_uptime/templates/settings.jinja2:6
 msgid "Uptime could not be determined on this system."
 msgstr "Die Uptime konnte auf diesem System nicht ermittelt werden."
 
-#: octoprint_uptime/templates/navbar.jinja2:3
+#: octoprint_uptime/templates/navbar.jinja2:6
 msgid "Uptime:"
 msgstr "Uptime:"
 
-#: octoprint_uptime/templates/settings.jinja2:4
-msgid "Use this plugin to display system uptime in the Navbar."
-msgstr "Dieses Plugin zeigt die System-Uptime in der Navbar an."
-
-#: octoprint_uptime/templates/settings.jinja2:126
+#: octoprint_uptime/templates/settings.jinja2:112
 msgid ""
-"When enabled, the plugin will log debug messages. Messages are throttled "
-"to avoid spamming the log."
+"When enabled, alternates system and OctoPrint uptime to save navbar space."
 msgstr ""
-"Wenn aktiviert, schreibt das Plugin Debug-Meldungen ins Protokoll. "
-"Meldungen werden gedrosselt, um Log‑Spam zu vermeiden."
+"Wenn aktiviert, wechselt die Anzeige zwischen System- und OctoPrint-Uptime, "
+"um Platz in der Navbar zu sparen."
 
-#: octoprint_uptime/plugin.py:786 octoprint_uptime/plugin.py:792
+#: octoprint_uptime/templates/settings.jinja2:100
+msgid "When enabled, shows OctoPrint uptime in the navbar."
+msgstr "Wenn aktiviert, wird die OctoPrint-Uptime in der Navbar angezeigt."
+
+#: octoprint_uptime/templates/settings.jinja2:88
+msgid "When enabled, shows system uptime in the navbar."
+msgstr "Wenn aktiviert, wird die System-Uptime in der Navbar angezeigt."
+
+#: octoprint_uptime/templates/settings.jinja2:163
+msgid "When enabled, writes throttled debug logs."
+msgstr "Wenn aktiviert, schreibt das Plugin gedrosselte Debug-Logs."
+
+#: octoprint_uptime/plugin.py:816 octoprint_uptime/plugin.py:822
 msgid "full"
 msgstr "voll"
 
-#: octoprint_uptime/plugin.py:234
+#: octoprint_uptime/plugin.py:242
 msgid "navbar_uptime"
-msgstr "Navbar‑Uptime"
+msgstr "Navbar-Uptime"
 
-#: octoprint_uptime/plugin.py:588 octoprint_uptime/plugin.py:630
-#: octoprint_uptime/plugin.py:739 octoprint_uptime/plugin.py:746
+#: octoprint_uptime/plugin.py:601 octoprint_uptime/plugin.py:642
+#: octoprint_uptime/plugin.py:778
 msgid "unknown"
 msgstr "unbekannt"
-

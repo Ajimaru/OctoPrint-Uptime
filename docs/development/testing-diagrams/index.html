@@ -2,18 +2,18 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Testing Diagrams — OctoPrint-Uptime</title>
-        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+        <title>Testing Diagrams - OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.5/dist/mermaid.min.js" integrity="sha384-enVdc7lTHDGtpROV85t9+VqPC2EyyB0hsRD0MrvQnHUsHmTHIz2D8SPP4EnBkstH" crossorigin="anonymous"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
     </head>
     <body>
-        <h1>Testing — Flow Diagrams</h1>
+        <h1>Testing - Flow Diagrams</h1>
         <p>Comprehensive test coverage diagrams for the OctoPrint-Uptime plugin.</p>
         <h2>Test Structure</h2>
         <ul>
             <li>
-                <a href="plugin-tests.html"><strong>plugin_test.py</strong></a> — Complete test suite overview with all test categories and coverage areas
+                <a href="plugin-tests.html"><strong>plugin_test.py</strong></a>: Complete test suite overview with all test categories and coverage areas
             </li>
         </ul>
         <hr>
@@ -23,7 +23,7 @@
         <script>
             window.addEventListener('load', () => {
                 if (window.mermaid) {
-                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'strict' });
                     mermaid.run({ querySelector: '.mermaid' });
                 }
             });

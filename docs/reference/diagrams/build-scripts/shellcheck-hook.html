@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>shellcheck-hook.sh flow - OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.5/dist/mermaid.min.js" integrity="sha384-enVdc7lTHDGtpROV85t9+VqPC2EyyB0hsRD0MrvQnHUsHmTHIz2D8SPP4EnBkstH" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+    </head>
+    <body>
+        <h1>shellcheck-hook.sh - Lint Helper Flow</h1>
+        <pre class="mermaid">
+            flowchart TD
+                Start([Start]) --> Wrapper["Ensure Bash / win-bash-wrapper"]
+                Wrapper --> HasShellcheck{shellcheck available?}
+                HasShellcheck -->|no| FailMissing([Error: install ShellCheck])
+                HasShellcheck -->|yes| CheckVersion{Version >= 0.11.0?}
+                CheckVersion -->|no| FailOld([Error: upgrade ShellCheck])
+                CheckVersion -->|yes| Args{Files provided?}
+                Args -->|no| Usage([Show usage + exit 2])
+                Args -->|yes| Run["shellcheck --severity=warning files"]
+                Run --> Done([Exit 0])
+
+                classDef action fill:#ecfeff,stroke:#06b6d4
+                classDef decision fill:#fef3c7,stroke:#f59e0b
+                classDef success fill:#d1fae5,stroke:#10b981
+                classDef error fill:#fee2e2,stroke:#ef4444
+                class Wrapper,Run action
+                class HasShellcheck,CheckVersion,Args decision
+                class Done,Usage success
+                class FailMissing,FailOld error
+        </pre>
+    <p>
+        <a href="index.html">Back to build scripts</a>
+    </p>
+    <script>
+            window.addEventListener('load', () => {
+                if (window.mermaid) {
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'strict' });
+                }
+            });
+    </script>
+</body>
+</html>

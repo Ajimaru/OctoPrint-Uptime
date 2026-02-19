@@ -122,6 +122,11 @@ class DummySettings:
     """
 
     def __init__(self, data=None):
+        """Initialize DummySettings with optional data dictionary.
+
+        Args:
+            data (dict, optional): Initial settings data. Defaults to empty dict.
+        """
         self._data = data or {}
 
     def get(self, keys):
@@ -236,6 +241,7 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
             "octoprint_uptime": {
                 "debug_throttle_seconds": "999",
                 "poll_interval_seconds": "0",
+                "compact_toggle_interval_seconds": "2",
             }
         }
     }
@@ -245,12 +251,15 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
         pytest.fail("debug_throttle_seconds should be 120")
     if cfg.get("poll_interval_seconds") != 1:
         pytest.fail("poll_interval_seconds should be 1")
+    if cfg.get("compact_toggle_interval_seconds") != 5:
+        pytest.fail("compact_toggle_interval_seconds should be clamped to 5")
 
     data2 = {
         "plugins": {
             "octoprint_uptime": {
                 "debug_throttle_seconds": "-1",
                 "poll_interval_seconds": "200",
+                "compact_toggle_interval_seconds": "999",
             }
         }
     }
@@ -260,12 +269,15 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
         pytest.fail("debug_throttle_seconds should be 1")
     if cfg2.get("poll_interval_seconds") != 120:
         pytest.fail("poll_interval_seconds should be 120")
+    if cfg2.get("compact_toggle_interval_seconds") != 60:
+        pytest.fail("compact_toggle_interval_seconds should be clamped to 60")
 
     data3 = {
         "plugins": {
             "octoprint_uptime": {
                 "debug_throttle_seconds": None,
                 "poll_interval_seconds": "bad",
+                "compact_toggle_interval_seconds": "bad",
             }
         }
     }
@@ -275,6 +287,8 @@ def test_validate_and_sanitize_settings_valid_and_invalid_values():
         pytest.fail("debug_throttle_seconds should be 60")
     if cfg3.get("poll_interval_seconds") != 5:
         pytest.fail("poll_interval_seconds should be 5")
+    if cfg3.get("compact_toggle_interval_seconds") != 5:
+        pytest.fail("compact_toggle_interval_seconds should be 5")
 
 
 def test_log_settings_save_data_and_call_base_on_settings_save(monkeypatch):
@@ -309,7 +323,6 @@ def test_update_internal_state_and_get_api_settings_and_logging():
     p._settings = DummySettings(
         {
             "debug": True,
-            "navbar_enabled": False,
             "display_format": "compact",
             "debug_throttle_seconds": 30,
             "poll_interval_seconds": 999,
@@ -322,31 +335,25 @@ def test_update_internal_state_and_get_api_settings_and_logging():
     p._update_internal_state()
     if p._debug_enabled is not True:
         pytest.fail("p._debug_enabled is not True")
-    if p._navbar_enabled is not False:
-        pytest.fail("p._navbar_enabled is not False")
     if p._display_format != "compact":
         pytest.fail(f"p._display_format != 'compact' (got {p._display_format!r})")
     if p._debug_throttle_seconds != 30:
         pytest.fail(f"p._debug_throttle_seconds != 30 (got {p._debug_throttle_seconds!r})")
 
-    nav, fmt, poll = p._get_api_settings()
-    if nav is not False:
-        pytest.fail("nav is not False")
+    fmt, poll = p._get_api_settings()
     if fmt != "compact":
         pytest.fail(f"fmt != 'compact' (got {fmt!r})")
     if poll != 120:
         pytest.fail(f"poll != 120 (got {poll!r})")
 
 
-def test_log_settings_after_save_prev_navbar_change():
+def test_log_settings_after_save_emits_info():
     """
-    Test that the plugin logs settings correctly after saving when the previous
-    navbar state changes.
+    Test that the plugin logs settings correctly after saving.
 
-    This test initializes the plugin with specific settings,
-    simulates a change in the navbar state,
-    and verifies that at least two info log calls are made:
-    one for the current state and one for the change.
+    This test initializes the plugin with specific settings
+    and verifies that at least one info log call is made when
+    _log_settings_after_save() is invoked.
     """
     p = plugin.OctoprintUptimePlugin()
     if hasattr(p, "set_logger"):
@@ -354,13 +361,12 @@ def test_log_settings_after_save_prev_navbar_change():
     else:
         setattr(p, "_logger", FakeLogger())
     p._debug_enabled = True
-    p._navbar_enabled = True
     p._display_format = "f"
     p._debug_throttle_seconds = 7
-    p._log_settings_after_save(prev_navbar=False)
+    p._log_settings_after_save()
     infos = [c for c in p._logger.calls if c[0] == "info"]
-    if len(infos) < 2:
-        pytest.fail("expected at least 2 info log calls")
+    if len(infos) < 1:
+        pytest.fail("expected at least 1 info log call")
 
 
 def test_log_debug_throttle(monkeypatch):
@@ -420,6 +426,12 @@ def test_fallback_uptime_response_handles_type_errors(monkeypatch):
     falling back to a dict response.
     """
     p = plugin.OctoprintUptimePlugin()
+    p._settings = DummySettings(
+        {
+            "show_system_uptime": True,
+            "show_octoprint_uptime": True,
+        }
+    )
     if hasattr(p, "set_logger"):
         p.set_logger(FakeLogger())
     else:
@@ -457,7 +469,7 @@ def test_fallback_uptime_response_handles_type_errors(monkeypatch):
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_api_settings",
-        lambda _: (True, "full", 5),
+        lambda _: ("full", 5),
     )
     resp = p._fallback_uptime_response()
     if not isinstance(resp, dict):
@@ -544,6 +556,12 @@ def test_fallback_uptime_response_flask_jsonify_args(monkeypatch):
     Test _fallback_uptime_response passes correct arguments to Flask's jsonify.
     """
     p = plugin.OctoprintUptimePlugin()
+    p._settings = DummySettings(
+        {
+            "show_system_uptime": False,
+            "show_octoprint_uptime": False,
+        }
+    )
     captured = {}
 
     class CaptureFlask:
@@ -578,7 +596,7 @@ def test_fallback_uptime_response_flask_jsonify_args(monkeypatch):
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_api_settings",
-        lambda _: (False, "compact", 10),
+        lambda _: ("compact", 10),
     )
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
@@ -590,8 +608,6 @@ def test_fallback_uptime_response_flask_jsonify_args(monkeypatch):
         raise ValueError("Response is not a valid JSON dictionary")
     if captured.get("uptime") != "50s":
         raise AssertionError("Expected uptime to be '50s'")
-    if captured.get("navbar_enabled") is not False:
-        raise AssertionError("navbar_enabled should be False")
     if captured.get("display_format") != "compact":
         raise AssertionError("display_format should be 'compact'")
     if captured.get("poll_interval_seconds") != 10:
@@ -618,10 +634,15 @@ def test_on_api_get_permission_and_response(monkeypatch):
         "_get_uptime_info",
         lambda self: (42, "42s", "42s", "0h", "0d"),
     )
+    monkeypatch.setattr(
+        plugin.OctoprintUptimePlugin,
+        "_get_octoprint_uptime_info",
+        lambda self: (1, "1s", "1s", "0h", "0d"),
+    )
     monkeypatch.setattr(plugin, "_flask", None, raising=False)
     out = p.on_api_get()
-    if out != {"uptime": "42s"}:
-        pytest.fail(f"Expected out == {{'uptime': '42s'}}, got {out!r}")
+    if out != {"uptime": "42s", "octoprint_uptime": "1s"}:
+        pytest.fail(f"Expected out == {{'uptime': '42s', 'octoprint_uptime': '1s'}}, got {out!r}")
 
     monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_check_permissions", lambda _: False)
     p2 = plugin.OctoprintUptimePlugin()
@@ -879,6 +900,118 @@ def test_get_uptime_from_psutil_import_error_and_bad_boot(monkeypatch):
         pytest.fail("_get_uptime_from_psutil() should return None when boot_time is invalid")
 
 
+def test_get_octoprint_uptime_success(monkeypatch):
+    """
+    Test that _get_octoprint_uptime successfully retrieves OctoPrint process uptime.
+
+    This test verifies that the method correctly calculates uptime using psutil's
+    Process.create_time() for the current process.
+    """
+    p = plugin.OctoprintUptimePlugin()
+
+    class FakeProcess:
+        """
+        A fake process class used for testing purposes.
+
+        Attributes:
+            pid (int): The process ID.
+
+        Methods:
+            create_time(): Returns a simulated process creation time (500 seconds ago).
+        """
+
+        def __init__(self, pid):
+            self.pid = pid
+
+        def create_time(self):
+            """Create a mock time value for testing purposes.
+
+            Returns:
+                float: A timestamp 500 seconds in the past from the current time.
+            """
+            return time.time() - 500
+
+    fake_ps = SimpleNamespace(Process=FakeProcess)
+
+    orig_import = importlib.import_module
+
+    def safe_import_module(name):
+        if name == "psutil":
+            return fake_ps
+        return orig_import(name)
+
+    monkeypatch.setattr(importlib, "import_module", safe_import_module)
+    val = p._get_octoprint_uptime()
+    if not (isinstance(val, float) and abs(val - 500) < 5):
+        pytest.fail("Expected val to be a float and within 5 of 500")
+
+
+def test_get_octoprint_uptime_import_error(monkeypatch):
+    """
+    Test that _get_octoprint_uptime returns None when psutil cannot be imported.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    monkeypatch.setattr(
+        importlib,
+        "import_module",
+        lambda name: (_ for _ in ()).throw(ImportError("nope")),
+    )
+    res = p._get_octoprint_uptime()
+    if res is not None:
+        pytest.fail(
+            "_get_octoprint_uptime() should return None when import_module raises ImportError"
+        )
+
+
+def test_get_octoprint_uptime_info(monkeypatch):
+    """
+    Test that _get_octoprint_uptime_info returns formatted uptime strings.
+    """
+    p = plugin.OctoprintUptimePlugin()
+
+    class FakeProcess:
+        """
+        A mock process class for testing uptime calculations.
+
+        This class simulates a psutil.Process object with a fixed uptime,
+        useful for testing time-related functionality without relying on actual processes.
+
+        Attributes:
+            pid: The process ID of the fake process.
+        """
+
+        def __init__(self, pid):
+            self.pid = pid
+
+        def create_time(self):
+            """
+            Create a mock time value for testing.
+
+            Returns:
+                float: A timestamp representing 1 hour, 1 minute, and 5 seconds ago from the
+                current time.
+            """
+            return time.time() - 3665  # 1h 1m 5s
+
+    fake_ps = SimpleNamespace(Process=FakeProcess)
+    orig_import = importlib.import_module
+
+    def safe_import_module(name):
+        if name == "psutil":
+            return fake_ps
+        return orig_import(name)
+
+    monkeypatch.setattr(importlib, "import_module", safe_import_module)
+    seconds, uptime_full, uptime_dhm, _, _ = p._get_octoprint_uptime_info()
+
+    if not isinstance(seconds, float):
+        pytest.fail("Expected seconds to be a float")
+    if not uptime_full:
+        pytest.fail("Expected uptime_full to be non-empty")
+    if not uptime_dhm:
+        pytest.fail("Expected uptime_dhm to be non-empty")
+
+
 def test_on_settings_initialized_invokes_hook_variants(monkeypatch):
     """
     Test that the `on_settings_initialized` method of `OctoprintUptimePlugin` correctly invokes
@@ -965,6 +1098,12 @@ def test_fallback_uptime_response_flask_jsonify_raises(monkeypatch):
     back to returning a plain dictionary.
     """
     p = plugin.OctoprintUptimePlugin()
+    p._settings = DummySettings(
+        {
+            "show_system_uptime": True,
+            "show_octoprint_uptime": True,
+        }
+    )
     if hasattr(p, "set_logger"):
         p.set_logger(FakeLogger())
     else:
@@ -1000,7 +1139,7 @@ def test_fallback_uptime_response_flask_jsonify_raises(monkeypatch):
     monkeypatch.setattr(
         plugin.OctoprintUptimePlugin,
         "_get_api_settings",
-        lambda self: (True, "full", 5),
+        lambda self: ("full", 5),
     )
     out = p._fallback_uptime_response()
     if not isinstance(out, dict):
@@ -1020,6 +1159,12 @@ def test_on_api_get_with_flask_returns_json(monkeypatch):
     Asserts that the output is a dictionary containing a "json" key.
     """
     p = plugin.OctoprintUptimePlugin()
+    p._settings = DummySettings(
+        {
+            "show_system_uptime": True,
+            "show_octoprint_uptime": True,
+        }
+    )
 
     class FakeFlask:
         """
@@ -1049,6 +1194,11 @@ def test_on_api_get_with_flask_returns_json(monkeypatch):
         plugin.OctoprintUptimePlugin,
         "_get_uptime_info",
         lambda self: (5, "5s", "5s", "0h", "0d"),
+    )
+    monkeypatch.setattr(
+        plugin.OctoprintUptimePlugin,
+        "_get_octoprint_uptime_info",
+        lambda self: (10, "10s", "10s", "0h", "0d"),
     )
     out = p.on_api_get()
     if not (isinstance(out, dict) and "json" in out):
@@ -1113,12 +1263,9 @@ def test_get_api_settings_exceptions():
             raise ValueError("bad")
 
     p._settings = BadSettings()
-    nav, fmt, poll = p._get_api_settings()
-    if not (nav is True and fmt == plugin._("full") and poll == 5):
-        pytest.fail(
-            f"Expected nav=True, fmt={plugin._('full')}, poll=5 but got nav={nav}, "
-            f"fmt={fmt}, poll={poll}"
-        )
+    fmt, poll = p._get_api_settings()
+    if not (fmt == plugin._("full") and poll == 5):
+        pytest.fail(f"Expected fmt={plugin._('full')}, poll=5 but got fmt={fmt}, poll={poll}")
 
 
 def test_reload_with_octoprint_present_and_flask_abort(monkeypatch):
@@ -1224,33 +1371,26 @@ def test_get_api_settings_multiple_cases():
         setattr(p, "_logger", FakeLogger())
 
     p._settings = DummySettings({})
-    nav, fmt, poll = p._get_api_settings()
-    if nav is not True:
-        pytest.fail("nav is not True")
+    fmt, poll = p._get_api_settings()
     if fmt != plugin._("full"):
         pytest.fail(f"fmt != plugin._('full') (got {fmt!r})")
     if poll != 5:
         pytest.fail(f"poll != 5 (got {poll!r})")
-    if not any(
-        "defaulting to True" in str(c[1]) or "defaulting to 'full'" in str(c[1])
-        for c in p._logger.calls
-    ):
+    if not any("defaulting to 'full'" in str(c[1]) for c in p._logger.calls):
         pytest.fail("Expected defaulting log message not found in logger calls")
 
-    p._settings = DummySettings(
-        {"navbar_enabled": False, "display_format": "x", "poll_interval_seconds": "0"}
-    )
-    nav, fmt, poll = p._get_api_settings()
+    p._settings = DummySettings({"display_format": "x", "poll_interval_seconds": "0"})
+    fmt, poll = p._get_api_settings()
     if poll != 1:
         pytest.fail(f"poll != 1 (got {poll!r})")
 
     p._settings = DummySettings({"poll_interval_seconds": "999"})
-    nav, fmt, poll = p._get_api_settings()
+    fmt, poll = p._get_api_settings()
     if poll != 120:
         pytest.fail(f"poll != 120 (got {poll!r})")
 
     p._settings = DummySettings({"poll_interval_seconds": "bad"})
-    nav, fmt, poll = p._get_api_settings()
+    fmt, poll = p._get_api_settings()
     if poll != 5:
         raise AssertionError(f"poll != 5 (got {poll!r})")
 
@@ -1513,8 +1653,12 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
     defaults = p.get_settings_defaults()
     if defaults["debug"] is not False:
         pytest.fail('Expected defaults["debug"] to be False')
-    if defaults["navbar_enabled"] is not True:
-        pytest.fail('Expected defaults["navbar_enabled"] to be True')
+    if defaults["show_system_uptime"] is not True:
+        pytest.fail('Expected defaults["show_system_uptime"] to be True')
+    if defaults["show_octoprint_uptime"] is not True:
+        pytest.fail('Expected defaults["show_octoprint_uptime"] to be True')
+    if defaults.get("compact_toggle_interval_seconds") != 5:
+        pytest.fail('Expected defaults["compact_toggle_interval_seconds"] to be 5')
 
     called = {}
 
@@ -1625,6 +1769,170 @@ def test_reload_plugin_without_octoprint(monkeypatch):
     importlib.reload(plugin)
 
 
+def test_reload_plugin_without_flask_import():
+    """
+    Test module reload path when importing flask raises ImportError.
+    """
+    original_import = builtins.__import__
+
+    def fake_import(name, *args, **kwargs):
+        if name == "flask":
+            raise ImportError("blocked for test")
+        return original_import(name, *args, **kwargs)
+
+    try:
+        builtins.__import__ = fake_import
+        importlib.reload(plugin)
+        if plugin._flask is not None:
+            raise AssertionError("Expected plugin._flask to be None when flask import fails")
+    finally:
+        builtins.__import__ = original_import
+        importlib.reload(plugin)
+
+
+def test_reload_plugin_without_permissions_module():
+    """Test module reload path when octoprint.access.permissions is unavailable."""
+    original_import_module = importlib.import_module
+
+    def fake_import_module(name):
+        if name == "octoprint.access.permissions":
+            raise ModuleNotFoundError("blocked for test")
+        return original_import_module(name)
+
+    try:
+        importlib.import_module = fake_import_module
+        importlib.reload(plugin)
+        if plugin.PERM is not None:
+            raise AssertionError(
+                "Expected plugin.PERM to be None when permissions module is missing"
+            )
+    finally:
+        importlib.import_module = original_import_module
+        importlib.reload(plugin)
+
+
+def test_reload_plugin_when_octoprint_plugin_import_fails():
+    """
+    Test module fallback classes when octoprint.plugin import raises ModuleNotFoundError.
+    """
+    original_import_module = importlib.import_module
+
+    def fake_import_module(name):
+        if name == "octoprint.plugin":
+            raise ModuleNotFoundError("blocked for test")
+        return original_import_module(name)
+
+    try:
+        importlib.import_module = fake_import_module
+        importlib.reload(plugin)
+        if plugin.PERM is not None:
+            raise AssertionError("Expected plugin.PERM to be None in fallback mode")
+        if plugin.SettingsPluginBase.__name__ != "_SettingsPluginBase":
+            raise AssertionError("Expected fallback SettingsPluginBase to be active")
+    finally:
+        importlib.import_module = original_import_module
+        importlib.reload(plugin)
+
+
+def test_safe_invoke_hook_param_count_zero_calls_hook():
+    """
+    Test _safe_invoke_hook executes zero-argument hooks when param_count is 0.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    called = {"ok": False}
+
+    def hook():
+        called["ok"] = True
+
+    p._safe_invoke_hook(hook, 0)
+    if called["ok"] is not True:
+        raise AssertionError("Expected zero-argument hook to be called")
+
+
+def test_invoke_settings_hook_param_count_none_returns_early():
+    """
+    Test _invoke_settings_hook returns early when parameter count cannot be determined.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    if hasattr(p, "set_logger"):
+        p.set_logger(FakeLogger())
+    else:
+        setattr(p, "_logger", FakeLogger())
+
+    called = {"invoked": False}
+
+    def hook():
+        called["invoked"] = True
+
+    mp = pytest.MonkeyPatch()
+    mp.setattr(p, "_get_hook_positional_param_count", lambda _hook: None)
+    p._invoke_settings_hook(hook)
+    mp.undo()
+
+    if called["invoked"] is not False:
+        raise AssertionError("Expected hook not to be invoked when param_count is None")
+
+
+def test_get_octoprint_uptime_handles_process_errors(monkeypatch):
+    """
+    Test _get_octoprint_uptime returns None when psutil.Process/create_time fails.
+    """
+    p = plugin.OctoprintUptimePlugin()
+
+    class BadProcess:
+        """
+        Mock process class for testing error handling in process time creation.
+        This class simulates a process object that raises an OSError when attempting
+        to retrieve creation time, used to test exception handling in time-related
+        operations.
+        """
+
+        def __init__(self, _pid):
+            pass
+
+        def create_time(self):
+            """
+            Raise an OSError exception with a boom message.
+            This method is used for testing error handling in time creation scenarios.
+            Raises:
+                OSError: Always raises with message "boom".
+            """
+            raise OSError("boom")
+
+    fake_ps = SimpleNamespace(Process=BadProcess)
+    monkeypatch.setattr(importlib, "import_module", lambda _name: fake_ps)
+
+    if p._get_octoprint_uptime() is not None:
+        raise AssertionError("Expected None when process create_time raises OSError")
+
+
+def test_get_octoprint_uptime_info_non_numeric_and_exception(monkeypatch):
+    """
+    Test _get_octoprint_uptime_info unknown and exception fallback paths.
+    """
+    p = plugin.OctoprintUptimePlugin()
+    if hasattr(p, "set_logger"):
+        p.set_logger(FakeLogger())
+    else:
+        setattr(p, "_logger", FakeLogger())
+
+    monkeypatch.setattr(p, "_get_octoprint_uptime", lambda: "invalid")
+    seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d = p._get_octoprint_uptime_info()
+    if not (
+        seconds is None
+        and uptime_full == plugin._("unknown")
+        and uptime_dhm == plugin._("unknown")
+        and uptime_dh == plugin._("unknown")
+        and uptime_d == plugin._("unknown")
+    ):
+        raise AssertionError("Expected unknown fallback for non-numeric OctoPrint uptime")
+
+    monkeypatch.setattr(p, "_get_octoprint_uptime", lambda: (_ for _ in ()).throw(TypeError("x")))
+    seconds2, uptime_full2, *_ = p._get_octoprint_uptime_info()
+    if not (seconds2 is None and uptime_full2 == plugin._("unknown")):
+        raise AssertionError("Expected unknown fallback when _get_octoprint_uptime raises")
+
+
 def make_plugin():
     """
     Creates and returns an instance of OctoprintUptimePlugin with mocked settings and logger.
@@ -1661,18 +1969,22 @@ def make_plugin():
                 _data (dict): A dictionary containing the following default settings:
                     - "debug" (bool): Enables or disables debug mode
                       (default: False).
-                    - "navbar_enabled" (bool): Shows or hides the navbar
-                      (default: True).
+                                        - "show_system_uptime" (bool): Shows or hides system uptime
+                                            (default: True).
+                                        - "show_octoprint_uptime" (bool): Shows or hides OctoPrint
+                                            uptime
+                                            (default: True).
                     - "display_format" (str): Format for display, e.g., "full"
                       (default: "full").
-                    - "debug_throttle_seconds" (int): Throttle interval for debug mode
-                      in seconds (default: 60).
-                    - "poll_interval_seconds" (int): Interval for polling in seconds
-                      (default: 5).
+                    - "debug_throttle_seconds" (int): Throttle interval for
+                      debug mode in seconds (default: 60).
+                    - "poll_interval_seconds" (int): Interval for polling
+                      in seconds (default: 5).
             """
             self._data = {
                 "debug": False,
-                "navbar_enabled": True,
+                "show_system_uptime": True,
+                "show_octoprint_uptime": True,
                 "display_format": "full",
                 "debug_throttle_seconds": 60,
                 "poll_interval_seconds": 5,
@@ -1838,6 +2150,7 @@ def test_validate_and_sanitize_settings_sanitizes_values():
             "octoprint_uptime": {
                 "debug_throttle_seconds": None,
                 "poll_interval_seconds": "bad",
+                "compact_toggle_interval_seconds": None,
             }
         }
     }
@@ -1847,22 +2160,17 @@ def test_validate_and_sanitize_settings_sanitizes_values():
         raise ValueError("Invalid debug_throttle_seconds")
     if cfg["poll_interval_seconds"] != 5:
         raise AssertionError("poll_interval_seconds should be 5")
+    if cfg["compact_toggle_interval_seconds"] != 5:
+        raise AssertionError("compact_toggle_interval_seconds should be 5")
 
 
 def test_log_settings_after_save_logs_change():
     """
-    Test that changing the 'navbar_enabled' setting and saving logs an info message.
-
-    This test verifies that after toggling the 'navbar_enabled' setting in the plugin's
-    settings, the internal state is updated and the '_log_settings_after_save' method logs
-    an info-level message.
+    Test that the settings save log emits an info message.
     """
     p = make_plugin()
     p._update_internal_state()
-    prev = p._navbar_enabled
-    p._settings._data["navbar_enabled"] = not prev
-    p._update_internal_state()
-    p._log_settings_after_save(prev)
+    p._log_settings_after_save()
     if not any(r[0] == "info" for r in p._logger.records):
         raise AssertionError("Expected info-level log message not found.")
 
@@ -2050,10 +2358,9 @@ def test__log_settings_after_save_handles_info_exceptions():
 
     p._logger = BadLogger()
     p._debug_enabled = True
-    p._navbar_enabled = True
     p._display_format = "f"
     p._debug_throttle_seconds = 1
-    p._log_settings_after_save(prev_navbar=False)
+    p._log_settings_after_save()
 
 
 def test__log_debug_outer_exception_handled(monkeypatch):
