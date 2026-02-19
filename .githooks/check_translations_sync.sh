@@ -145,7 +145,7 @@ fi
 
 # mirror compile_translations behavior: remove obsolete (#~) entries in temp copy
 if [[ -x "$VENV_PYTHON" ]]; then
-  "$VENV_PYTHON" - "$REPO_ROOT" "$tmpdir" <<'PY' || true
+  "$VENV_PYTHON" - <<'PY' "$REPO_ROOT" "$tmpdir" || true
 import os
 import sys
 from pathlib import Path
@@ -187,7 +187,7 @@ fi
 
 # normalize PO files in temp copy to match build output (polib reads/writes in canonical format)
 if [[ -x "$VENV_PYTHON" ]]; then
-  "$VENV_PYTHON" - "$REPO_ROOT" "$tmpdir" <<'NORMALIZE' || true
+  "$VENV_PYTHON" - <<'NORMALIZE' "$REPO_ROOT" "$tmpdir" || true
 import sys
 from pathlib import Path
 
