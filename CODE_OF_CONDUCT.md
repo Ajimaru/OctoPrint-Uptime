@@ -6,7 +6,6 @@ This project aims to provide a welcoming, inclusive, and harassment-free experie
 
 We expect participants to be respectful, constructive, and collaborative. Examples of behavior that contributes to a positive environment include:
 
-- Being respectful, constructive, and collaborative
 - Giving and receiving feedback thoughtfully and assuming good faith while remaining accountable
 - Being mindful of different experience levels and backgrounds
 - Focusing on what is best for the community and users

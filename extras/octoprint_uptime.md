@@ -69,12 +69,13 @@ Returns system and OctoPrint uptime information with formatted variants:
 ```json
 {
   "seconds": 3600,
-  "uptime": "1h 0m 0s",
+  "uptime": "1h 0m",
   "uptime_dhm": "1h 0m",
   "octoprint_seconds": 1234,
-  "octoprint_uptime": "20m 34s",
+  "octoprint_uptime": "20m",
   "display_format": "dhm",
-  "poll_interval_seconds": 5
+  "poll_interval_seconds": 5,
+  "uptime_available": true
 }
 ```
 
