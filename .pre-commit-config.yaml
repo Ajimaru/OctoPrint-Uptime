@@ -109,6 +109,7 @@ repos:
         entry: .githooks/shellcheck-hook.sh
         language: script
         types: [shell]
+        pass_filenames: true
 
   - repo: https://github.com/OctoPrint/pre-commit-lessc
     rev: 4.4.0
