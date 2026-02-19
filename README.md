@@ -181,7 +181,7 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 ### 🧾 5. Metadata
 
 ![Code Size](https://img.shields.io/github/languages/code-size/Ajimaru/OctoPrint-Uptime)
-[![Security](https://img.shields.io/badge/security-policy-blue)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/SECURITY.md))
+[![Security](https://img.shields.io/badge/security-policy-blue)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/SECURITY.md)
 [![Snyk](https://img.shields.io/badge/security-snyk-blueviolet)](https://app.snyk.io)
 ![Languages Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime)
 ![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime)
