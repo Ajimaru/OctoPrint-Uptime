@@ -27,13 +27,26 @@ OCTOPRINT_VIEWMODELS.push([
 
 ## Template anchor
 
-The navbar template defines an anchor element with an ID where the viewmodel binds. The template file lives in the plugin package at `octoprint_uptime/templates/navbar.jinja2`. A minimal example:
+The navbar template defines the anchor element where the ViewModel binds. The
+actual template lives in `octoprint_uptime/templates/navbar.jinja2`:
 
 ```html
-<li id="navbar_plugin_navbar_uptime" data-bind="visible: isNavbarEnabled">
-  <a title="Uptime" data-bind="text: uptime"></a>
+<li id="navbar_plugin_navbar_uptime" class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+    <i class="fas fa-history"></i>
+    <span data-bind="html: uptimeDisplayHtml"></span>
+  </a>
 </li>
 ```
+
+Navbar visibility is controlled **in JavaScript** via `navbarEl.hide()` /
+`navbarEl.show()` rather than a Knockout binding. The JavaScript evaluates
+`show_system_uptime` and `show_octoprint_uptime` from the plugin settings on
+every polling cycle and calls the appropriate jQuery method.
+
+The same JavaScript path also updates the anchor `title` tooltip in both normal
+and compact display modes, so mouseover content remains consistent when
+`compact_display` is enabled.
 
 ## Customizing placement
 
@@ -48,7 +61,7 @@ The navbar template defines an anchor element with an ID where the viewmodel bin
 
 ## API usage (frontend)
 
-Always use OctoPrint's helper API to query plugin endpoints — pass the plugin id only. Example:
+Always use OctoPrint's helper API to query plugin endpoints, pass the plugin id only. Example:
 
 ```js
 OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {
@@ -62,11 +75,22 @@ OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {
 
 ## Testing & debugging
 
-- Open browser DevTools, check the Console for errors and Network tab for the `/api/plugin/octoprint_uptime` request and its JSON response.
-- If the element does not appear, verify the selector used in `OCTOPRINT_VIEWMODELS.push` matches an element present on the page and that `isNavbarEnabled` is true in settings.
+- Open browser DevTools, check the Console for errors and the Network tab for
+  the `/api/plugin/octoprint_uptime` request and its JSON response.
+- If the element does not appear, verify that at least one of `show_system_uptime`
+  or `show_octoprint_uptime` is enabled in the plugin settings
+  (Settings → Plugin OctoPrint-Uptime).
+- The ViewModel starts polling in `onStartupComplete`, not immediately in the
+  constructor, so the navbar will only appear after OctoPrint's full startup
+  sequence has completed.
 
 ## Troubleshooting checklist
 
 - Is the plugin loaded? Check `octoprint.log` for plugin initialization messages.
 - Are static assets served? Open the JS file URL shown in the page source and confirm 200 response.
 - Does the API return `uptime_available: true`? If false, inspect `uptime_note` for hints.
+- Are `show_system_uptime` or `show_octoprint_uptime` enabled? If both are false the
+  navbar entry is hidden via `navbarEl.hide()`.
+- Is `compact_display` enabled but only one uptime type is active? Compact mode
+  only alternates when **both** uptime types are enabled; otherwise the single
+  active type is displayed in regular mode.

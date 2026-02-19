@@ -4,13 +4,13 @@
 
 View detailed flow diagrams and documentation for the scripts in this directory:
 
-→ **[Build Scripts — Flow Diagrams](../docs/reference/diagrams/build-scripts.md)**
+→ **[Build Scripts - Flow Diagrams](../docs/reference/diagrams/build-scripts.md)**
 
 This includes interactive flowcharts for `generate-diagrams.sh`, `generate-jsdocs.sh`, and their relationships.
 
 ---
 
-## generate-diagrams.sh — helper script
+## generate-diagrams.sh - helper script
 
 ### What it does
 
@@ -25,7 +25,7 @@ python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-- **Python dependencies**: Install the project development requirements which include `pyreverse` (provided by `pylint`)—this lives in `requirements-dev.txt`:
+- **Python dependencies**: Install the project development requirements, including `pyreverse` (provided by `pylint`) from `requirements-dev.txt`:
 
 ```bash
 pip install -r requirements-dev.txt
@@ -41,7 +41,7 @@ From the repository root:
 ./scripts/generate-diagrams.sh
 ```
 
-## generate-jsdocs.sh — JavaScript API documentation
+## generate-jsdocs.sh - JavaScript API documentation
 
 ### Overview
 

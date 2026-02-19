@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=70,<76",
+    "setuptools>=70,<83",
     "wheel",
     "OctoPrint",
 ]
@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OctoPrint-Uptime"
-version = "0.2.1"
+version = "0.2.2.dev13+4a58f79"
 description = "Adds system uptime to the navbar and exposes a small uptime API."
 authors = [
     {name = "Ajimaru", email = "ajimaru_gdr@pm.me"}
@@ -18,11 +18,8 @@ readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.8, <3.14"
 
 dynamic = [
-    "license"
-]
-
-dependencies = [
-    "psutil>=5.9.0",
+    "license",
+    "dependencies"
 ]
 
 [tool.setuptools]
@@ -30,9 +27,7 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 octoprint_uptime = [
-    "translations/**/*.po",
     "translations/**/*.mo",
-    "translations/**/*.pot",
 ]
 
 [tool.setuptools.packages.find]
@@ -51,7 +46,7 @@ Issues = "https://github.com/Ajimaru/OctoPrint-Uptime/issues"
 
 [project.optional-dependencies]
 develop = [
-    "Babel>=2.17.0",
+    "Babel==2.18.0",
     "build",
     "mock",
     "pre-commit>=3.0.0",

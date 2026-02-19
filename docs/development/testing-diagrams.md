@@ -1,11 +1,11 @@
-# Testing — Diagrams and Documentation
+# Testing - Diagrams and Documentation
 
 This section contains detailed diagrams and documentation for the test suite of the OctoPrint-Uptime plugin.
 
 ## Test Suite Overview
 
-- **[Test Suite Overview](testing-diagrams/index.html)** — Complete overview page with links to all diagrams
-- **[plugin_test.py](testing-diagrams/plugin-tests.html)** — Complete overview of all test categories, including:
+- **[Test Suite Overview](testing-diagrams/index.html)** - Complete overview page with links to all diagrams
+- **[plugin_test.py](testing-diagrams/plugin-tests.html)** - Complete overview of all test categories, including:
   - Utility function tests (uptime formatting)
   - Settings validation and sanitization tests
   - Logging and debug throttling tests

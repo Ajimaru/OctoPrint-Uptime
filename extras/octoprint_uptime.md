@@ -3,12 +3,12 @@ layout: plugin
 
 id: octoprint_uptime
 title: OctoPrint-Uptime
-description: Displays the host system uptime in the OctoPrint navbar and provides a small JSON API for integrations.
+description: Displays the host system and OctoPrint process uptime in the navbar and provides a JSON API for integrations.
 authors:
   - Ajimaru
 license: AGPLv3
 
-date: 2026-02-01
+date: 2026-02-18
 
 homepage: https://ajimaru.github.io/OctoPrint-Uptime/
 source: https://github.com/Ajimaru/OctoPrint-Uptime
@@ -38,13 +38,13 @@ compatibility:
   python: ">=3.8,<3.14"
 ---
 
-OctoPrint-Uptime is a lightweight plugin that displays the system uptime of your OctoPrint server directly in the navbar. Additionally, it provides a small, authenticated JSON API that can be queried by external tools or scripts.
+OctoPrint-Uptime is a lightweight plugin that displays both the host system uptime and OctoPrint process uptime in the navbar. Additionally, it provides a small, authenticated JSON API that can be queried by external tools or scripts.
 
 **Features:**
 
+- Display system and/or OctoPrint process uptime independently or with optional compact alternating mode
 - Configurable display format (full, dhm, dh, d)
 - Adjustable polling interval
-- Optional: Systeminfo bundle for support purposes
 - Secure (authenticated API, no unauthorized access)
 - Translatable (i18n ready, German/English)
 
