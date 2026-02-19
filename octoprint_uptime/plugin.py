@@ -303,10 +303,7 @@ class OctoprintUptimePlugin(
                 return uptime
         except (AttributeError, TypeError, ValueError, OSError):
             return None
-        except (AttributeError, TypeError, ValueError, OSError):
-            return None
-
-    def _get_octoprint_uptime(self) -> Optional[float]:
+        return None
 
     def _get_octoprint_uptime(self) -> Optional[float]:
         """Get OctoPrint process uptime using psutil if available."""
@@ -314,8 +311,7 @@ class OctoprintUptimePlugin(
             _ps = importlib.import_module("psutil")
         except ImportError:
             return None
-        try:
-            # Get current process
+        psutil_base_error = getattr(_ps, "Error", Exception)
         try:
             # Get current process
             current_process = _ps.Process(os.getpid())
@@ -324,7 +320,7 @@ class OctoprintUptimePlugin(
             uptime = time.time() - create_time
             if isinstance(uptime, (int, float)) and 0 <= uptime < 10 * 365 * 24 * 3600:
                 return uptime
-        except Exception:
+        except (AttributeError, TypeError, ValueError, OSError, psutil_base_error):
             return None
         return None
 
