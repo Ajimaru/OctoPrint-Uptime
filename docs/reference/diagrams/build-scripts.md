@@ -24,8 +24,9 @@ The OctoPrint-Uptime project uses several helper scripts to automate documentati
 
 ### Platform Support
 
-- **win-bash-wrapper.sh** Re-executes Bash scripts under Git Bash on Windows
-  - Used by both documentation scripts to ensure consistent behavior across platforms
+- **win-bash-wrapper.sh** — Utility script that re-executes Bash scripts under Git Bash on Windows
+  - Used by build scripts to ensure consistent behavior across platforms
+  - No separate diagram (helper script)
 
 ---
 
