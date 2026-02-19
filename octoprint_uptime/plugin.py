@@ -307,6 +307,8 @@ class OctoprintUptimePlugin(
             return None
 
     def _get_octoprint_uptime(self) -> Optional[float]:
+
+    def _get_octoprint_uptime(self) -> Optional[float]:
         """Get OctoPrint process uptime using psutil if available."""
         try:
             _ps = importlib.import_module("psutil")
