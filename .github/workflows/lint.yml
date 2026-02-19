@@ -93,8 +93,14 @@ jobs:
       - # Install ShellCheck >= 0.11.0 required by custom shellcheck-hook.sh
         name: Install ShellCheck
         run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck || true
+          # Ubuntu apt repos have outdated ShellCheck (0.9.0), download from GitHub releases
+          SHELLCHECK_VERSION="0.11.0"
+          if ! command -v shellcheck &> /dev/null || [ "$(shellcheck --version | grep -oP 'version: \K[0-9.]+')" \< "$SHELLCHECK_VERSION" ]; then
+            echo "Installing ShellCheck $SHELLCHECK_VERSION..."
+            wget -qO- "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" | tar -xJ -C /tmp
+            sudo mv /tmp/shellcheck-v${SHELLCHECK_VERSION}/shellcheck /usr/local/bin/
+            shellcheck --version
+          fi
 
       - # Execute all pre-commit hooks on repository
         name: Run pre-commit on all files
