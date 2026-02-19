@@ -53,7 +53,7 @@ find_bash() {
         return 0
     fi
 
-    # WSL-style path checks (/c/Program Files)
+    # Git Bash / MSYS-style path checks (/c/Program Files; WSL uses /mnt/c/...)
     if [ -x "/c/Program Files/Git/bin/bash.exe" ]; then
         printf '%s' "/c/Program Files/Git/bin/bash.exe"
         return 0

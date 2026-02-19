@@ -6,9 +6,10 @@ This module provides common functions used by translation management scripts.
 """
 
 from pathlib import Path
+from typing import Iterator
 
 
-def iter_po_files(root: Path):
+def iter_po_files(root: Path) -> Iterator[Path]:
     """
     Iterate over all messages.po files in the translations directory.
 
@@ -21,7 +22,7 @@ def iter_po_files(root: Path):
     Yields:
         Path: Paths to existing messages.po files.
     """
-    if not root.exists():
+    if not root.is_dir():
         return
     for lang_dir in root.iterdir():
         po = lang_dir / "LC_MESSAGES" / "messages.po"

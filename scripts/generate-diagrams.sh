@@ -65,6 +65,15 @@ generate_diagram() {
 
   echo "graphviz 'dot' not found, attempting PNG fallback for ${fallback_label}"
   pyreverse "${pyreverse_args[@]}" -o png
+
+  # Defensive check: verify PNG was generated before proceeding
+  if [ ! -s "${pngfile}" ]; then
+    echo "${failure_message}" >&2
+    RENDER_FAILED=1
+    FAILED_TARGETS+=("${dotfile} -> ${out_svg}")
+    return
+  fi
+
   if command -v convert >/dev/null 2>&1 && command -v potrace >/dev/null 2>&1; then
     echo "Converting ${pngfile} -> ${pnmfile}..."
     convert "${pngfile}" "${pnmfile}"

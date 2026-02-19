@@ -145,16 +145,17 @@ fi
 
 # mirror compile_translations behavior: remove obsolete (#~) entries in temp copy
 if [[ -x "$VENV_PYTHON" ]]; then
-  "$VENV_PYTHON" - <<'PY' "$tmpdir" || true
+  "$VENV_PYTHON" - "$REPO_ROOT" "$tmpdir" <<'PY' || true
 import os
 import sys
 from pathlib import Path
 
 # Add scripts to path to import shared utilities
-sys.path.insert(0, str(Path.cwd() / "scripts"))
+repo_root = Path(sys.argv[1])
+sys.path.insert(0, str(repo_root / "scripts"))
 from translation_utils import iter_po_files
 
-tmpdir = Path(sys.argv[1])
+tmpdir = Path(sys.argv[2])
 translations = tmpdir / "translations"
 
 try:
@@ -169,13 +170,15 @@ for po in iter_po_files(translations):
   obsolete = [e for e in pofile if e.obsolete]
   if not obsolete:
     continue
+  successful = 0
   for entry in obsolete:
     try:
       pofile.remove(entry)
+      successful += 1
     except ValueError:
       pass
   pofile.save()
-  total += len(obsolete)
+  total += successful
 
 if total:
   print(f"Removed {total} obsolete entries from temp PO files.")

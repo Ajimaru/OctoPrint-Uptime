@@ -184,6 +184,7 @@ function formatUptime(seconds, format) {
     const days = Math.floor(secs / 86400);
     const hours = Math.floor((secs % 86400) / 3600);
     const minutes = Math.floor((secs % 3600) / 60);
+    const seconds = secs % 60;
 
     switch (format) {
         case "dhm":
@@ -194,7 +195,7 @@ function formatUptime(seconds, format) {
             return `${days}d`;
         case "full":
         default:
-            return `${days}d ${hours}h ${minutes}m`;
+            return `${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
 }
 ```
