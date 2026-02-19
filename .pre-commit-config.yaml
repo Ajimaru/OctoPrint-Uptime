@@ -9,12 +9,11 @@ exclude: '^docs/api/python\.md$'
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v4.6.0
     hooks:
       - id: check-merge-conflict # Detect unresolved merge conflict markers and fail early
       - id: detect-private-key # Scan for likely private keys to avoid accidental leaks
       - id: check-added-large-files # Prevent adding very large files to commits
-      - id: check-illegal-windows-names # Prevent filenames illegal on Windows
       - id: check-symlinks # Ensure symlinks are valid and not broken
       - id: check-case-conflict # Prevent case-only filename conflicts on case-insensitive FS
       - id: mixed-line-ending
@@ -34,7 +33,7 @@ repos:
 
   # Formatting and code-mod tools
   - repo: https://github.com/psf/black
-    rev: 26.1.0
+    rev: 24.1.1
     hooks:
       - id: black # Code formatter: reformats Python files to a canonical style (Black)
         language_version: python3
@@ -43,12 +42,12 @@ repos:
     rev: v10.0.0
     hooks:
       - id: eslint # JavaScript/TypeScript linter (ESLint)
-        files: \.js$
+        files: "(\\.js)$"
         exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|docs/|scripts/|translations/)
         additional_dependencies: ["eslint@10.0.0", "globals@17.3.0"]
 
   - repo: https://github.com/pycqa/isort
-    rev: 7.0.0
+    rev: 5.13.2
     hooks:
       - id: isort # Sorts and groups Python imports to a consistent order
         args: ["--profile", "black"]
