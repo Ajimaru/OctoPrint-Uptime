@@ -21,6 +21,7 @@ jobs:
     env:
       BABEL_VERSION: "2.18.0"
       POLIB_VERSION: "1.2.0"
+      BANDIT_VERSION: "1.9.3"
 
     strategy:
       fail-fast: false
@@ -98,7 +99,7 @@ jobs:
         name: Bandit (security)
         if: success() || failure()
         run: |
-          pip install bandit==1.9.3
+          pip install "bandit==${{ env.BANDIT_VERSION }}"
           bandit -r octoprint_uptime -x .venv,venv,.git -ll
       - # Print summary message
         name: Summary

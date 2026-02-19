@@ -90,11 +90,7 @@ jobs:
           if [ -d .venv ]; then
             . .venv/bin/activate
           else
-            # Minimal fallback: create a lightweight venv with only Babel and polib
-            # for pre-commit translation checks. This edge case shouldn't occur in
-            # normal flow (the "Create venv and install dependencies" step always runs first),
-            # but if .venv doesn't exist, we only need translation tools for pre-commit hooks,
-            # not the full OctoPrint/[develop] dependencies used in the primary setup.
+            # Fallback: create minimal venv with translation tools only
             python -m venv .venv
             . .venv/bin/activate
             python -m pip install --upgrade pip
