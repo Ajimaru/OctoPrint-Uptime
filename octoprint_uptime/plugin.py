@@ -312,7 +312,8 @@ class OctoprintUptimePlugin(
             _ps = importlib.import_module("psutil")
         except ImportError:
             return None
-        psutil_base_error = getattr(_ps, "Error", Exception)
+        try:
+            # Get current process
         try:
             # Get current process
             current_process = _ps.Process(os.getpid())
