@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>prettier-hook.sh flow - OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.5/dist/mermaid.min.js" integrity="sha384-enVdc7lTHDGtpROV85t9+VqPC2EyyB0hsRD0MrvQnHUsHmTHIz2D8SPP4EnBkstH" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+    </head>
+    <body>
+        <h1>prettier-hook.sh - Format Helper Flow</h1>
+        <pre class="mermaid">
+            flowchart TD
+                Start([Start]) --> Wrapper["Ensure Bash / win-bash-wrapper"]
+                Wrapper --> Args{Files provided?}
+                Args -->|no| Usage([Show usage + exit 2])
+                Args -->|yes| Local{Local Prettier in node_modules?}
+                Local -->|yes| RunLocal["prettier --write files"]
+                Local -->|no| Node{node + package.json available?}
+                Node -->|yes| NpmCi["npm ci (retry)"]
+                Node -->|no| Npx
+                NpmCi --> Local2{Local Prettier now present?}
+                Local2 -->|yes| RunLocal2["prettier --write files"]
+                Local2 -->|no| Npx["npx --yes prettier --write (retry)"]
+                RunLocal --> Done([Exit 0])
+                RunLocal2 --> Done
+                Npx --> Done
+
+                classDef action fill:#ecfeff,stroke:#06b6d4
+                classDef decision fill:#fef3c7,stroke:#f59e0b
+                classDef success fill:#d1fae5,stroke:#10b981
+                classDef error fill:#fee2e2,stroke:#ef4444
+                class Wrapper,RunLocal,RunLocal2,NpmCi,Npx action
+                class Args,Local,Node,Local2 decision
+                class Usage error
+                class Done success
+        </pre>
+        <p>
+            <a href="index.html">Back to build scripts</a>
+        </p>
+        <script>
+            window.addEventListener('load', () => {
+                if (window.mermaid) {
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'strict' });
+                }
+            });
+        </script>
+        </body>
+        </html>

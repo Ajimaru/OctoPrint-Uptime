@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>translation_utils.py flow - OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.5/dist/mermaid.min.js" integrity="sha384-enVdc7lTHDGtpROV85t9+VqPC2EyyB0hsRD0MrvQnHUsHmTHIz2D8SPP4EnBkstH" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+    </head>
+    <body>
+        <h1>translation_utils.py - Translation Helper Flow</h1>
+        <pre class="mermaid" aria-label="Flowchart: start, check root, iterate directories, check messages.po, yield or skip, repeat until done, then stop.">
+            flowchart TD
+                Start([Start]) --> CheckRoot{Root exists?}
+                CheckRoot -->|no| Stop([Return, no output])
+                CheckRoot -->|yes| Iterate["Iterate root/* directories"]
+                Iterate --> CheckPo{messages.po exists?}
+                CheckPo -->|yes| Yield["Yield messages.po path"]
+                CheckPo -->|no| Next["Skip and continue"]
+                Yield --> MoreDirs{More directories?}
+                Next --> MoreDirs
+                MoreDirs -->|yes| Iterate
+                MoreDirs -->|no| Stop
+
+                classDef action fill:#ecfeff,stroke:#06b6d4
+                classDef decision fill:#fef3c7,stroke:#f59e0b
+                classDef success fill:#d1fae5,stroke:#10b981
+                class Start,Iterate,Yield,Next action
+                class CheckRoot,CheckPo,MoreDirs decision
+                class Stop success
+        </pre>
+    <p>
+        <a href="index.html">Back to build scripts</a>
+    </p>
+    <script>
+            window.addEventListener('load', () => {
+                if (window.mermaid) {
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'strict' });
+                    mermaid.run({ querySelector: '.mermaid' });
+                }
+            });
+    </script>
+</body>
+</html>
