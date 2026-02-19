@@ -1,22 +1,5 @@
 #!/usr/bin/env bash
 
-# If running on native Windows, re-exec this script under Git Bash if available.
-# This is idempotent: if already running under Bash it does nothing.
-if _dir="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd)"; then
-  _SCRIPT_DIR_HINT="$_dir"
-else
-  _SCRIPT_DIR_HINT="$(dirname "$0")"
-fi
-REPO_ROOT="$(cd "$_SCRIPT_DIR_HINT/.." >/dev/null 2>&1 && pwd || echo "$_SCRIPT_DIR_HINT")"
-WRAPPER="$REPO_ROOT/scripts/win-bash-wrapper.sh"
-if [ -z "${BASH_VERSION-}" ]; then
-  if [ -x "$WRAPPER" ]; then
-    exec "$WRAPPER" "$0" "$@"
-  elif command -v bash >/dev/null 2>&1; then
-    exec bash "$0" "$@"
-  fi
-fi
-
 # Helper: verify that top-level PO catalogs are synchronized with translations/messages.pot
 # Behavior:
 #  - Creates a temporary copy of `translations/`, runs `pybabel update` against the POT
@@ -34,9 +17,7 @@ cd "$REPO_ROOT"
 
 VENV_PYBABEL="./venv/bin/pybabel"
 VENV_PYTHON="./venv/bin/python3"
-# Note: Python blocks in this script require the virtual environment (VENV_PYTHON).
-# Unlike pybabel (which falls back to system PATH), Python blocks only run if venv exists.
-# This is intentional for consistency with compile_translations.sh.
+
 PYBABEL=""
 if [[ -x "$VENV_PYBABEL" ]]; then
   PYBABEL="$VENV_PYBABEL"
@@ -62,167 +43,80 @@ trap 'rm -rf "$tmpdir"' EXIT
 # copy translations to temporary location
 cp -a translations "$tmpdir"/translations
 
-# run pybabel update on the temporary copy (capture output for diagnostics)
+# run pybabel update on the temporary copy
 if ! output="$($PYBABEL update -i translations/messages.pot -d "$tmpdir"/translations 2>&1)"; then
     echo "pybabel failed while updating temporary translations. Output follows:" >&2
     printf '%s\n' "$output" >&2
-  exit 1
+    exit 1
 fi
 
-# mirror compile_translations behavior: autofill translations in temp copy if argostranslate is available
+# normalize and compare using Python with polib for canonical representation
 if [[ -x "$VENV_PYTHON" ]]; then
-  "$VENV_PYTHON" - <<'AUTOFILL' "$tmpdir" || true
-import os
+  "$VENV_PYTHON" - <<'COMPARE' "$REPO_ROOT" "$tmpdir"
 import sys
 from pathlib import Path
 
-tmpdir = Path(sys.argv[1])
-translations = tmpdir / "translations"
+def normalize_po_content(path: str) -> str:
+    """Normalize a PO/POT file using polib for canonical representation."""
+    if not Path(path).exists():
+        return ""
 
-try:
-  import polib
-except ImportError:
-  sys.exit(0)
-
-try:
-  import argostranslate.package
-  import argostranslate.translate
-except ImportError:
-  sys.exit(0)
-
-def has_model(from_code: str, to_code: str) -> bool:
-  try:
-    installed = argostranslate.translate.get_installed_languages()
-    has_from = next((inst for inst in installed if inst.code == from_code), None)
-    has_to = next((inst for inst in installed if inst.code == to_code), None)
-    return has_from is not None and has_to is not None
-  except Exception:
-    return False
-
-def translate_text(text: str, from_code: str, to_code: str) -> str:
-  try:
-    return argostranslate.translate.translate(text, from_code, to_code)
-  except Exception:
-    return ""
-
-def autofill_language(lang: str, source_lang: str = "en"):
-  po_path = translations / lang / "LC_MESSAGES" / "messages.po"
-  if not po_path.exists():
-    return 0
-  if not has_model(source_lang, lang):
-    return 0
-
-  po = polib.pofile(str(po_path))
-  changed = 0
-  for entry in po:
-    if not entry.msgstr or entry.msgstr.strip() == "":
-      src = entry.msgid
-      tr = translate_text(src, source_lang, lang)
-      if tr:
-        entry.msgstr = tr
-        if "fuzzy" not in entry.flags:
-          entry.flags.append("fuzzy")
-        entry.comment = (entry.comment + "\n" if entry.comment else "") + "Auto-translated by argostranslate"
-        changed += 1
-  if changed > 0:
-    po.save()
-  return changed
-
-source_lang = os.environ.get("AUTOFILL_SOURCE_LANG", "en")
-langs = []
-if translations.exists():
-  for child in translations.iterdir():
-    if (child / "LC_MESSAGES" / "messages.po").exists():
-      langs.append(child.name)
-
-total = 0
-for lang in langs:
-  if lang == source_lang:
-    continue
-  total += autofill_language(lang, source_lang)
-AUTOFILL
-fi
-
-# mirror compile_translations behavior: remove obsolete (#~) entries in temp copy
-if [[ -x "$VENV_PYTHON" ]]; then
-  "$VENV_PYTHON" - <<'PY' "$REPO_ROOT" "$tmpdir" || true
-import os
-import sys
-from pathlib import Path
-
-# Add scripts to path to import shared utilities
-repo_root = Path(sys.argv[1])
-sys.path.insert(0, str(repo_root / "scripts"))
-from translation_utils import iter_po_files
-
-tmpdir = Path(sys.argv[2])
-translations = tmpdir / "translations"
-
-try:
-  import polib
-except Exception:
-  print("polib not available; skipping obsolete cleanup in temp copy", file=sys.stderr)
-  sys.exit(0)
-
-total = 0
-for po in iter_po_files(translations):
-  pofile = polib.pofile(str(po))
-  obsolete = [e for e in pofile if e.obsolete]
-  if not obsolete:
-    continue
-  successful = 0
-  for entry in obsolete:
     try:
-      pofile.remove(entry)
-      successful += 1
-    except ValueError:
-      pass
-  pofile.save()
-  total += successful
+        import polib
+        pofile = polib.pofile(path)
+        return pofile.__unicode__()
+    except Exception:
+        # Fallback to filtering timestamps manually
+        text = Path(path).read_text(encoding="utf-8")
+        lines = text.splitlines()
+        out = []
+        for line in lines:
+            if line.startswith('"POT-Creation-Date:'):
+                continue
+            if line.startswith('"Generated-By:'):
+                continue
+            out.append(line)
+        return "\n".join(out).strip() + "\n"
 
-if total:
-  print(f"Removed {total} obsolete entries from temp PO files.")
-PY
-fi
-
-# normalize PO files in temp copy to match build output (polib reads/writes in canonical format)
-if [[ -x "$VENV_PYTHON" ]]; then
-  "$VENV_PYTHON" - <<'NORMALIZE' "$REPO_ROOT" "$tmpdir" || true
-import sys
-from pathlib import Path
-
-# Add scripts to path to import shared utilities
 repo_root = Path(sys.argv[1])
-sys.path.insert(0, str(repo_root / "scripts"))
-from translation_utils import iter_po_files
-
 tmpdir = Path(sys.argv[2])
-translations = tmpdir / "translations"
+real_dir = repo_root / "translations"
+temp_dir = tmpdir / "translations"
 
-try:
-  import polib
-except ImportError:
-  sys.exit(0)
+if not real_dir.exists() or not temp_dir.exists():
+    print("ERROR: translations directory not found", file=sys.stderr)
+    sys.exit(1)
 
-for po in iter_po_files(translations):
-  try:
-    pofile = polib.pofile(str(po))
-    pofile.save()
-  except Exception as e:
-    print(f"Warning: Failed to normalize {po}: {e}", file=sys.stderr)
-    continue
-NORMALIZE
+# Get all relative paths for .pot and .po files in both directories
+real_po_files = {f.relative_to(real_dir) for f in real_dir.rglob("*") if f.suffix in {".pot", ".po"} and f.is_file()}
+temp_po_files = {f.relative_to(temp_dir) for f in temp_dir.rglob("*") if f.suffix in {".pot", ".po"} and f.is_file()}
+
+all_relative_paths = real_po_files | temp_po_files
+differences = []
+
+for rel_path in sorted(all_relative_paths):
+    real_file = real_dir / rel_path
+    temp_file = temp_dir / rel_path
+
+    real_normalized = normalize_po_content(str(real_file))
+    temp_normalized = normalize_po_content(str(temp_file))
+
+    if real_normalized != temp_normalized:
+        differences.append(str(rel_path))
+
+if differences:
+    print("ERROR: Translations are out of sync with translations/messages.pot.", file=sys.stderr)
+    print("Files with content differences:", file=sys.stderr)
+    for f in differences:
+        print(f"  {f}", file=sys.stderr)
+    sys.exit(1)
+else:
+    print("Translations are up-to-date.")
+    sys.exit(0)
+COMPARE
+  exit_code=$?
+  exit "$exit_code"
 fi
 
-# check for any differences between real translations and the updated temp copy
-if diff -r -q translations "$tmpdir"/translations >/dev/null 2>&1; then
-  printf '%s\n' "Translations are up-to-date."
-  exit 0
-fi
-
-printf '%s\n' "ERROR: Translations are out of sync with translations/messages.pot. The following differences were detected:"
-diff -r -q translations "$tmpdir"/translations || true
-
-printf '%s\n' "Update the real PO files."
-printf '%s\n' "Then review and commit the updated PO (and compiled MO if you keep them)."
+printf '%s\n' "ERROR: Unable to run Python for comparison check"
 exit 1
