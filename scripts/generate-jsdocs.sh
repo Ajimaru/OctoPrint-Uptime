@@ -173,7 +173,7 @@ The JavaScript source files exist but don't yet have JSDoc comments. To generate
 /**
  * Format system uptime for display.
  * @param {number} seconds - Uptime in seconds
- * @param {string} format - Display format: "full", "dhm", "dh", "d", or "short"
+ * @param {string} format - Display format: "full", "dhm", "dh", or "d"
  * @returns {string} Formatted uptime string suitable for UI display
  */
 function formatUptime(seconds, format) {
@@ -192,10 +192,6 @@ function formatUptime(seconds, format) {
             return `${days}d ${hours}h`;
         case "d":
             return `${days}d`;
-        case "short":
-            if (days > 0) return `${days}d ${hours}h`;
-            if (hours > 0) return `${hours}h ${minutes}m`;
-            return `${minutes}m`;
         case "full":
         default:
             return `${days}d ${hours}h ${minutes}m`;

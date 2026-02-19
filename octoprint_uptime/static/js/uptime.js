@@ -33,8 +33,10 @@ $(function () {
      */
     var getPluginSettings = function () {
       try {
-        var s =
-          settingsVM && settingsVM.settings ? settingsVM.settings : settingsVM;
+        if (!(settingsVM && settingsVM.settings)) {
+          return null;
+        }
+        var s = settingsVM.settings;
         return s && s.plugins ? s.plugins.octoprint_uptime : null;
       } catch (e) {
         return null;
@@ -154,7 +156,7 @@ $(function () {
      * Get the configured display format (fallback to "full").
      * @function displayFormat
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
-     * @returns {string} one of "full", "dhm", "dh", "d", or "short"
+     * @returns {string} one of "full", "dhm", "dh", or "d"
      */
     var displayFormat = function () {
       try {
@@ -366,6 +368,23 @@ $(function () {
                 "octoprint_uptime: failed to dispose existing tooltip",
               );
             }
+            // Fallback: attempt safe cleanup if normal disposal failed
+            try {
+              anchor.tooltip("hide");
+              anchor.removeData("bs.tooltip");
+              anchor.removeAttr("data-original-title");
+              anchor.removeAttr("data-bs-original-title");
+            } catch (fallbackErr) {
+              if (
+                typeof globalThis !== "undefined" &&
+                globalThis?.UptimeDebug
+              ) {
+                console.error(
+                  "octoprint_uptime: fallback tooltip cleanup also failed",
+                  fallbackErr,
+                );
+              }
+            }
           }
           anchor.attr("title", startedText);
           anchor.removeAttr("data-original-title");
@@ -389,7 +408,6 @@ $(function () {
      * //   "seconds": 3600,
      * //   "uptime": "1 hour",
      * //   "uptime_dhm": "0d 1h 0m",
-     * //   "uptime_short": "1h",
      * //   "display_format": "dhm",
      * //   "poll_interval_seconds": 5
      * // }
@@ -436,7 +454,7 @@ $(function () {
               data.octoprint_uptime_d || data.octoprint_uptime || "unknown";
           } else if (fmt === "short") {
             // legacy value: keep days+hours behavior
-            displayValue = data.uptime_short || data.uptime || "unknown";
+            displayValue = data.uptime_dh || data.uptime || "unknown";
             // Use dh format for OctoPrint uptime in legacy "short" mode
             octoprintDisplayValue =
               data.octoprint_uptime_dh || data.octoprint_uptime || "unknown";
@@ -662,7 +680,7 @@ $(function () {
             showValidationErrors(errors);
             return Promise.reject(new Error("validation failed"));
           }
-          return origSave();
+          return Promise.resolve(origSave());
         };
       }
     } catch (e) {}

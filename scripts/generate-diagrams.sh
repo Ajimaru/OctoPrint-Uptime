@@ -138,8 +138,6 @@ echo "Cleaning up intermediate files..."
 # patterns that match nothing expand to an empty list instead of themselves.
 patterns=(classes_OctoPrint-Uptime*.{dot,png,pnm} packages_OctoPrint-Uptime*.{dot,png,pnm})
 for f in "${patterns[@]}"; do
-  if [ -e "$f" ]; then
-    rm -f -- "$f"
-    echo "removed $f"
-  fi
+  rm -f -- "$f"
+  echo "removed $f"
 done
