@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=70,<83",
+    "setuptools>=70,<75.4.0",
     "wheel",
     "OctoPrint",
 ]
@@ -16,9 +16,9 @@ authors = [
 readme = {file = "README.md", content-type = "text/markdown"}
 
 requires-python = ">=3.8, <3.14"
+license = {text = "AGPL-3.0-or-later"}
 
 dynamic = [
-    "license",
     "dependencies"
 ]
 
