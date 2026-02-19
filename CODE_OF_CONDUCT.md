@@ -12,7 +12,7 @@ We expect participants to be respectful, constructive, and collaborative. Exampl
 - Focusing on what is best for the community and users
 - Being open to new technologies, ideas and ways of programming
 
-We do not tolerate harassment, discrimination, or exclusionary behavior. This includes, but is not limited to, behaviors based on protected characteristics such as age, disability, gender identity or expression, nationality, race or ethnicity, religion, sexual orientation, or socio‑economic status.
+We do not tolerate harassment, discrimination, or exclusionary behavior. This includes, but is not limited to, behaviors based on protected characteristics such as age, disability, gender identity or expression, nationality, race or ethnicity, religion, sexual orientation, or socio-economic status.
 
 Examples of unacceptable behavior include:
 

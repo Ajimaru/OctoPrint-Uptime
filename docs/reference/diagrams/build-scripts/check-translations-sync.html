@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>check_translations_sync.sh flow - OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.5/dist/mermaid.min.js" integrity="sha384-enVdc7lTHDGtpROV85t9+VqPC2EyyB0hsRD0MrvQnHUsHmTHIz2D8SPP4EnBkstH" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+    </head>
+    <body>
+        <h1>check_translations_sync.sh - Translations Sync Check</h1>
+        <pre class="mermaid">
+            flowchart TD
+                Start([Start]) --> Wrapper["Ensure Bash / win-bash-wrapper"]
+                Wrapper --> FindPybabel{pybabel available?}
+                FindPybabel -->|no| FailPybabel([Error: install Babel])
+                FindPybabel -->|yes| CheckPot{messages.pot exists?}
+                CheckPot -->|no| FailPot([Error: missing POT])
+                CheckPot -->|yes| Copy["Copy translations to temp dir"]
+                Copy --> Update["pybabel update temp copy"]
+                Update --> UpdateOK{Update ok?}
+                UpdateOK -->|no| FailUpdate([Error: update failed])
+                UpdateOK -->|yes| Autofill{venv + argos available?}
+                Autofill -->|yes| RunAutofill["Auto-translate missing entries"]
+                Autofill -->|no| SkipAutofill["Skip autofill"]
+                RunAutofill --> Obsolete
+                SkipAutofill --> Obsolete
+                Obsolete{venv + polib available?} -->|yes| RemoveObsolete["Remove obsolete entries"]
+                Obsolete -->|no| SkipObsolete["Skip obsolete cleanup"]
+                RemoveObsolete --> Normalize
+                SkipObsolete --> Normalize
+                Normalize{venv + polib available?} -->|yes| NormalizePo["Normalize PO formatting"]
+                Normalize -->|no| SkipNormalize["Skip normalize"]
+                NormalizePo --> Diff
+                SkipNormalize --> Diff
+                Diff{Temp matches real?} -->|yes| Success([Up to date])
+                Diff -->|no| Report["Show diff + exit 1"]
+                Report --> Fail([Out of sync])
+
+                classDef action fill:#ecfeff,stroke:#06b6d4
+                classDef decision fill:#fef3c7,stroke:#f59e0b
+                classDef success fill:#d1fae5,stroke:#10b981
+                classDef error fill:#fee2e2,stroke:#ef4444
+                class Wrapper,Copy,Update,RunAutofill,RemoveObsolete,NormalizePo,Report action
+                class FindPybabel,CheckPot,UpdateOK,Autofill,Obsolete,Normalize,Diff decision
+                class Success success
+                class FailPybabel,FailPot,FailUpdate,Fail error
+        </pre>
+    <p>
+        <a href="index.html">Back to build scripts</a>
+    </p>
+    <script>
+            window.addEventListener('load', () => {
+                if (window.mermaid) {
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+                    mermaid.run({ querySelector: '.mermaid' });
+                }
+            });
+    </script>
+</body>
+</html>

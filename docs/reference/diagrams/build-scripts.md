@@ -27,6 +27,18 @@ The OctoPrint-Uptime project uses several helper scripts to automate documentati
 - **win-bash-wrapper.sh** Re-executes Bash scripts under Git Bash on Windows
   - Used by both documentation scripts to ensure consistent behavior across platforms
 
+## Translation utilities
+
+- **[translation_utils.py](build-scripts/translation-utils.html)** Shared helpers for translation scripts
+
+## Git hooks
+
+- **[check_translations_sync.sh](build-scripts/check-translations-sync.html)** Read-only translations sync check
+- **[pre-commit](build-scripts/pre-commit.html)** Pre-commit runner with venv + logging
+- **[post-commit](build-scripts/post-commit.html)** Post-commit hook runner
+- **[prettier-hook.sh](build-scripts/prettier-hook.html)** Prettier formatter helper
+- **[shellcheck-hook.sh](build-scripts/shellcheck-hook.html)** ShellCheck lint helper
+
 ---
 
 For more information about these scripts, see [Scripts README](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/scripts/README.md).

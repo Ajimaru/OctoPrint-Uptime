@@ -28,7 +28,10 @@ OctoPrint-Uptime is a plugin for OctoPrint that displays both system and OctoPri
 
 - System and OctoPrint process uptime can be displayed independently or together in the navbar (with optional compact alternating mode).
 - API endpoint: `/api/plugin/octoprint_uptime` returns both system uptime fields (`seconds`, `uptime`, `uptime_dhm`, `uptime_dh`, `uptime_d`) and separate OctoPrint process uptime fields (`octoprint_seconds`, `octoprint_uptime`, `octoprint_uptime_dhm`, `octoprint_uptime_dh`, `octoprint_uptime_d`).
-  - Note: Fields with `_dhm`, `_dh`, or `_d` suffixes omit leading zero days for readability (e.g., "1h 0m" for 1 hour instead of "0d 1h 0m"), but always include other components even when zero (e.g., "0h 57m" for 57 minutes). The `display_format` field indicates which format is active.
+  - `uptime_dhm`: Shows days, hours, and minutes (e.g., "2d 3h 45m" or "1h 30m" if zero days). Leading zero days are omitted, but hours and minutes are always shown even if zero.
+  - `uptime_dh`: Shows days and hours (e.g., "2d 3h" or "5h" if zero days). Leading zero days are omitted, but hours are always shown even if zero.
+  - `uptime_d`: Shows days only (e.g., "2d" or "0d").
+  - The `display_format` setting controls which formatted string the API returns and the frontend displays.
 - Configuration: Settings → Plugin OctoPrint-Uptime
 
 ## API Example

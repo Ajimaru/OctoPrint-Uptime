@@ -15,6 +15,15 @@
                     genDiag["generate-diagrams.sh<br />UML class diagrams"]
                     genJS["generate-jsdocs.sh<br />JS API documentation"]
                     winBash["win-bash-wrapper.sh<br />Windows Git Bash"]
+                    transUtil["translation_utils.py<br />Shared helpers"]
+                end
+
+                subgraph Hooks["Git Hooks"]
+                    hookCheck["check_translations_sync.sh<br />Translations check"]
+                    hookPre["pre-commit<br />Hook runner"]
+                    hookPost["post-commit<br />Hook runner"]
+                    hookPrettier["prettier-hook.sh<br />Formatter"]
+                    hookShellcheck["shellcheck-hook.sh<br />Linter"]
                 end
 
                 subgraph Output["Generated Output"]
@@ -39,11 +48,20 @@
 
                                         genDiag -->|uses| winBash
                                         genJS -->|uses| winBash
+                                        hookCheck -->|uses| winBash
+                                        hookPre -->|uses| winBash
+                                        hookPost -->|uses| winBash
+                                        hookPrettier -->|uses| winBash
+                                        hookShellcheck -->|uses| winBash
+
+                                        hookCheck -->|uses| transUtil
 
                                         classDef script fill:#3b82f6,stroke:#1e40af,color:#fff
+                                        classDef hook fill:#0ea5e9,stroke:#0369a1,color:#fff
                                         classDef output fill:#10b981,stroke:#065f46,color:#fff
                                         classDef dependency fill:#f59e0b,stroke:#b45309,color:#fff
-                                        class genDiag,genJS,winBash script
+                                        class genDiag,genJS,winBash,transUtil script
+                                        class hookCheck,hookPre,hookPost,hookPrettier,hookShellcheck hook
                                         class SVGs,JSDoc output
                                         class pyreverse,graphviz,potrace,jsdoc2md dependency
                     </pre>
@@ -54,6 +72,45 @@
         </li>
         <li>
             <a href="generate-jsdocs.html"><strong>generate-jsdocs.sh</strong></a>: Generates JavaScript API documentation
+        </li>
+        <li>
+            <a href="translation-utils.html"><strong>translation_utils.py</strong></a>: Shared helpers for translation scripts
+        </li>
+        <li>
+            <a href="check-translations-sync.html"><strong>check_translations_sync.sh</strong></a>: Read-only translations sync check
+        </li>
+        <li>
+            <a href="pre-commit.html"><strong>pre-commit</strong></a>: Pre-commit runner with venv + logging
+        </li>
+        <li>
+            <a href="post-commit.html"><strong>post-commit</strong></a>: Post-commit hook runner
+        </li>
+        <li>
+            <a href="prettier-hook.html"><strong>prettier-hook.sh</strong></a>: Prettier formatter helper
+        </li>
+        <li>
+            <a href="shellcheck-hook.html"><strong>shellcheck-hook.sh</strong></a>: ShellCheck lint helper
+        </li>
+    </ul>
+    <h2>Git Hooks & Utilities</h2>
+    <ul>
+        <li>
+            <a href="translation-utils.html"><strong>translation_utils.py</strong></a>: Shared helpers for translation scripts
+        </li>
+        <li>
+            <a href="check-translations-sync.html"><strong>check_translations_sync.sh</strong></a>: Read-only translations sync check
+        </li>
+        <li>
+            <a href="pre-commit.html"><strong>pre-commit</strong></a>: Pre-commit runner with venv + logging
+        </li>
+        <li>
+            <a href="post-commit.html"><strong>post-commit</strong></a>: Post-commit hook runner
+        </li>
+        <li>
+            <a href="prettier-hook.html"><strong>prettier-hook.sh</strong></a>: Prettier formatter helper
+        </li>
+        <li>
+            <a href="shellcheck-hook.html"><strong>shellcheck-hook.sh</strong></a>: ShellCheck lint helper
         </li>
     </ul>
     <hr>

@@ -32,11 +32,10 @@ mkdocs serve
 
 When working on translations during development, use the repository helper script to manage translations.
 
-Example:
+To perform a clean translation build that removes stale or old translation files, run:
 
 ```bash
-# Compile and clean translations
-FORCE_CLEAN=true ./.development/compile_translations.sh --all  # Removes stale/old translation files before compile (forces a clean build)
+FORCE_CLEAN=true ./.development/compile_translations.sh --all
 ```
 
 If a commit fails due to translations being out of sync, run the compile command above, add the changed PO/MO files, and re-commit.

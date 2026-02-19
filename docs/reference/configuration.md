@@ -30,13 +30,14 @@ Settings (defaults):
 
 - `debug_throttle_seconds` (int) - default: `60`\
    Minimum interval (in seconds) between repeated debug log messages to avoid
-  logging spam when debug mode is enabled. Values are validated and clamped
-  to a sensible range (currently 1-120 seconds).
+  logging spam when debug mode is enabled. Valid range: 1-120 seconds (integers
+  only). Values are validated and clamped by the plugin on save.
 
 - `poll_interval_seconds` (int) - default: `5`\
    Suggested polling interval (in seconds) that clients can use to refresh the
-  uptime display. The frontend uses this to adjust its polling frequency. The
-  plugin validates and clamps this value (1-120 seconds).
+  uptime display. The frontend uses this to adjust its polling frequency. Valid
+  range: 1-120 seconds (integers only). Values are validated and clamped by the
+  plugin on save.
 
 ## Changing settings
 

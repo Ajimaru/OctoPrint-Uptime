@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>post-commit hook flow - OctoPrint-Uptime</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.5/dist/mermaid.min.js" integrity="sha384-enVdc7lTHDGtpROV85t9+VqPC2EyyB0hsRD0MrvQnHUsHmTHIz2D8SPP4EnBkstH" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:24px;}</style>
+    </head>
+    <body>
+        <h1>post-commit - Hook Runner Flow</h1>
+        <pre class="mermaid">
+            flowchart TD
+                Start([Start]) --> Wrapper["Ensure Bash / win-bash-wrapper"]
+                Wrapper --> CheckGit{GIT_DIR set?}
+                CheckGit -->|no| Exit0([Exit quietly])
+                CheckGit -->|yes| RepoRoot{Repo root found?}
+                RepoRoot -->|no| Exit1([Exit quietly])
+                RepoRoot -->|yes| SetupLog["Create .logs + tee output"]
+                SetupLog --> DropIn{.githooks/post-commit.d exists?}
+                DropIn -->|no| SkipDrop["No drop-in scripts"]
+                DropIn -->|yes| RunDrop["Run each *.sh (exec or bash)"]
+                RunDrop --> Summary["Summarize Passed/Failed"]
+                SkipDrop --> Summary
+                Summary --> Done([Exit 0])
+
+                classDef action fill:#ecfeff,stroke:#06b6d4
+                classDef decision fill:#fef3c7,stroke:#f59e0b
+                classDef success fill:#d1fae5,stroke:#10b981
+                class Wrapper,SetupLog,RunDrop,Summary action
+                class CheckGit,RepoRoot,DropIn decision
+                class Exit0,Exit1,SkipDrop,Done success
+        </pre>
+    <p>
+        <a href="index.html">Back to build scripts</a>
+    </p>
+    <script>
+            window.addEventListener('load', () => {
+                if (window.mermaid) {
+                    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+                    mermaid.run({ querySelector: '.mermaid' });
+                }
+            });
+    </script>
+</body>
+</html>

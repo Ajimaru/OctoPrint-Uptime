@@ -41,6 +41,18 @@ From the repository root:
 ./scripts/generate-diagrams.sh
 ```
 
+### Output
+
+- The script writes final SVGs to `docs/reference/diagrams/`:
+  - `classes.svg`
+  - `classes_detailed.svg`
+  - `packages.svg`
+
+### Notes
+
+- CI regenerates these files automatically; the repository ignores generated SVGs and intermediate files. Do not commit the generated SVGs unless you have a specific reason.
+- To retain DOT files for debugging, edit the script and comment out the cleanup step.
+
 ## generate-jsdocs.sh - JavaScript API documentation
 
 ### Overview
@@ -76,12 +88,12 @@ Examples:
 
 ### Output
 
-- The script writes final SVGs to `docs/reference/diagrams/`:
-  - `classes.svg`
-  - `classes_detailed.svg`
-  - `packages.svg`
+- The script writes Markdown to `docs/api/javascript.md` (generated and ignored by default).
 
-### Notes
+## translation_utils.py - shared helpers
 
-- CI regenerates these files automatically; the repository ignores generated SVGs and intermediate files. Do not commit the generated SVGs unless you have a specific reason.
-- To retain DOT files for debugging, edit the script and comment out the cleanup step.
+This module provides shared utilities for translation management scripts and hooks. It is not intended to be executed directly.
+
+## win-bash-wrapper.sh - Windows helper
+
+This helper wraps a bash call for Windows environments that need a consistent entry point to the shell scripts.
