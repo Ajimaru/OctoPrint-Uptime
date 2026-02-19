@@ -354,11 +354,9 @@ $(function () {
           var startedText = tooltipLines.join("\n");
           var anchor = navbarEl.find("a").first();
           try {
-           try {
-             if (anchor.data("bs.tooltip")) {
-               anchor.tooltip("destroy");
-             }
-           } catch (disposeErr) {
+            if (anchor.data("bs.tooltip")) {
+              anchor.tooltip("destroy");
+            }
           } catch (disposeErr) {
             if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
               console.error(
