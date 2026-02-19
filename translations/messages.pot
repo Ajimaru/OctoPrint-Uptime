@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-19 20:17+0100\n"
+"POT-Creation-Date: 2026-02-19 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: octoprint_uptime/templates/settings.jinja2:150
+#: octoprint_uptime/templates/settings.jinja2:151
 msgid "API poll interval for navbar updates (default: 5 s)."
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:138
+#: octoprint_uptime/templates/settings.jinja2:139
 msgid "Choose uptime format for the navbar."
+msgstr ""
+
+#: octoprint_uptime/templates/settings.jinja2:137
+msgid "Compact (e.g., 2d3h15m)"
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:104
@@ -49,11 +53,11 @@ msgstr ""
 msgid "D + H + M + S (days + hours + minutes + seconds)"
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:154
+#: octoprint_uptime/templates/settings.jinja2:155
 msgid "Debug"
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:166
+#: octoprint_uptime/templates/settings.jinja2:167
 msgid "Debug throttle (s)"
 msgstr ""
 
@@ -67,7 +71,7 @@ msgstr ""
 msgid "Display format"
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:160
+#: octoprint_uptime/templates/settings.jinja2:161
 msgid "Enable debug logging (throttled)"
 msgstr ""
 
@@ -84,7 +88,7 @@ msgstr ""
 msgid "Forbidden"
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:173
+#: octoprint_uptime/templates/settings.jinja2:174
 msgid "Minimum interval between debug log entries (s)."
 msgstr ""
 
@@ -108,7 +112,7 @@ msgstr ""
 msgid "OctoPrint-Uptime"
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:142
+#: octoprint_uptime/templates/settings.jinja2:143
 msgid "Polling interval (s)"
 msgstr ""
 
@@ -166,7 +170,7 @@ msgstr ""
 msgid "When enabled, shows system uptime in the navbar."
 msgstr ""
 
-#: octoprint_uptime/templates/settings.jinja2:162
+#: octoprint_uptime/templates/settings.jinja2:163
 msgid "When enabled, writes throttled debug logs."
 msgstr ""
 

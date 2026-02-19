@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-19 20:17+0100\n"
+"POT-Creation-Date: 2026-02-19 21:08+0100\n"
 "PO-Revision-Date: 2026-02-18 21:35+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -18,13 +18,17 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: octoprint_uptime/templates/settings.jinja2:150
+#: octoprint_uptime/templates/settings.jinja2:151
 msgid "API poll interval for navbar updates (default: 5 s)."
 msgstr "API-Abfrageintervall für Navbar-Updates (Standard: 5 s)."
 
-#: octoprint_uptime/templates/settings.jinja2:138
+#: octoprint_uptime/templates/settings.jinja2:139
 msgid "Choose uptime format for the navbar."
 msgstr "Anzeigeformat für die Uptime in der Navbar wählen."
+
+#: octoprint_uptime/templates/settings.jinja2:137
+msgid "Compact (e.g., 2d3h15m)"
+msgstr "Kompakt (z.B. 2d3h15m)"
 
 #: octoprint_uptime/templates/settings.jinja2:104
 msgid "Compact Display"
@@ -50,11 +54,11 @@ msgstr "D + H + M (Tage + Stunden + Minuten)"
 msgid "D + H + M + S (days + hours + minutes + seconds)"
 msgstr "D + H + M + S (Tage + Stunden + Minuten + Sekunden)"
 
-#: octoprint_uptime/templates/settings.jinja2:154
+#: octoprint_uptime/templates/settings.jinja2:155
 msgid "Debug"
 msgstr "Debug"
 
-#: octoprint_uptime/templates/settings.jinja2:166
+#: octoprint_uptime/templates/settings.jinja2:167
 msgid "Debug throttle (s)"
 msgstr "Debug-Drossel (s)"
 
@@ -70,7 +74,7 @@ msgstr ""
 msgid "Display format"
 msgstr "Anzeigeformat"
 
-#: octoprint_uptime/templates/settings.jinja2:160
+#: octoprint_uptime/templates/settings.jinja2:161
 msgid "Enable debug logging (throttled)"
 msgstr "Debug-Protokollierung aktivieren (gedrosselt)"
 
@@ -87,7 +91,7 @@ msgstr "Fehler bei der Ermittlung der Uptime"
 msgid "Forbidden"
 msgstr "Zugriff verweigert"
 
-#: octoprint_uptime/templates/settings.jinja2:173
+#: octoprint_uptime/templates/settings.jinja2:174
 msgid "Minimum interval between debug log entries (s)."
 msgstr "Mindestintervall zwischen Debug-Logeinträgen (s)."
 
@@ -111,7 +115,7 @@ msgstr "OctoPrint-Uptime:"
 msgid "OctoPrint-Uptime"
 msgstr "OctoPrint-Uptime"
 
-#: octoprint_uptime/templates/settings.jinja2:142
+#: octoprint_uptime/templates/settings.jinja2:143
 msgid "Polling interval (s)"
 msgstr "Abfrageintervall (s)"
 
@@ -172,7 +176,7 @@ msgstr "Wenn aktiviert, wird die OctoPrint-Uptime in der Navbar angezeigt."
 msgid "When enabled, shows system uptime in the navbar."
 msgstr "Wenn aktiviert, wird die System-Uptime in der Navbar angezeigt."
 
-#: octoprint_uptime/templates/settings.jinja2:162
+#: octoprint_uptime/templates/settings.jinja2:163
 msgid "When enabled, writes throttled debug logs."
 msgstr "Wenn aktiviert, schreibt das Plugin gedrosselte Debug-Logs."
 
