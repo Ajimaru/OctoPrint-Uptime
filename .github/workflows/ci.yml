@@ -82,21 +82,6 @@ jobs:
           python -m pip install "Babel==${{ env.BABEL_VERSION }}" "polib==${{ env.POLIB_VERSION }}"
           python -m pip install -e ".[develop]" build
 
-      - name: Use existing .venv for translation check
-        if: ${{ matrix.run-precommit }}
-        run: |
-          # Reuse the repository .venv created earlier for consistency and to avoid
-          # creating duplicate virtual environments in the same job.
-          if [ -d .venv ]; then
-            . .venv/bin/activate
-          else
-            # Fallback: create minimal venv with translation tools only
-            python -m venv .venv
-            . .venv/bin/activate
-            python -m pip install --upgrade pip
-            python -m pip install "Babel==${{ env.BABEL_VERSION }}" "polib==${{ env.POLIB_VERSION }}"
-          fi
-
       - # Run unit tests (no coverage)
         name: Run tests
         if: ${{ !matrix.run-coverage }}
