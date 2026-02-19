@@ -303,7 +303,8 @@ class OctoprintUptimePlugin(
                 return uptime
         except (AttributeError, TypeError, ValueError, OSError):
             return None
-        return None
+        except (AttributeError, TypeError, ValueError, OSError):
+            return None
 
     def _get_octoprint_uptime(self) -> Optional[float]:
         """Get OctoPrint process uptime using psutil if available."""
