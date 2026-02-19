@@ -355,7 +355,9 @@ $(function () {
           var anchor = navbarEl.find("a").first();
           try {
             if (anchor.data("bs.tooltip")) {
-              anchor.tooltip("dispose");
+             if (anchor.data("bs.tooltip")) {
+               anchor.tooltip("destroy");
+             }
             }
           } catch (disposeErr) {
             if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
