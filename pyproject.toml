@@ -25,6 +25,9 @@ dynamic = [
 [tool.setuptools]
 include-package-data = true
 
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
 [tool.setuptools.package-data]
 octoprint_uptime = [
     "translations/**/*.mo",
