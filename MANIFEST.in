@@ -7,5 +7,5 @@ include babel.cfg
 include translations/messages.pot
 recursive-include octoprint_uptime/templates *
 recursive-include octoprint_uptime/static *
-recursive-include octoprint_uptime/translations *.mo
+recursive-include octoprint_uptime/translations *.po *.mo *.pot
 recursive-include translations *.po *.mo
