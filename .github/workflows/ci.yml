@@ -149,6 +149,13 @@ jobs:
             npm install --no-audit --no-fund
           fi
 
+      - # Install ShellCheck >= 0.11.0 required by custom shellcheck-hook.sh
+        name: Install ShellCheck
+        if: ${{ matrix.run-precommit }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck || true
+
       - # Execute pre-commit hooks across repository
         name: Run pre-commit
         if: ${{ matrix.run-precommit }}

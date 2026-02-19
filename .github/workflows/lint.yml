@@ -90,6 +90,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install "Babel==${{ env.BABEL_VERSION }}" "polib==${{ env.POLIB_VERSION }}"
 
+      - # Install ShellCheck >= 0.11.0 required by custom shellcheck-hook.sh
+        name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck || true
+
       - # Execute all pre-commit hooks on repository
         name: Run pre-commit on all files
         run: |
