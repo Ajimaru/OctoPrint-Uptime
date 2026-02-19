@@ -75,8 +75,8 @@ jobs:
       - # Create venv and install all dependencies
         name: Create venv and install dependencies
         run: |
-          python -m venv .venv
-          . .venv/bin/activate
+          python -m venv venv
+          . venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install "OctoPrint>=1.10.0,<2"
           python -m pip install "Babel==${{ env.BABEL_VERSION }}" "polib==${{ env.POLIB_VERSION }}"
@@ -86,14 +86,14 @@ jobs:
         name: Run tests
         if: ${{ !matrix.run-coverage }}
         run: |
-          if [ -d .venv ]; then . .venv/bin/activate; fi
+          if [ -d venv ]; then . venv/bin/activate; fi
           pytest -q
 
       - # Run unit tests with coverage reporting
         name: Run tests (with coverage)
         if: ${{ matrix.run-coverage }}
         run: |
-          if [ -d .venv ]; then . .venv/bin/activate; fi
+          if [ -d venv ]; then . venv/bin/activate; fi
           pytest -q --cov=octoprint_uptime --cov-branch --cov-report=xml:coverage.xml
 
       - # Upload coverage.xml to Codecov
@@ -162,19 +162,19 @@ jobs:
         name: Run pre-commit
         if: ${{ matrix.run-precommit }}
         run: |
-          if [ -d .venv ]; then . .venv/bin/activate; fi
+          if [ -d venv ]; then . venv/bin/activate; fi
           pre-commit run --all-files
 
       - name: Smoke install (import check)
         run: |
-          if [ -d .venv ]; then . .venv/bin/activate; fi
+          if [ -d venv ]; then . venv/bin/activate; fi
           python -c "import importlib, sys; importlib.import_module('octoprint_uptime'); print('ok')"
 
       - # Build source and wheel distributions
         name: Build package
         if: ${{ matrix.run-build }}
         run: |
-          if [ -d .venv ]; then . .venv/bin/activate; fi
+          if [ -d venv ]; then . venv/bin/activate; fi
           python -m build
 
   octoprint-smoke:
