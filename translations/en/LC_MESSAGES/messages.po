@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-19 22:37+0100\n"
+"POT-Creation-Date: 2026-02-19 23:00+0100\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -76,16 +76,16 @@ msgstr ""
 msgid "Enable debug logging (throttled)"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:797
+#: octoprint_uptime/plugin.py:793
 msgid "Error computing OctoPrint uptime"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:760
+#: octoprint_uptime/plugin.py:756
 msgid "Error computing uptime"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:698 octoprint_uptime/plugin.py:705
-#: octoprint_uptime/plugin.py:734
+#: octoprint_uptime/plugin.py:694 octoprint_uptime/plugin.py:701
+#: octoprint_uptime/plugin.py:730
 msgid "Forbidden"
 msgstr ""
 
@@ -145,12 +145,12 @@ msgstr ""
 msgid "Toggle between system and OctoPrint uptime in the navbar"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:664
+#: octoprint_uptime/plugin.py:660
 #, python-format
 msgid "Uptime API requested, result=%s"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:620 octoprint_uptime/plugin.py:636
+#: octoprint_uptime/plugin.py:616 octoprint_uptime/plugin.py:632
 #: octoprint_uptime/templates/settings.jinja2:6
 msgid "Uptime could not be determined on this system."
 msgstr ""
@@ -176,7 +176,7 @@ msgstr ""
 msgid "When enabled, writes throttled debug logs."
 msgstr ""
 
-#: octoprint_uptime/plugin.py:820 octoprint_uptime/plugin.py:826
+#: octoprint_uptime/plugin.py:816 octoprint_uptime/plugin.py:822
 msgid "full"
 msgstr ""
 
@@ -184,7 +184,7 @@ msgstr ""
 msgid "navbar_uptime"
 msgstr "Uptime"
 
-#: octoprint_uptime/plugin.py:605 octoprint_uptime/plugin.py:646
-#: octoprint_uptime/plugin.py:782
+#: octoprint_uptime/plugin.py:601 octoprint_uptime/plugin.py:642
+#: octoprint_uptime/plugin.py:778
 msgid "unknown"
 msgstr ""
