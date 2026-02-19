@@ -41,7 +41,7 @@ From the repository root:
 ./scripts/generate-diagrams.sh
 ```
 
-### Output
+### Diagram Output
 
 - The script writes final SVGs to `docs/reference/diagrams/`:
   - `classes.svg`
