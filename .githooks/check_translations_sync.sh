@@ -34,6 +34,9 @@ cd "$REPO_ROOT"
 
 VENV_PYBABEL="./venv/bin/pybabel"
 VENV_PYTHON="./venv/bin/python3"
+# Note: Python blocks in this script require the virtual environment (VENV_PYTHON).
+# Unlike pybabel (which falls back to system PATH), Python blocks only run if venv exists.
+# This is intentional for consistency with compile_translations.sh.
 PYBABEL=""
 if [[ -x "$VENV_PYBABEL" ]]; then
   PYBABEL="$VENV_PYBABEL"
@@ -147,6 +150,10 @@ import os
 import sys
 from pathlib import Path
 
+# Add scripts to path to import shared utilities
+sys.path.insert(0, str(Path.cwd() / "scripts"))
+from translation_utils import iter_po_files
+
 tmpdir = Path(sys.argv[1])
 translations = tmpdir / "translations"
 
@@ -155,14 +162,6 @@ try:
 except Exception:
   print("polib not available; skipping obsolete cleanup in temp copy", file=sys.stderr)
   sys.exit(0)
-
-def iter_po_files(root: Path):
-  if not root.exists():
-    return
-  for lang_dir in root.iterdir():
-    po = lang_dir / "LC_MESSAGES" / "messages.po"
-    if po.exists():
-      yield po
 
 total = 0
 for po in iter_po_files(translations):
@@ -189,6 +188,10 @@ if [[ -x "$VENV_PYTHON" ]]; then
 import sys
 from pathlib import Path
 
+# Add scripts to path to import shared utilities
+sys.path.insert(0, str(Path.cwd() / "scripts"))
+from translation_utils import iter_po_files
+
 tmpdir = Path(sys.argv[1])
 translations = tmpdir / "translations"
 
@@ -197,20 +200,13 @@ try:
 except ImportError:
   sys.exit(0)
 
-def iter_po_files(root: Path):
-  if not root.exists():
-    return
-  for lang_dir in root.iterdir():
-    po = lang_dir / "LC_MESSAGES" / "messages.po"
-    if po.exists():
-      yield po
-
 for po in iter_po_files(translations):
   try:
     pofile = polib.pofile(str(po))
     pofile.save()
-  except Exception:
-    pass
+  except Exception as e:
+    print(f"Warning: Failed to normalize {po}: {e}", file=sys.stderr)
+    continue
 NORMALIZE
 fi
 
