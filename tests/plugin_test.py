@@ -347,12 +347,13 @@ def test_update_internal_state_and_get_api_settings_and_logging():
         pytest.fail(f"poll != 120 (got {poll!r})")
 
 
-def test_log_settings_after_save_prev_navbar_change():
+def test_log_settings_after_save_emits_info():
     """
     Test that the plugin logs settings correctly after saving.
 
     This test initializes the plugin with specific settings
-    and verifies that at least one info log call is made.
+    and verifies that at least one info log call is made when
+    _log_settings_after_save() is invoked.
     """
     p = plugin.OctoprintUptimePlugin()
     if hasattr(p, "set_logger"):
@@ -932,10 +933,12 @@ def test_get_octoprint_uptime_success(monkeypatch):
 
     fake_ps = SimpleNamespace(Process=FakeProcess)
 
+    orig_import = importlib.import_module
+
     def safe_import_module(name):
         if name == "psutil":
             return fake_ps
-        return importlib.import_module(name)
+        return orig_import(name)
 
     monkeypatch.setattr(importlib, "import_module", safe_import_module)
     val = p._get_octoprint_uptime()
@@ -991,11 +994,12 @@ def test_get_octoprint_uptime_info(monkeypatch):
             return time.time() - 3665  # 1h 1m 5s
 
     fake_ps = SimpleNamespace(Process=FakeProcess)
+    orig_import = importlib.import_module
 
     def safe_import_module(name):
         if name == "psutil":
             return fake_ps
-        return importlib.import_module(name)
+        return orig_import(name)
 
     monkeypatch.setattr(importlib, "import_module", safe_import_module)
     seconds, uptime_full, uptime_dhm, _, _ = p._get_octoprint_uptime_info()
@@ -1800,7 +1804,7 @@ def test_reload_plugin_without_permissions_module():
         importlib.reload(plugin)
         if plugin.PERM is not None:
             raise AssertionError(
-                "Expected plugin.PERM to be None when " "permissions module is missing"
+                "Expected plugin.PERM to be None when permissions module is missing"
             )
     finally:
         importlib.import_module = original_import_module

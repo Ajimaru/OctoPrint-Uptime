@@ -35,7 +35,7 @@ compatibility:
     - 1.10.0
   os:
     - linux
-  python: ">=3.8,<3.14"
+  python: ">=3.8,<4"
 ---
 
 OctoPrint-Uptime is a lightweight plugin that displays both the host system uptime and OctoPrint process uptime in the navbar. Additionally, it provides a small, authenticated JSON API that can be queried by external tools or scripts.
@@ -48,21 +48,53 @@ OctoPrint-Uptime is a lightweight plugin that displays both the host system upti
 - Secure (authenticated API, no unauthorized access)
 - Translatable (i18n ready, German/English)
 
-## Uptime retrieval changes
-
-- The plugin no longer executes the system `uptime` binary.
-- Uptime is retrieved by one of two methods:
-  - `/proc/uptime` (Linux)
-  - the `psutil` Python package (when available)
-- If neither source is available the API will set `uptime_available: false` and may include an `uptime_note` with remediation instructions (for example suggesting `pip install psutil` in the OctoPrint virtualenv).
-
 **Installation:**
 Via the Plugin Manager using the URL from the README or manually via pip.
 
 **Configuration:**
 All settings are available in the OctoPrint UI under "OctoPrint Uptime".
 
-GET `/api/plugin/octoprint_uptime` (OctoPrint API key required)
+## How Uptime is Retrieved
 
-**Lizenz:**
+- On Linux, the plugin reads system uptime from `/proc/uptime` first and falls back to the `psutil` Python package if `/proc/uptime` is unavailable. On non-Linux platforms it uses `psutil` exclusively.
+- If neither source is available, the API sets `uptime_available: false` and may include an `uptime_note` with remediation instructions (for example, suggesting `pip install psutil` in the OctoPrint virtualenv).
+
+## API Endpoint
+
+GET /api/plugin/octoprint_uptime
+Authorization: Required (OctoPrint API key or authenticated session)
+
+Returns system and OctoPrint uptime information with formatted variants:
+
+```json
+{
+  "seconds": 3600,
+  "uptime": "1h 0m",
+  "uptime_dhm": "1h 0m",
+  "octoprint_seconds": 1234,
+  "octoprint_uptime": "20m",
+  "display_format": "dhm",
+  "poll_interval_seconds": 5,
+  "uptime_available": true
+}
+```
+
+When uptime sources are unavailable, the API sets `uptime_available: false` and
+includes `uptime_note` to explain why:
+
+```json
+{
+  "uptime_available": false,
+  "uptime_note": "No sources available",
+  "seconds": null,
+  "uptime": null,
+  "uptime_dhm": null,
+  "octoprint_seconds": null,
+  "octoprint_uptime": null,
+  "display_format": "dhm",
+  "poll_interval_seconds": 5
+}
+```
+
+**License:**
 AGPLv3

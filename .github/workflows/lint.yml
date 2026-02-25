@@ -18,6 +18,10 @@ jobs:
   lint:
     name: Lint (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    env:
+      BABEL_VERSION: "2.18.0"
+      POLIB_VERSION: "1.2.0"
+      BANDIT_VERSION: "1.9.3"
 
     strategy:
       fail-fast: false
@@ -50,7 +54,7 @@ jobs:
       - # Install pre-commit and Babel for linting
         name: Install minimal dev dependencies for CI
         run: |
-          python -m pip install pre-commit Babel
+          python -m pip install pre-commit "Babel==${{ env.BABEL_VERSION }}" "polib==${{ env.POLIB_VERSION }}"
 
       - # Cache pre-commit hooks to speed up subsequent runs
         name: Cache pre-commit
@@ -67,7 +71,7 @@ jobs:
         name: Set up Node.js for hooks
         uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: "20.19.0"
           cache: "npm"
           cache-dependency-path: "package-lock.json"
 
@@ -84,7 +88,28 @@ jobs:
           python -m venv venv
           . venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install Babel
+          python -m pip install "Babel==${{ env.BABEL_VERSION }}" "polib==${{ env.POLIB_VERSION }}"
+
+      - # Install ShellCheck >= 0.11.0 required by custom shellcheck-hook.sh
+        name: Install ShellCheck
+        run: |
+          set -e
+          SHELLCHECK_VERSION="0.11.0"
+          INSTALL_DIR="/usr/local/bin"
+          SHELLCHECK_URL="https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz"
+
+          echo "Downloading ShellCheck ${SHELLCHECK_VERSION}..."
+          mkdir -p /tmp/shellcheck-install
+          cd /tmp/shellcheck-install
+          wget -q "${SHELLCHECK_URL}" -O shellcheck.tar.xz
+          tar -xf shellcheck.tar.xz
+
+          echo "Installing to ${INSTALL_DIR}..."
+          sudo cp "shellcheck-v${SHELLCHECK_VERSION}/shellcheck" "${INSTALL_DIR}/shellcheck"
+          sudo chmod +x "${INSTALL_DIR}/shellcheck"
+
+          echo "Verifying installation..."
+          "${INSTALL_DIR}/shellcheck" --version
 
       - # Execute all pre-commit hooks on repository
         name: Run pre-commit on all files
@@ -95,7 +120,7 @@ jobs:
         name: Bandit (security)
         if: success() || failure()
         run: |
-          pip install bandit==1.9.3
+          pip install "bandit==${{ env.BANDIT_VERSION }}"
           bandit -r octoprint_uptime -x .venv,venv,.git -ll
       - # Print summary message
         name: Summary

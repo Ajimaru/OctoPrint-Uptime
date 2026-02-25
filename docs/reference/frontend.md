@@ -18,6 +18,8 @@ Example response (partial):
 }
 ```
 
+**Note**: This endpoint returns API-provided fields (`seconds`, `uptime`, `uptime_dhm`, `uptime_short`, `display_format`, `poll_interval_seconds`, `uptime_available`, `uptime_note`). Plugin configuration settings such as `show_system_uptime`, `show_octoprint_uptime`, `compact_display`, and `compact_toggle_interval_seconds` are retrieved from the OctoPrint settings system, not from this endpoint. See [Settings](../architecture/settings.md) for details on configuring these options.
+
 Quick test (local OctoPrint, with API key if needed):
 
 ```bash
@@ -37,7 +39,7 @@ Check / test poll interval:
 
 - If the API returns `uptime_available: false` the client should fall back to a sensible UI state (for example display "unknown") and surface the localized `uptime_note` when present to guide remediation.
 
-## Navbar show / hide behaviour
+## Navbar show/hide behavior
 
 Navbar visibility is driven entirely by the JavaScript ViewModel:
 
@@ -65,7 +67,7 @@ appear broken.
 ## Debugging tips
 
 - If the navbar is not displayed, check `show_system_uptime` and `show_octoprint_uptime`
-  in the plugin settings (Settings → Plugin OctoPrint-Uptime).
+  in the plugin settings (Settings → Plugin OctoPrint Uptime).
 - Enable `debug: true` in the plugin settings to get throttled server-side log
   messages from each API call.
 - For empty or faulty responses: check OctoPrint logs and use `curl -v` for troubleshooting.

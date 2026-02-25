@@ -83,7 +83,7 @@ This configures Git to use the hooks from `.githooks/` instead of the default `.
 - `pre-commit` - Runs code formatting, linting, and validation checks before each commit
 - `commit-msg` - Validates commit message format
 
-After configuring, Git will automatically run these hooks on each commit. If a hook fails, the commit is rejected, fix the issues and try again.
+After configuring, Git will automatically run these hooks on each commit. If a hook fails, the commit is rejected. Fix the issues and try again.
 
 To temporarily skip hooks (not recommended):
 
@@ -93,7 +93,7 @@ git commit --no-verify
 
 **Automatic pre-commit autoupdate (optional):**
 
-If you want your local hooks to attempt to keep themselves updated before running, set the environment variable `PRECOMMIT_AUTOUPDATE=1`. The repo-local wrapper will run `pre-commit autoupdate` at most once per 24 hours. This is opt-in, running autoupdate on every commit by default is not recommended because it may change `.pre-commit-config.yaml` unexpectedly.
+If you want your local hooks to attempt to keep themselves updated before running, set the environment variable `PRECOMMIT_AUTOUPDATE=1`. The repo-local wrapper will run `pre-commit autoupdate` at most once per 24 hours. This is opt-in. Running autoupdate on every commit by default is not recommended because it may change `.pre-commit-config.yaml` unexpectedly.
 
 To enable:
 
