@@ -541,6 +541,19 @@ $(function () {
           self.octoprintUptimeDisplay("Error");
           self.uptimeDisplayText("Error");
           stopCompactToggleLoop();
+
+          // Clear any existing tooltip so stale uptime timestamps are not shown on error
+          try {
+            if (navbarEl && typeof navbarEl.tooltip === "function") {
+              navbarEl.tooltip("destroy");
+            }
+          } catch (e) {
+            // Ignore tooltip cleanup errors
+          }
+          navbarEl
+            .removeAttr("title")
+            .removeAttr("data-original-title")
+            .removeAttr("data-bs-original-title");
           if (!isNavbarEnabled()) {
             navbarEl.hide();
           }
