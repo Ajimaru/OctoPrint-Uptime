@@ -659,9 +659,14 @@ class OctoprintUptimePlugin(
         ) = self._get_octoprint_uptime_info()
         self._log_debug(_("Uptime API requested, result=%s") % uptime_full)
 
+        uptime_available = seconds is not None
+        uptime_note = (
+            _("Uptime could not be determined on this system.") if not uptime_available else None
+        )
+
         if _flask is not None:
             display_format, poll_interval = self._get_api_settings()
-            return _flask.jsonify(
+            resp = dict(
                 uptime=uptime_full,
                 uptime_dhm=uptime_dhm,
                 uptime_dh=uptime_dh,
@@ -674,9 +679,20 @@ class OctoprintUptimePlugin(
                 octoprint_seconds=octoprint_seconds,
                 display_format=display_format,
                 poll_interval_seconds=poll_interval,
+                uptime_available=uptime_available,
             )
+            if not uptime_available:
+                resp["uptime_note"] = uptime_note
+            return _flask.jsonify(**resp)
 
-        return {"uptime": uptime_full, "octoprint_uptime": octoprint_uptime_full}
+        resp = {
+            "uptime": uptime_full,
+            "octoprint_uptime": octoprint_uptime_full,
+            "uptime_available": uptime_available,
+        }
+        if not uptime_available:
+            resp["uptime_note"] = uptime_note
+        return resp
 
     def _handle_permission_check(self) -> Optional[Any]:
         """
