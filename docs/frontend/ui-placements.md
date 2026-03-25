@@ -34,7 +34,7 @@ actual template lives in `octoprint_uptime/templates/navbar.jinja2`:
 <li id="navbar_plugin_navbar_uptime" class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
     <i class="fas fa-history"></i>
-    <span data-bind="html: uptimeDisplayHtml"></span>
+    <span data-bind="text: uptimeDisplayText"></span>
   </a>
 </li>
 ```

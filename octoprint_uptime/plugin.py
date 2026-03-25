@@ -674,6 +674,7 @@ class OctoprintUptimePlugin(
                 octoprint_seconds=octoprint_seconds,
                 display_format=display_format,
                 poll_interval_seconds=poll_interval,
+                uptime_available=True,
             )
 
         return {"uptime": uptime_full, "octoprint_uptime": octoprint_uptime_full}
