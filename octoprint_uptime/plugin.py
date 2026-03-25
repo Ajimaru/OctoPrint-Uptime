@@ -667,6 +667,7 @@ class OctoprintUptimePlugin(
                 uptime_dh=uptime_dh,
                 uptime_d=uptime_d,
                 seconds=seconds,
+                uptime_available=True,
                 octoprint_uptime=octoprint_uptime_full,
                 octoprint_uptime_dhm=octoprint_uptime_dhm,
                 octoprint_uptime_dh=octoprint_uptime_dh,
@@ -676,7 +677,7 @@ class OctoprintUptimePlugin(
                 poll_interval_seconds=poll_interval,
             )
 
-        return {"uptime": uptime_full, "octoprint_uptime": octoprint_uptime_full}
+        return {"uptime": uptime_full, "octoprint_uptime": octoprint_uptime_full, "uptime_available": True}
 
     def _handle_permission_check(self) -> Optional[Any]:
         """

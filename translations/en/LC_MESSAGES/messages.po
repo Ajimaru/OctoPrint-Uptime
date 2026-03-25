@@ -103,7 +103,7 @@ msgstr ""
 
 #: octoprint_uptime/plugin.py:248
 msgid "OctoPrint Uptime"
-msgstr ""
+msgstr "OctoPrint Uptime"
 
 #: octoprint_uptime/templates/settings.jinja2:92
 msgid "OctoPrint Uptime:"

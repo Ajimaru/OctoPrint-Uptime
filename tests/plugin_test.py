@@ -641,8 +641,8 @@ def test_on_api_get_permission_and_response(monkeypatch):
     )
     monkeypatch.setattr(plugin, "_flask", None, raising=False)
     out = p.on_api_get()
-    if out != {"uptime": "42s", "octoprint_uptime": "1s"}:
-        pytest.fail(f"Expected out == {{'uptime': '42s', 'octoprint_uptime': '1s'}}, got {out!r}")
+    if out != {"uptime": "42s", "octoprint_uptime": "1s", "uptime_available": True}:
+        pytest.fail(f"Expected out == {{'uptime': '42s', 'octoprint_uptime': '1s', 'uptime_available': True}}, got {out!r}")
 
     monkeypatch.setattr(plugin.OctoprintUptimePlugin, "_check_permissions", lambda _: False)
     p2 = plugin.OctoprintUptimePlugin()

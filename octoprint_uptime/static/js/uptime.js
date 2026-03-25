@@ -538,6 +538,9 @@ $(function () {
         })
         .fail(function () {
           self.uptimeDisplay("Error");
+          self.octoprintUptimeDisplay("Error");
+          self.uptimeDisplayText("Error");
+          stopCompactToggleLoop();
           if (!isNavbarEnabled()) {
             navbarEl.hide();
           }
