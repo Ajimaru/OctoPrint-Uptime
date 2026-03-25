@@ -417,7 +417,7 @@ $(function () {
       if (!isNavbarEnabled()) {
         navbarEl.hide();
         stopCompactToggleLoop();
-        scheduleNext(DEFAULT_POLL);
+        scheduleNextFromData(null);
         return;
       }
 

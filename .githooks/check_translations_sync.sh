@@ -30,6 +30,18 @@ else
   fi
 fi
 
+PYTHON=""
+if [[ -x "$VENV_PYTHON" ]]; then
+  PYTHON="$VENV_PYTHON"
+elif command -v python3 >/dev/null 2>&1; then
+  PYTHON="$(command -v python3)"
+elif command -v python >/dev/null 2>&1; then
+  PYTHON="$(command -v python)"
+else
+  echo "python3 not found in ./venv or system PATH. Install dev requirements: pip install polib" >&2
+  exit 1
+fi
+
 if [[ ! -f translations/messages.pot ]]; then
   echo "POT file not found at translations/messages.pot. Update .pot files first." >&2
   exit 1
@@ -51,8 +63,7 @@ if ! output="$($PYBABEL update -i translations/messages.pot -d "$tmpdir"/transla
 fi
 
 # normalize and compare using Python with polib for canonical representation
-if [[ -x "$VENV_PYTHON" ]]; then
-  "$VENV_PYTHON" - <<'COMPARE' "$REPO_ROOT" "$tmpdir"
+"$PYTHON" - <<'COMPARE' "$REPO_ROOT" "$tmpdir"
 import sys
 from pathlib import Path
 
@@ -114,9 +125,5 @@ else:
     print("Translations are up-to-date.")
     sys.exit(0)
 COMPARE
-  exit_code=$?
-  exit "$exit_code"
-fi
-
-printf '%s\n' "ERROR: Unable to run Python for comparison check"
-exit 1
+exit_code=$?
+exit "$exit_code"

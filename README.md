@@ -59,7 +59,7 @@ The navbar widget polls the plugin API and displays both system and OctoPrint pr
 
 ### Note about uptime retrieval
 
-The plugin determines system uptime using either `/proc/uptime` on Linux systems or the Python library `psutil`; OctoPrint process uptime is retrieved via the OctoPrint API. `psutil` is installed automatically as a dependency. If system uptime cannot be determined, the plugin API returns `uptime_available: false` along with a human‑readable `uptime_note`.
+The plugin determines system uptime using either `/proc/uptime` on Linux systems or the Python library `psutil`, and OctoPrint process uptime from the current OctoPrint process start time via `psutil`. `psutil` is installed automatically as a dependency. If system uptime cannot be determined, the plugin API returns `uptime_available: false` along with a human‑readable `uptime_note`.
 
 ## Configuration
 
