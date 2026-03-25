@@ -156,7 +156,7 @@ $(function () {
      * Get the configured display format (fallback to "full").
      * @function displayFormat
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
-     * @returns {string} one of "full", "dhm", "dh", or "d"
+     * @returns {string} one of "full", "dhm", "dh", "d", or "short"
      */
     var displayFormat = function () {
       try {
