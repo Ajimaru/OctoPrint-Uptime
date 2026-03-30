@@ -10,7 +10,12 @@ Example response (partial):
   "seconds": 3600,
   "uptime": "1 hour",
   "uptime_dhm": "0d 1h 0m",
-  "uptime_short": "1h",
+  "uptime_dh": "0d 1h",
+  "uptime_d": "0d",
+  "octoprint_uptime": "30 minutes",
+  "octoprint_uptime_dhm": "0d 0h 30m",
+  "octoprint_uptime_dh": "0d 0h",
+  "octoprint_uptime_d": "0d",
   "display_format": "dhm",
   "poll_interval_seconds": 5,
   "uptime_available": true,
@@ -18,7 +23,7 @@ Example response (partial):
 }
 ```
 
-**Note**: This endpoint returns API-provided fields (`seconds`, `uptime`, `uptime_dhm`, `uptime_short`, `display_format`, `poll_interval_seconds`, `uptime_available`, `uptime_note`). Plugin configuration settings such as `show_system_uptime`, `show_octoprint_uptime`, `compact_display`, and `compact_toggle_interval_seconds` are retrieved from the OctoPrint settings system, not from this endpoint. See [Settings](../architecture/settings.md) for details on configuring these options.
+**Note**: This endpoint returns API-provided fields (`seconds`, `uptime`, `uptime_dhm`, `uptime_dh`, `uptime_d`, `octoprint_uptime`, `octoprint_uptime_dhm`, `octoprint_uptime_dh`, `octoprint_uptime_d`, `display_format`, `poll_interval_seconds`, `uptime_available`, `uptime_note`). Plugin configuration settings such as `show_system_uptime`, `show_octoprint_uptime`, `compact_display`, and `compact_toggle_interval_seconds` are retrieved from the OctoPrint settings system, not from this endpoint. See [Settings](../architecture/settings.md) for details on configuring these options.
 
 Quick test (local OctoPrint, with API key if needed):
 

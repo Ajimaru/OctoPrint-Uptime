@@ -417,7 +417,7 @@ $(function () {
       if (!isNavbarEnabled()) {
         navbarEl.hide();
         stopCompactToggleLoop();
-        scheduleNext(DEFAULT_POLL);
+        scheduleNextFromData(null);
         return;
       }
 
@@ -538,11 +538,13 @@ $(function () {
         })
         .fail(function () {
           self.uptimeDisplay("Error");
+          stopCompactToggleLoop();
+          self.uptimeDisplayText(localize("Error"));
           if (!isNavbarEnabled()) {
             navbarEl.hide();
           }
-          // Continue polling even after failure (with default interval)
-          scheduleNext(DEFAULT_POLL);
+          // Continue polling even after failure (respecting configured interval)
+          scheduleNextFromData(null);
         });
     };
 
