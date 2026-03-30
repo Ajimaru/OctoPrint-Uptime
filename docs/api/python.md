@@ -9,6 +9,7 @@ The plugin exposes a few convenience formatting functions in the public API usab
 - `format_uptime(seconds: float) -> str` - full human-readable form (e.g. "1d 2h 3m 4s").
 - `format_uptime_dhm(seconds: float) -> str` - days/hours/minutes (omits seconds).
 - `format_uptime_dh(seconds: float) -> str` - days/hours (omits minutes and seconds).
+- `format_uptime_dh(seconds: float) -> str` - days/hours (omits minutes and seconds).
 - `format_uptime_d(seconds: float) -> str` - whole days only (e.g. "3d").
 
 Example usage from a Python context inside OctoPrint:
