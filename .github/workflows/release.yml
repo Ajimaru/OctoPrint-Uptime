@@ -102,7 +102,7 @@ jobs:
           path: dist/*
 
       - name: Generate release notes
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require("fs");
@@ -145,7 +145,7 @@ jobs:
           echo "title=$title" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: ${{ steps.release_title.outputs.title }}
           draft: false
