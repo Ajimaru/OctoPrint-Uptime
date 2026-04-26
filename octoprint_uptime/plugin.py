@@ -305,8 +305,47 @@ class OctoprintUptimePlugin(
             return None
         return None
 
+    def _get_octoprint_uptime_from_proc(self) -> Optional[float]:
+        """Get process uptime from /proc on Linux in a clock-jump-safe way."""
+        try:
+            if not (os.path.exists("/proc/uptime") and os.path.exists("/proc/self/stat")):
+                return None
+
+            with open("/proc/uptime", encoding="utf-8") as f_uptime:
+                system_uptime = float(f_uptime.readline().split()[0])
+
+            with open("/proc/self/stat", encoding="utf-8") as f_stat:
+                stat_line = f_stat.readline().strip()
+
+            # /proc/self/stat contains "pid (comm) ..." where comm can include spaces.
+            rparen = stat_line.rfind(")")
+            if rparen == -1:
+                return None
+            stat_fields = stat_line[rparen + 2 :].split()
+            if len(stat_fields) <= 19:
+                return None
+
+            start_ticks = float(stat_fields[19])
+            clk_tck = float(os.sysconf("SC_CLK_TCK"))
+            if clk_tck <= 0:
+                return None
+
+            process_uptime = system_uptime - (start_ticks / clk_tck)
+            if (
+                isinstance(process_uptime, (int, float))
+                and 0 <= process_uptime < 10 * 365 * 24 * 3600
+            ):
+                return process_uptime
+        except (ValueError, TypeError, OSError):
+            return None
+        return None
+
     def _get_octoprint_uptime(self) -> Optional[float]:
-        """Get OctoPrint process uptime using psutil if available."""
+        """Get OctoPrint process uptime, preferring Linux /proc and falling back to psutil."""
+        proc_uptime = self._get_octoprint_uptime_from_proc()
+        if proc_uptime is not None:
+            return proc_uptime
+
         try:
             _ps = importlib.import_module("psutil")
         except ImportError:

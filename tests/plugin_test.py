@@ -908,6 +908,7 @@ def test_get_octoprint_uptime_success(monkeypatch):
     Process.create_time() for the current process.
     """
     p = plugin.OctoprintUptimePlugin()
+    monkeypatch.setattr(p, "_get_octoprint_uptime_from_proc", lambda: None)
 
     class FakeProcess:
         """
@@ -946,11 +947,49 @@ def test_get_octoprint_uptime_success(monkeypatch):
         pytest.fail("Expected val to be a float and within 5 of 500")
 
 
+def test_get_octoprint_uptime_from_proc_success(monkeypatch):
+    """
+    Test that _get_octoprint_uptime_from_proc computes process uptime on Linux.
+    """
+    p = plugin.OctoprintUptimePlugin()
+
+    proc_uptime = "1000.00 0.00\n"
+    proc_stat = (
+        "1234 (octoprint) S 1 1 1 0 -1 4194560 0 0 0 0 0 0 0 0 20 0 1 0 "
+        "10000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n"
+    )
+
+    monkeypatch.setattr(
+        plugin.os.path,
+        "exists",
+        lambda path: path in {"/proc/uptime", "/proc/self/stat"},
+    )
+    monkeypatch.setattr(plugin.os, "sysconf", lambda _name: 100)
+
+    mo_uptime = mock.mock_open(read_data=proc_uptime)
+    mo_stat = mock.mock_open(read_data=proc_stat)
+    orig_open = builtins.open
+
+    def fake_open(path, *args, **kwargs):
+        if path == "/proc/uptime":
+            return mo_uptime(*args, **kwargs)
+        if path == "/proc/self/stat":
+            return mo_stat(*args, **kwargs)
+        return orig_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "open", fake_open)
+
+    val = p._get_octoprint_uptime_from_proc()
+    if not (isinstance(val, float) and abs(val - 900.0) < 0.001):
+        pytest.fail("Expected val to be 900.0 seconds from /proc-based process uptime")
+
+
 def test_get_octoprint_uptime_import_error(monkeypatch):
     """
     Test that _get_octoprint_uptime returns None when psutil cannot be imported.
     """
     p = plugin.OctoprintUptimePlugin()
+    monkeypatch.setattr(p, "_get_octoprint_uptime_from_proc", lambda: None)
     monkeypatch.setattr(
         importlib,
         "import_module",
@@ -1878,6 +1917,7 @@ def test_get_octoprint_uptime_handles_process_errors(monkeypatch):
     Test _get_octoprint_uptime returns None when psutil.Process/create_time fails.
     """
     p = plugin.OctoprintUptimePlugin()
+    monkeypatch.setattr(p, "_get_octoprint_uptime_from_proc", lambda: None)
 
     class BadProcess:
         """
