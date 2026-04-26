@@ -53,7 +53,7 @@ develop = [
     "build",
     "mock",
     "pre-commit>=3.0.0",
-    "pylint>=2.17.0",
+    "pylint>=3.3.9",
     "pytest",
     "pytest-cov",
     "tomli",
