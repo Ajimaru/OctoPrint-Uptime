@@ -908,7 +908,11 @@ def test_get_octoprint_uptime_success(monkeypatch):
     Process.create_time() for the current process.
     """
     p = plugin.OctoprintUptimePlugin()
-    monkeypatch.setattr(p, "_get_octoprint_uptime_from_proc", lambda: None)
+
+    def fake_proc_uptime():
+        return None
+
+    monkeypatch.setattr(p, "_get_octoprint_uptime_from_proc", fake_proc_uptime)
 
     class FakeProcess:
         """
@@ -989,7 +993,11 @@ def test_get_octoprint_uptime_import_error(monkeypatch):
     Test that _get_octoprint_uptime returns None when psutil cannot be imported.
     """
     p = plugin.OctoprintUptimePlugin()
-    monkeypatch.setattr(p, "_get_octoprint_uptime_from_proc", lambda: None)
+
+    def fake_proc_uptime():
+        return None
+
+    monkeypatch.setattr(p, "_get_octoprint_uptime_from_proc", fake_proc_uptime)
     monkeypatch.setattr(
         importlib,
         "import_module",
@@ -1070,7 +1078,7 @@ def test_on_settings_initialized_invokes_hook_variants(monkeypatch):
     called = {"base0": False, "base1": None}
 
     def base0(self):
-        called["base0"] = True
+        called["base0"] = self is not None
 
     def base1(self):
         called["base1"] = self
@@ -1917,7 +1925,11 @@ def test_get_octoprint_uptime_handles_process_errors(monkeypatch):
     Test _get_octoprint_uptime returns None when psutil.Process/create_time fails.
     """
     p = plugin.OctoprintUptimePlugin()
-    monkeypatch.setattr(p, "_get_octoprint_uptime_from_proc", lambda: None)
+
+    def fake_proc_uptime():
+        return None
+
+    monkeypatch.setattr(p, "_get_octoprint_uptime_from_proc", fake_proc_uptime)
 
     class BadProcess:
         """
