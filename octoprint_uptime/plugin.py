@@ -350,7 +350,12 @@ class OctoprintUptimePlugin(
             _ps = importlib.import_module("psutil")
         except ImportError:
             return None
-        psutil_base_error = getattr(_ps, "Error", Exception)
+        psutil_base_error = getattr(_ps, "Error", None)
+        valid_psutil_base_error = (
+            psutil_base_error
+            if isinstance(psutil_base_error, type) and issubclass(psutil_base_error, BaseException)
+            else None
+        )
         try:
             # Get current process
             current_process = _ps.Process(os.getpid())
@@ -359,8 +364,12 @@ class OctoprintUptimePlugin(
             uptime = time.time() - create_time
             if isinstance(uptime, (int, float)) and 0 <= uptime < 10 * 365 * 24 * 3600:
                 return uptime
-        except (AttributeError, TypeError, ValueError, OSError, psutil_base_error):
+        except (AttributeError, TypeError, ValueError, OSError):
             return None
+        except Exception as exc:
+            if valid_psutil_base_error and isinstance(exc, valid_psutil_base_error):
+                return None
+            raise
         return None
 
     def on_settings_initialized(self) -> None:
