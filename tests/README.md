@@ -14,12 +14,12 @@ This includes a comprehensive overview of all test categories, coverage areas, a
 
 ## Running Tests
 
-- Tests are executed in a Python virtual environment (`venv`). Create and activate a virtual environment before running tests:
+- Tests are executed in a Python virtual environment (`.venv`). Create and activate a virtual environment before running tests:
 
 ```bash
-python -m venv venv
+python -m venv .venv
 
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 - Install test dependencies in the virtual environment:

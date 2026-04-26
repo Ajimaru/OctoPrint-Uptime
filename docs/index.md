@@ -74,8 +74,8 @@ pip install -r requirements-dev.txt
 - For building the documentation (mkdocs + docs tooling), create a **separate virtual environment** to avoid dependency conflicts:
 
 ```bash
-python3 -m venv venv-docs
-source venv-docs/bin/activate  # On Windows: venv-docs\Scripts\activate
+python3 -m venv .venv-docs
+source .venv-docs/bin/activate  # On Windows: .venv-docs\Scripts\activate
 pip install -r requirements-docs.txt
 ```
 
@@ -85,7 +85,7 @@ pip install -r requirements-docs.txt
 pip install -r requirements.txt
 ```
 
-**Important:** Use separate virtual environments for development (`venv`) and documentation (`venv-docs`) to avoid version conflicts, as `requirements-dev.txt` and `requirements-docs.txt` have overlapping dependencies (`pylint`, `ruff`).
+**Important:** Use separate virtual environments for development (`.venv`) and documentation (`.venv-docs`) to avoid version conflicts, as `requirements-dev.txt` and `requirements-docs.txt` have overlapping dependencies (`pylint`, `ruff`).
 
 Install Node.js dependencies for frontend tooling when needed:
 

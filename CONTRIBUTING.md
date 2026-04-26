@@ -15,8 +15,8 @@ This is the recommended approach for a consistent, reproducible development envi
 3. Create and activate a virtual environment:
 
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate
+   python3 -m venv .venv
+   source .venv/bin/activate
    ```
 
 4. Install development dependencies:
@@ -37,8 +37,8 @@ This is the recommended approach for a consistent, reproducible development envi
 If you prefer a minimal setup without the full development dependencies:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 python -m pip install -U pip
 python -m pip install -e ".[develop]"
 ```
@@ -49,6 +49,7 @@ After setting up your environment, complete these steps:
 
 - [ ] Install pre-commit in your venv (included in `requirements-dev.txt` or via `pip install pre-commit`)
 - [ ] Enable repository-local git hooks: `git config core.hooksPath .githooks`
+      (do **not** run `pre-commit install` — the repo ships its own hook wrapper at `.githooks/pre-commit` that invokes `./.venv/bin/pre-commit` automatically)
 - [ ] Run tests to verify setup: `pytest`
 - [ ] Run pre-commit to verify hooks: `pre-commit run --hook-stage manual --all-files`
 
@@ -70,20 +71,22 @@ pre-commit run --hook-stage manual --all-files
 
 ### Enabling Repository-Local Git Hooks
 
-The repository includes custom git hooks in the `.githooks/` directory. To enable them locally:
+The repository ships custom git hook wrappers in `.githooks/`. Enable them locally with:
 
 ```bash
 git config core.hooksPath .githooks
 ```
 
-This configures Git to use the hooks from `.githooks/` instead of the default `.git/hooks/` directory. You only need to run this command once per repository clone.
+You only need to run this command once per repository clone.
+
+**Do not run `pre-commit install`.** The wrapper at `.githooks/pre-commit` is the entry point Git invokes; it then delegates to `./.venv/bin/pre-commit run`. Running `pre-commit install` will fail with `Cowardly refusing to install hooks with 'core.hooksPath' set` (by design).
 
 **Available hooks:**
 
-- `pre-commit` - Runs code formatting, linting, and validation checks before each commit
-- `commit-msg` - Validates commit message format
+- `pre-commit` — wrapper that runs the project's pre-commit suite from `./.venv` (formatting, linting, validation)
+- `post-commit` — auxiliary post-commit tasks
 
-After configuring, Git will automatically run these hooks on each commit. If a hook fails, the commit is rejected. Fix the issues and try again.
+After configuring, Git automatically runs these hooks on each commit. If a hook fails, the commit is rejected — fix the issues and re-commit.
 
 To temporarily skip hooks (not recommended):
 
@@ -148,5 +151,5 @@ Do not commit generated or environment-specific files such as:
 
 - `dist/`, `build/`, `*.egg-info/`
 - `__pycache__/`, `.pytest_cache/`, `.coverage/`, `htmlcov/`
-- local virtual environments (`venv/`)
+- local virtual environments (`.venv/`)
 - IDE/editor configs (`.idea/`, `.vscode/`)
