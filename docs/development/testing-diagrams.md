@@ -50,8 +50,8 @@ Tests for module reloading, dependency checking, and fallback handling.
 
 ```bash
 # Activate virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install test dependencies
 pip install -e ".[develop]"

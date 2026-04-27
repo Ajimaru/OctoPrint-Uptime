@@ -10,7 +10,7 @@ import importlib
 import inspect
 import os
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 try:
     from ._version import VERSION
@@ -186,7 +186,7 @@ class OctoprintUptimePlugin(
         self._debug_throttle_seconds: int = 60
         self._last_uptime_source: Optional[str] = None
 
-    def get_update_information(self) -> Dict[str, Any]:
+    def get_update_information(self) -> dict[str, Any]:
         """Return update information for the OctoPrint-Uptime plugin.
 
         This method provides metadata required for OctoPrint's update mechanism.
@@ -195,7 +195,7 @@ class OctoprintUptimePlugin(
             dict: Update information dictionary.
         """
 
-        info: Dict[str, Any] = {
+        info: dict[str, Any] = {
             "octoprint_uptime": {
                 "displayName": "OctoPrint-Uptime",
                 "displayVersion": VERSION,
@@ -217,15 +217,15 @@ class OctoprintUptimePlugin(
         result: bool = True
         return result
 
-    def get_assets(self) -> Dict[str, List[str]]:
+    def get_assets(self) -> dict[str, list[str]]:
         """Return plugin asset files for OctoPrint-Uptime.
 
         Returns:
-            Dict[str, List[str]]: Dictionary mapping asset types to file lists.
+            dict[str, list[str]]: Dictionary mapping asset types to file lists.
         """
         return {"js": ["js/uptime.js"]}
 
-    def get_template_configs(self) -> List[Dict[str, Any]]:
+    def get_template_configs(self) -> list[dict[str, Any]]:
         """
         Returns a list of template configuration dictionaries for the OctoPrint plugin.
 
@@ -234,7 +234,7 @@ class OctoprintUptimePlugin(
         and whether they use custom bindings.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing template configuration details.
+            list[dict[str, Any]]: A list of dictionaries containing template configuration details.
         """
         return [
             {
@@ -260,7 +260,7 @@ class OctoprintUptimePlugin(
         """
         return True
 
-    def _get_uptime_seconds(self) -> Tuple[Optional[float], str]:
+    def _get_uptime_seconds(self) -> tuple[Optional[float], str]:
         """Attempts to retrieve system uptime using several strategies.
 
         Returns a tuple of (seconds|None, source) where source is one of
@@ -305,13 +305,57 @@ class OctoprintUptimePlugin(
             return None
         return None
 
+    def _get_octoprint_uptime_from_proc(self) -> Optional[float]:
+        """Get process uptime from /proc on Linux in a clock-jump-safe way."""
+        try:
+            if not (os.path.exists("/proc/uptime") and os.path.exists("/proc/self/stat")):
+                return None
+
+            with open("/proc/uptime", encoding="utf-8") as f_uptime:
+                system_uptime = float(f_uptime.readline().split()[0])
+
+            with open("/proc/self/stat", encoding="utf-8") as f_stat:
+                stat_line = f_stat.readline().strip()
+
+            # /proc/self/stat contains "pid (comm) ..." where comm can include spaces.
+            rparen = stat_line.rfind(")")
+            if rparen == -1:
+                return None
+            stat_fields = stat_line[rparen + 2 :].split()
+            if len(stat_fields) <= 19:
+                return None
+
+            start_ticks = float(stat_fields[19])
+            clk_tck = float(os.sysconf("SC_CLK_TCK"))
+            if clk_tck <= 0:
+                return None
+
+            process_uptime = system_uptime - (start_ticks / clk_tck)
+            if (
+                isinstance(process_uptime, (int, float))
+                and 0 <= process_uptime < 10 * 365 * 24 * 3600
+            ):
+                return process_uptime
+        except (ValueError, TypeError, OSError):
+            return None
+        return None
+
     def _get_octoprint_uptime(self) -> Optional[float]:
-        """Get OctoPrint process uptime using psutil if available."""
+        """Get OctoPrint process uptime, preferring Linux /proc and falling back to psutil."""
+        proc_uptime = self._get_octoprint_uptime_from_proc()
+        if proc_uptime is not None:
+            return proc_uptime
+
         try:
             _ps = importlib.import_module("psutil")
         except ImportError:
             return None
-        psutil_base_error = getattr(_ps, "Error", Exception)
+        psutil_base_error = getattr(_ps, "Error", None)
+        valid_psutil_base_error = (
+            psutil_base_error
+            if isinstance(psutil_base_error, type) and issubclass(psutil_base_error, BaseException)
+            else None
+        )
         try:
             # Get current process
             current_process = _ps.Process(os.getpid())
@@ -320,8 +364,12 @@ class OctoprintUptimePlugin(
             uptime = time.time() - create_time
             if isinstance(uptime, (int, float)) and 0 <= uptime < 10 * 365 * 24 * 3600:
                 return uptime
-        except (AttributeError, TypeError, ValueError, OSError, psutil_base_error):
+        except (AttributeError, TypeError, ValueError, OSError):
             return None
+        except Exception as exc:
+            if valid_psutil_base_error and isinstance(exc, valid_psutil_base_error):
+                return None
+            raise
         return None
 
     def on_settings_initialized(self) -> None:
@@ -341,12 +389,12 @@ class OctoprintUptimePlugin(
         if callable(hook):
             self._invoke_settings_hook(hook)
 
-    def on_settings_save(self, data: Dict[str, Any]) -> None:
+    def on_settings_save(self, data: dict[str, Any]) -> None:
         """
         Save plugin settings, validate config values, and update internal state.
 
         Args:
-            data (Dict[str, Any]): Settings data to save.
+            data (dict[str, Any]): Settings data to save.
         """
         self._validate_and_sanitize_settings(data)
         self._log_settings_save_data(data)
@@ -431,7 +479,7 @@ class OctoprintUptimePlugin(
 
         self._safe_invoke_hook(hook, param_count)
 
-    def _validate_and_sanitize_settings(self, data: Dict[str, Any]) -> None:
+    def _validate_and_sanitize_settings(self, data: dict[str, Any]) -> None:
         """Validate and sanitize plugin settings in the provided data dict."""
         plugins = data.get("plugins") if isinstance(data, dict) else None
         if not isinstance(plugins, dict):
@@ -455,12 +503,12 @@ class OctoprintUptimePlugin(
                 val = max(lo, min(val, hi))
                 uptime_cfg[key] = val
 
-    def _log_settings_save_data(self, data: Dict[str, Any]) -> None:
+    def _log_settings_save_data(self, data: dict[str, Any]) -> None:
         """
         Logs the data passed to the settings save event for debugging purposes.
 
         Args:
-            data (Dict[str, Any]): The data being saved to the settings.
+            data (dict[str, Any]): The data being saved to the settings.
 
         Notes:
             If the logger is not available or an error occurs during logging,
@@ -473,13 +521,13 @@ class OctoprintUptimePlugin(
             except (AttributeError, TypeError, ValueError):
                 pass
 
-    def _call_base_on_settings_save(self, data: Dict[str, Any]) -> None:
+    def _call_base_on_settings_save(self, data: dict[str, Any]) -> None:
         """
         Calls the base class's `on_settings_save` method with the provided data if it exists
         and is callable.
 
         Args:
-            data (Dict[str, Any]): The settings data to be saved.
+            data (dict[str, Any]): The settings data to be saved.
 
         Notes:
             - Silently ignores AttributeError, TypeError, and ValueError exceptions that may
@@ -494,7 +542,7 @@ class OctoprintUptimePlugin(
             except (AttributeError, TypeError, ValueError):
                 pass
 
-    def get_settings_defaults(self) -> Dict[str, Any]:
+    def get_settings_defaults(self) -> dict[str, Any]:
         """Return default settings for the plugin.
 
         OctoPrint populates `settings.plugins.<identifier>` from this mapping so the
@@ -715,7 +763,7 @@ class OctoprintUptimePlugin(
         # permission enforcement is required.
         return True
 
-    def _abort_forbidden(self) -> Dict[str, str]:
+    def _abort_forbidden(self) -> dict[str, str]:
         """
         Handles forbidden access attempts by aborting the request with a 403 status code if
         Flask is available, and returns a JSON error message indicating the action is
@@ -729,7 +777,7 @@ class OctoprintUptimePlugin(
             _flask.abort(403)
         return {"error": _("Forbidden")}
 
-    def _get_uptime_info(self) -> Tuple[Optional[float], str, str, str, str]:
+    def _get_uptime_info(self) -> tuple[Optional[float], str, str, str, str]:
         """
         Retrieve uptime information and formatted strings.
 
@@ -760,7 +808,7 @@ class OctoprintUptimePlugin(
 
     def _format_uptime_tuple(
         self, seconds: Optional[float]
-    ) -> Tuple[Optional[float], str, str, str, str]:
+    ) -> tuple[Optional[float], str, str, str, str]:
         """
         Normalize and format an uptime value into display strings.
         """
@@ -778,7 +826,7 @@ class OctoprintUptimePlugin(
             uptime_full = uptime_dhm = uptime_dh = uptime_d = _("unknown")
         return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
 
-    def _get_octoprint_uptime_info(self) -> Tuple[Optional[float], str, str, str, str]:
+    def _get_octoprint_uptime_info(self) -> tuple[Optional[float], str, str, str, str]:
         """
         Retrieve OctoPrint process uptime information and formatted strings.
 
@@ -795,7 +843,7 @@ class OctoprintUptimePlugin(
                 pass
             return self._format_uptime_tuple(None)
 
-    def _get_api_settings(self) -> Tuple[str, int]:
+    def _get_api_settings(self) -> tuple[str, int]:
         """
         Retrieves and returns the plugin's API settings with appropriate fallbacks.
 

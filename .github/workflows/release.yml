@@ -96,13 +96,13 @@ jobs:
           cp -f "$zip_versioned" "$zip_latest"
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/*
 
       - name: Generate release notes
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require("fs");
@@ -145,7 +145,7 @@ jobs:
           echo "title=$title" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3
         with:
           name: ${{ steps.release_title.outputs.title }}
           draft: false

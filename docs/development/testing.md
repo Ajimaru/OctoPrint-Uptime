@@ -2,12 +2,12 @@
 
 This page is aligned with the repository `tests/README.md` and covers the common commands for running unit and integration tests locally.
 
-- Tests are executed in a Python virtual environment (`venv`). Create and activate a virtual environment before running tests:
+- Tests are executed in a Python virtual environment (`.venv`). Create and activate a virtual environment before running tests:
 
 ```bash
-python -m venv venv
+python -m venv .venv
 
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 - Install test dependencies (from the project root in the activated venv):

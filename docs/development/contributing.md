@@ -4,11 +4,11 @@ This page summarizes the contributor workflow for developers. The authoritative,
 
 ## Quickstart
 
-- Create and activate a virtual environment (venv) and install development deps:
+- Create and activate a virtual environment (.venv) and install development deps:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 python -m pip install -U pip
 python -m pip install -e ".[develop]"
 ```
@@ -20,7 +20,13 @@ python -m pip install -e ".[develop]"
 
 ## Pre-commit
 
-- We use `pre-commit` hooks. To run all hooks locally:
+- We use `pre-commit` hooks. Enable the repo's hook wrappers once (do **not** run `pre-commit install` — the repo ships its own wrapper at `.githooks/pre-commit` which delegates to `./.venv/bin/pre-commit`):
+
+```bash
+git config core.hooksPath .githooks
+```
+
+- To run all hooks locally:
 
 ```bash
 pre-commit run --hook-stage manual --all-files
@@ -65,4 +71,4 @@ This will write the compiled `.mo` files into `octoprint_uptime/translations/<la
 
 Notes:
 
-- Keep changes small and focused. Follow the coding style in `CONTRIBUTING.md` (4-space indentation, English text, use `self._logger` for logging). Use the 'venv' directory for the virtual environment.
+- Keep changes small and focused. Follow the coding style in `CONTRIBUTING.md` (4-space indentation, English text, use `self._logger` for logging). Use the '.venv' directory for the virtual environment.

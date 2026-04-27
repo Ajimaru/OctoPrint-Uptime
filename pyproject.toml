@@ -1,32 +1,32 @@
 [build-system]
 requires = [
-    "setuptools>=70,<76",
+    "setuptools>=77,<83",
     "wheel",
-    "OctoPrint",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "OctoPrint-Uptime"
-version = "0.3.0"
+version = "0.4.0"
 description = "Adds system uptime to the navbar and exposes a small uptime API."
 authors = [
     {name = "Ajimaru", email = "ajimaru_gdr@pm.me"}
 ]
 readme = {file = "README.md", content-type = "text/markdown"}
 
-requires-python = ">=3.8, <4"
-license = {text = "AGPL-3.0-or-later"}
+requires-python = ">=3.9, <4"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
 
-dynamic = [
-    "dependencies"
+# Any additional requirements (besides OctoPrint) must be listed here.
+# OctoPrint itself is the runtime environment, not a pip dependency of the plugin.
+dependencies = [
+    "flask>=2.2.5",
+    "psutil>=7.2.2",
 ]
 
 [tool.setuptools]
 include-package-data = true
-
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.package-data]
 octoprint_uptime = [
@@ -53,7 +53,7 @@ develop = [
     "build",
     "mock",
     "pre-commit>=3.0.0",
-    "pylint>=2.17.0",
+    "pylint>=3.3.9",
     "pytest",
     "pytest-cov",
     "tomli",
@@ -64,4 +64,19 @@ develop = [
 
 [tool.black]
 line-length = 100
-target-version = ["py38", "py39", "py310", "py311", "py312"]
+target-version = ["py39", "py310", "py311", "py312"]
+
+[tool.ruff.lint.pydocstyle]
+# Use Google docstring style ("Args:", "Returns:", "Yields:" with colon).
+# This silences NumPy-style-only checks (D212, D406, D407, D413) that
+# otherwise conflict with the Google convention used across this codebase.
+convention = "google"
+
+[tool.pydocstyle]
+# Mirror the ruff convention so Prospector/Codacy (which run pydocstyle
+# directly) accept Google-style "Args:"/"Yields:" sections instead of
+# demanding NumPy-style underlines.
+convention = "google"
+# Explicitly disable the four NumPy-style-only checks in case the
+# convention key is ignored by the tool version in use.
+add-ignore = "D212,D406,D407,D413"

@@ -21,8 +21,8 @@ This script runs `pyreverse` (from `pylint`) to analyse the plugin package, uses
 - **Python virtual environment**: Create and activate a development environment from the project root:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 - **Python dependencies**: Install the project development requirements, including `pyreverse` (provided by `pylint`) from `requirements-dev.txt`:
