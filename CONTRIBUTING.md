@@ -4,7 +4,7 @@ Thanks for your interest in contributing to the OctoPrint-Uptime plugin!
 
 ## Quick Start and Development Setup
 
-**Prerequisites:** Python 3.12+ and `python3-venv` (or equivalent) installed.
+**Prerequisites:** Python 3.9+ and `python3-venv` (or equivalent) installed.
 
 ### Recommended Setup (Reproducible)
 
