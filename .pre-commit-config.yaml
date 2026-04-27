@@ -62,7 +62,7 @@ repos:
     rev: v3.21.2
     hooks:
       - id: pyupgrade # Modernize Python syntax to newer constructs (pyupgrade)
-        args: ["--py38-plus"]
+        args: ["--py39-plus"]
         exclude: "setup.py"
 
   # Linters and security
