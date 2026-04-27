@@ -65,3 +65,18 @@ develop = [
 [tool.black]
 line-length = 100
 target-version = ["py39", "py310", "py311", "py312"]
+
+[tool.ruff.lint.pydocstyle]
+# Use Google docstring style ("Args:", "Returns:", "Yields:" with colon).
+# This silences NumPy-style-only checks (D212, D406, D407, D413) that
+# otherwise conflict with the Google convention used across this codebase.
+convention = "google"
+
+[tool.pydocstyle]
+# Mirror the ruff convention so Prospector/Codacy (which run pydocstyle
+# directly) accept Google-style "Args:"/"Yields:" sections instead of
+# demanding NumPy-style underlines.
+convention = "google"
+# Explicitly disable the four NumPy-style-only checks in case the
+# convention key is ignored by the tool version in use.
+add-ignore = "D212,D406,D407,D413"

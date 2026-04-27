@@ -148,9 +148,17 @@ if command -v sed >/dev/null 2>&1; then
 fi
 
 if command -v perl >/dev/null 2>&1; then
-    perl -0777 -pe 's/[ \t]+$//mg; s/\n+\z/\n/' "$OUTPUT" > "$OUTPUT.tmp" && mv "$OUTPUT.tmp" "$OUTPUT" || true
+    if perl -0777 -pe 's/[ \t]+$//mg; s/\n+\z/\n/' "$OUTPUT" > "$OUTPUT.tmp"; then
+        mv "$OUTPUT.tmp" "$OUTPUT"
+    else
+        rm -f "$OUTPUT.tmp"
+    fi
 else
-    awk 'BEGIN{ORS=""} {print}' "$OUTPUT" | sed -E ':a;/\n$/{$!{N;ba}};s/\n+$/\n/' > "$OUTPUT.tmp" && mv "$OUTPUT.tmp" "$OUTPUT" || true
+    if awk 'BEGIN{ORS=""} {print}' "$OUTPUT" | sed -E ':a;/\n$/{$!{N;ba}};s/\n+$/\n/' > "$OUTPUT.tmp"; then
+        mv "$OUTPUT.tmp" "$OUTPUT"
+    else
+        rm -f "$OUTPUT.tmp"
+    fi
 fi
 
 if [ ! -s "$OUTPUT" ]; then
