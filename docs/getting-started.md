@@ -3,8 +3,8 @@
 - Create and activate a **separate** Python virtual environment for docs to avoid dependency conflicts:
 
 ```bash
-python -m venv venv-docs
-source venv-docs/bin/activate  # On Windows: venv-docs\Scripts\activate
+python -m venv .venv-docs
+source .venv-docs/bin/activate  # On Windows: .venv-docs\Scripts\activate
 ```
 
 - Install docs dependencies in the activated venv:

@@ -2,11 +2,11 @@
 
 Prerequisites:
 
-- Create and activate a Python virtual environment (`venv`) from the project root:
+- Create and activate a Python virtual environment (`.venv`) from the project root:
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 - Install the project development Python requirements (contains `pyreverse` via the `pylint` package) in the activated venv. See `requirements-dev.txt`:

@@ -24,8 +24,8 @@ fi
 
 # Description: Wrapper to run pre-commit hooks from the repository virtualenv.
 # Behavior:
-#  - Attempts to execute `./venv/bin/pre-commit` to ensure hooks run inside the project's venv.
-#  - Validates that the venv Python meets the minimum required version (Python 3.12+).
+#  - Attempts to execute `./.venv/bin/pre-commit` to ensure hooks run inside the project's venv.
+#  - Validates that the venv Python meets the minimum required version (Python 3.9+).
 #  - Optionally runs `pre-commit autoupdate` once per 24h when `PRECOMMIT_AUTOUPDATE=1`.
 # Usage:
 #  - Installed as a git hook via `core.hooksPath` and invoked automatically by Git.
@@ -74,9 +74,9 @@ exec > >(tee >($STRIP_FUNC)) 2> >(tee >($STRIP_FUNC) >&2)
 echo "===== $LOG_PREFIX START: $(date -u +"%Y-%m-%dT%H:%M:%SZ") (pid=$PID) ====="
 # -------------------------------------------------------------------
 
-python_is_at_least_312() {
+python_meets_minimum() {
     local python_bin="$1"
-    "$python_bin" -c 'import sys; sys.exit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1
+    "$python_bin" -c 'import sys; sys.exit(0 if sys.version_info[:2] >= (3, 9) else 1)' >/dev/null 2>&1
 }
 
 run_pre_commit_from_venv() {
@@ -88,8 +88,8 @@ run_pre_commit_from_venv() {
         return 1
     fi
 
-    if ! python_is_at_least_312 "$python_bin"; then
-        echo "ERROR: $python_bin is < 3.12; pre-commit hooks require Python 3.12+" >&2
+    if ! python_meets_minimum "$python_bin"; then
+        echo "ERROR: $python_bin is < 3.9; pre-commit hooks require Python 3.9+" >&2
         return 2
     fi
 
@@ -129,51 +129,51 @@ maybe_run_autoupdate() {
         fi
     fi
 
-    if [[ -x "./venv/bin/pre-commit" ]]; then
+    if [[ -x "./.venv/bin/pre-commit" ]]; then
         echo "PRECOMMIT_AUTOUPDATE=1: running 'pre-commit autoupdate'..."
         # Run autoupdate but do not auto-stage or commit changes; user must review.
-        ./venv/bin/pre-commit autoupdate || true
+        ./.venv/bin/pre-commit autoupdate || true
         date +%s > "$marker_file" || true
     else
-        echo "PRECOMMIT_AUTOUPDATE=1 but ./venv/bin/pre-commit not available" >&2
+        echo "PRECOMMIT_AUTOUPDATE=1 but ./.venv/bin/pre-commit not available" >&2
     fi
 }
 
 # Try running autoupdate (no-op unless PRECOMMIT_AUTOUPDATE=1)
 maybe_run_autoupdate
 
-run_pre_commit_from_venv "./venv"
-rc=$?
+rc=0
+run_pre_commit_from_venv "./.venv" || rc=$?
 if [[ $rc -eq 0 ]]; then
     exit 0
 else
-    if [[ -x "./venv/bin/pre-commit" ]]; then
+    if [[ -x "./.venv/bin/pre-commit" ]]; then
         echo "ERROR: pre-commit ran but exited with code $rc. See log: $LOGFILE" >&2
         exit $rc
         else
                 cat <<'MSG' >&2
-ERROR: pre-commit not available in ./venv.
+ERROR: pre-commit not available in ./.venv.
 
-To install pre-commit into the project's virtual environment, activate the venv and install:
+This repository uses `git config core.hooksPath .githooks`, so DO NOT run
+`pre-commit install` (it will fail by design). Instead, install pre-commit
+into the project's virtual environment:
 
     Unix / macOS (bash/zsh):
-        source ./venv/bin/activate
+        source ./.venv/bin/activate
         python -m pip install --upgrade pip
         python -m pip install pre-commit
-        pre-commit install
 
     Windows (PowerShell):
-        .\venv\Scripts\Activate.ps1
+        .\.venv\Scripts\Activate.ps1
         python -m pip install --upgrade pip
         python -m pip install pre-commit
-        pre-commit install
 
-If you prefer a user-scoped install, you can run:
-    python -m pip install --user pre-commit
-or use pipx:
-    pipx install pre-commit
+Then ensure the hooks path is wired to this repo's wrapper:
 
-After installing, re-run this command or retry your commit. If permissions are restricted, consider using the `--user` flag or `pipx` as shown above.
+        git config core.hooksPath .githooks
+
+After installing, retry your commit. The wrapper will pick up
+./.venv/bin/pre-commit automatically.
 MSG
                 exit 1
         fi

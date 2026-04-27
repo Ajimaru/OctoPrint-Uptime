@@ -1,8 +1,8 @@
 """Centralized version constant for the OctoPrint-Uptime package.
 
 This file exposes a single `VERSION` symbol which is used by
-`__init__.py`, `setup.py` and `plugin.py` as the single source of truth
-for the package version.
+`__init__.py` and `plugin.py` as the shared runtime version constant
+for the package.
 """
 
-VERSION = "0.3.0"
+VERSION = "0.4.0rc1+3f301c1"

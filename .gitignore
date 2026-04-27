@@ -17,6 +17,10 @@ venv/
 .venv/
 venv-docs/
 .venv-docs/
+.venv-octoprint-*/
+.cache/octoprint-src/
+.octoprint-master/
+.octoprint-devel/
 
 # === Python Generated ===
 *.pyc
@@ -45,6 +49,7 @@ node_modules/
 GITHUB_UPLOAD.md
 
 # === CI/Code Quality ===
+.claude/
 .codacy/
 .codacyignore
 .trivyignore

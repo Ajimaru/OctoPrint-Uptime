@@ -83,10 +83,10 @@ jobs:
           fi
 
       - # Create venv and install Babel for i18n validation
-        name: Create ./venv for translation check
+        name: Create ./.venv for translation check
         run: |
-          python -m venv venv
-          . venv/bin/activate
+          python -m venv .venv
+          . .venv/bin/activate
           python -m pip install --upgrade pip
           python -m pip install "Babel==${{ env.BABEL_VERSION }}" "polib==${{ env.POLIB_VERSION }}"
 
