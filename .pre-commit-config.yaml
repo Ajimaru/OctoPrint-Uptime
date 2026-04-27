@@ -29,7 +29,6 @@ repos:
       - id: check-json # Validate JSON files like package.json
       - id: check-xml # Validate XML files if present
       - id: debug-statements # Detect accidental debug statements (e.g., print, pdb)
-      - id: requirements-txt-fixer # Normalize requirements.txt formatting
 
   # Formatting and code-mod tools
   - repo: https://github.com/psf/black
@@ -63,7 +62,6 @@ repos:
     hooks:
       - id: pyupgrade # Modernize Python syntax to newer constructs (pyupgrade)
         args: ["--py39-plus"]
-        exclude: "setup.py"
 
   # Linters and security
   - repo: https://github.com/pycqa/flake8

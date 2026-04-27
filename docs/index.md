@@ -79,10 +79,10 @@ source .venv-docs/bin/activate  # On Windows: .venv-docs\Scripts\activate
 pip install -r requirements-docs.txt
 ```
 
-- For runtime/production installs (OctoPrint runtime dependencies), use the top-level `requirements.txt`:
+- For runtime/production installs, install the plugin itself; runtime dependencies are declared in `pyproject.toml`:
 
 ```bash
-pip install -r requirements.txt
+pip install .
 ```
 
 **Important:** Use separate virtual environments for development (`.venv`) and documentation (`.venv-docs`) to avoid version conflicts, as `requirements-dev.txt` and `requirements-docs.txt` have overlapping dependencies (`pylint`, `ruff`).
