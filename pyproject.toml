@@ -1,8 +1,7 @@
 [build-system]
 requires = [
-    "setuptools>=70,<83",
+    "setuptools>=77,<83",
     "wheel",
-    "OctoPrint",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -16,17 +15,18 @@ authors = [
 readme = {file = "README.md", content-type = "text/markdown"}
 
 requires-python = ">=3.9, <4"
-license = {text = "AGPL-3.0-or-later"}
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
 
-dynamic = [
-    "dependencies"
+# Any additional requirements (besides OctoPrint) must be listed here.
+# OctoPrint itself is the runtime environment, not a pip dependency of the plugin.
+dependencies = [
+    "flask>=2.2.5",
+    "psutil>=7.2.2",
 ]
 
 [tool.setuptools]
 include-package-data = true
-
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.package-data]
 octoprint_uptime = [
