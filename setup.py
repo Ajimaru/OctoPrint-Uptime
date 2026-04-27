@@ -1,4 +1,3 @@
-# coding=utf-8
 """OctoPrint Uptime plugin setup module.
 
 Provides packaging metadata for the OctoPrint-Uptime plugin.
@@ -7,7 +6,7 @@ Provides packaging metadata for the OctoPrint-Uptime plugin.
 import copy
 import os
 import re
-from typing import List, Optional
+from typing import Optional
 
 from setuptools import setup
 
@@ -41,7 +40,7 @@ def _read_version():
     version = "0.0.0"
     version_pattern = re.compile(r'^VERSION\s*=\s*[\'"]([^\'"]+)[\'"]')
     try:
-        with open(ver_path, "r", encoding="utf-8") as f:
+        with open(ver_path, encoding="utf-8") as f:
             for line in f:
                 match = version_pattern.match(line)
                 if match:
@@ -83,15 +82,15 @@ PLUGIN_URL = "https://github.com/Ajimaru/OctoPrint-Uptime"
 # so python setup.py sdist produces a source distribution that contains
 # all your files (see http://stackoverflow.com/a/14159430/2028598).
 
-PLUGIN_ADDITIONAL_DATA: List[str] = []
+PLUGIN_ADDITIONAL_DATA: list[str] = []
 
 # Any additional python packages you need to install with your plugin that
 # are not contained in <plugin_package>.*.
-PLUGIN_ADDITIONAL_PACKAGES: List[str] = []
+PLUGIN_ADDITIONAL_PACKAGES: list[str] = []
 
 # Any python packages within <plugin_package>.* you do NOT want to install
 # with your plugin.
-PLUGIN_IGNORED_PACKAGES: List[str] = []
+PLUGIN_IGNORED_PACKAGES: list[str] = []
 
 # Additional parameters for the call to setuptools.setup.
 # If your plugin wants to register additional entry points,
