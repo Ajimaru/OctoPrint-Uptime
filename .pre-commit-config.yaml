@@ -39,12 +39,12 @@ repos:
         language_version: python3
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v10.0.0
+    rev: v10.2.0
     hooks:
       - id: eslint # JavaScript/TypeScript linter (ESLint)
         files: "(\\.js)$"
         exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|docs/|scripts/|translations/)
-        additional_dependencies: ["eslint@10.0.0", "globals@17.3.0"]
+        additional_dependencies: ["eslint@10.2.0", "globals@17.5.0"]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
