@@ -17,6 +17,10 @@ venv/
 .venv/
 venv-docs/
 .venv-docs/
+.venv-octoprint-*/
+.cache/octoprint-src/
+.octoprint-master/
+.octoprint-devel/
 
 # === Python Generated ===
 *.pyc
