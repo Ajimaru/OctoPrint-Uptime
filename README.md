@@ -6,7 +6,7 @@
 <!-- markdownlint-enable MD041 MD033 -->
 
 [![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/LICENSE)
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://python.org)
 [![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
 [![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
@@ -164,7 +164,7 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 [![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total.svg)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
 [![Pre‑Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?include_prereleases&label=pre-release)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://python.org)
 [![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue.svg)](https://octoprint.org)
 [![Maintenance](https://img.shields.io/maintenance/yes/2026)](https://github.com/Ajimaru/OctoPrint-Uptime/graphs/commit-activity)
 

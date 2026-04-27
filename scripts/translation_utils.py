@@ -5,8 +5,8 @@ Shared utilities for translation file management.
 This module provides common functions used by translation management scripts.
 """
 
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 
 def iter_po_files(root: Path) -> Iterator[Path]:
