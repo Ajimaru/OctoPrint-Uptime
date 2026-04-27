@@ -221,7 +221,7 @@ class OctoprintUptimePlugin(
         """Return plugin asset files for OctoPrint-Uptime.
 
         Returns:
-            Dict[str, List[str]]: Dictionary mapping asset types to file lists.
+            dict[str, list[str]]: Dictionary mapping asset types to file lists.
         """
         return {"js": ["js/uptime.js"]}
 
@@ -234,7 +234,7 @@ class OctoprintUptimePlugin(
         and whether they use custom bindings.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing template configuration details.
+            list[dict[str, Any]]: A list of dictionaries containing template configuration details.
         """
         return [
             {
@@ -394,7 +394,7 @@ class OctoprintUptimePlugin(
         Save plugin settings, validate config values, and update internal state.
 
         Args:
-            data (Dict[str, Any]): Settings data to save.
+            data (dict[str, Any]): Settings data to save.
         """
         self._validate_and_sanitize_settings(data)
         self._log_settings_save_data(data)
@@ -508,7 +508,7 @@ class OctoprintUptimePlugin(
         Logs the data passed to the settings save event for debugging purposes.
 
         Args:
-            data (Dict[str, Any]): The data being saved to the settings.
+            data (dict[str, Any]): The data being saved to the settings.
 
         Notes:
             If the logger is not available or an error occurs during logging,
@@ -527,7 +527,7 @@ class OctoprintUptimePlugin(
         and is callable.
 
         Args:
-            data (Dict[str, Any]): The settings data to be saved.
+            data (dict[str, Any]): The settings data to be saved.
 
         Notes:
             - Silently ignores AttributeError, TypeError, and ValueError exceptions that may
