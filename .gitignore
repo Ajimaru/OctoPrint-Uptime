@@ -70,7 +70,6 @@ gh_logs/
 
 # === Local Configuration ===
 .python-version
-.pre-commit-config.yaml
 .githooks/
 
 # === Generated API Docs ===
