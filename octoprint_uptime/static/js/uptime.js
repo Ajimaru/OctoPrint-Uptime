@@ -7,6 +7,7 @@
  * Frontend module for the navbar uptime widget.
  * @module octoprint_uptime/navbar
  */
+/* global $, ko, OctoPrint, OCTOPRINT_VIEWMODELS, gettext, _, alert, Promise */
 $(function () {
   /**
    * NavbarUptimeViewModel
@@ -28,18 +29,18 @@ $(function () {
      * reference captured before `settingsViewModel.settings` was ready.
      * @function getPluginSettings
      * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
-     * @returns {Object|null} The KO-mapped plugin settings node, or `null` when
+     * @returns {Object|boolean} The KO-mapped plugin settings node, or `false` when
      *   unavailable (e.g. during early startup before settings are loaded).
      */
     var getPluginSettings = function () {
       try {
         if (!(settingsVM && settingsVM.settings)) {
-          return null;
+          return false;
         }
         var s = settingsVM.settings;
-        return s && s.plugins ? s.plugins.octoprint_uptime : null;
+        return s && s.plugins ? s.plugins.octoprint_uptime : false;
       } catch (e) {
-        return null;
+        return false;
       }
     };
 
@@ -59,7 +60,7 @@ $(function () {
     var navbarEl = $("#navbar_plugin_navbar_uptime");
     var DEFAULT_POLL = 5;
     var DEFAULT_COMPACT_TOGGLE_INTERVAL = 5; // seconds, used as fallback
-    var compactToggleTimer = null;
+    var compactToggleTimer = 0;
     var compactDisplayUptimeType = "system"; // "system" or "octoprint"
 
     /**
@@ -167,7 +168,7 @@ $(function () {
       }
     };
 
-    var pollTimer = null;
+    var pollTimer = 0;
 
     /**
      * Schedule the next polling cycle.
@@ -208,7 +209,7 @@ $(function () {
         }
         scheduleNext(pollInterval);
       } catch (e) {
-        if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
+        if (typeof window !== "undefined" && window.UptimeDebug) {
           console.error(
             "octoprint_uptime: poll interval calculation error",
             e,
@@ -281,15 +282,16 @@ $(function () {
      */
     function scheduleCompactToggle() {
       if (compactToggleTimer) {
-        return;
+        return false;
       }
       compactToggleTimer = setTimeout(function () {
-        compactToggleTimer = null;
+        compactToggleTimer = 0;
         compactDisplayUptimeType =
           compactDisplayUptimeType === "system" ? "octoprint" : "system";
         renderCompactDisplay();
         scheduleCompactToggle();
       }, getCompactToggleInterval() * 1000);
+      return true;
     }
 
     /**
@@ -305,7 +307,8 @@ $(function () {
           clearTimeout(compactToggleTimer);
         }
       } catch (e) {}
-      compactToggleTimer = null;
+      compactToggleTimer = 0;
+      return true;
     }
 
     /**
@@ -322,28 +325,26 @@ $(function () {
         var secs =
           data && typeof data.seconds !== "undefined"
             ? Number(data.seconds)
-            : null;
+            : Number.NaN;
         var octoprintSecs =
           data && typeof data.octoprint_seconds !== "undefined"
             ? Number(data.octoprint_seconds)
-            : null;
+            : Number.NaN;
 
         var tooltipLines = [];
 
-        if (secs !== null && !isNaN(secs)) {
-          var started = new Date(Date.now() - secs * 1000);
+        if (!Number.isNaN(secs)) {
+          var started = new Date(new Date().getTime() - secs * 1000);
           var systemStartedLabel = localize("System Started:");
           tooltipLines.push(
             systemStartedLabel + " " + started.toLocaleString(),
           );
         }
 
-        if (
-          includeOctoprint &&
-          octoprintSecs !== null &&
-          !isNaN(octoprintSecs)
-        ) {
-          var octoprintStarted = new Date(Date.now() - octoprintSecs * 1000);
+        if (includeOctoprint && !Number.isNaN(octoprintSecs)) {
+          var octoprintStarted = new Date(
+            new Date().getTime() - octoprintSecs * 1000,
+          );
           var octoprintStartedLabel = localize("OctoPrint Started:");
           tooltipLines.push(
             octoprintStartedLabel + " " + octoprintStarted.toLocaleString(),
@@ -358,7 +359,7 @@ $(function () {
               anchor.tooltip("destroy");
             }
           } catch (disposeErr) {
-            if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
+            if (typeof window !== "undefined" && window.UptimeDebug) {
               console.error(
                 "octoprint_uptime: failed to dispose existing tooltip",
                 disposeErr,
@@ -375,10 +376,7 @@ $(function () {
               anchor.removeAttr("data-original-title");
               anchor.removeAttr("data-bs-original-title");
             } catch (fallbackErr) {
-              if (
-                typeof globalThis !== "undefined" &&
-                globalThis?.UptimeDebug
-              ) {
+              if (typeof window !== "undefined" && window.UptimeDebug) {
                 console.error(
                   "octoprint_uptime: fallback tooltip cleanup also failed",
                   fallbackErr,
@@ -390,10 +388,11 @@ $(function () {
           anchor.removeAttr("data-original-title");
         }
       } catch (e) {
-        if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
+        if (typeof window !== "undefined" && window.UptimeDebug) {
           console.error("octoprint_uptime: tooltip calculation error", e, data);
         }
       }
+      return true;
     }
 
     /**
@@ -412,29 +411,29 @@ $(function () {
      * //   "poll_interval_seconds": 5
      * // }
      */
-    var fetchUptime = function () {
+    function fetchUptime() {
       // If local settings explicitly disable the navbar, hide immediately
       if (!isNavbarEnabled()) {
         navbarEl.hide();
         stopCompactToggleLoop();
         scheduleNext(DEFAULT_POLL);
-        return;
+        return false;
       }
 
-      OctoPrint.simpleApiGet("octoprint_uptime")
+      return OctoPrint.simpleApiGet("octoprint_uptime")
         .done(function (data) {
           if (!isNavbarEnabled()) {
             navbarEl.hide();
             stopCompactToggleLoop();
             scheduleNextFromData(data);
-            return;
+            return false;
           }
 
           var fmt =
             data && data.display_format ? data.display_format : displayFormat();
           navbarEl.show();
-          var displayValue;
-          var octoprintDisplayValue;
+          var displayValue = "unknown";
+          var octoprintDisplayValue = "unknown";
 
           // Format system uptime
           if (fmt === "full") {
@@ -469,7 +468,7 @@ $(function () {
               displayValue = localize("Unavailable");
             }
           } catch (e) {
-            if (typeof globalThis !== "undefined" && globalThis?.UptimeDebug) {
+            if (typeof window !== "undefined" && window.UptimeDebug) {
               console.error(
                 "octoprint_uptime: error processing uptime_available flag",
                 e,
@@ -503,7 +502,7 @@ $(function () {
             renderCompactDisplay();
             scheduleCompactToggle();
             scheduleNextFromData(data);
-            return;
+            return true;
           }
 
           // Cancel any pending compact toggle timer if not in compact mode
@@ -530,11 +529,12 @@ $(function () {
             navbarEl.hide();
             stopCompactToggleLoop();
             scheduleNextFromData(data);
-            return;
+            return false;
           }
           self.uptimeDisplayText(textDisplay);
           updateNavbarTooltip(data, showOctoprint);
           scheduleNextFromData(data);
+          return true;
         })
         .fail(function () {
           self.uptimeDisplay("Error");
@@ -543,8 +543,9 @@ $(function () {
           }
           // Continue polling even after failure (with default interval)
           scheduleNext(DEFAULT_POLL);
+          return false;
         });
-    };
+    }
 
     /**
      * OctoPrint lifecycle hook - called once after all ViewModels have been
@@ -560,6 +561,7 @@ $(function () {
      */
     self.onStartupComplete = function () {
       fetchUptime();
+      return true;
     };
 
     // Validate numeric settings on save: enforce integers in [1,120].
@@ -578,7 +580,7 @@ $(function () {
          */
         var origSave = settingsVM.save.bind(settingsVM);
         // Helper: Validate integer in range with localized message on failure.
-        function validateIntegerRange(rawValue, min, max, message) {
+        var validateIntegerRange = function (rawValue, min, max, message) {
           try {
             if (
               rawValue === "" ||
@@ -598,10 +600,10 @@ $(function () {
             }
           } catch (e) {}
           return null;
-        }
+        };
 
         // Helper: Validate compact toggle interval
-        function validateCompactToggleInterval() {
+        var validateCompactToggleInterval = function () {
           var raw;
           try {
             var ps = getPluginSettings();
@@ -615,10 +617,10 @@ $(function () {
             60,
             "Compact toggle interval must be an integer between 5 and 60 seconds.",
           );
-        }
+        };
 
         // Helper: Validate debug throttle
-        function validateDebugThrottle() {
+        var validateDebugThrottle = function () {
           try {
             var ps = getPluginSettings();
             var raw = ps ? ps.debug_throttle_seconds() : undefined;
@@ -631,10 +633,10 @@ $(function () {
             120,
             "Debug throttle must be an integer between 1 and 120 seconds.",
           );
-        }
+        };
 
         // Helper: Validate poll interval
-        function validatePollInterval() {
+        var validatePollInterval = function () {
           var raw;
           try {
             var ps = getPluginSettings();
@@ -648,10 +650,10 @@ $(function () {
             120,
             "Polling interval must be an integer between 1 and 120 seconds.",
           );
-        }
+        };
 
         // Helper: Show error notification
-        function showValidationErrors(errors) {
+        var showValidationErrors = function (errors) {
           try {
             if (
               typeof OctoPrint !== "undefined" &&
@@ -665,7 +667,7 @@ $(function () {
           } catch (e) {
             alert(errors.join("\n"));
           }
-        }
+        };
 
         settingsVM.save = function () {
           var errors = [];
