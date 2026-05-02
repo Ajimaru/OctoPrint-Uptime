@@ -20,10 +20,10 @@ python -m pip install -e ".[develop]"
 
 ## Pre-commit
 
-- We use `pre-commit` hooks. Enable the repo's hook wrappers once (do **not** run `pre-commit install` — the repo ships its own wrapper at `.githooks/pre-commit` which delegates to `./.venv/bin/pre-commit`):
+- We use `pre-commit` hooks. Install hooks once per clone:
 
 ```bash
-git config core.hooksPath .githooks
+pre-commit install
 ```
 
 - To run all hooks locally:
@@ -32,9 +32,7 @@ git config core.hooksPath .githooks
 pre-commit run --hook-stage manual --all-files
 ```
 
-### Notes on JS docs & pre-commit
-
-- The repository includes a `jsdoc-gen` pre-commit hook that runs `./scripts/generate-jsdocs.sh` when JS files under `octoprint_uptime/static/js` are modified. The hook uses `pass_filenames: true` so it only passes changed files to the script (faster local commits).
+### Notes on JS docs
 
 - Populate `node_modules` and install the doc generator:
 

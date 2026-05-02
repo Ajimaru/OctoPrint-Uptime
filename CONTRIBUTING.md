@@ -48,8 +48,7 @@ python -m pip install -e ".[develop]"
 After setting up your environment, complete these steps:
 
 - [ ] Install pre-commit in your venv (included in `requirements-dev.txt` or via `pip install pre-commit`)
-- [ ] Enable repository-local git hooks: `git config core.hooksPath .githooks`
-      (do **not** run `pre-commit install` — the repo ships its own hook wrapper at `.githooks/pre-commit` that invokes `./.venv/bin/pre-commit` automatically)
+- [ ] Install git hooks: `pre-commit install`
 - [ ] Run tests to verify setup: `pytest`
 - [ ] Run pre-commit to verify hooks: `pre-commit run --hook-stage manual --all-files`
 
@@ -69,15 +68,13 @@ To run all checks manually:
 pre-commit run --hook-stage manual --all-files
 ```
 
-### Enabling Repository-Local Git Hooks
+### Installing Pre-commit Hooks
 
-The repository ships custom git hook wrappers in `.githooks/`. Enable them locally with:
+Install hooks once per clone:
 
 ```bash
-git config core.hooksPath .githooks
+pre-commit install
 ```
-
-You only need to run this command once per repository clone.
 
 **Do not run `pre-commit install`.** The wrapper at `.githooks/pre-commit` is the entry point Git invokes; it then delegates to `./.venv/bin/pre-commit run`. Running `pre-commit install` will fail with `Cowardly refusing to install hooks with 'core.hooksPath' set` (by design).
 
