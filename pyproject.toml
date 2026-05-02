@@ -22,8 +22,8 @@ license-files = ["LICENSE"]
 # OctoPrint itself is the runtime environment, not a pip dependency of the plugin.
 dependencies = [
     "flask>=2.2.5",
-    # Keep overlap across OctoPrint flavors: 1.11.x needs psutil<7, devel needs >=7.2.2.
-    "psutil>=6.1.1,<8",
+    # OctoPrint 1.11.x requires psutil<7; keep plugin requirement aligned.
+    "psutil>=6.1.1,<7",
 ]
 
 [tool.setuptools]
