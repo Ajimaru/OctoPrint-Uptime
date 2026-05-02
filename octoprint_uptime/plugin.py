@@ -73,8 +73,7 @@ except ModuleNotFoundError:
 
 
 def format_uptime(seconds: float) -> str:
-    """
-    Converts a duration in seconds to a human-readable string format.
+    """Converts a duration in seconds to a human-readable string format.
 
     Args:
         seconds (float): The total number of seconds to format.
@@ -100,8 +99,7 @@ def format_uptime(seconds: float) -> str:
 
 
 def format_uptime_dhm(seconds: float) -> str:
-    """
-    Converts a duration in seconds to a human-readable string in days, hours, and minutes.
+    """Converts a duration in seconds to a human-readable string in days, hours, and minutes.
 
     Args:
         seconds (float): The total number of seconds to format.
@@ -123,8 +121,7 @@ def format_uptime_dhm(seconds: float) -> str:
 
 
 def format_uptime_dh(seconds: float) -> str:
-    """
-    Converts a duration in seconds to a human-readable string in days and hours.
+    """Converts a duration in seconds to a human-readable string in days and hours.
 
     Args:
         seconds (float): The total number of seconds to format.
@@ -143,8 +140,7 @@ def format_uptime_dh(seconds: float) -> str:
 
 
 def format_uptime_d(seconds: float) -> str:
-    """
-    Converts a duration in seconds to a string representing the number of whole days.
+    """Converts a duration in seconds to a string representing the number of whole days.
 
     Args:
         seconds (float): The duration in seconds.
@@ -163,13 +159,16 @@ class OctoprintUptimePlugin(
     SettingsPluginBase,
     TemplatePluginBase,
 ):
-    """OctoPrint plugin implementation.
+    """
+    OctoPrint plugin implementation.
+
     Uses lazy imports for OctoPrint/Flask integration points so the module
     can be imported in environments where OctoPrint is not installed.
     """
 
     def __init__(self, *args: object, **kwargs: object) -> None:
-        """Initialize the OctoPrint-Uptime plugin.
+        """
+        Initialize the OctoPrint-Uptime plugin.
 
         Sets up default internal state variables for debug settings,
         display format, and uptime tracking.
@@ -187,7 +186,8 @@ class OctoprintUptimePlugin(
         self._last_uptime_source: Optional[str] = None
 
     def get_update_information(self) -> dict[str, Any]:
-        """Return update information for the OctoPrint-Uptime plugin.
+        """
+        Return update information for the OctoPrint-Uptime plugin.
 
         This method provides metadata required for OctoPrint's update mechanism.
 
@@ -209,7 +209,8 @@ class OctoprintUptimePlugin(
         return info
 
     def is_api_protected(self) -> bool:
-        """Indicate whether the plugin's API endpoint requires authentication.
+        """
+        Indicate whether the plugin's API endpoint requires authentication.
 
         Returns:
             bool: True if API is protected, False otherwise.
@@ -218,7 +219,8 @@ class OctoprintUptimePlugin(
         return result
 
     def get_assets(self) -> dict[str, list[str]]:
-        """Return plugin asset files for OctoPrint-Uptime.
+        """
+        Return plugin asset files for OctoPrint-Uptime.
 
         Returns:
             dict[str, list[str]]: Dictionary mapping asset types to file lists.
@@ -226,8 +228,7 @@ class OctoprintUptimePlugin(
         return {"js": ["js/uptime.js"]}
 
     def get_template_configs(self) -> list[dict[str, Any]]:
-        """
-        Returns a list of template configuration dictionaries for the OctoPrint plugin.
+        """Returns a list of template configuration dictionaries for the OctoPrint plugin.
 
         The configurations specify templates for the navbar and settings sections,
         including their types, display names, template file names,
@@ -245,15 +246,14 @@ class OctoprintUptimePlugin(
             },
             {
                 "type": "settings",
-                "name": _("OctoPrint Uptime"),
+                "name": _("Uptime"),
                 "template": "settings.jinja2",
                 "custom_bindings": False,
             },
         ]
 
     def is_template_autoescaped(self) -> bool:
-        """
-        Determine if template autoescaping is enabled.
+        """Determine if template autoescaping is enabled.
 
         Returns:
             bool: True if autoescaping is enabled for templates, otherwise False.
@@ -261,7 +261,8 @@ class OctoprintUptimePlugin(
         return True
 
     def _get_uptime_seconds(self) -> tuple[Optional[float], str]:
-        """Attempts to retrieve system uptime using several strategies.
+        """
+        Attempts to retrieve system uptime using several strategies.
 
         Returns a tuple of (seconds|None, source) where source is one of
         "proc", "psutil" or "none".
@@ -373,8 +374,7 @@ class OctoprintUptimePlugin(
         return None
 
     def on_settings_initialized(self) -> None:
-        """
-        Called when OctoPrint has initialized plugin settings.
+        """Called when OctoPrint has initialized plugin settings.
 
         This updates the plugin's internal state from the settings store and
         calls a base implementation if provided by OctoPrint.
@@ -390,8 +390,7 @@ class OctoprintUptimePlugin(
             self._invoke_settings_hook(hook)
 
     def on_settings_save(self, data: dict[str, Any]) -> None:
-        """
-        Save plugin settings, validate config values, and update internal state.
+        """Save plugin settings, validate config values, and update internal state.
 
         Args:
             data (dict[str, Any]): Settings data to save.
@@ -415,7 +414,8 @@ class OctoprintUptimePlugin(
                 )
 
     def _get_hook_positional_param_count(self, hook: Any) -> Optional[int]:
-        """Return the number of positional params a callable accepts or None on error.
+        """
+        Return the number of positional params a callable accepts or None on error.
 
         Uses `inspect.signature` and logs a warning on failure.
         """
@@ -442,7 +442,8 @@ class OctoprintUptimePlugin(
             return None
 
     def _safe_invoke_hook(self, hook: Any, param_count: int) -> None:
-        """Invoke a hook with either zero or one positional parameter and log failures.
+        """
+        Invoke a hook with either zero or one positional parameter and log failures.
 
         `param_count` should be 0 or 1; any exception raised by the hook is logged
         but not propagated.
@@ -458,7 +459,8 @@ class OctoprintUptimePlugin(
                 logger.exception("_safe_invoke_hook: %r raised", hook)
 
     def _invoke_settings_hook(self, hook: Any) -> None:
-        """Invoke a settings hook using signature inspection and log call errors.
+        """
+        Invoke a settings hook using signature inspection and log call errors.
 
         Delegates signature inspection and the actual call to small helpers to
         reduce complexity and make failures easier to log/reason about.
@@ -504,8 +506,7 @@ class OctoprintUptimePlugin(
                 uptime_cfg[key] = val
 
     def _log_settings_save_data(self, data: dict[str, Any]) -> None:
-        """
-        Logs the data passed to the settings save event for debugging purposes.
+        """Logs the data passed to the settings save event for debugging purposes.
 
         Args:
             data (dict[str, Any]): The data being saved to the settings.
@@ -522,8 +523,7 @@ class OctoprintUptimePlugin(
                 pass
 
     def _call_base_on_settings_save(self, data: dict[str, Any]) -> None:
-        """
-        Calls the base class's `on_settings_save` method with the provided data if it exists
+        """Calls the base class's `on_settings_save` method with the provided data if it exists
         and is callable.
 
         Args:
@@ -543,7 +543,8 @@ class OctoprintUptimePlugin(
                 pass
 
     def get_settings_defaults(self) -> dict[str, Any]:
-        """Return default settings for the plugin.
+        """
+        Return default settings for the plugin.
 
         OctoPrint populates `settings.plugins.<identifier>` from this mapping so the
         frontend can safely bind to `settings.plugins.octoprint_uptime.*`.
@@ -560,8 +561,7 @@ class OctoprintUptimePlugin(
         }
 
     def _update_internal_state(self) -> None:
-        """
-        Updates the plugin's internal state variables based on the current settings.
+        """Updates the plugin's internal state variables based on the current settings.
 
         This method retrieves the latest configuration values from the settings object and updates
         the following internal attributes:
@@ -577,8 +577,7 @@ class OctoprintUptimePlugin(
         self._debug_throttle_seconds = int(self._settings.get(["debug_throttle_seconds"]) or 60)
 
     def _log_settings_after_save(self) -> None:
-        """
-        Logs the current plugin settings after they have been saved.
+        """Logs the current plugin settings after they have been saved.
 
         This method logs the values of debug mode, display format, and debug
         throttle seconds.
@@ -605,8 +604,7 @@ class OctoprintUptimePlugin(
             pass
 
     def _log_debug(self, message: str) -> None:
-        """
-        Logs a debug message if debugging is enabled and throttling conditions are met.
+        """Logs a debug message if debugging is enabled and throttling conditions are met.
 
         This method checks if debugging is enabled via the `_debug_enabled` attribute.
         If enabled, it ensures that debug messages are not logged more frequently than
@@ -636,8 +634,7 @@ class OctoprintUptimePlugin(
             pass
 
     def _fallback_uptime_response(self) -> Any:
-        """
-        Return system uptime info as a JSON or dict response.
+        """Return system uptime info as a JSON or dict response.
 
         If Flask is available, returns a JSON response with uptime details and settings.
         Otherwise, returns a basic dictionary. On error, returns 'unknown' uptime.
@@ -690,9 +687,7 @@ class OctoprintUptimePlugin(
             return {"uptime": _("unknown"), "uptime_available": False}
 
     def on_api_get(self, _request: Any = None) -> Any:
-        """
-        Handle GET requests to the plugin's API endpoint.
-        """
+        """Handle GET requests to the plugin's API endpoint."""
         permission_result = self._handle_permission_check()
         if permission_result is not None:
             return permission_result
@@ -727,8 +722,7 @@ class OctoprintUptimePlugin(
         return {"uptime": uptime_full, "octoprint_uptime": octoprint_uptime_full}
 
     def _handle_permission_check(self) -> Optional[Any]:
-        """
-        Handles permission checking and error handling for API GET requests.
+        """Handles permission checking and error handling for API GET requests.
 
         Returns:
             The forbidden response or fallback response if permission is denied or an error occurs,
@@ -750,8 +744,7 @@ class OctoprintUptimePlugin(
         return None
 
     def _check_permissions(self) -> bool:
-        """
-        Checks if the current user has the necessary system permissions.
+        """Checks if the current user has the necessary system permissions.
 
         Returns:
             bool: True if the user has system permissions or if permissions are not enforced;
@@ -764,8 +757,7 @@ class OctoprintUptimePlugin(
         return True
 
     def _abort_forbidden(self) -> dict[str, str]:
-        """
-        Handles forbidden access attempts by aborting the request with a 403 status code if
+        """Handles forbidden access attempts by aborting the request with a 403 status code if
         Flask is available, and returns a JSON error message indicating the action is
         forbidden.
 
@@ -778,8 +770,7 @@ class OctoprintUptimePlugin(
         return {"error": _("Forbidden")}
 
     def _get_uptime_info(self) -> tuple[Optional[float], str, str, str, str]:
-        """
-        Retrieve uptime information and formatted strings.
+        """Retrieve uptime information and formatted strings.
 
         Returns:
             Tuple: (seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d)
@@ -809,9 +800,7 @@ class OctoprintUptimePlugin(
     def _format_uptime_tuple(
         self, seconds: Optional[float]
     ) -> tuple[Optional[float], str, str, str, str]:
-        """
-        Normalize and format an uptime value into display strings.
-        """
+        """Normalize and format an uptime value into display strings."""
         if isinstance(seconds, (int, float)):
             seconds = float(seconds)
         else:
@@ -827,8 +816,7 @@ class OctoprintUptimePlugin(
         return seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d
 
     def _get_octoprint_uptime_info(self) -> tuple[Optional[float], str, str, str, str]:
-        """
-        Retrieve OctoPrint process uptime information and formatted strings.
+        """Retrieve OctoPrint process uptime information and formatted strings.
 
         Returns:
             Tuple: (seconds, uptime_full, uptime_dhm, uptime_dh, uptime_d)
@@ -844,8 +832,7 @@ class OctoprintUptimePlugin(
             return self._format_uptime_tuple(None)
 
     def _get_api_settings(self) -> tuple[str, int]:
-        """
-        Retrieves and returns the plugin's API settings with appropriate fallbacks.
+        """Retrieves and returns the plugin's API settings with appropriate fallbacks.
 
         Attempts to fetch the following settings from the plugin's configuration:
         - display_format (str): The format to display uptime.

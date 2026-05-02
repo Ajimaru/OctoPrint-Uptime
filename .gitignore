@@ -70,6 +70,7 @@ gh_logs/
 
 # === Local Configuration ===
 .python-version
+.githooks/
 
 # === Generated API Docs ===
 docs/api/javascript.md
