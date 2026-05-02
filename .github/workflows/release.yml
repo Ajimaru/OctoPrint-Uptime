@@ -108,7 +108,9 @@ jobs:
             const fs = require("fs");
 
             const tag = process.env.GITHUB_REF_NAME;
-            const title = tag;
+            const title = String(tag || "")
+              .replace(/^OctoPrint[-_\s]?Uptime[-_\s]?/i, "")
+              .trim() || tag;
 
             const { owner, repo } = context.repo;
             const response = await github.rest.repos.generateReleaseNotes({
