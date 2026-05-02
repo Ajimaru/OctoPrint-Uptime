@@ -10,7 +10,7 @@
  * @module octoprint_uptime/navbar
  */
 /* global $, ko, OctoPrint, OCTOPRINT_VIEWMODELS, gettext, _, alert, Promise */
-function localize(text) {
+const localize = (text) => {
   if (typeof window.gettext === "function") {
     return window.gettext(text);
   }
@@ -18,7 +18,7 @@ function localize(text) {
     return window._(text);
   }
   return text;
-}
+};
 
 /**
  * NavbarUptimeViewModel
@@ -29,13 +29,12 @@ function localize(text) {
  * @alias module:octoprint_uptime/navbar.NavbarUptimeViewModel
  * @param {Array} parameters - ViewModel parameters (expects `settingsViewModel`).
  */
-function NavbarUptimeViewModel(parameters) {
+const NavbarUptimeViewModel = function (parameters = []) {
   /**
    * Dynamic accessor: always re-resolves settingsVM.settings to avoid stale
    * captures when the ViewModel is constructed before settings are loaded.
    */
-  var self = this;
-  var settingsVM = parameters[0];
+  const settingsVM = parameters[0];
   /**
    * Return the plugin-specific settings object (`settings.plugins.octoprint_uptime`).
    * Re-resolves on every call so that the ViewModel never holds a stale
@@ -61,9 +60,13 @@ function NavbarUptimeViewModel(parameters) {
     return false;
   }
 
-  self.uptimeDisplay = window.ko.observable("Loading...");
-  self.octoprintUptimeDisplay = window.ko.observable("Loading...");
-  self.uptimeDisplayText = window.ko.observable("Loading...");
+  const uptimeDisplay = window.ko.observable("Loading...");
+  const octoprintUptimeDisplay = window.ko.observable("Loading...");
+  const uptimeDisplayText = window.ko.observable("Loading...");
+
+  this.uptimeDisplay = uptimeDisplay;
+  this.octoprintUptimeDisplay = octoprintUptimeDisplay;
+  this.uptimeDisplayText = uptimeDisplayText;
 
   var navbarEl = $("#navbar_plugin_navbar_uptime");
   var DEFAULT_POLL = 5;
@@ -196,18 +199,16 @@ function NavbarUptimeViewModel(parameters) {
    * @param {number} intervalSeconds - seconds until next poll (clamped by caller)
    * @returns {void}
    */
-  function scheduleNext(intervalSeconds) {
+  const scheduleNext = function (intervalSeconds = DEFAULT_POLL) {
+    const seconds = Number(intervalSeconds) || DEFAULT_POLL;
     try {
       if (pollTimer) {
         clearTimeout(pollTimer);
       }
     } catch {}
-    pollTimer = setTimeout(
-      () => fetchUptime(),
-      Math.max(1, intervalSeconds) * 1000,
-    );
+    pollTimer = setTimeout(() => fetchUptime(), Math.max(1, seconds) * 1000);
     return !!pollTimer;
-  }
+  };
 
   /**
    * Schedule the next polling cycle using the poll interval from the last API
@@ -260,37 +261,27 @@ function NavbarUptimeViewModel(parameters) {
 
     if (
       compactDisplayUptimeType === "system" &&
-      self.uptimeDisplay() !== "Loading..." &&
-      self.uptimeDisplay() !== "Error"
+      uptimeDisplay() !== "Loading..." &&
+      uptimeDisplay() !== "Error"
     ) {
-      textDisplay =
-        uptimeLabel + " " + systemLabel + " " + self.uptimeDisplay();
+      textDisplay = uptimeLabel + " " + systemLabel + " " + uptimeDisplay();
     } else if (
       compactDisplayUptimeType === "octoprint" &&
-      self.octoprintUptimeDisplay() !== "Loading..." &&
-      self.octoprintUptimeDisplay() !== "Error"
+      octoprintUptimeDisplay() !== "Loading..." &&
+      octoprintUptimeDisplay() !== "Error"
     ) {
       textDisplay =
-        uptimeLabel +
-        " " +
-        octoprintLabel +
-        " " +
-        self.octoprintUptimeDisplay();
+        uptimeLabel + " " + octoprintLabel + " " + octoprintUptimeDisplay();
     } else if (compactDisplayUptimeType === "system") {
       // Show system even if loading/error
-      textDisplay =
-        uptimeLabel + " " + systemLabel + " " + self.uptimeDisplay();
+      textDisplay = uptimeLabel + " " + systemLabel + " " + uptimeDisplay();
     } else {
       // Show octoprint even if loading/error
       textDisplay =
-        uptimeLabel +
-        " " +
-        octoprintLabel +
-        " " +
-        self.octoprintUptimeDisplay();
+        uptimeLabel + " " + octoprintLabel + " " + octoprintUptimeDisplay();
     }
 
-    self.uptimeDisplayText(textDisplay);
+    uptimeDisplayText(textDisplay);
     return true;
   }
 
@@ -509,8 +500,8 @@ function NavbarUptimeViewModel(parameters) {
         }
 
         // update visible text
-        self.uptimeDisplay(displayValue);
-        self.octoprintUptimeDisplay(octoprintDisplayValue);
+        uptimeDisplay(displayValue);
+        octoprintUptimeDisplay(octoprintDisplayValue);
 
         // Build HTML display based on settings
         let textDisplay;
@@ -558,13 +549,13 @@ function NavbarUptimeViewModel(parameters) {
           scheduleNextFromData(data);
           return false;
         }
-        self.uptimeDisplayText(textDisplay);
+        uptimeDisplayText(textDisplay);
         updateNavbarTooltip(data, showOctoprint);
         scheduleNextFromData(data);
         return true;
       })
       .fail(() => {
-        self.uptimeDisplay("Error");
+        uptimeDisplay("Error");
         if (!isNavbarEnabled()) {
           navbarEl.hide();
         }
@@ -586,7 +577,7 @@ function NavbarUptimeViewModel(parameters) {
    * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel
    * @returns {void}
    */
-  self.onStartupComplete = () => {
+  this.onStartupComplete = () => {
     fetchUptime();
     return true;
   };
@@ -710,8 +701,8 @@ function NavbarUptimeViewModel(parameters) {
       };
     }
   } catch {}
-  return self;
-}
+  return this;
+};
 
 $(() => {
   window.OCTOPRINT_VIEWMODELS.push([
