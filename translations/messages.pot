@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-27 12:31+0200\n"
+"POT-Creation-Date: 2026-05-02 17:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -75,16 +75,16 @@ msgstr ""
 msgid "Enable debug logging (throttled)"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:841
+#: octoprint_uptime/plugin.py:829
 msgid "Error computing OctoPrint uptime"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:804
+#: octoprint_uptime/plugin.py:795
 msgid "Error computing uptime"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:742 octoprint_uptime/plugin.py:749
-#: octoprint_uptime/plugin.py:778
+#: octoprint_uptime/plugin.py:736 octoprint_uptime/plugin.py:743
+#: octoprint_uptime/plugin.py:770
 msgid "Forbidden"
 msgstr ""
 
@@ -100,16 +100,8 @@ msgstr ""
 msgid "OctoPrint Started:"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:248
-msgid "OctoPrint Uptime"
-msgstr ""
-
 #: octoprint_uptime/templates/settings.jinja2:92
 msgid "OctoPrint Uptime:"
-msgstr ""
-
-#: octoprint_uptime/templates/settings.jinja2:3
-msgid "OctoPrint-Uptime"
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:143
@@ -144,12 +136,16 @@ msgstr ""
 msgid "Toggle between system and OctoPrint uptime in the navbar"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:708
+#: octoprint_uptime/plugin.py:249 octoprint_uptime/templates/settings.jinja2:3
+msgid "Uptime"
+msgstr ""
+
+#: octoprint_uptime/plugin.py:703
 #, python-format
 msgid "Uptime API requested, result=%s"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:664 octoprint_uptime/plugin.py:680
+#: octoprint_uptime/plugin.py:661 octoprint_uptime/plugin.py:677
 #: octoprint_uptime/templates/settings.jinja2:6
 msgid "Uptime could not be determined on this system."
 msgstr ""
@@ -174,16 +170,16 @@ msgstr ""
 msgid "When enabled, writes throttled debug logs."
 msgstr ""
 
-#: octoprint_uptime/plugin.py:864 octoprint_uptime/plugin.py:870
+#: octoprint_uptime/plugin.py:851 octoprint_uptime/plugin.py:857
 msgid "full"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:242
+#: octoprint_uptime/plugin.py:243
 msgid "navbar_uptime"
 msgstr ""
 
-#: octoprint_uptime/plugin.py:649 octoprint_uptime/plugin.py:690
-#: octoprint_uptime/plugin.py:826
+#: octoprint_uptime/plugin.py:646 octoprint_uptime/plugin.py:687
+#: octoprint_uptime/plugin.py:815
 msgid "unknown"
 msgstr ""
 

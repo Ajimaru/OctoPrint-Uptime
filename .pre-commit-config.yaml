@@ -1,0 +1,98 @@
+default_language_version:
+  python: python3
+
+exclude: '^docs/api/python\.md$'
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-added-large-files
+      - id: check-symlinks
+      - id: check-case-conflict
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+        exclude: '^translations/.*\.(po|pot)$'
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-ast
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-xml
+      - id: debug-statements
+
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+      - id: black
+        language_version: python3
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v10.2.0
+    hooks:
+      - id: eslint
+        files: "(\\.js)$"
+        exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|docs/|scripts/|translations/)
+        additional_dependencies: ["eslint@10.2.0", "globals@17.5.0"]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.14
+    hooks:
+      - id: ruff-check
+        args: ["--fix"]
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.2
+    hooks:
+      - id: pyupgrade
+        args: ["--py39-plus"]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
+    hooks:
+      - id: flake8
+        exclude: '\\.md$|\\.yaml$|\\.yml$|\\.json$|\\.txt$|\\.po$|\\.pot$|\\.mo$'
+        args: ["--max-line-length=100", "--extend-ignore=E203,W503"]
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.9.3
+    hooks:
+      - id: bandit
+        args: ["-x", "tests,.venv,venv,.git", "-ll"]
+
+  - repo: https://github.com/djlint/djlint
+    rev: v1.36.4
+    hooks:
+      - id: djlint-reformat
+        files: "\\.(html|jinja2|j2)$"
+        exclude: "^docs/(development/testing-diagrams|reference/diagrams)/"
+        types: [html]
+      - id: djlint-reformat-jinja
+        files: "\\.(html|jinja2|j2)$"
+        exclude: "^docs/(development/testing-diagrams|reference/diagrams)/"
+
+  - repo: https://github.com/OctoPrint/pre-commit-lessc
+    rev: 4.4.0
+    hooks:
+      - id: lessc
+        args: ["--wrapper-quiet", "--clean-css=--s1 --advanced --compatibility=ie8"]
+        additional_dependencies: ["less-plugin-clean-css"]
+        files: ^octoprint_uptime/static/less/.*\\.less$
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        args: ["-L", "te,nd,inh"]
+        exclude: "(^site/|^node_modules/|^translations/.*\\.(po|pot)$)"
