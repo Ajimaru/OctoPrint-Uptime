@@ -42,6 +42,7 @@ $(function () {
       } catch (e) {
         return false;
       }
+      return false;
     };
 
     function localize(text) {
@@ -104,6 +105,7 @@ $(function () {
       } catch (e) {
         return true;
       }
+      return true;
     };
 
     /**
@@ -119,6 +121,7 @@ $(function () {
       } catch (e) {
         return true;
       }
+      return true;
     };
 
     /**
@@ -134,6 +137,7 @@ $(function () {
       } catch (e) {
         return true;
       }
+      return true;
     };
 
     /**
@@ -151,6 +155,7 @@ $(function () {
       } catch (e) {
         return false;
       }
+      return false;
     };
 
     /**
@@ -166,6 +171,7 @@ $(function () {
       } catch (e) {
         return "full";
       }
+      return "full";
     };
 
     var pollTimer = 0;
@@ -678,6 +684,7 @@ $(function () {
           } catch (e) {
             alert(errors.join("\n"));
           }
+          return true;
         };
 
         settingsVM.save = function () {
