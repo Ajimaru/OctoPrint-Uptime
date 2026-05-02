@@ -338,23 +338,27 @@ const NavbarUptimeViewModel = function (parameters = []) {
   function updateNavbarTooltip(data, includeOctoprint) {
     try {
       const secs =
-        data && typeof data.seconds !== "undefined"
+        data && data.seconds != null
           ? Number(data.seconds)
           : Number.NaN;
       const octoprintSecs =
-        data && typeof data.octoprint_seconds !== "undefined"
+        data && data.octoprint_seconds != null
           ? Number(data.octoprint_seconds)
           : Number.NaN;
 
       const tooltipLines = [];
 
-      if (!Number.isNaN(secs)) {
+      if (Number.isFinite(secs) && secs >= 0) {
         var started = new Date(new Date().getTime() - secs * 1000);
         const systemStartedLabel = localize("System Started:");
         tooltipLines.push(systemStartedLabel + " " + started.toLocaleString());
       }
 
-      if (includeOctoprint && !Number.isNaN(octoprintSecs)) {
+      if (
+        includeOctoprint &&
+        Number.isFinite(octoprintSecs) &&
+        octoprintSecs >= 0
+      ) {
         var octoprintStarted = new Date(
           new Date().getTime() - octoprintSecs * 1000,
         );

@@ -782,7 +782,6 @@ def test_module_simple_methods_and_uptime_seconds_none(monkeypatch):
 
     Verifies behavior when both _get_uptime_from_proc and
     _get_uptime_from_psutil return None.
-    when both _get_uptime_from_proc and _get_uptime_from_psutil return None.
 
     This test verifies:
     - get_update_information returns expected plugin info.
@@ -2190,9 +2189,7 @@ def test_handle_permission_check_check_raises_and_abort_fallback():
     p = make_plugin()
 
     def bad_check():
-        """Raises:
-        AttributeError: Always raised with the message "boom" to indicate an error condition.
-        """
+        """Raise AttributeError with message "boom"."""
         raise AttributeError("boom")
 
     p._check_permissions = bad_check
