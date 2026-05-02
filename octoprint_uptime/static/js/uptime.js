@@ -528,21 +528,11 @@ const NavbarUptimeViewModel = function (parameters = []) {
 
         // Regular display logic: show selected uptimes
         if (showSystem && showOctoprint) {
-          textDisplay =
-            uptimeLabel +
-            " " +
-            systemLabel +
-            " " +
-            displayValue +
-            " | " +
-            octoprintLabel +
-            " " +
-            octoprintDisplayValue;
+          textDisplay = `${uptimeLabel} ${systemLabel} ${displayValue} | ${octoprintLabel} ${octoprintDisplayValue}`;
         } else if (showSystem) {
-          textDisplay = uptimeLabel + " " + systemLabel + " " + displayValue;
+          textDisplay = `${uptimeLabel} ${systemLabel} ${displayValue}`;
         } else if (showOctoprint) {
-          textDisplay =
-            uptimeLabel + " " + octoprintLabel + " " + octoprintDisplayValue;
+          textDisplay = `${uptimeLabel} ${octoprintLabel} ${octoprintDisplayValue}`;
         } else {
           navbarEl.hide();
           stopCompactToggleLoop();
