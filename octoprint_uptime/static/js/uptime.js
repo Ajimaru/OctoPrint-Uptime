@@ -45,17 +45,17 @@ $(function () {
     };
 
     function localize(text) {
-      if (typeof gettext === "function") {
-        return gettext(text);
+      if (typeof window.gettext === "function") {
+        return window.gettext(text);
       }
-      if (typeof _ === "function") {
-        return _(text);
+      if (typeof window._ === "function") {
+        return window._(text);
       }
       return text;
     }
-    self.uptimeDisplay = ko.observable("Loading...");
-    self.octoprintUptimeDisplay = ko.observable("Loading...");
-    self.uptimeDisplayText = ko.observable("Loading...");
+    self.uptimeDisplay = window.ko.observable("Loading...");
+    self.octoprintUptimeDisplay = window.ko.observable("Loading...");
+    self.uptimeDisplayText = window.ko.observable("Loading...");
 
     var navbarEl = $("#navbar_plugin_navbar_uptime");
     var DEFAULT_POLL = 5;
@@ -169,6 +169,9 @@ $(function () {
     };
 
     var pollTimer = 0;
+    var fetchUptime = function () {
+      return false;
+    };
 
     /**
      * Schedule the next polling cycle.
@@ -184,6 +187,7 @@ $(function () {
         }
       } catch (e) {}
       pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
+      return true;
     }
 
     /**
@@ -203,7 +207,7 @@ $(function () {
         } else {
           try {
             var ps = getPluginSettings();
-            var s = ps ? ps.poll_interval_seconds() : null;
+            var s = ps ? ps.poll_interval_seconds() : false;
             if (s) pollInterval = Number(s) || DEFAULT_POLL;
           } catch (e) {}
         }
@@ -219,6 +223,7 @@ $(function () {
         // Ensure polling continues even if interval calculation fails
         scheduleNext(DEFAULT_POLL);
       }
+      return true;
     }
 
     /**
@@ -268,6 +273,7 @@ $(function () {
       }
 
       self.uptimeDisplayText(textDisplay);
+      return true;
     }
 
     /**
@@ -411,7 +417,7 @@ $(function () {
      * //   "poll_interval_seconds": 5
      * // }
      */
-    function fetchUptime() {
+    fetchUptime = function () {
       // If local settings explicitly disable the navbar, hide immediately
       if (!isNavbarEnabled()) {
         navbarEl.hide();
@@ -420,7 +426,7 @@ $(function () {
         return false;
       }
 
-      return OctoPrint.simpleApiGet("octoprint_uptime")
+      return window.OctoPrint.simpleApiGet("octoprint_uptime")
         .done(function (data) {
           if (!isNavbarEnabled()) {
             navbarEl.hide();
@@ -545,7 +551,7 @@ $(function () {
           scheduleNext(DEFAULT_POLL);
           return false;
         });
-    }
+    };
 
     /**
      * OctoPrint lifecycle hook - called once after all ViewModels have been
@@ -599,7 +605,7 @@ $(function () {
               return localize(message);
             }
           } catch (e) {}
-          return null;
+          return false;
         };
 
         // Helper: Validate compact toggle interval
@@ -656,11 +662,11 @@ $(function () {
         var showValidationErrors = function (errors) {
           try {
             if (
-              typeof OctoPrint !== "undefined" &&
-              OctoPrint.notifications &&
-              OctoPrint.notifications.error
+              typeof window.OctoPrint !== "undefined" &&
+              window.OctoPrint.notifications &&
+              window.OctoPrint.notifications.error
             ) {
-              OctoPrint.notifications.error(errors.join("\n"));
+              window.OctoPrint.notifications.error(errors.join("\n"));
             } else {
               alert(errors.join("\n"));
             }
@@ -688,7 +694,7 @@ $(function () {
     } catch (e) {}
   }
 
-  OCTOPRINT_VIEWMODELS.push([
+  window.OCTOPRINT_VIEWMODELS.push([
     NavbarUptimeViewModel,
     ["settingsViewModel"],
     ["#navbar_plugin_navbar_uptime"],
