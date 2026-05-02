@@ -186,7 +186,12 @@ $(function () {
           clearTimeout(pollTimer);
         }
       } catch (e) {}
-      pollTimer = setTimeout(fetchUptime, Math.max(1, intervalSeconds) * 1000);
+      pollTimer = setTimeout(
+        function () {
+          return fetchUptime();
+        },
+        Math.max(1, intervalSeconds) * 1000,
+      );
       return true;
     }
 
@@ -699,4 +704,5 @@ $(function () {
     ["settingsViewModel"],
     ["#navbar_plugin_navbar_uptime"],
   ]);
+  return true;
 });
