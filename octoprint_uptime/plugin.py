@@ -246,7 +246,7 @@ class OctoprintUptimePlugin(
             },
             {
                 "type": "settings",
-                "name": _("OctoPrint Uptime"),
+                "name": _("Uptime"),
                 "template": "settings.jinja2",
                 "custom_bindings": False,
             },
