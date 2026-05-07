@@ -1,4 +1,4 @@
-argostranslate>=1.10.0,<2.0.0
+argostranslate>=1.11.0,<2.0.0
 Babel>=2.17.0
 bandit-sarif-formatter
 build
