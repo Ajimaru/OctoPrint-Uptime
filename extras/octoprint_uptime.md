@@ -57,7 +57,8 @@ All settings are available in the OctoPrint UI under "OctoPrint Uptime".
 ## How Uptime is Retrieved
 
 - On Linux, the plugin reads system uptime from `/proc/uptime` first and falls back to the `psutil` Python package if `/proc/uptime` is unavailable. On non-Linux platforms it uses `psutil` exclusively.
-- If neither source is available, the API sets `uptime_available: false` and may include an `uptime_note` with remediation instructions (for example, suggesting `pip install psutil` in the OctoPrint virtualenv).
+- Runtime dependency range for `psutil` is `>=5.9.8,<8` to remain compatible with OctoPrint 1.10.x and newer versions.
+- If neither source is available, the API sets `uptime_available: false` and may include an `uptime_note` with remediation instructions (for example, reinstalling the plugin so dependency constraints are applied, or installing a `psutil` version compatible with the running OctoPrint version).
 
 ## API Endpoint
 
