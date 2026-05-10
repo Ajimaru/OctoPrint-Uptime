@@ -196,14 +196,14 @@ jobs:
           cache: pip
 
       - name: Install OctoPrint (PyPI)
-        if: matrix.octoprint-source == 'pypi'
+        if: ${{ matrix.octoprint-source == 'pypi' }}
         run: |
           python -m pip install --upgrade pip
           python -m pip install "${{ matrix.octoprint-spec }}"
           python -m pip install "limits<4"
 
       - name: Install OctoPrint (git dev branch)
-        if: matrix.octoprint-source == 'git'
+        if: ${{ matrix.octoprint-source == 'git' }}
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install "git+https://github.com/OctoPrint/OctoPrint@dev#egg=OctoPrint"
