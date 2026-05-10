@@ -33,12 +33,12 @@ repos:
         language_version: python3
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v10.2.0
+    rev: v10.3.0
     hooks:
       - id: eslint
         files: "(\\.js)$"
         exclude: ^(src/octoprint/vendor/|tests/static/js/lib|tests/util/_files|docs/|scripts/|translations/)
-        additional_dependencies: ["eslint@10.2.0", "globals@17.5.0"]
+        additional_dependencies: ["eslint@10.3.0", "globals@17.6.0"]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
@@ -47,7 +47,7 @@ repos:
         args: ["--profile", "black"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.14
+    rev: v0.15.12
     hooks:
       - id: ruff-check
         args: ["--fix"]
