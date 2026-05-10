@@ -37,7 +37,7 @@ Check / test poll interval:
 
 ## Handling unavailable uptime
 
-- If the API returns `uptime_available: false` the client should fall back to a sensible UI state (for example display "unknown") and surface the localized `uptime_note` when present to guide remediation.
+- If the API returns `uptime_available: false` the client should fall back to a sensible UI state (for example display "unknown") and surface the localized `uptime_note` when present to explain that uptime could not be determined.
 
 ## Navbar show/hide behavior
 
