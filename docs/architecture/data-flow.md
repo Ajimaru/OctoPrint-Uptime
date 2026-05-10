@@ -54,6 +54,6 @@ The ViewModel continues to poll to detect runtime changes to those settings (all
 ## Resilience
 
 - **Error handling:** When the API fetch fails, the ViewModel displays "Error" in the navbar and continues polling at the fixed `DEFAULT_POLL` interval (5 seconds) without requiring manual intervention.
-- **Graceful degradation:** When uptime data is unavailable (e.g., `/proc/uptime` not accessible on Linux or `psutil` not installed), the API returns `uptime_available: false` and includes an optional `uptime_note` with remediation guidance (e.g., "psutil not available; install via `pip install psutil`"). The UI surfaces this note to help operators resolve the issue.
+- **Graceful degradation:** When uptime data is unavailable (e.g., `/proc/uptime` not accessible on Linux or `psutil` not installed), the API returns `uptime_available: false` and includes an optional localized `uptime_note` indicating uptime could not be determined. The UI surfaces this note to explain the fallback state.
 - **Throttled logging:** Debug log entries are throttled to avoid spam; plugin debug flag controls only these throttled entries while general logs depend on OctoPrint's global log level.
 - **Continued operation:** The widget tolerates transient failures and continues polling and refreshing the display, allowing automatic recovery when the API becomes available again without requiring a page reload.
