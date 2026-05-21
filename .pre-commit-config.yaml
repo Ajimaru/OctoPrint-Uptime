@@ -101,7 +101,7 @@ repos:
 
   - repo: local
     hooks:
-      - id: shellcheck # Requires local shellcheck >= 0.11.0 for consistent lint results
+      - id: shellcheck # Requires local shellcheck >= 0.10.0 for consistent lint results
         name: ShellCheck
         entry: bash scripts/shellcheck-hook.sh
         language: system

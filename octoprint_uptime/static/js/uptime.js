@@ -338,9 +338,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
   function updateNavbarTooltip(data, includeOctoprint) {
     try {
       const secs =
-        data && data.seconds != null
-          ? Number(data.seconds)
-          : Number.NaN;
+        data && data.seconds != null ? Number(data.seconds) : Number.NaN;
       const octoprintSecs =
         data && data.octoprint_seconds != null
           ? Number(data.octoprint_seconds)
