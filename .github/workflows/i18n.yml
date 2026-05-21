@@ -41,6 +41,7 @@ jobs:
       - # Extract and validate translation catalog
         name: Verify messages.pot is up to date
         run: |
+          . .venv/bin/activate
           pybabel extract --sort-output -F babel.cfg -o /tmp/messages.pot .
           python - <<'PY'
           import pathlib
