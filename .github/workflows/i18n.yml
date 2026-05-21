@@ -30,13 +30,13 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - # Create venv and install Babel and polib for i18n
+      - # Create venv and install i18n extractor/runtime deps
         name: Create venv and install minimal i18n deps
         run: |
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install 'Babel==2.18.0' 'polib==1.2.0'
+          python -m pip install 'Babel==2.18.0' 'polib==1.2.0' 'Jinja2==3.1.6'
 
       - # Extract and validate translation catalog
         name: Verify messages.pot is up to date
