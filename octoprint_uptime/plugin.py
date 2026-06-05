@@ -99,7 +99,7 @@ def format_uptime(seconds: float) -> str:
 
 
 def format_uptime_dhm(seconds: float) -> str:
-    """Converts a duration in seconds to a human-readable string in days, hours, and minutes.  # noqa: E501
+    """Convert seconds to a human-readable string in days, hours, and minutes.
 
     Args:
         seconds (float): The total number of seconds to format.
@@ -127,7 +127,8 @@ def format_uptime_dh(seconds: float) -> str:
         seconds (float): The total number of seconds to format.
 
     Returns:
-        str: A string representing the duration in the format 'Xd Yh' if days are present,  # noqa: E501
+           str: A string representing the duration in the format 'Xd Yh'
+               if days are present,
              otherwise 'Yh' for hours only.
     """
     seconds = int(seconds)
@@ -203,7 +204,10 @@ class OctoprintUptimePlugin(
                 "user": "Ajimaru",
                 "repo": "OctoPrint-Uptime",
                 "current": VERSION,
-                "pip": "https://github.com/Ajimaru/OctoPrint-Uptime/archive/{target_version}.zip",  # noqa: E501
+                "pip": (
+                    "https://github.com/Ajimaru/"
+                    "OctoPrint-Uptime/archive/{target_version}.zip"
+                ),
             }
         }
         return info
@@ -228,14 +232,15 @@ class OctoprintUptimePlugin(
         return {"js": ["js/uptime.js"]}
 
     def get_template_configs(self) -> list[dict[str, Any]]:
-        """Returns a list of template configuration dictionaries for the OctoPrint plugin.  # noqa: E501
+        """Return template configuration dictionaries for the OctoPrint plugin.
 
         The configurations specify templates for the navbar and settings sections,
         including their types, display names, template file names,
         and whether they use custom bindings.
 
         Returns:
-            list[dict[str, Any]]: A list of dictionaries containing template configuration details.  # noqa: E501
+            list[dict[str, Any]]: A list of dictionaries containing template
+                configuration details.
         """
         return [
             {
@@ -344,7 +349,7 @@ class OctoprintUptimePlugin(
         return None
 
     def _get_octoprint_uptime(self) -> Optional[float]:
-        """Get OctoPrint process uptime, preferring Linux /proc and falling back to psutil."""  # noqa: E501
+        """Get OctoPrint process uptime, preferring /proc and then psutil."""
         proc_uptime = self._get_octoprint_uptime_from_proc()
         if proc_uptime is not None:
             return proc_uptime
@@ -438,7 +443,8 @@ class OctoprintUptimePlugin(
         except (ValueError, TypeError, AttributeError) as e:
             if logger:
                 logger.info(
-                    "_get_hook_positional_param_count: unable to inspect signature for %r: %s",  # noqa: E501
+                    "_get_hook_positional_param_count: "
+                    "unable to inspect signature for %r: %s",
                     hook,
                     e,
                 )
@@ -476,7 +482,8 @@ class OctoprintUptimePlugin(
         if param_count not in (0, 1):
             if logger:
                 logger.warning(
-                    "_invoke_settings_hook: unexpected parameter count %s for %r; skipping",  # noqa: E501
+                    "_invoke_settings_hook: unexpected parameter count "
+                    "%s for %r; skipping",
                     param_count,
                     hook,
                 )
@@ -526,16 +533,17 @@ class OctoprintUptimePlugin(
                 pass
 
     def _call_base_on_settings_save(self, data: dict[str, Any]) -> None:
-        """Calls the base class's `on_settings_save` method with the provided data if it exists  # noqa: E501
-        and is callable.
+        """Call base `on_settings_save` with provided data, if callable.
 
         Args:
             data (dict[str, Any]): The settings data to be saved.
 
         Notes:
-            - Silently ignores AttributeError, TypeError, and ValueError exceptions that may  # noqa: E501
+                        - Silently ignores AttributeError, TypeError, and ValueError
+                            exceptions that may
               occur during the call.
-            - This is typically used to ensure that any base class logic for saving settings  # noqa: E501
+                        - This is typically used to ensure that any base class logic for
+                            saving settings
               is executed.
         """
         method = getattr(SettingsPluginBase, "on_settings_save", None)
@@ -566,11 +574,13 @@ class OctoprintUptimePlugin(
     def _update_internal_state(self) -> None:
         """Updates the plugin's internal state variables based on the current settings.
 
-        This method retrieves the latest configuration values from the settings object and updates  # noqa: E501
+                This method retrieves latest configuration values from settings
+                and updates
         the following internal attributes:
         - _debug_enabled: Whether debug mode is enabled.
         - _display_format: The format string for displaying uptime.
-        - _debug_throttle_seconds: The throttle interval (in seconds) for debug messages.  # noqa: E501
+                - _debug_throttle_seconds: The throttle interval (in seconds) for
+                    debug messages.
 
         Returns:
             None
@@ -609,7 +619,7 @@ class OctoprintUptimePlugin(
             pass
 
     def _log_debug(self, message: str) -> None:
-        """Logs a debug message if debugging is enabled and throttling conditions are met.  # noqa: E501
+        """Log debug message when enabled and throttle conditions are met.
 
         This method checks if debugging is enabled via the `_debug_enabled` attribute.
         If enabled, it ensures that debug messages are not logged more frequently than
@@ -693,7 +703,8 @@ class OctoprintUptimePlugin(
             if logger:
                 try:
                     logger.exception(
-                        "_fallback_uptime_response: unexpected error while building response"  # noqa: E501
+                        "_fallback_uptime_response: unexpected error while "
+                        "building response"
                     )
                 except (AttributeError, TypeError, ValueError):
                     pass
@@ -738,7 +749,8 @@ class OctoprintUptimePlugin(
         """Handles permission checking and error handling for API GET requests.
 
         Returns:
-            The forbidden response or fallback response if permission is denied or an error occurs,  # noqa: E501
+            The forbidden response or fallback response if permission is denied
+            or an error occurs,
             otherwise None if permission is granted.
         """
         try:
@@ -762,22 +774,26 @@ class OctoprintUptimePlugin(
         """Checks if the current user has the necessary system permissions.
 
         Returns:
-            bool: True if the user has system permissions or if permissions are not enforced;  # noqa: E501
-                  otherwise, returns the result of the permission check. If an exception occurs  # noqa: E501
-                  during the check (AttributeError, TypeError, or ValueError), defaults to True.  # noqa: E501
+            bool: True if the user has system permissions or if permissions are
+                  not enforced; otherwise returns the permission check result.
+                  If an exception occurs during the check (AttributeError,
+                  TypeError, or ValueError), defaults to True.
         """
-        # Intentionally permissive placeholder: permission enforcement is not implemented  # noqa: E501
+        # Intentionally permissive placeholder: permission enforcement is not
+        # implemented
         # in this plugin. Always allow access for now; replace with real checks when
         # permission enforcement is required.
         return True
 
     def _abort_forbidden(self) -> dict[str, str]:
-        """Handles forbidden access attempts by aborting the request with a 403 status code if  # noqa: E501
+        """Handle forbidden access attempts.
+
+        Abort with 403 if Flask is available,
         Flask is available, and returns a JSON error message indicating the action is
         forbidden.
 
         Returns:
-            dict: A dictionary containing an error message with the key "error" and value  # noqa: E501
+            dict: A dictionary containing an error message with key "error" and value
             "Forbidden".
         """
         if _flask is not None:
@@ -868,7 +884,8 @@ class OctoprintUptimePlugin(
                 display_format = _("full")
                 if logger:
                     logger.debug(
-                        "_get_api_settings: display_format missing, defaulting to 'full'"  # noqa: E501
+                        "_get_api_settings: display_format missing, "
+                        "defaulting to 'full'"
                     )
             else:
                 display_format = str(raw_fmt)
@@ -887,7 +904,8 @@ class OctoprintUptimePlugin(
                 poll_interval = 5
                 if logger:
                     logger.debug(
-                        "_get_api_settings: poll_interval_seconds missing, defaulting to 5"  # noqa: E501
+                        "_get_api_settings: poll_interval_seconds missing, "
+                        "defaulting to 5"
                     )
             else:
                 try:
