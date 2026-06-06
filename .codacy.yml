@@ -1,0 +1,33 @@
+---
+exclude_paths:
+  - "tests/**"
+
+engines:
+  eslint:
+    enabled: true
+    options:
+      ignore_rules:
+        # SSR/framework rules irrelevant for plain browser JS
+        - "@lwc/lwc/no-restricted-browser-globals-during-ssr"
+        - "@lwc/lwc/no-async-operation"
+        - "@salesforce/aura/ecma-intrinsics"
+        # Flow type annotations not used in this project
+        - "flowtype/require-parameter-type"
+        - "flowtype/require-return-type"
+        # Functional programming style — not applicable
+        - "fp/no-nil"
+        # ES5 compatibility rules — OctoPrint 1.10+ targets modern browsers
+        - "es-x/no-block-scoped-variables"
+        - "es-x/no-arrow-functions"
+        - "es-x/no-default-parameters"
+        - "es-x/no-trailing-function-commas"
+        - "es-x/no-number-isfinite"
+        # TypeScript rules — project uses plain JS with @ts-nocheck intentionally
+        - "@typescript-eslint/ban-ts-comment"
+        - "@typescript-eslint/no-redeclare"
+        # unicorn — not adopted in this project
+        - "unicorn/consistent-function-scoping"
+  biome:
+    enabled: true
+  pmd:
+    enabled: true

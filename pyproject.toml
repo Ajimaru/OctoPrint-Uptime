@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OctoPrint-Uptime"
-version = "0.4.2"
+version = "0.4.3"
 description = "Adds system uptime to the navbar and exposes a small uptime API."
 authors = [
     {name = "Ajimaru", email = "ajimaru_gdr@pm.me"}
@@ -64,7 +64,7 @@ develop = [
 ]
 
 [tool.black]
-line-length = 100
+line-length = 88
 target-version = ["py39", "py310", "py311", "py312"]
 
 [tool.ruff.lint.pydocstyle]

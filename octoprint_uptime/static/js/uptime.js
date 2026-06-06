@@ -9,7 +9,7 @@
  * Frontend module for the navbar uptime widget.
  * @module octoprint_uptime/navbar
  */
-/* global $, ko, OctoPrint, OCTOPRINT_VIEWMODELS, gettext, _, alert, Promise */
+/* global $, alert, clearTimeout, console, setTimeout, window */
 const localize = (text) => {
   if (typeof window.gettext === "function") {
     return window.gettext(text);
@@ -53,11 +53,10 @@ const NavbarUptimeViewModel = function (parameters = []) {
         return false;
       }
       const s = settingsVM.settings;
-      return s && s.plugins ? s.plugins.octoprint_uptime : false;
+      return s?.plugins ? s.plugins.octoprint_uptime : false;
     } catch {
       return false;
     }
-    return false;
   }
 
   const uptimeDisplay = window.ko.observable("Loading...");
@@ -115,7 +114,6 @@ const NavbarUptimeViewModel = function (parameters = []) {
     } catch {
       return true;
     }
-    return true;
   }
 
   /**
@@ -131,7 +129,6 @@ const NavbarUptimeViewModel = function (parameters = []) {
     } catch {
       return true;
     }
-    return true;
   }
 
   /**
@@ -147,7 +144,6 @@ const NavbarUptimeViewModel = function (parameters = []) {
     } catch {
       return true;
     }
-    return true;
   }
 
   /**
@@ -165,7 +161,6 @@ const NavbarUptimeViewModel = function (parameters = []) {
     } catch {
       return false;
     }
-    return false;
   }
 
   /**
@@ -184,7 +179,6 @@ const NavbarUptimeViewModel = function (parameters = []) {
     } catch {
       return "full";
     }
-    return "full";
   }
 
   var pollTimer = 0;
@@ -205,7 +199,9 @@ const NavbarUptimeViewModel = function (parameters = []) {
       if (pollTimer) {
         clearTimeout(pollTimer);
       }
-    } catch {}
+    } catch {
+      // Ignore timer cleanup errors and continue scheduling.
+    }
     pollTimer = setTimeout(() => fetchUptime(), Math.max(1, seconds) * 1000);
     return !!pollTimer;
   };
@@ -229,7 +225,9 @@ const NavbarUptimeViewModel = function (parameters = []) {
           const ps = getPluginSettings();
           const s = ps ? ps.poll_interval_seconds() : false;
           if (s) pollInterval = Number(s) || DEFAULT_POLL;
-        } catch {}
+        } catch {
+          // Fall back to the default poll interval when settings are unreadable.
+        }
       }
       return scheduleNext(pollInterval);
     } catch {
@@ -242,7 +240,6 @@ const NavbarUptimeViewModel = function (parameters = []) {
       // Ensure polling continues even if interval calculation fails
       return scheduleNext(DEFAULT_POLL);
     }
-    return false;
   }
 
   /**
@@ -321,7 +318,9 @@ const NavbarUptimeViewModel = function (parameters = []) {
       if (compactToggleTimer) {
         clearTimeout(compactToggleTimer);
       }
-    } catch {}
+    } catch {
+      // Ignore timer cleanup errors before resetting the handle.
+    }
     compactToggleTimer = 0;
     return true;
   }
@@ -338,9 +337,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
   function updateNavbarTooltip(data, includeOctoprint) {
     try {
       const secs =
-        data && data.seconds != null
-          ? Number(data.seconds)
-          : Number.NaN;
+        data && data.seconds != null ? Number(data.seconds) : Number.NaN;
       const octoprintSecs =
         data && data.octoprint_seconds != null
           ? Number(data.octoprint_seconds)
@@ -349,7 +346,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
       const tooltipLines = [];
 
       if (Number.isFinite(secs) && secs >= 0) {
-        var started = new Date(new Date().getTime() - secs * 1000);
+        var started = new Date(Date.now() - secs * 1000);
         const systemStartedLabel = localize("System Started:");
         tooltipLines.push(systemStartedLabel + " " + started.toLocaleString());
       }
@@ -359,9 +356,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
         Number.isFinite(octoprintSecs) &&
         octoprintSecs >= 0
       ) {
-        var octoprintStarted = new Date(
-          new Date().getTime() - octoprintSecs * 1000,
-        );
+        var octoprintStarted = new Date(Date.now() - octoprintSecs * 1000);
         const octoprintStartedLabel = localize("OctoPrint Started:");
         tooltipLines.push(
           octoprintStartedLabel + " " + octoprintStarted.toLocaleString(),
@@ -450,7 +445,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
         }
 
         let fmt = displayFormat();
-        if (data && data.display_format) {
+        if (data?.display_format) {
           fmt = data.display_format;
         }
         navbarEl.show();
@@ -606,7 +601,9 @@ const NavbarUptimeViewModel = function (parameters = []) {
           ) {
             return localize(message);
           }
-        } catch {}
+        } catch {
+          // Treat conversion failures the same as validation failures below.
+        }
         return false;
       };
 
@@ -629,9 +626,10 @@ const NavbarUptimeViewModel = function (parameters = []) {
 
       // Helper: Validate debug throttle
       var validateDebugThrottle = function () {
+        var raw;
         try {
           const ps = getPluginSettings();
-          const raw = ps ? ps.debug_throttle_seconds() : undefined;
+          raw = ps ? ps.debug_throttle_seconds() : undefined;
         } catch {
           return localize("Unable to read debug throttle setting.");
         }
@@ -694,7 +692,9 @@ const NavbarUptimeViewModel = function (parameters = []) {
         return Promise.resolve(origSave());
       };
     }
-  } catch {}
+  } catch {
+    // Keep the widget usable even if save-hook wiring fails during startup.
+  }
   return this;
 };
 
