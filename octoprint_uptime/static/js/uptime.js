@@ -53,7 +53,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
         return false;
       }
       const s = settingsVM.settings;
-      return s && s.plugins ? s.plugins.octoprint_uptime : false;
+      return s?.plugins ? s.plugins.octoprint_uptime : false;
     } catch {
       return false;
     }
@@ -346,7 +346,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
       const tooltipLines = [];
 
       if (Number.isFinite(secs) && secs >= 0) {
-        var started = new Date(new Date().getTime() - secs * 1000);
+        var started = new Date(Date.now() - secs * 1000);
         const systemStartedLabel = localize("System Started:");
         tooltipLines.push(systemStartedLabel + " " + started.toLocaleString());
       }
@@ -356,9 +356,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
         Number.isFinite(octoprintSecs) &&
         octoprintSecs >= 0
       ) {
-        var octoprintStarted = new Date(
-          new Date().getTime() - octoprintSecs * 1000,
-        );
+        var octoprintStarted = new Date(Date.now() - octoprintSecs * 1000);
         const octoprintStartedLabel = localize("OctoPrint Started:");
         tooltipLines.push(
           octoprintStartedLabel + " " + octoprintStarted.toLocaleString(),
@@ -447,7 +445,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
         }
 
         let fmt = displayFormat();
-        if (data && data.display_format) {
+        if (data?.display_format) {
           fmt = data.display_format;
         }
         navbarEl.show();

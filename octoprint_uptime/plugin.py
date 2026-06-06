@@ -127,9 +127,8 @@ def format_uptime_dh(seconds: float) -> str:
         seconds (float): The total number of seconds to format.
 
     Returns:
-           str: A string representing the duration in the format 'Xd Yh'
-               if days are present,
-             otherwise 'Yh' for hours only.
+        str: A string representing the duration in the format 'Xd Yh'
+             if days are present, otherwise 'Yh' for hours only.
     """
     seconds = int(seconds)
     days = seconds // 86400
@@ -539,12 +538,10 @@ class OctoprintUptimePlugin(
             data (dict[str, Any]): The settings data to be saved.
 
         Notes:
-                        - Silently ignores AttributeError, TypeError, and ValueError
-                            exceptions that may
-              occur during the call.
-                        - This is typically used to ensure that any base class logic for
-                            saving settings
-              is executed.
+            - Silently ignores AttributeError, TypeError, and ValueError
+              exceptions that may occur during the call.
+            - This is typically used to ensure that any base class logic for
+              saving settings is executed.
         """
         method = getattr(SettingsPluginBase, "on_settings_save", None)
         if callable(method):
@@ -572,18 +569,15 @@ class OctoprintUptimePlugin(
         }
 
     def _update_internal_state(self) -> None:
-        """Updates the plugin's internal state variables based on the current settings.
+        """Update the plugin's internal state variables from current settings.
 
-                This method retrieves latest configuration values from settings
-                and updates
-        the following internal attributes:
+        Retrieves the latest configuration values and updates the following
+        internal attributes:
+
         - _debug_enabled: Whether debug mode is enabled.
         - _display_format: The format string for displaying uptime.
-                - _debug_throttle_seconds: The throttle interval (in seconds) for
-                    debug messages.
-
-        Returns:
-            None
+        - _debug_throttle_seconds: The throttle interval (in seconds) for
+          debug messages.
         """
         self._debug_enabled = bool(self._settings.get(["debug"]))
         self._display_format = str(self._settings.get(["display_format"]))

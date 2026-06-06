@@ -3,8 +3,8 @@
 
 This module contains comprehensive test cases for the `octoprint_uptime.plugin` module,
 covering formatting functions, settings validation and sanitization, logging behavior,
-uptime retrieval from various sources, API responses, permission handling, hook invocation,  # noqa: E501
-and plugin reloading under different dependency scenarios.
+uptime retrieval from various sources, API responses, permission handling,
+hook invocation, and plugin reloading under different dependency scenarios.
 
 Test coverage includes:
 - Uptime formatting utilities.

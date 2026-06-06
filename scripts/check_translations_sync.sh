@@ -54,7 +54,15 @@ def normalize_po_content(path: str) -> str:
         import polib
 
         pofile = polib.pofile(path)
-        return pofile.__unicode__()
+        text = pofile.__unicode__()
+        lines = text.splitlines()
+        out = [
+            line
+            for line in lines
+            if not line.startswith('"POT-Creation-Date:')
+            and not line.startswith('"Generated-By:')
+        ]
+        return "\n".join(out).strip() + "\n"
     except Exception:
         text = Path(path).read_text(encoding="utf-8")
         lines = text.splitlines()
