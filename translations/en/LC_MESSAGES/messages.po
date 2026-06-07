@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-06 11:03+0200\n"
+"POT-Creation-Date: 2026-06-06 23:59+0200\n"
 "PO-Revision-Date: 2026-01-19 21:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
 #: octoprint_uptime/templates/settings.jinja2:151
@@ -138,9 +138,8 @@ msgid "Toggle between system and OctoPrint uptime in the navbar"
 msgstr ""
 
 #: octoprint_uptime/plugin.py:253 octoprint_uptime/templates/settings.jinja2:3
-#, fuzzy
 msgid "Uptime"
-msgstr "Uptime:"
+msgstr "Uptime"
 
 #: octoprint_uptime/plugin.py:721
 #, python-format
@@ -157,7 +156,8 @@ msgid "Uptime:"
 msgstr "Uptime:"
 
 #: octoprint_uptime/templates/settings.jinja2:112
-msgid "When enabled, alternates system and OctoPrint uptime to save navbar space."
+msgid ""
+"When enabled, alternates system and OctoPrint uptime to save navbar space."
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:100
@@ -184,4 +184,3 @@ msgstr "Uptime"
 #: octoprint_uptime/plugin.py:842
 msgid "unknown"
 msgstr ""
-
