@@ -65,11 +65,13 @@ else
     PYBABEL=""
 fi
 
-# Both pybabel (extract/update/compile) and polib (normalize/verify/snapshot)
-# are required. If either is missing, skip gracefully: CI enforces the catalog.
-if [[ -z "$PYBABEL" || -z "$PYTHON" ]] || ! "$PYTHON" -c "import polib" >/dev/null 2>&1; then
-    echo "i18n tooling (pybabel/polib) not available locally; skipping translation" >&2
-    echo "sync check. The i18n CI workflow remains the authoritative gate." >&2
+# The toolchain needs pybabel (extract/update/compile), polib (snapshot/verify)
+# and Jinja2 (babel.cfg uses the [jinja2: ...] extractor for the templates). If
+# anything is missing, skip gracefully: the i18n CI workflow enforces the
+# catalog, so a missing local toolchain must not block work.
+if [[ -z "$PYBABEL" || -z "$PYTHON" ]] || ! "$PYTHON" -c "import polib, jinja2" >/dev/null 2>&1; then
+    echo "i18n tooling (pybabel/polib/Jinja2) not available locally; skipping" >&2
+    echo "translation sync check. The i18n CI workflow remains the authoritative gate." >&2
     exit 0
 fi
 
@@ -139,8 +141,15 @@ before="$(snapshot_normalized)"
 echo "Regenerating translation catalogs (extract + update + verify + compile)..."
 
 # 1) Extract. The babel.cfg patterns are scoped to the package, so extracting
-#    from "." does not walk build/, dist/ or .venv.
-"$PYBABEL" extract --sort-output -F "$BABEL_CFG" -o translations/messages.pot .
+#    from "." does not walk build/, dist/ or .venv. If extraction fails (e.g.
+#    pybabel runs in an environment without Jinja2 for the jinja2 extractor),
+#    restore the catalogs and skip rather than leaving a truncated POT behind.
+if ! "$PYBABEL" extract --sort-output -F "$BABEL_CFG" -o translations/messages.pot .; then
+    echo "WARNING: 'pybabel extract' failed (is Jinja2 available to pybabel?);" >&2
+    echo "restoring catalogs and skipping the sync check." >&2
+    git checkout -- "${TRANSLATION_PATHS[@]}" 2>/dev/null || true
+    exit 0
+fi
 
 # 2) Update each language catalog. --no-fuzzy-matching avoids Babel silently
 #    mistranslating new msgids by matching them to similar old ones.
