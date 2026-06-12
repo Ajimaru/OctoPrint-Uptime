@@ -244,9 +244,15 @@ class OctoprintUptimePlugin(
         return [
             {
                 "type": "navbar",
-                "name": _("navbar_uptime"),
+                "name": _("Uptime"),
                 "template": "navbar.jinja2",
                 "custom_bindings": True,
+                # Keep the historical div id so the JS (and its tooltip lookup)
+                # keeps targeting the same element. OctoPrint already wraps the
+                # template in the navbar <li>, so the template must not add its
+                # own; doing so produced nested <li> markup that broke the
+                # core ``.nav > li > a`` styling and made the text look bold.
+                "div": "navbar_plugin_navbar_uptime",
             },
             {
                 "type": "settings",

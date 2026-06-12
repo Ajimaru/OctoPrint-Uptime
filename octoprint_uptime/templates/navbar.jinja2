@@ -1,11 +1,14 @@
-<li id="navbar_plugin_navbar_uptime" class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-        <i class="fas fa-history"></i> <span data-bind="text: uptimeDisplayText"></span>
-    </a>
-    {# Ensure JS translation loader picks up the tooltip strings used in JavaScript #}
-    <span style="display:none" aria-hidden="true">{{ _("Uptime:") }}</span>
-    <span style="display:none" aria-hidden="true">{{ _("System") }}</span>
-    <span style="display:none" aria-hidden="true">{{ _("OctoPrint") }}</span>
-    <span style="display:none" aria-hidden="true">{{ _("System Started:") }}</span>
-    <span style="display:none" aria-hidden="true">{{ _("OctoPrint Started:") }}</span>
-</li>
+{# Pure display item (not a link): an <a> would inherit navbar link styling
+   from themes (e.g. bold text). Mirror the bootstrap navbar link padding so
+   it stays vertically aligned with the other navbar entries. #}
+<span class="navbar_plugin_uptime_display"
+      style="display:inline-block;
+             padding:10px 15px">
+    <i class="fas fa-history"></i> <span data-bind="text: uptimeDisplayText"></span>
+</span>
+{# Ensure JS translation loader picks up the tooltip strings used in JavaScript #}
+<span style="display:none" aria-hidden="true">{{ _("Uptime:") }}</span>
+<span style="display:none" aria-hidden="true">{{ _("System") }}</span>
+<span style="display:none" aria-hidden="true">{{ _("OctoPrint") }}</span>
+<span style="display:none" aria-hidden="true">{{ _("System Started:") }}</span>
+<span style="display:none" aria-hidden="true">{{ _("OctoPrint Started:") }}</span>

@@ -365,7 +365,12 @@ const NavbarUptimeViewModel = function (parameters = []) {
 
       if (tooltipLines.length > 0) {
         const startedText = tooltipLines.join("\n");
-        const anchor = navbarEl.find("a").first();
+        // The navbar entry is a pure display <span> (no <a>); fall back to the
+        // navbar element itself if the display span cannot be located.
+        let anchor = navbarEl.find(".navbar_plugin_uptime_display").first();
+        if (anchor.length === 0) {
+          anchor = navbarEl;
+        }
         try {
           if (anchor.data("bs.tooltip")) {
             anchor.tooltip("destroy");
