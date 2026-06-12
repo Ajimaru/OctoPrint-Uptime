@@ -41,8 +41,6 @@ cd "$REPO_ROOT"
 PACKAGE="octoprint_uptime"
 BABEL_CFG="$REPO_ROOT/babel.cfg"
 LANGUAGES=(de en)
-# Deterministic fallback when a catalog has no usable PO-Revision-Date.
-EPOCH_DATE="1970-01-01 00:00+0000"
 
 # Translation artifacts that this hook may regenerate and re-stage.
 TRANSLATION_PATHS=(
@@ -87,10 +85,14 @@ snapshot_normalized() {
     PACKAGE="$PACKAGE" "$PYTHON" - <<'PY'
 import hashlib
 import os
-import sys
 from pathlib import Path
 
-import polib
+# Normalize exactly like the i18n CI check (.github/workflows/i18n.yml): strip
+# only the volatile date / tool-version headers and keep everything else,
+# including the "#: file:line" references. That way the hook re-stages the
+# catalogs whenever a template reflow shifts those references (which CI checks),
+# while pure timestamp churn is still ignored.
+VOLATILE = ('"POT-Creation-Date:', '"PO-Revision-Date:', '"Generated-By:')
 
 roots = ["translations", f"{os.environ['PACKAGE']}/translations"]
 out = []
@@ -101,16 +103,12 @@ for root in roots:
     for f in sorted(base.rglob("*")):
         if f.suffix not in {".po", ".pot"} or not f.is_file():
             continue
-        try:
-            po = polib.pofile(str(f))
-        except Exception:
-            continue
-        items = sorted(
-            (e.msgctxt or "", e.msgid, e.msgstr)
-            for e in po
-            if not e.obsolete
-        )
-        h = hashlib.sha256(repr(items).encode("utf-8")).hexdigest()
+        lines = [
+            line
+            for line in f.read_text(encoding="utf-8").splitlines()
+            if not line.startswith(VOLATILE)
+        ]
+        h = hashlib.sha256("\n".join(lines).encode("utf-8")).hexdigest()
         out.append(f"{f}:{h}")
 print("\n".join(out))
 PY
@@ -131,69 +129,32 @@ for lang in "${LANGUAGES[@]}"; do
         -i translations/messages.pot -d translations -l "$lang"
 done
 
-# 3) Stabilize headers, strip obsolete entries and verify catalogs.
-if ! EPOCH_DATE="$EPOCH_DATE" "$PYTHON" - <<'PY'; then
-import datetime
-import os
+# 3) Verify catalogs (read-only). The .po/.pot files are intentionally left in
+#    Babel's own output format so the committed messages.pot keeps matching
+#    `pybabel extract` (the i18n CI compares against that, ignoring only the
+#    volatile POT-Creation-Date / Generated-By headers). The volatile date
+#    therefore is NOT pinned here; pure timestamp churn is absorbed by the
+#    "restore on no normalized change" step below.
+if ! "$PYTHON" - <<'PY'; then
 import sys
 from pathlib import Path
 
 import polib
 
-EPOCH = os.environ["EPOCH_DATE"]
-
-
-def is_real_date(value):
-    """True only for a value Babel can parse back as a datetime."""
-    if not value:
-        return False
-    try:
-        datetime.datetime.strptime(value[:16], "%Y-%m-%d %H:%M")
-        return True
-    except (ValueError, TypeError):
-        return False
-
-
-def stabilize(catalog):
-    """Pin POT-Creation-Date to a deterministic, content-independent value.
-
-    Babel rewrites POT-Creation-Date to "now" on every run; pinning it keeps a
-    no-op run a true no-op. The freshly extracted POT carries the literal Babel
-    template placeholder in its date headers, which would otherwise crash
-    polib/Babel on re-read, so fall back to a fixed epoch in that case.
-    """
-    meta = catalog.metadata
-    stable = meta.get("PO-Revision-Date")
-    if not is_real_date(stable):
-        stable = EPOCH
-    meta["POT-Creation-Date"] = stable
-
-
-def catalogs():
-    pot = Path("translations/messages.pot")
-    if pot.exists():
-        yield pot
-    for po in sorted(Path("translations").glob("*/LC_MESSAGES/messages.po")):
-        yield po
-
-
 bad_fuzzy = []
 en_mismatch = []
-for path in catalogs():
+for path in sorted(Path("translations").glob("*/LC_MESSAGES/messages.po")):
+    lang = path.parts[1]
     cat = polib.pofile(str(path))
-    # Drop obsolete ("#~") entries so they neither accumulate nor collide.
-    cat[:] = [e for e in cat if not e.obsolete]
-    stabilize(cat)
-
-    lang = path.parts[1] if path.suffix == ".po" else None
     for entry in cat:
+        if entry.obsolete:
+            continue
         if "fuzzy" in entry.flags and entry.msgstr and entry.msgstr != entry.msgid:
             bad_fuzzy.append(f"{lang}: {entry.msgid!r} -> {entry.msgstr!r}")
         if lang == "en" and entry.msgstr and entry.msgstr != entry.msgid:
             en_mismatch.append(
                 f"en: msgstr != msgid for {entry.msgid!r} (got {entry.msgstr!r})"
             )
-    cat.save(str(path))
 
 if bad_fuzzy or en_mismatch:
     print("Catalog verification FAILED:", file=sys.stderr)

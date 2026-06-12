@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 1970-01-01 00:00+0000\n"
+"POT-Creation-Date: 2026-06-12 16:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,11 +92,11 @@ msgstr ""
 msgid "Minimum interval between debug log entries (s)."
 msgstr ""
 
-#: octoprint_uptime/templates/navbar.jinja2:7
+#: octoprint_uptime/templates/navbar.jinja2:12
 msgid "OctoPrint"
 msgstr ""
 
-#: octoprint_uptime/templates/navbar.jinja2:9
+#: octoprint_uptime/templates/navbar.jinja2:14
 msgid "OctoPrint Started:"
 msgstr ""
 
@@ -120,11 +120,11 @@ msgstr ""
 msgid "Switch interval in compact mode (5-60 s)."
 msgstr ""
 
-#: octoprint_uptime/templates/navbar.jinja2:6
+#: octoprint_uptime/templates/navbar.jinja2:11
 msgid "System"
 msgstr ""
 
-#: octoprint_uptime/templates/navbar.jinja2:8
+#: octoprint_uptime/templates/navbar.jinja2:13
 msgid "System Started:"
 msgstr ""
 
@@ -151,13 +151,12 @@ msgstr ""
 msgid "Uptime could not be determined on this system."
 msgstr ""
 
-#: octoprint_uptime/templates/navbar.jinja2:5
+#: octoprint_uptime/templates/navbar.jinja2:10
 msgid "Uptime:"
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:112
-msgid ""
-"When enabled, alternates system and OctoPrint uptime to save navbar space."
+msgid "When enabled, alternates system and OctoPrint uptime to save navbar space."
 msgstr ""
 
 #: octoprint_uptime/templates/settings.jinja2:100
@@ -180,3 +179,4 @@ msgstr ""
 #: octoprint_uptime/plugin.py:848
 msgid "unknown"
 msgstr ""
+
