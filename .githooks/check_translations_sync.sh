@@ -87,11 +87,18 @@ import hashlib
 import os
 from pathlib import Path
 
-# Normalize exactly like the i18n CI check (.github/workflows/i18n.yml): strip
-# only the volatile date / tool-version headers and keep everything else,
-# including the "#: file:line" references. That way the hook re-stages the
-# catalogs whenever a template reflow shifts those references (which CI checks),
-# while pure timestamp churn is still ignored.
+import polib
+
+# Two different normalizations, because the two CI checks treat the files
+# differently:
+#  - messages.pot is compared verbatim by the i18n CI workflow (only the
+#    volatile date / tool-version headers are ignored), so the hook must also
+#    track its "#: file:line" references and entry order. A template reflow
+#    that shifts those refs then correctly re-stages the POT.
+#  - the .po catalogs are NOT format-checked by CI; their refs, entry order and
+#    line wrapping vary by Babel version/platform, so comparing them verbatim
+#    produces false "content changed" results (Babel on the committer's machine
+#    vs Babel in CI). They are compared semantically (msgctxt/msgid/msgstr only).
 VOLATILE = ('"POT-Creation-Date:', '"PO-Revision-Date:', '"Generated-By:')
 
 roots = ["translations", f"{os.environ['PACKAGE']}/translations"]
@@ -101,22 +108,35 @@ for root in roots:
     if not base.exists():
         continue
     for f in sorted(base.rglob("*")):
-        if f.suffix not in {".po", ".pot"} or not f.is_file():
+        if not f.is_file():
             continue
-        lines = [
-            line
-            for line in f.read_text(encoding="utf-8").splitlines()
-            if not line.startswith(VOLATILE)
-        ]
-        h = hashlib.sha256("\n".join(lines).encode("utf-8")).hexdigest()
-        out.append(f"{f}:{h}")
+        if f.suffix == ".pot":
+            lines = [
+                line
+                for line in f.read_text(encoding="utf-8").splitlines()
+                if not line.startswith(VOLATILE)
+            ]
+            h = hashlib.sha256("\n".join(lines).encode("utf-8")).hexdigest()
+            out.append(f"{f}:{h}")
+        elif f.suffix == ".po":
+            try:
+                po = polib.pofile(str(f))
+            except Exception:
+                continue
+            items = sorted(
+                (e.msgctxt or "", e.msgid, e.msgstr)
+                for e in po
+                if not e.obsolete
+            )
+            h = hashlib.sha256(repr(items).encode("utf-8")).hexdigest()
+            out.append(f"{f}:{h}")
 print("\n".join(out))
 PY
 }
 
 before="$(snapshot_normalized)"
 
-echo "Regenerating translation catalogs (extract + update + stabilize + verify)..."
+echo "Regenerating translation catalogs (extract + update + verify + compile)..."
 
 # 1) Extract. The babel.cfg patterns are scoped to the package, so extracting
 #    from "." does not walk build/, dist/ or .venv.
