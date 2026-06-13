@@ -3,7 +3,7 @@
     "node": ">=20.19.0"
   },
   "devDependencies": {
-    "eslint": "10.4.0",
+    "eslint": "10.4.1",
     "globals": "17.6.0",
     "jsdoc": "4.0.5",
     "jsdoc-to-markdown": "9.1.3",
