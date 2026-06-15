@@ -14,6 +14,8 @@
 
 ### Effortlessly track your OctoPrint server's uptime, right from your navbar
 
+[![49% Vibe_Coded](https://img.shields.io/badge/49%25-Vibe_Coded-ff69b4?style=flat-square&logo=githubcopilot&logoColor=white)](https://github.com/ai-ecoverse/vibe-coded-badge-action)
+
 [![Vibe Coded](https://img.shields.io/badge/Vibe_Coded-0%25-ff69b4?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime)
 
 > [!NOTE]
