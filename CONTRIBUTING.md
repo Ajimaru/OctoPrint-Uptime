@@ -19,16 +19,10 @@ This is the recommended approach for a consistent, reproducible development envi
    source .venv/bin/activate
    ```
 
-4. Install development dependencies:
+4. Install the package in editable mode with development extras:
 
    ```bash
    python -m pip install --upgrade pip
-   python -m pip install -r requirements-dev.txt
-   ```
-
-5. (Optional) Install the package in editable mode with development extras:
-
-   ```bash
    python -m pip install -e ".[develop]"
    ```
 
@@ -47,7 +41,7 @@ python -m pip install -e ".[develop]"
 
 After setting up your environment, complete these steps:
 
-- [ ] Install pre-commit in your venv (included in `requirements-dev.txt` or via `pip install pre-commit`)
+- [ ] Install pre-commit in your venv (included in the `[develop]` extras or via `pip install pre-commit`)
 - [ ] Install git hooks: `pre-commit install`
 - [ ] Run tests to verify setup: `pytest`
 - [ ] Run pre-commit to verify hooks: `pre-commit run --hook-stage manual --all-files`

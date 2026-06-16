@@ -69,7 +69,7 @@ Install the appropriate requirements for your purpose:
 - For development (tests, linters, build tools):
 
 ```bash
-pip install -r requirements-dev.txt
+pip install -e ".[develop]"
 ```
 
 - For building the documentation (mkdocs + docs tooling), create a **separate virtual environment** to avoid dependency conflicts:
@@ -86,7 +86,7 @@ pip install -r requirements-docs.txt
 pip install .
 ```
 
-**Important:** Use separate virtual environments for development (`.venv`) and documentation (`.venv-docs`) to avoid version conflicts, as `requirements-dev.txt` and `requirements-docs.txt` have overlapping dependencies (`pylint`, `ruff`).
+**Important:** Use separate virtual environments for development (`.venv`) and documentation (`.venv-docs`) to avoid version conflicts, as the `[develop]` extras and `requirements-docs.txt` have overlapping dependencies (`pylint`, `ruff`).
 
 Install Node.js dependencies for frontend tooling when needed:
 
