@@ -25,10 +25,10 @@ python3 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
-- **Python dependencies**: Install the project development requirements, including `pyreverse` (provided by `pylint`) from `requirements-dev.txt`:
+- **Python dependencies**: Install the project development extras, including `pyreverse` (provided by `pylint`):
 
 ```bash
-pip install -r requirements-dev.txt
+pip install -e ".[develop]"
 ```
 
 - **System utilities**: `graphviz` (dot). Optional: `imagemagick` (`convert`) and `potrace` for fallback.
