@@ -11,7 +11,7 @@ Preferred reporting channels:
 1. **GitHub Security Advisories** (recommended):
    - Go to your repository on GitHub → **Security** → **Advisories** → **Report a vulnerability**.
 2. **Email**:
-   - Send details to: **[ajimaru_gdr@pm.me](mailto:ajimaru_gdr@pm.me)**
+   - Send details to: **[at ajimaru_gdr [at] pm [dot] me](mailto:at ajimaru_gdr [at] pm [dot] me)**
 
 Please include:
 
