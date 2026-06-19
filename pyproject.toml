@@ -50,7 +50,9 @@ Issues = "https://github.com/Ajimaru/OctoPrint-Uptime/issues"
 
 [project.optional-dependencies]
 develop = [
-    "argostranslate>=1.11.0,<2.0.0",
+    # argostranslate pulls spacy->thinc>=8.3.12, which dropped Python 3.9.
+    # Dev-only i18n tooling, never imported at runtime -- skip it on 3.9.
+    "argostranslate>=1.11.0,<2.0.0; python_version >= '3.10'",
     "Babel>=2.17.0",
     "bandit-sarif-formatter",
     "black>=24.0.0",
