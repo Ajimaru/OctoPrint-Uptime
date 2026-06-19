@@ -14,6 +14,8 @@
 
 ### Effortlessly track your OctoPrint server's uptime, right from your navbar
 
+[![49% Vibe_Coded](https://img.shields.io/badge/49%25-Vibe_Coded-ff69b4?style=flat-square&logo=githubcopilot&logoColor=white)](https://github.com/ai-ecoverse/vibe-coded-badge-action)
+
 > [!NOTE]
 > **About this project.** I built this for my own printer setup with AI, and if
 > it helps others, even better. I have tested it to the best of my knowledge and
