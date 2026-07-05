@@ -59,7 +59,7 @@ develop = [
     "build",
     "flake8>=7.0.0",
     "flask>=2.3.2",
-    "isort>=5,<8",
+    "isort>=5,<9",
     "mock",
     "polib",
     "pre-commit>=3.0.0",
