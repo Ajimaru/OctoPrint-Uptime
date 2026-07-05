@@ -4,8 +4,9 @@ This page describes how uptime is computed and propagated from the server to the
 
 ## Server-side
 
-- The plugin attempts to read system uptime via `psutil` (declared as a runtime dependency in `pyproject.toml`). If access is restricted the plugin returns an `uptime_available: false` and an optional `uptime_note` hint in the API response.
-- Formatting helpers convert raw seconds into human-friendly strings (full, `dhm`, `dh`, `d`, short forms).
+- System uptime is read from `/proc/uptime` on Linux, with `psutil.boot_time()` as a fallback (`psutil` is declared as a runtime dependency in `pyproject.toml`). OctoPrint process uptime is read from `/proc/self/stat`, falling back to the `psutil` process creation time.
+- When no source yields a valid value, the API response carries `uptime_available: false` plus a localized `uptime_note` hint; the field is omitted otherwise.
+- Formatting helpers convert raw seconds into human-friendly strings (`full`, `dhm`, `dh`, `d`; see [Algorithms & formatting](algorithms.md)).
 
 ## API contract
 
@@ -13,13 +14,12 @@ Example response (partial):
 
 ```json
 {
-  "seconds": 3600,
-  "uptime": "1 hour",
-  "uptime_dhm": "0d 1h 0m",
+  "seconds": 3600.0,
+  "uptime": "1h 0m 0s",
+  "uptime_dhm": "1h 0m",
   "display_format": "dhm",
   "poll_interval_seconds": 5,
-  "uptime_available": true,
-  "uptime_note": null
+  "uptime_available": true
 }
 ```
 

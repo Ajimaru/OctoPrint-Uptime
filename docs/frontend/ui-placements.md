@@ -16,14 +16,14 @@ The viewmodel is registered in `octoprint_uptime/static/js/uptime.js` using the 
 OCTOPRINT_VIEWMODELS.push([
   NavbarUptimeViewModel,
   ["settingsViewModel"],
-  ["#navbar_plugin_navbar_uptime"],
+  ["#navbar_plugin_octoprint_uptime"],
 ]);
 ```
 
 ## What this does
 
 - OctoPrint will instantiate `NavbarUptimeViewModel`, passing the `settingsViewModel` instance into the constructor.
-- It will bind the generated viewmodel to the DOM element matching `#navbar_plugin_navbar_uptime`.
+- It will bind the generated viewmodel to the DOM element matching `#navbar_plugin_octoprint_uptime`.
 
 ## Template anchor
 
@@ -31,7 +31,7 @@ The navbar template defines the anchor element where the ViewModel binds. The
 actual template lives in `octoprint_uptime/templates/navbar.jinja2`:
 
 ```html
-<li id="navbar_plugin_navbar_uptime" class="dropdown">
+<li id="navbar_plugin_octoprint_uptime" class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
     <i class="fas fa-history"></i>
     <span data-bind="html: uptimeDisplayHtml"></span>

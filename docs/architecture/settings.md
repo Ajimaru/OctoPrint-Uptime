@@ -13,11 +13,11 @@ This document lists the plugin settings that affect the uptime display and polli
   - Both disabled: No uptime is displayed.
 - `compact_toggle_interval_seconds` (integer, default `5`): Seconds between navbar switches in compact mode; values that cannot be parsed as integers fall back to the default (5), and integer values outside 5-60 are clamped to the nearest bound.
 - `display_format` (string, default `full`): Format of uptime display. Options:
-  - `full` (default): Human-friendly longest form; e.g., "2 days 3 hours 15 minutes"
+  - `full` (default): Longest form including seconds; e.g., "2d 3h 15m 4s"
   - `dhm`: Days, hours, minutes; e.g., "2d 3h 15m"
   - `dh`: Days, hours; e.g., "2d 3h"
   - `d`: Days only; e.g., "2d"
-  - `short`: Compact machine-friendly form; e.g., "2d3h15m" or "2h15m" (omits zero-value leading components)
+  - `short`: Legacy alias; renders the same as `dh` (e.g., "2d 3h")
 - `debug_throttle_seconds` (integer, default `60`): Minimum seconds between debug log entries; values that cannot be parsed as integers fall back to the default (60), and integer values outside 1-120 are clamped to the nearest bound.
 - `poll_interval_seconds` (integer, default `5`): Client polling interval in seconds; the frontend uses the API response value when present (e.g., API returns `10` → poll every 10s), otherwise falls back to this setting (e.g., API absent → poll every 5s).
 

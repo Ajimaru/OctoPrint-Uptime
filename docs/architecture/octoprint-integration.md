@@ -36,6 +36,7 @@ OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {
 - `octoprint_seconds`, `octoprint_uptime`, `octoprint_uptime_dhm`, `octoprint_uptime_dh`, `octoprint_uptime_d`: OctoPrint process uptime information
 - `display_format`: The currently configured display format preference
 - `poll_interval_seconds`: Recommended polling interval for the client
+- `uptime_available`: `true` when system uptime could be determined; when `false`, a localized `uptime_note` field is also included
 
 **Error responses** (e.g., permission denied) include:
 

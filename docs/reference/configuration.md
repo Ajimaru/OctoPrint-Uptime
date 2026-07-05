@@ -25,8 +25,9 @@ Settings (defaults):
 
 - `display_format` (string) - default: `"full"`\
    Controls the default formatted uptime string returned by the API and used in
-  the UI. Valid values include `full`, `dhm`, `dh`, `d`, and `short` which map to the
-  helper formatters exposed by the plugin (see [API docs](../api/python.md)).
+  the UI. Valid values are `full`, `dhm`, `dh`, `d`, and `short` (a legacy alias
+  rendered like `dh`), which map to the helper formatters exposed by the plugin
+  (see [API docs](../api/python.md)).
 
 - `debug_throttle_seconds` (int) - default: `60`\
    Minimum interval (in seconds) between repeated debug log messages to avoid

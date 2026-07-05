@@ -25,7 +25,7 @@
 <strong>
   Lightweight OctoPrint plugin that displays both host system and OctoPrint process uptime in the navbar and exposes a small JSON API for tooling and integrations.<br />
 </strong>
-</br />
+<br />
 <img src="assets/img/uptime_navbar.png" alt="OctoPrint Uptime Navbar" width="666" />
 <!-- markdownlint-enable MD033-->
 
@@ -34,6 +34,7 @@
 - 🖥️ Navbar widget displaying system and OctoPrint uptime with configurable formats (full / dhm / dh / d / short)
 - 🔒 Small read‑only API at `/api/plugin/octoprint_uptime` (OctoPrint auth enforced)
 - ⚙️ Configurable polling interval and optional compact toggle mode
+- 📚 Developer documentation at [ajimaru.github.io/OctoPrint-Uptime](https://ajimaru.github.io/OctoPrint-Uptime/) (architecture, API reference, contributing)
 
 ## Installation
 
@@ -66,7 +67,7 @@ The navbar widget polls the plugin API and displays both system and OctoPrint pr
 
 ### Note about uptime retrieval
 
-The plugin determines system uptime using either `/proc/uptime` on Linux systems or the Python library `psutil`; OctoPrint process uptime is retrieved via the OctoPrint API. `psutil` is installed automatically as a dependency.
+The plugin determines system uptime from `/proc/uptime` on Linux, falling back to the Python library `psutil` (boot time). OctoPrint process uptime is determined from `/proc/self/stat` on Linux, falling back to the process creation time reported by `psutil`. `psutil` is installed automatically as a dependency.
 
 The packaged dependency range is `psutil>=5.9.8,<8`, which keeps installs compatible with OctoPrint 1.10.x and newer OctoPrint versions.
 
@@ -78,7 +79,7 @@ Configure the plugin in **Settings** → **OctoPrint Uptime**:
 
 <!-- markdownlint-disable MD033 -->
 <img src="assets/img/uptime_settings.png" alt="OctoPrint Uptime Settings" width="666" />
-</br>
+<br />
 <details>
 <summary>Settings Defaults</summary>
 
@@ -86,7 +87,7 @@ Configure the plugin in **Settings** → **OctoPrint Uptime**:
 - `show_octoprint_uptime`: `true` - Show OctoPrint uptime in the navbar
 - `compact_display`: `false` - Toggle between system and OctoPrint uptime in the navbar
 - `compact_toggle_interval_seconds`: `5` - Interval for toggling between system and OctoPrint uptime in seconds (validated and clamped between 5-60s)
-- `display_format`: `full` - Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`)
+- `display_format`: `full` - Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`; `short` is a legacy alias that renders like `dh`)
 - `poll_interval_seconds`: `5` - Polling interval in seconds (validated and clamped between 1-120s)
 - `debug`: `false` - Enable debug logging for troubleshooting
 - `debug_throttle_seconds`: `60` - Throttle debug logs to reduce log spam (validated and clamped between 1-120s)
@@ -110,6 +111,28 @@ Quick curl example:
 ```bash
 curl -s -H "X-Api-Key: $API_KEY" http://localhost:5000/api/plugin/octoprint_uptime | jq
 ```
+
+Example response:
+
+```json
+{
+  "seconds": 93784.0,
+  "uptime": "1d 2h 3m 4s",
+  "uptime_dhm": "1d 2h 3m",
+  "uptime_dh": "1d 2h",
+  "uptime_d": "1d",
+  "octoprint_seconds": 3665.0,
+  "octoprint_uptime": "1h 1m 5s",
+  "octoprint_uptime_dhm": "1h 1m",
+  "octoprint_uptime_dh": "1h",
+  "octoprint_uptime_d": "0d",
+  "display_format": "full",
+  "poll_interval_seconds": 5,
+  "uptime_available": true
+}
+```
+
+When uptime cannot be determined, `uptime_available` is `false` and an additional localized `uptime_note` explains why.
 
 **Q: Which OSes are supported?**
 A: Linux is tested and supported. Other OSes may work but are not officially supported. See details in [How It Works](#note-about-uptime-retrieval).

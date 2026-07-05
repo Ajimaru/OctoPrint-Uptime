@@ -1,6 +1,7 @@
-"""OctoPrint-Uptime plugin module.
+"""OctoPrint-Uptime plugin package.
 
-Provides a small API endpoint that returns formatted system uptime.
+Displays host system and OctoPrint process uptime in the navbar and exposes
+a small JSON API returning both raw seconds and formatted variants.
 This module avoids importing OctoPrint/Flask at import-time so it can be
 packaged and unit-tested without the OctoPrint runtime present.
 """

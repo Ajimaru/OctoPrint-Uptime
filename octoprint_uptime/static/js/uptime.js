@@ -67,7 +67,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
   this.octoprintUptimeDisplay = octoprintUptimeDisplay;
   this.uptimeDisplayText = uptimeDisplayText;
 
-  var navbarEl = $("#navbar_plugin_navbar_uptime");
+  var navbarEl = $("#navbar_plugin_octoprint_uptime");
   var DEFAULT_POLL = 5;
   var DEFAULT_COMPACT_TOGGLE_INTERVAL = 5; // seconds, used as fallback
   var compactToggleTimer = 0;
@@ -425,10 +425,11 @@ const NavbarUptimeViewModel = function (parameters = []) {
    * // Expected API response (partial):
    * // {
    * //   "seconds": 3600,
-   * //   "uptime": "1 hour",
-   * //   "uptime_dhm": "0d 1h 0m",
+   * //   "uptime": "1h 0m 0s",
+   * //   "uptime_dhm": "1h 0m",
    * //   "display_format": "dhm",
-   * //   "poll_interval_seconds": 5
+   * //   "poll_interval_seconds": 5,
+   * //   "uptime_available": true
    * // }
    */
   fetchUptime = function () {
@@ -707,7 +708,7 @@ $(() => {
   window.OCTOPRINT_VIEWMODELS.push([
     NavbarUptimeViewModel,
     ["settingsViewModel"],
-    ["#navbar_plugin_navbar_uptime"],
+    ["#navbar_plugin_octoprint_uptime"],
   ]);
   return true;
 });

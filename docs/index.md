@@ -4,7 +4,7 @@ This directory contains the documentation for the [OctoPrint-Uptime](https://git
 
 ## Overview
 
-OctoPrint-Uptime is a plugin for OctoPrint that displays both system and OctoPrint process uptime in the navbar and About → System dialog, and provides an API endpoint for retrieving uptime information. It supports internationalization (English/German), configurable polling intervals, optional compact toggle mode, and integration with the OctoPrint frontend.
+OctoPrint-Uptime is a plugin for OctoPrint that displays both system and OctoPrint process uptime in the navbar and provides an API endpoint for retrieving uptime information. It supports internationalization (English/German), configurable polling intervals, optional compact toggle mode, and integration with the OctoPrint frontend.
 
 ## Quick Start
 
@@ -32,7 +32,8 @@ OctoPrint-Uptime is a plugin for OctoPrint that displays both system and OctoPri
   - `uptime_dhm`: Shows days, hours, and minutes (e.g., "2d 3h 45m" or "1h 30m" if zero days). Leading zero days are omitted, but hours and minutes are always shown even if zero.
   - `uptime_dh`: Shows days and hours (e.g., "2d 3h" or "5h" if zero days). Leading zero days are omitted, but hours are always shown even if zero.
   - `uptime_d`: Shows days only (e.g., "2d" or "0d").
-  - The API returns all formatted strings; `display_format` only selects which returned variant the frontend displays.
+  - The API returns all formatted strings; `display_format` only selects which returned variant the frontend displays (`short` is a legacy alias that displays the `_dh` variant).
+  - The response also contains `uptime_available` (boolean); when it is `false`, a localized `uptime_note` explains that uptime could not be determined.
 - Configuration: Settings → Plugin OctoPrint-Uptime
 
 ## API Example
@@ -50,7 +51,8 @@ OctoPrint-Uptime is a plugin for OctoPrint that displays both system and OctoPri
   "octoprint_uptime_dh": "0h",
   "octoprint_uptime_d": "0d",
   "display_format": "dhm",
-  "poll_interval_seconds": 5
+  "poll_interval_seconds": 5,
+  "uptime_available": true
 }
 ```
 
@@ -113,7 +115,6 @@ mkdocs build
 
 ```text
 docs/
-├── README.md                         # Documentation README
 ├── index.md                          # Overview page (this file)
 ├── getting-started.md                # Development setup
 ├── jsdoc.json                        # jsdoc-to-markdown config used by scripts/generate-jsdocs.sh
@@ -132,6 +133,7 @@ docs/
 ├── development/                      # Developer guides
 │   ├── contributing.md               # Contributing guide (synced with top-level CONTRIBUTING.md)
 │   ├── testing.md                    # Testing guide (commands, coverage)
+│   ├── testing-diagrams.md           # Test-suite structure diagrams
 │   └── release-process.md            # Release process for maintainers
 └── reference/                        # Reference docs
     ├── configuration.md             # Configuration reference
@@ -139,6 +141,7 @@ docs/
     ├── frontend.md                  # Frontend reference
     └── diagrams/
         ├── overview.md              # Conceptual diagram (Mermaid)
+        ├── build-scripts.md         # Build/hook script diagrams
         ├── classes.md               # UML class diagram (auto-generated, SVG generated during CI)
         ├── classes_detailed.md      # Detailed UML class diagram (auto-generated, SVG generated during CI)
         ├── packages.md              # Package diagram (auto-generated, SVG generated during CI)
