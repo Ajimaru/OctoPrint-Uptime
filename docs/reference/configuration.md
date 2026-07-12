@@ -6,36 +6,36 @@ the `get_settings_defaults()` method in `octoprint_uptime/plugin.py`.
 Settings (defaults):
 
 - `debug` (bool) - default: `false`\
-   Enable throttled debug logging for the plugin (for example, API access messages).
+  Enable throttled debug logging for the plugin (for example, API access messages).
   Other debug/info messages still depend on OctoPrint's global log level.
 
 - `show_system_uptime` (bool) - default: `true`\
-   Controls whether the system uptime is shown in the OctoPrint navbar.
+  Controls whether the system uptime is shown in the OctoPrint navbar.
 
 - `show_octoprint_uptime` (bool) - default: `true`\
-   Controls whether the OctoPrint process uptime is shown in the navbar.
+  Controls whether the OctoPrint process uptime is shown in the navbar.
 
 - `compact_display` (bool) - default: `false`\
-   Alternates between system and OctoPrint uptime in the navbar; only takes effect when both `show_system_uptime` and `show_octoprint_uptime` are enabled.
+  Alternates between system and OctoPrint uptime in the navbar; only takes effect when both `show_system_uptime` and `show_octoprint_uptime` are enabled.
 
 - `compact_toggle_interval_seconds` (int) - default: `5`\
-   Interval in seconds between navbar uptime switches when compact mode is active.
+  Interval in seconds between navbar uptime switches when compact mode is active.
   Valid range: 5-60 seconds (integers only). Values are validated and clamped by
   the plugin on save.
 
 - `display_format` (string) - default: `"full"`\
-   Controls the default formatted uptime string returned by the API and used in
+  Controls the default formatted uptime string returned by the API and used in
   the UI. Valid values are `full`, `dhm`, `dh`, `d`, and `short` (a legacy alias
   rendered like `dh`), which map to the helper formatters exposed by the plugin
   (see [API docs](../api/python.md)).
 
 - `debug_throttle_seconds` (int) - default: `60`\
-   Minimum interval (in seconds) between repeated debug log messages to avoid
+  Minimum interval (in seconds) between repeated debug log messages to avoid
   logging spam when debug mode is enabled. Valid range: 1-120 seconds (integers
   only). Values are validated and clamped by the plugin on save.
 
 - `poll_interval_seconds` (int) - default: `5`\
-   Suggested polling interval (in seconds) that clients can use to refresh the
+  Suggested polling interval (in seconds) that clients can use to refresh the
   uptime display. The frontend uses this to adjust its polling frequency. Valid
   range: 1-120 seconds (integers only). Values are validated and clamped by the
   plugin on save.
