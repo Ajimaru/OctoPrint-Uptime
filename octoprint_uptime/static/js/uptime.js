@@ -147,6 +147,25 @@ const NavbarUptimeViewModel = function (parameters = []) {
   }
 
   /**
+   * Check whether icon-only mode is enabled.
+   * In icon-only mode, the navbar shows just the uptime icon (no text) to
+   * save space; the uptime values stay available in the tooltip.
+   * @function isIconOnly
+   * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+   * @returns {boolean} true when icon-only mode is enabled, false otherwise
+   */
+  function isIconOnly() {
+    try {
+      const ps = getPluginSettings();
+      return ps && typeof ps.icon_only === "function"
+        ? !!ps.icon_only()
+        : false;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Check whether compact display mode is enabled.
    * In compact mode, system and OctoPrint uptime alternate in the navbar
    * instead of being shown side-by-side.
@@ -332,9 +351,11 @@ const NavbarUptimeViewModel = function (parameters = []) {
    * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
    * @param {Object} data - API payload that may include uptime second counters.
    * @param {boolean} includeOctoprint - Whether to include OctoPrint start time.
+   * @param {Array<string>} [extraLines] - Optional lines prepended to the
+   *   tooltip (used in icon-only mode to keep the uptime values visible).
    * @returns {void}
    */
-  function updateNavbarTooltip(data, includeOctoprint) {
+  function updateNavbarTooltip(data, includeOctoprint, extraLines) {
     try {
       const secs =
         data && data.seconds != null ? Number(data.seconds) : Number.NaN;
@@ -343,7 +364,7 @@ const NavbarUptimeViewModel = function (parameters = []) {
           ? Number(data.octoprint_seconds)
           : Number.NaN;
 
-      const tooltipLines = [];
+      const tooltipLines = Array.isArray(extraLines) ? extraLines.slice() : [];
 
       if (Number.isFinite(secs) && secs >= 0) {
         var started = new Date(Date.now() - secs * 1000);
@@ -518,6 +539,25 @@ const NavbarUptimeViewModel = function (parameters = []) {
         const uptimeLabel = localize("Uptime:");
         const systemLabel = localize("System");
         const octoprintLabel = localize("OctoPrint");
+
+        // Icon-only mode: clear the navbar text (only the icon remains) and
+        // move the uptime values into the tooltip so they stay accessible.
+        if (isIconOnly() && (showSystem || showOctoprint)) {
+          const uptimeLines = [];
+          if (showSystem) {
+            uptimeLines.push(`${uptimeLabel} ${systemLabel} ${displayValue}`);
+          }
+          if (showOctoprint) {
+            uptimeLines.push(
+              `${uptimeLabel} ${octoprintLabel} ${octoprintDisplayValue}`,
+            );
+          }
+          stopCompactToggleLoop();
+          uptimeDisplayText("");
+          updateNavbarTooltip(data, showOctoprint, uptimeLines);
+          scheduleNextFromData(data);
+          return true;
+        }
 
         // Handle compact display (toggling between system and octoprint)
         if (useCompactDisplay && showSystem && showOctoprint) {

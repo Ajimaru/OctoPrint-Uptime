@@ -557,6 +557,7 @@ class OctoprintUptimePlugin(
             "show_octoprint_uptime": True,
             "compact_display": False,
             "compact_toggle_interval_seconds": 5,
+            "icon_only": False,
             "display_format": "full",
             "debug_throttle_seconds": 60,
             "poll_interval_seconds": 5,

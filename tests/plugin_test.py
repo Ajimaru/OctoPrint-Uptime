@@ -1654,6 +1654,8 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
         pytest.fail('Expected defaults["show_octoprint_uptime"] to be True')
     if defaults.get("compact_toggle_interval_seconds") != 5:
         pytest.fail('Expected defaults["compact_toggle_interval_seconds"] to be 5')
+    if defaults.get("icon_only") is not False:
+        pytest.fail('Expected defaults["icon_only"] to be False')
 
     called = {}
 
@@ -1703,6 +1705,28 @@ def test_get_settings_defaults_and_on_settings_save(monkeypatch):
         pytest.fail(
             "Expected all hooks to be called: validate, log, call_base, updated"
         )
+
+
+def test_icon_only_setting_defaults_and_persistence():
+    """Test that the ``icon_only`` setting has a False default and survives saves.
+
+    Verifies that:
+    - ``get_settings_defaults`` exposes ``icon_only`` as a boolean False so the
+      frontend can safely bind ``settings.plugins.octoprint_uptime.icon_only``.
+    - ``_validate_and_sanitize_settings`` leaves the boolean untouched (it only
+      sanitizes the integer settings listed in ``_INT_SETTING_BOUNDS``).
+    """
+    p = plugin.OctoprintUptimePlugin()
+    defaults = p.get_settings_defaults()
+    if "icon_only" not in defaults:
+        pytest.fail('Expected "icon_only" key in settings defaults')
+    if defaults["icon_only"] is not False:
+        pytest.fail('Expected defaults["icon_only"] to be False')
+
+    data = {"plugins": {"octoprint_uptime": {"icon_only": True}}}
+    p._validate_and_sanitize_settings(data)
+    if data["plugins"]["octoprint_uptime"]["icon_only"] is not True:
+        pytest.fail("Expected icon_only to pass through sanitization unchanged")
 
 
 def test_reload_plugin_with_gettext_bind_failure(monkeypatch):
