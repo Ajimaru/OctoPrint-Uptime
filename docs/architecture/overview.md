@@ -8,8 +8,8 @@ This page gives a concise overview of the main components of the OctoPrint-Uptim
 - Frontend: A Knockout.js ViewModel that queries the plugin API periodically and updates the navbar display with configurable uptime values and optional compact mode.
 - Settings: Plugin settings control the polling interval, which uptime values
   are shown in the navbar (`show_system_uptime`, `show_octoprint_uptime`),
-  whether compact alternating mode is active (`compact_display`), and the
-  display format.
+  whether compact alternating mode is active (`compact_display`), whether only
+  the icon is shown in the navbar (`icon_only`), and the display format.
 - Internationalization: Translatable strings provided via `translations/` and compiled with `pybabel`.
 
 ## Quick links

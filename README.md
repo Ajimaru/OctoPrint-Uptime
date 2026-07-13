@@ -87,6 +87,7 @@ Configure the plugin in **Settings** → **OctoPrint Uptime**:
 
 - `show_system_uptime`: `true` - Show system uptime in the OctoPrint navbar
 - `show_octoprint_uptime`: `true` - Show OctoPrint uptime in the navbar
+- `icon_only`: `false` - Show only the uptime icon in the navbar to save space (uptimes stay visible in the tooltip)
 - `compact_display`: `false` - Toggle between system and OctoPrint uptime in the navbar
 - `compact_toggle_interval_seconds`: `5` - Interval for toggling between system and OctoPrint uptime in seconds (validated and clamped between 5-60s)
 - `display_format`: `full` - Display format for uptime (options: `full`, `dhm`, `dh`, `d`, `short`; `short` is a legacy alias that renders like `dh`)

@@ -101,12 +101,26 @@
             </div>
         </div>
         <div class="control-group">
+            <label class="control-label" for="plugin_uptime_icon_only">{{ _("Icon Only") }}</label>
+            <div class="controls">
+                <label class="checkbox" for="plugin_uptime_icon_only">
+                    <input id="plugin_uptime_icon_only"
+                           type="checkbox"
+                           data-bind="checked: settings.plugins.octoprint_uptime.icon_only, enable: settings.plugins.octoprint_uptime.show_system_uptime() || settings.plugins.octoprint_uptime.show_octoprint_uptime()" />
+                    {{ _("Show only the uptime icon in the navbar") }}
+                </label>
+                <p class="help-block">
+                    {{ _("When enabled, hides the uptime text in the navbar to save space; the times stay visible in the tooltip.") }}
+                </p>
+            </div>
+        </div>
+        <div class="control-group">
             <label class="control-label" for="plugin_uptime_compact">{{ _("Compact Display") }}</label>
             <div class="controls">
                 <label class="checkbox" for="plugin_uptime_compact">
                     <input id="plugin_uptime_compact"
                            type="checkbox"
-                           data-bind="checked: settings.plugins.octoprint_uptime.compact_display, enable: settings.plugins.octoprint_uptime.show_system_uptime() && settings.plugins.octoprint_uptime.show_octoprint_uptime()" />
+                           data-bind="checked: settings.plugins.octoprint_uptime.compact_display, enable: settings.plugins.octoprint_uptime.show_system_uptime() && settings.plugins.octoprint_uptime.show_octoprint_uptime() && !settings.plugins.octoprint_uptime.icon_only()" />
                     {{ _("Toggle between system and OctoPrint uptime in the navbar") }}
                 </label>
                 <p class="help-block">{{ _("When enabled, alternates system and OctoPrint uptime to save navbar space.") }}</p>
@@ -120,7 +134,7 @@
                        class="span2"
                        min="5"
                        max="60"
-                       data-bind="value: settings.plugins.octoprint_uptime.compact_toggle_interval_seconds, enable: settings.plugins.octoprint_uptime.compact_display() && settings.plugins.octoprint_uptime.show_system_uptime() && settings.plugins.octoprint_uptime.show_octoprint_uptime()" />
+                       data-bind="value: settings.plugins.octoprint_uptime.compact_toggle_interval_seconds, enable: settings.plugins.octoprint_uptime.compact_display() && settings.plugins.octoprint_uptime.show_system_uptime() && settings.plugins.octoprint_uptime.show_octoprint_uptime() && !settings.plugins.octoprint_uptime.icon_only()" />
                 <p class="help-block">{{ _("Switch interval in compact mode (5-60 s).") }}</p>
             </div>
         </div>
