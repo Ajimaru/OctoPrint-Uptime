@@ -32,6 +32,10 @@ Example response (partial):
   from the plugin settings. If both are `false` the navbar is hidden immediately
   via `navbarEl.hide()` and polling resumes after the configured interval.
   - **Polling continues when both are disabled because:** It keeps detecting runtime changes and config updates.
+- When `icon_only` is `true` (and at least one uptime type is enabled), the
+  navbar text is cleared so only the icon remains; the current uptime values are
+  prepended to the tooltip instead. Icon-only mode takes precedence over
+  `compact_display`.
 - When both are enabled and `compact_display` is `true`, the navbar alternates
   between system and OctoPrint uptime at the configured
   `compact_toggle_interval_seconds` interval (default 5s, range 5-60 seconds)

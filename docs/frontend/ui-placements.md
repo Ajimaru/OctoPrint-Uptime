@@ -48,6 +48,10 @@ The same JavaScript path also injects the anchor `title` tooltip attribute at ru
 and compact display modes, so mouseover content remains consistent when
 `compact_display` is enabled (the title is not present in the static template).
 
+When `icon_only` is enabled, the JavaScript clears the navbar text (only the
+icon remains visible) and prepends the current uptime values to the tooltip,
+so the times stay accessible on mouseover.
+
 ## Customizing placement
 
 - Change the selector in the `OCTOPRINT_VIEWMODELS.push` call to bind elsewhere (e.g. a different navbar region or a settings panel).
@@ -94,3 +98,5 @@ OctoPrint.simpleApiGet("octoprint_uptime").done(function (data) {
 - Is `compact_display` enabled but only one uptime type is active? Compact mode
   only alternates when **both** uptime types are enabled; otherwise the single
   active type is displayed in regular mode.
+- Is `icon_only` enabled? Then the navbar intentionally shows only the icon;
+  hover over it to see the uptimes and start times in the tooltip.

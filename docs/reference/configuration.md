@@ -15,6 +15,12 @@ Settings (defaults):
 - `show_octoprint_uptime` (bool) - default: `true`\
   Controls whether the OctoPrint process uptime is shown in the navbar.
 
+- `icon_only` (bool) - default: `false`\
+  Shows only the uptime icon in the navbar (no text) to save space. The uptime
+  values are shown in the tooltip instead, together with the start times. Takes
+  precedence over `compact_display` and requires at least one of
+  `show_system_uptime` / `show_octoprint_uptime` to be enabled.
+
 - `compact_display` (bool) - default: `false`\
   Alternates between system and OctoPrint uptime in the navbar; only takes effect when both `show_system_uptime` and `show_octoprint_uptime` are enabled.
 
