@@ -26,7 +26,7 @@ jobs:
 
       - # Setup Python 3.12 for documentation tools
         name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -40,7 +40,7 @@ jobs:
 
       - # Setup Node.js for documentation tooling
         name: Install Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
 
