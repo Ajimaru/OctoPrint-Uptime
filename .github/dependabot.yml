@@ -1,40 +1,38 @@
 version: 2
 updates:
-  # Keep GitHub Actions up to date (security patches, bug fixes)
-  - package-ecosystem: "github-actions"
+  - package-ecosystem: github-actions
     directory: "/"
-    target-branch: "dev"
+    target-branch: dev
     schedule:
-      interval: "weekly"
+      interval: monthly
     open-pull-requests-limit: 5
     groups:
       github-actions:
         patterns:
           - "*"
 
-  # Keep Python dependencies up to date
-  - package-ecosystem: "pip"
+  - package-ecosystem: pip
     directory: "/"
-    target-branch: "dev"
+    target-branch: dev
     schedule:
-      interval: "weekly"
+      interval: monthly
     open-pull-requests-limit: 5
     groups:
-      python-dev-tools:
+      dev-dependencies:
+        dependency-type: development
         patterns:
-          - "black"
-          - "flake8"
-          - "isort"
-          - "pre-commit"
-          - "pytest"
-          - "pytest-*"
-          - "coverage"
-          - "pytest-cov"
-          - "build"
-      python-build-system:
+          - "*"
+      # Major bumps are deliberately not listed here: they stay individual
+      # PRs, since those are the ones that actually break things.
+      production-dependencies:
+        dependency-type: production
         patterns:
-          - "setuptools"
-          - "wheel"
-      python-runtime:
-        patterns:
-          - "typing_extensions"
+          - "*"
+        update-types:
+          - minor
+    # Patch bumps are ignored to keep PR volume low; security fixes still
+    # arrive through Dependabot security alerts, which ignore this filter.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-patch
