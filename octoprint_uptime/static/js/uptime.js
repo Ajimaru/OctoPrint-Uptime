@@ -35,6 +35,10 @@ const NavbarUptimeViewModel = function (parameters = []) {
    * captures when the ViewModel is constructed before settings are loaded.
    */
   const settingsVM = parameters[0];
+  // Settings-dialog note state: rendered once, guarded against duplicate
+  // in-flight requests when the dialog is opened repeatedly.
+  let settingsNoteRendered = false;
+  let settingsNotePromise = null;
   /**
    * Return the plugin-specific settings object (`settings.plugins.octoprint_uptime`).
    * Re-resolves on every call so that the ViewModel never holds a stale
@@ -612,8 +616,95 @@ const NavbarUptimeViewModel = function (parameters = []) {
    * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel
    * @returns {void}
    */
+  /**
+   * Render the "uptime unavailable" note into the settings section.
+   *
+   * Only renders when the API explicitly reports `uptime_available: false`;
+   * the message comes from the API when provided, otherwise from the
+   * `data-note` attribute of the container (localized server-side).
+   * @function renderSettingsNote
+   * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel~
+   * @param {Object} data - Response payload of the plugin's simple API.
+   * @returns {boolean} `true` once handled.
+   */
+  function renderSettingsNote(data) {
+    try {
+      if (!data || data.uptime_available !== false) {
+        return true;
+      }
+      const container = $("#uptime_note_container");
+      if (!container.length) {
+        return true;
+      }
+      const note = data.uptime_note || container.attr("data-note") || "";
+      container
+        .empty()
+        .append($("<div />").addClass("alert alert-warning").text(note))
+        .show();
+    } catch (err) {
+      if (typeof window !== "undefined" && window.UptimeDebug) {
+        console.error(
+          "octoprint_uptime: error rendering settings uptime note",
+          err,
+          data,
+        );
+      } else {
+        console.warn("octoprint_uptime: error rendering settings uptime note");
+      }
+    }
+    return true;
+  }
+
   this.onStartupComplete = () => {
     fetchUptime();
+    return true;
+  };
+
+  /**
+   * OctoPrint lifecycle hook - called every time the settings dialog is
+   * shown. Fetches the plugin API once and renders the "uptime could not be
+   * determined" note into the settings section when the server reports the
+   * uptime as unavailable.
+   *
+   * This lives in the ViewModel rather than in an inline <script> in the
+   * settings template: OctoPrint injects the templates before the bundled JS
+   * assets (jQuery included) are loaded, so an inline block would fail with
+   * "$ is not defined" before it could run.
+   * @function onSettingsShown
+   * @memberof module:octoprint_uptime/navbar.NavbarUptimeViewModel
+   * @returns {void}
+   */
+  this.onSettingsShown = () => {
+    if (settingsNoteRendered || settingsNotePromise) {
+      return true;
+    }
+
+    settingsNotePromise = window.OctoPrint.simpleApiGet("octoprint_uptime", {
+      timeout: 10000,
+    })
+      .done((data) => {
+        settingsNotePromise = null;
+        settingsNoteRendered = true;
+        renderSettingsNote(data);
+      })
+      .fail((jqXHR, textStatus, errorThrown) => {
+        // Clear the in-flight promise so a later open can retry.
+        settingsNotePromise = null;
+        if (typeof window !== "undefined" && window.UptimeDebug) {
+          console.error(
+            "octoprint_uptime: failed to fetch uptime API for settings note",
+            textStatus,
+            errorThrown,
+            jqXHR,
+          );
+        } else {
+          console.warn(
+            "octoprint_uptime: failed to fetch uptime API for settings note:",
+            textStatus,
+          );
+        }
+      });
+
     return true;
   };
 
