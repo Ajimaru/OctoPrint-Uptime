@@ -145,12 +145,36 @@ jobs:
           title=$(cat release_title.txt)
           echo "title=$title" >> "$GITHUB_OUTPUT"
 
+      - name: Determine prerelease
+        id: prerelease
+        run: |
+          TAG="${{ github.ref_name }}"
+          TAG_LOWER="$(printf '%s' "$TAG" | tr '[:upper:]' '[:lower:]')"
+          # Prerelease = an a/b/rc/dev segment in the VERSION part of the tag
+          # (PEP 440 style, digit or separator before it, e.g. 0.5.2rc1 or
+          # 0.5.2.dev6). The match must end at the tag end or at the local
+          # part ("+hash"), so a commit hash that happens to end in e.g. "b1"
+          # can never flip the detection.
+          #
+          # A bare `contains(github.ref_name, 'a')` would match any tag with
+          # the letter "a" anywhere in it, which is why this is a grep.
+          if echo "$TAG_LOWER" | grep -qE '(^|[-.0-9])(a|b|rc|dev)([.-]?[0-9]+)?($|\+)'; then
+            echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:
           name: ${{ steps.release_title.outputs.title }}
-          draft: false
-          prerelease: ${{ contains(github.ref_name, 'rc') || contains(github.ref_name, 'a') || contains(github.ref_name, 'b') }}
+          # Always a draft: a release is published by hand once the notes and
+          # the attached artifacts have been eyeballed. Pushing a tag must
+          # never publish on its own — the plugin manager installs from the
+          # fixed "…-latest.zip" asset URL, so a bad tag would reach users
+          # immediately.
+          draft: true
+          prerelease: ${{ steps.prerelease.outputs.is_prerelease }}
           body_path: release_notes.md
           files: dist/*
 
