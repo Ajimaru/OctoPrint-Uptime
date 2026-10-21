@@ -36,3 +36,27 @@ updates:
       - dependency-name: "*"
         update-types:
           - version-update:semver-patch
+
+  # package.json holds dev tooling only (eslint, prettier, jsdoc) — no runtime
+  # npm dependencies ship with the plugin.
+  #
+  # NOTE: routine npm updates have so far arrived from Depfu as batched
+  # "Update all development npm dependencies" pull requests. Depfu is
+  # configured from its dashboard, not from this repository, so enabling the
+  # ecosystem here means both bots watch the same five packages until npm is
+  # switched off on the Depfu side.
+  - package-ecosystem: npm
+    directory: "/"
+    target-branch: dev
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        patterns:
+          - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-patch
