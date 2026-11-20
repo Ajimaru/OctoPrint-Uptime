@@ -5,11 +5,11 @@
 <h1 align="center">OctoPrint‑Uptime</h1>
 <!-- markdownlint-enable MD041 MD033 -->
 
-[![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/LICENSE)
-[![Python](https://img.shields.io/badge/python-3.9%2B-blue?style=flat-square)](https://python.org)
-[![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue?style=flat-square)](https://octoprint.org)
-[![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver&style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
+[![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=gnu&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue?style=flat-square&logo=octoprint&logoColor=white)](https://octoprint.org)
+[![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver&style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
 [![Made with Love](https://img.shields.io/badge/made_with-❤️-ff69b4?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime)
 
 ### Effortlessly track your OctoPrint server's uptime, right from your navbar
@@ -173,62 +173,62 @@ Summary: this project exposes many status and quality badges (CI, linting, cover
 
 ### 🏗️ 1. Build & Test Status
 
-[![CI](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
-[![i18n](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/i18n.yml?branch=main&label=i18n&style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
-[![Lint](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/lint.yml?branch=main&label=Lint&style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/lint.yml?query=branch%3Amain)
-[![Docs workflow](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/docs.yml?branch=main&label=Docs&style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml?query=branch%3Amain)
-[![Bandit SARIF](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/bandit-sarif.yml?branch=main&label=Bandit+SARIF&style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/bandit-sarif.yml?query=branch%3Amain)
+[![CI](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/ci.yml?branch=main&label=CI&style=flat-square&logo=githubactions&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/ci.yml?query=branch%3Amain)
+[![i18n](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/i18n.yml?branch=main&label=i18n&style=flat-square&logo=githubactions&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/i18n.yml?query=branch%3Amain)
+[![Lint](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/lint.yml?branch=main&label=Lint&style=flat-square&logo=githubactions&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/lint.yml?query=branch%3Amain)
+[![Docs workflow](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/docs.yml?branch=main&label=Docs&style=flat-square&logo=githubactions&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/docs.yml?query=branch%3Amain)
+[![Bandit SARIF](https://img.shields.io/github/actions/workflow/status/Ajimaru/OctoPrint-Uptime/bandit-sarif.yml?branch=main&label=Bandit+SARIF&style=flat-square&logo=githubactions&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/actions/workflows/bandit-sarif.yml?query=branch%3Amain)
 
 ### 🧪 2. Code Quality & Formatting
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000?style=flat-square)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336)](https://pycqa.github.io/isort/)
-[![Code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4?style=flat-square)](https://github.com/prettier/prettier)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000?style=flat-square&logo=black&logoColor=white)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336&logo=python&logoColor=white)](https://pycqa.github.io/isort/)
+[![Code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4?style=flat-square&logo=prettier&logoColor=white)](https://github.com/prettier/prettier)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?style=flat-square&logo=pre-commit&logoColor=white)](https://pre-commit.com/)
-[![Codacy Badge](https://img.shields.io/badge/dynamic/json?style=flat-square&label=Codacy&query=%24.grade&url=https%3A%2F%2Fapp.codacy.com%2Fapi%2Fv3%2Fanalysis%2Fsummary%3FprojectUuid%3D1b946ed41ef2479fa1eb254e6eea9fb0&color=blue)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![Coverage](https://img.shields.io/badge/dynamic/json?style=flat-square&label=coverage&query=%24.totals.coverage&url=https%3A%2F%2Fcodecov.io%2Fapi%2Fv2%2Fgithub%2FAjimaru%2Frepos%2FOctoPrint-Uptime%2Fcommit%2F%3Fbranch%3Dmain%26page%3D1%26page_size%3D1&suffix=%25&color=brightgreen)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
-[![Pylint Score](https://img.shields.io/badge/pylint-10.0-green?style=flat-square)](https://www.pylint.org/)
-[![Bandit Security](https://img.shields.io/badge/bandit-security-green?style=flat-square)](https://bandit.readthedocs.io/en/latest/)
+[![Codacy Badge](https://img.shields.io/badge/dynamic/json?style=flat-square&label=Codacy&query=%24.grade&url=https%3A%2F%2Fapp.codacy.com%2Fapi%2Fv3%2Fanalysis%2Fsummary%3FprojectUuid%3D1b946ed41ef2479fa1eb254e6eea9fb0&color=blue&logo=codacy&logoColor=white)](https://app.codacy.com/gh/Ajimaru/OctoPrint-Uptime/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Coverage](https://img.shields.io/badge/dynamic/json?style=flat-square&label=coverage&query=%24.totals.coverage&url=https%3A%2F%2Fcodecov.io%2Fapi%2Fv2%2Fgithub%2FAjimaru%2Frepos%2FOctoPrint-Uptime%2Fcommit%2F%3Fbranch%3Dmain%26page%3D1%26page_size%3D1&suffix=%25&color=brightgreen&logo=codecov&logoColor=white)](https://codecov.io/gh/Ajimaru/OctoPrint-Uptime)
+[![Pylint Score](https://img.shields.io/badge/pylint-10.0-green?style=flat-square&logo=python&logoColor=white)](https://www.pylint.org/)
+[![Bandit Security](https://img.shields.io/badge/bandit-security-green?style=flat-square&logo=python&logoColor=white)](https://bandit.readthedocs.io/en/latest/)
 [![Depfu](https://img.shields.io/badge/dependencies-managed%20by%20Depfu-blue?style=flat-square)](https://depfu.com/repos/github/Ajimaru/OctoPrint-Uptime)
 [![Depfu](https://badges.depfu.com/badges/4c4d586bd117970e7507b8111f73a465/count.svg)](https://depfu.com/github/Ajimaru/OctoPrint-Uptime?project_id=70412)
 [![Known Vulnerabilities](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime/badge.svg)](https://snyk.io/test/github/Ajimaru/OctoPrint-Uptime)
 
 ### 🔄 3. CI/CD & Release
 
-[![SemVer](https://img.shields.io/badge/semver-2.0.0-blue?style=flat-square)](https://semver.org/)
-[![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
-[![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver&style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
-[![Pre‑Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?include_prereleases&label=pre-release&style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
-[![Python](https://img.shields.io/badge/python-3.9%2B-blue?style=flat-square)](https://python.org)
-[![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue?style=flat-square)](https://octoprint.org)
-[![Maintenance](https://img.shields.io/maintenance/yes/2026?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/graphs/commit-activity)
+[![SemVer](https://img.shields.io/badge/semver-2.0.0-blue?style=flat-square&logo=semver&logoColor=white)](https://semver.org/)
+[![Release Date](https://img.shields.io/github/release-date/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
+[![Latest Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?sort=semver&style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/Ajimaru/OctoPrint-Uptime/total?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
+[![Pre‑Release](https://img.shields.io/github/v/release/Ajimaru/OctoPrint-Uptime?include_prereleases&label=pre-release&style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/releases)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![OctoPrint](https://img.shields.io/badge/OctoPrint-1.10.0%2B-blue?style=flat-square&logo=octoprint&logoColor=white)](https://octoprint.org)
+[![Maintenance](https://img.shields.io/maintenance/yes/2026?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/graphs/commit-activity)
 
 ### 📊 4. Repository Activity
 
-[![Open Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aopen)
-[![Closed Issues](https://img.shields.io/github/issues-closed-raw/Ajimaru/OctoPrint-Uptime?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aclosed)
-[![Open PRs](https://img.shields.io/github/issues-pr/Ajimaru/OctoPrint-Uptime?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aopen)
-[![Closed PRs](https://img.shields.io/github/issues-pr-closed/Ajimaru/OctoPrint-Uptime?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aclosed)
-[![Last Commit](https://img.shields.io/github/last-commit/Ajimaru/OctoPrint-Uptime?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/commits/main)
-[![Commit Activity (year)](https://img.shields.io/github/commit-activity/y/Ajimaru/OctoPrint-Uptime?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/graphs/commit-activity)
-[![Contributors](https://img.shields.io/github/contributors/Ajimaru/OctoPrint-Uptime?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/graphs/contributors)
+[![Open Issues](https://img.shields.io/github/issues/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aopen)
+[![Closed Issues](https://img.shields.io/github/issues-closed-raw/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/issues?q=is%3Aissue%20state%3Aclosed)
+[![Open PRs](https://img.shields.io/github/issues-pr/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aopen)
+[![Closed PRs](https://img.shields.io/github/issues-pr-closed/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls?q=is%3Apr+is%3Aclosed)
+[![Last Commit](https://img.shields.io/github/last-commit/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/commits/main)
+[![Commit Activity (year)](https://img.shields.io/github/commit-activity/y/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/graphs/commit-activity)
+[![Contributors](https://img.shields.io/github/contributors/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/graphs/contributors)
 
 ### 🧾 5. Metadata
 
-![Code Size](https://img.shields.io/github/languages/code-size/Ajimaru/OctoPrint-Uptime?style=flat-square)
-[![Security](https://img.shields.io/badge/security-policy-blue?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/SECURITY.md)
-[![Snyk](https://img.shields.io/badge/security-snyk-blueviolet?style=flat-square)](https://app.snyk.io)
-![Languages Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime?style=flat-square)
-![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime?style=flat-square)
-[![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls)
+![Code Size](https://img.shields.io/github/languages/code-size/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)
+[![Security](https://img.shields.io/badge/security-policy-blue?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/SECURITY.md)
+[![Snyk](https://img.shields.io/badge/security-snyk-blueviolet?style=flat-square&logo=snyk&logoColor=white)](https://app.snyk.io)
+![Languages Count](https://img.shields.io/github/languages/count/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)
+![Top Language](https://img.shields.io/github/languages/top/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=github&logoColor=white)
+[![License](https://img.shields.io/github/license/Ajimaru/OctoPrint-Uptime?style=flat-square&logo=gnu&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/blob/main/LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square&logo=github&logoColor=white)](https://github.com/Ajimaru/OctoPrint-Uptime/pulls)
 
 </details>
 <!-- markdownlint-enable MD033 -->
 
 ---
 
-![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime?style=social) ![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime?style=social) ![Watchers](https://img.shields.io/github/watchers/Ajimaru/OctoPrint-Uptime?style=social)
+![Stars](https://img.shields.io/github/stars/Ajimaru/OctoPrint-Uptime?style=social&logo=github) ![Forks](https://img.shields.io/github/forks/Ajimaru/OctoPrint-Uptime?style=social&logo=github) ![Watchers](https://img.shields.io/github/watchers/Ajimaru/OctoPrint-Uptime?style=social&logo=github)
 
 **Like this plugin?** ⭐ Star the repo and share it with the OctoPrint community!
